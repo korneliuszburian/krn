@@ -43,6 +43,9 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `packages/contracts` now exports the standalone `KrnDashboardViewModel` contract with valid and known-bad fixtures under `docs/specs/krn-dashboard-view-model/`.
   - `packages/mcp` now exports `buildKrnDashboardViewModel`, which builds the first dashboard input from real read-only MCP/runtime resources and the latest `krn review` report.
   - `pnpm test -- packages/contracts/test/dashboard-view-model.test.ts packages/mcp/test/dashboard-view-model.test.ts packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts` passed with 14/14 files and 33/33 tests.
+  - `packages/mcp` now exports `validateProposalSourceRefs` and `storeKrnControlPlaneProposal` for source-backed append-only proposal persistence under `.krn/proposals`.
+  - `pnpm run eval:krn-proposal-store` generated `.krn/evals/krn-proposal-store/20260619T231608Z-1828089/report.json` with 4/4 cases and 9/9 assertions passing.
+  - `krn eval` now includes `krn-proposal-store` as a deterministic Slice 3 module.
 
 ## Objective
 
@@ -127,6 +130,15 @@ Work slice by slice. Within each slice, implement vertical behavior through fina
 ```text
 contract -> parser/schema -> fixture -> behavior test/eval -> runtime artifact -> memory/plan update
 ```
+
+Before any non-trivial implementation slice, run a lightweight research/plan checkpoint using the OpenAI Cookbook patterns already indexed in `docs/plans/canonical/SOURCES.md`:
+
+- S010 Goals in Codex: state outcome, verification surface, constraints, boundaries, iteration policy, and blocked stop condition.
+- S011 Codex ExecPlans: keep multi-hour work self-contained, restartable, and evidence-driven.
+- S012 Code modernization: split broad changes into bounded pilot, overview/design, validation/parity, implementation, and reusable template when the slice is broad enough.
+- S087 Related resources: use as discovery only; promote a pattern only after primary-source inspection and mechanism extraction.
+
+The checkpoint must name the product layer, selected source-backed mechanism, rejected alternatives, required skills, validation or falsification path, and overclaim boundary. Tiny mechanical edits can skip the checkpoint, but architecture, memory, eval, MCP/API, dashboard, runtime-skill, benchmark, and long-running-goal work cannot.
 
 Do not make broad horizontal dumps such as "all docs first", "all schemas first", or "dashboard shell first" unless the slice explicitly needs that artifact to unblock the next verified behavior.
 
@@ -245,7 +257,7 @@ Expose the product loop to humans and other agents, then prove whether it improv
   - Skill Impact,
   - Goal/Continuity Health.
 - Add runtime/product skills only after they use typed API/MCP contracts.
-- Add ChatGPT reviewer bridge as static/read-only first, then gateway-backed if current official docs and local proof support it.
+- Keep ChatGPT reviewer bridge deferred and optional. It may become a static/read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Add benchmark harness for baseline Codex vs KRN-assisted Codex.
 
 ### Acceptance Evidence
@@ -280,7 +292,7 @@ Do not mark complete for:
 Continue Slice 3 through the latest eight-hour child goal:
 
 ```bash
-docs/goals/goal-008.md
+docs/goals/goal-009.md
 ```
 
-Start with the STDIO MCP server transport over allowlisted read-only resources. This must reuse `packages/mcp` resource parsing, keep write/proposal tools disabled until their own contract exists, and must not expose destructive MCP/API tools or mocked dashboard state.
+Continue source-backed proposal persistence before MCP proposal tools. This must keep proposal writes append-only, idempotent, backed by `docs/plans/canonical/SOURCES.md` or existing target-root files, and must not expose destructive MCP/API tools or mocked dashboard state.

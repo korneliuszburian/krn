@@ -33,7 +33,7 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest eight-hour Slice 3 child goal is [docs/goals/goal-008.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-008.md). [docs/goals/goal-007.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-007.md) is historical Slice 2 context. Use [docs/goals/goal-005.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-005.md) only as superseded Slice 2 `krn init --dry-run` context.
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest eight-hour Slice 3 child goal is [docs/goals/goal-009.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-009.md). [docs/goals/goal-008.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-008.md) is completed Slice 3 transport/dashboard-contract context. [docs/goals/goal-007.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-007.md) is historical Slice 2 context. Use [docs/goals/goal-005.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-005.md) only as superseded Slice 2 `krn init --dry-run` context.
 3. Read current final product direction:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
 4. Read current canonical synthesis:
@@ -80,6 +80,8 @@ Before major planning work:
 - [KRN MCP STDIO transport](./product/2026-06-20--krn-mcp-stdio-transport.md)
 - [KRN control-plane proposal contract](./product/2026-06-20--krn-control-plane-proposal-contract.md)
 - [KRN dashboard view-model contract](./product/2026-06-20--krn-dashboard-view-model-contract.md)
+- [KRN source-backed proposal store](./product/2026-06-20--krn-source-backed-proposal-store.md)
+- [KRN operating architecture and memory layers](./product/2026-06-20--krn-operating-architecture-and-memory-layers.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

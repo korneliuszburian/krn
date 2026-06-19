@@ -41,7 +41,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Hooks | Semantic reviewer hook | S006 | A | Hook decides product truth | Bad fit | Hidden model/policy layer | reject |
 | Hooks | Compact continuity hooks | S006, S017 | A | Save/load state around compaction | Important hypothesis | Not proven in real Codex run | test |
 | MCP/API | Small allowlisted MCP | S007, S022 | A | Resources/tools/prompts with approvals | Strong fit | Unsafe broad API | adopt |
-| MCP/API | ChatGPT read-only reviewer gateway | S078-S083 | A | HTTPS MCP connector exposes source/claim/eval/memory state | Strong later fit | Plan/workspace availability and stale context | test |
+| MCP/API | ChatGPT read-only reviewer gateway | S078-S083 | A | HTTPS MCP connector exposes source/claim/eval/memory state | Later optional fit after local KRN loop proves useful | Plan/workspace availability and stale context | defer |
 | MCP/API | Direct ChatGPT-to-local-Codex stdio | S081-S085 | A | Skips gateway/tunnel and permission model | Bad fit | Not the documented connector architecture | reject |
 | MCP/API | Append-only idempotent writes | S007, S015 | A | Traceable mutation with IDs | Strong fit | Coupling and storage overhead | adopt |
 | MCP/API | Destructive autonomous tools | S007, S022 | A | Agent writes production state | Bad fit | Unapproved state mutation | reject |
@@ -55,7 +55,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Dashboard | Graph view | S026, S027, S030, S031 | A | Entity/source/decision relations | Later fit | Graph novelty without workflow | defer |
 | Dashboard | Metric owner/action rule | S016 | A | Each metric maps to owner and fix path | Strong fit | Vanity dashboard | adopt |
 | Dashboard | Raw transcript browser | S017, S040 | A | Store/show everything | Weak fit | Privacy and noise | reject |
-| Reviewer Layer | Static ChatGPT Project/GPT second opinion | S078-S080 | A | Upload canonical docs and run strict reviewer prompt | Strong immediate fit | Uploaded knowledge goes stale | adopt |
+| Reviewer Layer | Static ChatGPT Project/GPT second opinion | S078-S080 | A | Upload canonical docs and run strict reviewer prompt | Optional later reviewer, not current product core | Uploaded knowledge goes stale | defer |
 | Reviewer Layer | ChatGPT write-capable connector first | S081-S083 | A | Exposes write tools before read-only value is proven | Bad early fit | Unsafe mutation and tool confusion | reject |
 | Security | Least-power defaults | S006, S007, S009, S020 | A | Read-only/dry-run/approval before writes | Strong fit | Blocks useful automation too long | adopt |
 | Security | Hook trust review | S006 | A | Changed hooks must be trusted | Strong fit | Users bypass trust permanently | adopt |
@@ -68,6 +68,6 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 - Eval/self-improvement patterns: S013-S016, S049-S053.
 - Coding-agent benchmark/interface patterns: S041-S046.
 - Practitioner/senior-engineering patterns: S055-S065, S076-S077.
-- ChatGPT reviewer bridge patterns: S078-S085.
+- Deferred ChatGPT reviewer bridge patterns: S078-S085.
 - Controlled experiment loop pattern: S088.
 - Dashboard/control-plane patterns: rows under Dashboard plus Product Identity.

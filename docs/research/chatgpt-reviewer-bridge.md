@@ -1,8 +1,10 @@
 # ChatGPT Reviewer / Codex Bridge Research
 
-Status: inference
+Status: inference, deferred
 
 Access date: 2026-06-19.
+
+Current product priority as of 2026-06-20: deferred. The local Codex/KRN operating loop, source-backed proposal store, dashboard over real typed objects, and baseline-vs-assisted benchmark evidence come before any ChatGPT bridge work.
 
 ## Question
 
@@ -10,7 +12,7 @@ Can ChatGPT become the real reviewer/analyzer layer for KRN, with project knowle
 
 ## Short Answer
 
-[DECISION] Yes, but in two different phases:
+[DECISION] Yes, but only as a later optional reviewer channel. If resumed, use two different phases:
 
 1. Static reviewer: ChatGPT Project or custom GPT with uploaded KRN files and a strict second-opinion prompt.
 2. Live reviewer: ChatGPT custom app / MCP connector over HTTPS, backed by a KRN gateway. The gateway can call Codex through controlled local mechanisms such as `codex mcp-server`, the Codex SDK/app-server, or a narrow CLI worker.

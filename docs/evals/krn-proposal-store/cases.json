@@ -1,0 +1,79 @@
+[
+  {
+    "id": "source-backed-proposal-store",
+    "expected_behavior": "A valid proposal with local path refs, source IDs, claim IDs, local evidence IDs, and a ledger URL stores under .krn/proposals.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md",
+      "S007",
+      "C004",
+      "LOCAL015"
+    ],
+    "assertions": [
+      "proposal source refs validated",
+      "proposal stored under .krn/proposals",
+      "target files outside .krn/proposals unchanged"
+    ],
+    "metrics": [
+      "source_grounding_score",
+      "runtime_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "KRN can persist proposal-looking objects without proving their source refs resolve to source-backed project truth."
+  },
+  {
+    "id": "duplicate-idempotency-key-is-stable",
+    "expected_behavior": "Storing the same proposal twice returns the existing proposal path without creating a second file.",
+    "source_patterns": [
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md",
+      "C004"
+    ],
+    "assertions": [
+      "first write stored",
+      "duplicate write already stored",
+      "duplicate write uses same path"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "drift_resistance_score"
+    ],
+    "failure_mode": "Proposal persistence is not idempotent and cannot safely back a future proposal tool."
+  },
+  {
+    "id": "unbacked-source-ref-rejected",
+    "expected_behavior": "A schema-valid proposal with source refs absent from the source ledger and local files is rejected before persistence.",
+    "source_patterns": [
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md",
+      "C015"
+    ],
+    "assertions": [
+      "known-bad source-ref fixture parses as proposal",
+      "known-bad source-ref fixture rejected by store"
+    ],
+    "metrics": [
+      "source_grounding_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "KRN accepts source-looking strings as source-backed evidence without checking the ledger or filesystem."
+  },
+  {
+    "id": "unsafe-target-path-rejected",
+    "expected_behavior": "A proposal targeting a path outside the target root is rejected before persistence.",
+    "source_patterns": [
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md",
+      "C004"
+    ],
+    "assertions": [
+      "unsafe target path rejected"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "Proposal persistence accepts path traversal and weakens the future proposal-tool safety boundary."
+  }
+]

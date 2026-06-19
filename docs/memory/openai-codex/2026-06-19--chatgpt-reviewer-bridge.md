@@ -1,6 +1,6 @@
 # ChatGPT Reviewer Bridge
 
-Status: inference
+Status: inference, deferred
 
 Sources:
 
@@ -52,7 +52,9 @@ Only later add proposal tools:
 
 ## KRN Implication
 
-The first ChatGPT integration should not execute code. It should critique KRN's operating layer and catch drift.
+As of 2026-06-20, the ChatGPT reviewer bridge is not the current product core. The local Codex/KRN loop, source-backed proposal store, dashboard over real objects, and baseline-vs-assisted benchmark evidence come first.
+
+If this bridge is resumed later, the first ChatGPT integration should not execute code. It should critique KRN's operating layer and catch drift.
 
 The first live MCP version should expose reviewable state, not mutate state. Write tools should only create pending proposals visible in the dashboard.
 

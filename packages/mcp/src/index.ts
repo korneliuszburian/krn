@@ -129,6 +129,13 @@ function baseResource(
   };
 }
 
+export {
+  storeKrnControlPlaneProposal,
+  validateProposalSourceRefs,
+  type ProposalStoreResult,
+  type SourceRefValidationResult,
+} from "./proposal-store.js";
+
 function descriptorFromResource(
   resource: KrnControlPlaneResource,
   description: string,

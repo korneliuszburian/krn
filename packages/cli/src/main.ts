@@ -92,6 +92,11 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     command: ["pnpm", "run", "eval:krn-mcp-transport"],
     sourceRefs: ["docs/evals/krn-mcp-transport/README.md", "docs/specs/krn-mcp-read-model/README.md"],
   },
+  {
+    moduleId: "krn-proposal-store",
+    command: ["pnpm", "run", "eval:krn-proposal-store"],
+    sourceRefs: ["docs/evals/krn-proposal-store/README.md", "docs/specs/krn-control-plane-proposal/README.md"],
+  },
 ];
 
 function usage(): string {

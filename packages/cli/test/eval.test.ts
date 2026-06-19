@@ -26,10 +26,11 @@ describe("krn eval", () => {
       "krn-review-contracts",
       "krn-mcp-read-model",
       "krn-mcp-transport",
+      "krn-proposal-store",
     ]);
-    expect(report.summary.total_modules).toBe(5);
+    expect(report.summary.total_modules).toBe(6);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(15);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(19);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
   }, 60_000);

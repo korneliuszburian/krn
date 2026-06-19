@@ -240,9 +240,10 @@ MCP/API:
 
 ChatGPT reviewer bridge:
 
-- first use ChatGPT Project/custom GPT as a static reviewer over uploaded KRN docs,
-- then expose a read-only HTTPS MCP gateway for sources, claims, memory entries, eval results and compact state,
-- only later add proposal-only writes visible in the dashboard,
+- deferred optional reviewer channel after the local Codex/KRN loop proves useful,
+- possible later first step: ChatGPT Project/custom GPT as a static reviewer over uploaded KRN docs,
+- possible later live step: read-only HTTPS MCP gateway for sources, claims, memory entries, eval results and compact state,
+- only after that, if still useful, add proposal-only writes visible in the dashboard,
 - never describe the bridge as direct ChatGPT-to-local-Codex stdio; Codex can run as an MCP server over stdio for another local tool, while ChatGPT connectors need a reachable app/gateway endpoint.
 
 ## 11. Evals and Improvement Loop
@@ -367,10 +368,10 @@ Do not rank by stars. For each repo, inspect:
 | P4 | Compact hook prototype | Real Pre/PostCompact proof | Hook cannot reliably checkpoint |
 | P5 | Local eval harness | Known-bad fixtures work | Evals do not catch real failures |
 | P6 | Memory proposal schema | Review states and invalidation work | Memory becomes stale truth |
-| P7 | ChatGPT static reviewer pass | Reviewer finds useful drift or validates setup | Reviewer repeats context without insight |
-| P8 | MCP read-only bridge | Inspector and ChatGPT dev-mode tests pass | Tool discovery or permissions fail |
-| P9 | Dashboard prototype | Reads real events/proposals | UI shows vanity metrics |
-| P10 | Baseline vs KRN benchmark | 20 real task comparison | No measurable workflow lift |
+| P7 | Source-backed proposal store | Unbacked proposals fail before persistence | Proposal refs stay decorative |
+| P8 | Dashboard prototype | Reads real events/proposals | UI shows vanity metrics |
+| P9 | Baseline vs KRN benchmark | 20 real task comparison | No measurable workflow lift |
+| P10 | Optional ChatGPT reviewer bridge | Reviewer finds useful drift against stable local truth | Reviewer repeats stale context or distracts from local loop |
 
 ## 16. Kill Criteria
 
@@ -403,7 +404,7 @@ Kill or redesign the product if:
 | 2026-06-19 | Sandcastle added as GitHub research pattern. | Mechanism-level value: sandbox/worktree/log/commit orchestration. |
 | 2026-06-19 | Dashboard is control plane over ledgers, not analytics. | Matches product hypothesis and user reference UI. |
 | 2026-06-19 | Separate operator skills from runtime/product skills. | Matt Pocock-style skills are a build pipeline; KRN runtime skills are product capabilities. |
-| 2026-06-19 | ChatGPT reviewer starts static/read-only. | Official ChatGPT app/MCP docs require a gateway/tunnel for live tools and permissions vary. |
+| 2026-06-20 | ChatGPT reviewer bridge is deferred and optional. | The local Codex/KRN operating loop, source-backed proposal store, dashboard, and benchmark lift matter before external reviewer integration. |
 | 2026-06-19 | Cookbook links become pattern maps, not bibliography. | OpenAI examples matter when they change artifacts, evals, or stop conditions. |
 | 2026-06-19 | `autoresearch` is a bounded metric-loop reference only. | Borrow baseline/metric/budget/keep-discard; do not import endless autonomy. |
 | 2026-06-19 | Semantic policies stay out of hooks for now. | User rejected extra hooks, and OpenAI hook guidance fits deterministic lifecycle events better than semantic product truth. |
@@ -417,7 +418,7 @@ Kill or redesign the product if:
 - Coding-agent benchmark/interface sources: S041-S046.
 - Practitioner/senior sources: S055-S065, S074-S077.
 - Competitor/open-source sources: S067-S073.
-- ChatGPT reviewer bridge sources: S078-S085.
+- Deferred ChatGPT reviewer bridge sources: S078-S085.
 - Controlled experiment-loop source: S088.
 
 Final verdict: KRN is not proven breakthrough yet. The strongest path is a disciplined source-backed control plane where Codex work produces reviewable memory, eval, trace, and decision artifacts, and where every future dashboard feature reads those artifacts instead of inventing state.

@@ -2,11 +2,11 @@
 
 ## Status
 
-Active eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
+Completed eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
 
 This goal starts after commit `1339b74 feat: add krn mcp read model`. It is not a replacement for `goal-006`; it is the next overnight Slice 3 execution contract.
 
-Current implementation status: phases 0-5 are completed and verified; phase 6 is in progress and phase 7 remains pending.
+Current implementation status: phases 0-7 are completed and pushed in commit `1b3632c feat: add dashboard view model contract`. The next active child goal is [docs/goals/goal-009.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-009.md).
 
 ## Objective
 
@@ -298,7 +298,7 @@ Disproves completion:
 - Any metric lacks source, owner/action, or failure mode.
 - UI starts before the view model has real data tests.
 
-### 6. Memory, Source, And Goal Update - 55 minutes - in progress
+### 6. Memory, Source, And Goal Update - 55 minutes - completed
 
 Purpose: keep project truth indexed and prevent green eval overclaiming.
 
@@ -324,7 +324,7 @@ Disproves completion:
 - Docs cite stale or missing paths.
 - A green transport eval is claimed as dashboard readiness or productivity lift.
 
-### 7. Final Audit, Commit, And Push - 25 minutes - pending
+### 7. Final Audit, Commit, And Push - 25 minutes - completed
 
 Purpose: leave the all-night result reviewable and resumable.
 
@@ -462,10 +462,10 @@ The overnight goal is complete only when:
 
 ## Next Command
 
-Resume with Phase 6 final checks:
+Resume with the next active Slice 3 child goal:
 
 ```bash
-python3 scripts/evals/codex_memory_compliance.py --mode validate
+docs/goals/goal-009.md
 ```
 
-Then run final audit, commit with a semantic message, and push. Do not mark `goal-006` complete; measured lift and full dashboard/API surfaces remain incomplete.
+Do not mark `goal-006` complete; measured lift and full dashboard/API surfaces remain incomplete.

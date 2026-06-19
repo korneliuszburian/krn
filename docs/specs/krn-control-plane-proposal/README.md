@@ -26,6 +26,8 @@ A proposal is not approved truth. It is a schema-backed, append-only, idempotent
 ```ts
 parseKrnControlPlaneProposal(input)
 krnControlPlaneProposalJsonSchema
+validateProposalSourceRefs(proposal, targetRoot)
+storeKrnControlPlaneProposal(input, { targetInput })
 ```
 
 ## Required Shape
@@ -51,6 +53,8 @@ Allowed behavior:
 - parse proposal objects through `@krn/contracts`,
 - export JSON Schema for MCP/API/dashboard consumers,
 - represent future append-only reviewed write requests.
+- validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
+- persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
 
 Forbidden behavior:
 
@@ -59,12 +63,15 @@ Forbidden behavior:
 - no immediate memory/source/goal mutation,
 - no MCP tool registration in this slice,
 - no dashboard event publishing in this slice.
+- no unbacked source refs masquerading as paper/source-backed product decisions.
 
 ## Interpretation
 
 A green proposal-contract result means KRN can represent a future reviewed control-plane action without pretending it is approved or executed.
 
-It does not prove proposal tool safety, append-only persistence implementation, dashboard readiness, human approval quality, ChatGPT connector behavior, or productivity lift.
+A green proposal-store result means KRN can persist that action as append-only review input only after its `source_refs` resolve to existing target-root files, source IDs, claim IDs, local evidence IDs, or URLs present in `docs/plans/canonical/SOURCES.md`.
+
+It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, or productivity lift.
 
 ## Validation
 
@@ -72,5 +79,7 @@ Run:
 
 ```bash
 pnpm test -- packages/contracts/test/control-plane-proposal.test.ts
+pnpm test -- packages/mcp/test/proposal-store.test.ts
+pnpm run eval:krn-proposal-store
 pnpm typecheck
 ```

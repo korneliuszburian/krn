@@ -102,17 +102,36 @@
         "docs/specs/krn-mcp-read-model/README.md"
       ],
       "interpretation_caveat": "This eval proves the local KRN MCP STDIO transport for read-only resources only; it does not prove ChatGPT connector behavior, dashboard readiness, write-tool safety, human approval, or productivity lift."
+    },
+    {
+      "module_id": "krn-proposal-store",
+      "command": ["pnpm", "run", "eval:krn-proposal-store"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-proposal-store/20260619T215905Z-example/report.json",
+      "total_cases": 4,
+      "passed_cases": 4,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 9,
+      "passed_assertions": 9,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-proposal-store/README.md",
+        "docs/specs/krn-control-plane-proposal/README.md"
+      ],
+      "interpretation_caveat": "This eval proves local source-backed append-only proposal persistence only; it does not prove MCP/API proposal tool safety, human approval, dashboard readiness, ChatGPT connector behavior, or productivity lift."
     }
   ],
   "summary": {
-    "total_modules": 5,
-    "passed_modules": 5,
+    "total_modules": 6,
+    "passed_modules": 6,
     "failed_modules": 0,
-    "total_cases": 15,
-    "passed_cases": 15,
+    "total_cases": 19,
+    "passed_cases": 19,
     "failed_cases": 0,
-    "total_assertions": 37,
-    "passed_assertions": 37,
+    "total_assertions": 46,
+    "passed_assertions": 46,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",
