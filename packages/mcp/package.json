@@ -4,9 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./stdio": "./src/stdio.ts"
+  },
+  "scripts": {
+    "serve:stdio": "tsx src/stdio.ts"
   },
   "dependencies": {
-    "@krn/contracts": "workspace:*"
+    "@krn/contracts": "workspace:*",
+    "@modelcontextprotocol/sdk": "1.29.0"
   }
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "stdio-server-lists-allowlisted-resources",
+    "expected_behavior": "The STDIO MCP server starts through the SDK client, advertises no tools, and lists only the five allowlisted runtime resource URIs.",
+    "metrics": ["control_plane_transport_score", "drift_resistance_score"],
+    "failure_mode": "The transport layer is missing, exposes tools too early, or diverges from the allowlisted read model."
+  },
+  {
+    "id": "stdio-server-reads-schema-backed-resources",
+    "expected_behavior": "The STDIO MCP server returns summary and latest review resources that parse through @krn/contracts and preserve read-only/write-disabled caveats.",
+    "metrics": ["source_grounding_score", "control_plane_transport_score"],
+    "failure_mode": "The transport returns raw or unparsed runtime state, hides source/caveat fields, or implies write capability."
+  },
+  {
+    "id": "stdio-server-rejects-unknown-uri",
+    "expected_behavior": "The STDIO MCP server rejects unknown resource URIs instead of falling through to broad filesystem or runtime access.",
+    "metrics": ["control_plane_transport_score", "anti_slop_score"],
+    "failure_mode": "The transport accepts arbitrary resource URIs or leaks state outside the allowlist."
+  }
+]

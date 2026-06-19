@@ -31,10 +31,13 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm test` passed with 8/8 files and 16/16 tests.
 - Latest Slice 3 progress:
   - `packages/mcp` exists as a read-only resource model over typed `.krn` runtime reports.
+  - `packages/mcp` now also has a local STDIO MCP server entrypoint over that read-only resource model.
   - `krn://runtime/summary`, `krn://runtime/init/latest`, `krn://runtime/doctor/latest`, `krn://runtime/eval/latest`, and `krn://runtime/review/latest` are the current allowlisted resources.
   - `pnpm run eval:krn-mcp` passed 3/3 cases and 7/7 assertions.
-  - `pnpm run krn -- eval` generated `.krn/eval/20260619T222100Z-1727537/report.json` with 4/4 modules, 12/12 cases, and 30/30 assertions passing.
-  - `pnpm run krn -- review` generated `.krn/review/20260619T222108Z-1727852/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
+  - `pnpm run eval:krn-mcp-transport` generated `.krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json` with 3/3 cases and 7/7 assertions passing.
+  - `pnpm run krn -- eval` generated `.krn/eval/20260619T224349Z-1769637/report.json` with 5/5 modules, 15/15 cases, and 37/37 assertions passing.
+  - `pnpm run krn -- review` generated `.krn/review/20260619T224416Z-1770516/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
+  - The STDIO transport advertises no MCP tools; no proposal/write/destructive tools exist yet.
 
 ## Objective
 

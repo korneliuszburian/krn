@@ -83,17 +83,36 @@
         "docs/specs/krn-mcp-read-model/README.md"
       ],
       "interpretation_caveat": "This eval proves the KRN MCP read-model contract only; it does not prove a deployed MCP transport, dashboard readiness, write-tool safety, human approval, or productivity lift."
+    },
+    {
+      "module_id": "krn-mcp-transport",
+      "command": ["pnpm", "run", "eval:krn-mcp-transport"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-mcp-transport/20260619T215904Z-example/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 7,
+      "passed_assertions": 7,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-mcp-transport/README.md",
+        "docs/specs/krn-mcp-read-model/README.md"
+      ],
+      "interpretation_caveat": "This eval proves the local KRN MCP STDIO transport for read-only resources only; it does not prove ChatGPT connector behavior, dashboard readiness, write-tool safety, human approval, or productivity lift."
     }
   ],
   "summary": {
-    "total_modules": 4,
-    "passed_modules": 4,
+    "total_modules": 5,
+    "passed_modules": 5,
     "failed_modules": 0,
-    "total_cases": 12,
-    "passed_cases": 12,
+    "total_cases": 15,
+    "passed_cases": 15,
     "failed_cases": 0,
-    "total_assertions": 30,
-    "passed_assertions": 30,
+    "total_assertions": 37,
+    "passed_assertions": 37,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

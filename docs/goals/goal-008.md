@@ -2,9 +2,11 @@
 
 ## Status
 
-Next eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
+Active eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
 
 This goal starts after commit `1339b74 feat: add krn mcp read model`. It is not a replacement for `goal-006`; it is the next overnight Slice 3 execution contract.
+
+Current implementation status: phases 0-3 are completed and verified; phases 4-7 remain pending.
 
 ## Objective
 
@@ -54,7 +56,7 @@ Authoritative parent:
 
 [FACT] That evidence proves the read-model contract only. It does not prove deployed MCP transport, proposal-tool safety, dashboard readiness, or productivity lift.
 
-[FACT] The repo does not yet have:
+[FACT] Initial missing state at the start of this goal:
 
 - a runnable STDIO MCP server entrypoint,
 - a transport-level MCP eval,
@@ -62,9 +64,35 @@ Authoritative parent:
 - dashboard view models over the control-plane resources,
 - baseline-vs-assisted benchmark evidence.
 
+## Current Progress Evidence
+
+[FACT] Phases 0-3 now have local evidence:
+
+- `packages/mcp/src/server.ts` creates the read-only MCP server from the existing resource model.
+- `packages/mcp/src/stdio.ts` is the local STDIO entrypoint.
+- `packages/mcp/test/stdio-server.test.ts` exercises the transport through the MCP SDK client.
+- `docs/evals/krn-mcp-transport/` and `packages/evals/src/validate-krn-mcp-transport.ts` define the deterministic transport eval.
+- `krn eval` now aggregates `krn-mcp-transport` as the fifth deterministic module.
+
+[FACT] Implementation evidence:
+
+```text
+pnpm typecheck -> passed
+pnpm test -- packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts packages/contracts/test/control-plane-resource.test.ts -> 11 files, 25 tests passed
+pnpm run eval:krn-mcp-transport -> .krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json, 3/3 cases, 7/7 assertions
+pnpm run krn -- eval -> .krn/eval/20260619T224349Z-1769637/report.json, 5/5 modules, 15/15 cases, 37/37 assertions
+pnpm run krn -- review -> .krn/review/20260619T224416Z-1770516/report.json, ready_for_human_review
+```
+
+[FACT] The server advertises no MCP tools and rejects unknown resource URIs.
+
+[FACT] This does not prove ChatGPT connector behavior, registered Codex MCP config, proposal-tool safety, dashboard readiness, or productivity lift.
+
+[DECISION] The next implementation phase is Phase 4, proposal-only control-plane contracts. Do not add MCP tools before the proposal object contract, known-bad fixtures, and deterministic eval exist.
+
 ## Eight-Hour Work Plan
 
-### 0. Resume And Safety Gate - 25 minutes
+### 0. Resume And Safety Gate - 25 minutes - completed
 
 Purpose: prevent stale context, docs drift, or accidental destructive tool exposure.
 
@@ -91,7 +119,7 @@ Disproves completion:
 - Work begins without inspecting current files.
 - MCP behavior is inferred from memory instead of official docs and local package state.
 
-### 1. STDIO MCP Transport Contract And Package Entry - 75 minutes
+### 1. STDIO MCP Transport Contract And Package Entry - 75 minutes - completed
 
 Purpose: define the real transport boundary before adding new control-plane behavior.
 
@@ -117,7 +145,7 @@ Disproves completion:
 - Transport exposes destructive tools or write-capable handlers.
 - The server entrypoint cannot be invoked as a package boundary.
 
-### 2. Resource List/Read Over STDIO - 90 minutes
+### 2. Resource List/Read Over STDIO - 90 minutes - completed
 
 Purpose: make the server expose the existing allowlisted resources through actual MCP transport behavior.
 
@@ -143,7 +171,7 @@ Disproves completion:
 - Unknown URIs silently fall through.
 - Transport responses hide the read-only caveat or source refs.
 
-### 3. MCP Transport Eval - 70 minutes
+### 3. MCP Transport Eval - 70 minutes - completed
 
 Purpose: make the new transport a deterministic Slice 3 eval surface, not a manual smoke test.
 
@@ -176,7 +204,7 @@ Disproves completion:
 - Eval requires external services or non-deterministic network.
 - `krn eval` includes a flaky transport module.
 
-### 4. Proposal-Only Control-Plane Contract - 80 minutes
+### 4. Proposal-Only Control-Plane Contract - 80 minutes - pending
 
 Purpose: prepare safe future write surfaces without exposing write tools yet.
 
@@ -209,7 +237,7 @@ Disproves completion:
 - Known-bad fixture fails only from JSON syntax.
 - Contract enables writes without append-only/idempotency semantics.
 
-### 5. First Dashboard View-Model Contract - 60 minutes
+### 5. First Dashboard View-Model Contract - 60 minutes - pending
 
 Purpose: start dashboard work from typed product objects, not mocked UI state.
 
@@ -239,7 +267,7 @@ Disproves completion:
 - Any metric lacks source, owner/action, or failure mode.
 - UI starts before the view model has real data tests.
 
-### 6. Memory, Source, And Goal Update - 55 minutes
+### 6. Memory, Source, And Goal Update - 55 minutes - in progress
 
 Purpose: keep project truth indexed and prevent green eval overclaiming.
 
@@ -265,7 +293,7 @@ Disproves completion:
 - Docs cite stale or missing paths.
 - A green transport eval is claimed as dashboard readiness or productivity lift.
 
-### 7. Final Audit, Commit, And Push - 25 minutes
+### 7. Final Audit, Commit, And Push - 25 minutes - pending
 
 Purpose: leave the all-night result reviewable and resumable.
 
@@ -403,10 +431,10 @@ The overnight goal is complete only when:
 
 ## Next Command
 
-Start with:
+Resume with Phase 4:
 
 ```bash
-git status -sb
+pnpm typecheck
 ```
 
-Then re-check the current official MCP surface before editing transport behavior.
+Then add the proposal-only control-plane object contract before exposing any MCP tools.

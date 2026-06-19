@@ -3,7 +3,7 @@ id: krn-eval-contract
 kind: command-contract
 status: active
 owner: krn
-updated: 2026-06-19
+updated: 2026-06-20
 sources:
   - docs/goals/goal-006.md
   - docs/product/final-product-plan.md
@@ -17,7 +17,7 @@ sources:
 
 `krn eval` runs deterministic local KRN eval modules and writes one schema-backed aggregate report.
 
-It is the third Slice 2 CLI command after `krn init --dry-run` and `krn doctor`. Its job is to prove that runtime eval reports are executable and machine-readable before API/MCP/dashboard work starts. It also aggregates the `krn review` contract eval.
+It is the third Slice 2 CLI command after `krn init --dry-run` and `krn doctor`. Its job is to prove that runtime eval reports are executable and machine-readable before broader API/MCP/dashboard work expands. It also aggregates the `krn review` contract eval and the first Slice 3 MCP read/transport evals.
 
 ## Command
 
@@ -37,6 +37,7 @@ Supported module IDs:
 - `krn-doctor-contracts`
 - `krn-review-contracts`
 - `krn-mcp-read-model`
+- `krn-mcp-transport`
 
 If no module is supplied, the command runs all supported modules.
 
@@ -62,7 +63,7 @@ Allowed writes:
 
 - `.krn/eval/{run_id}/report.json`
 - `.krn/evals/{module_id}/{module_run_id}/report.json`
-- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, or read-model eval output under `.krn/evals/krn-mcp-read-model/**`
+- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, or transport eval output under `.krn/evals/krn-mcp-transport/**`
 
 Forbidden default writes:
 

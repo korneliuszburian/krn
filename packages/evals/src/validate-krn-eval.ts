@@ -41,6 +41,7 @@ const REQUIRED_MODULES = [
   "krn-doctor-contracts",
   "krn-review-contracts",
   "krn-mcp-read-model",
+  "krn-mcp-transport",
 ];
 
 function readJson(path: string): unknown {

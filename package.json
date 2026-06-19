@@ -12,6 +12,7 @@
     "eval:krn-doctor": "tsx packages/evals/src/validate-krn-doctor.ts --mode validate",
     "eval:krn-review": "tsx packages/evals/src/validate-krn-review.ts --mode validate",
     "eval:krn-mcp": "tsx packages/evals/src/validate-krn-mcp.ts --mode validate",
+    "eval:krn-mcp-transport": "tsx packages/evals/src/validate-krn-mcp-transport.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {
