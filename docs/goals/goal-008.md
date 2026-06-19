@@ -6,7 +6,7 @@ Active eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn
 
 This goal starts after commit `1339b74 feat: add krn mcp read model`. It is not a replacement for `goal-006`; it is the next overnight Slice 3 execution contract.
 
-Current implementation status: phases 0-4 are completed and verified; phases 5-7 remain pending.
+Current implementation status: phases 0-5 are completed and verified; phase 6 is in progress and phase 7 remains pending.
 
 ## Objective
 
@@ -81,7 +81,7 @@ pnpm typecheck -> passed
 pnpm test -- packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts packages/contracts/test/control-plane-resource.test.ts -> 11 files, 25 tests passed
 pnpm run eval:krn-mcp-transport -> .krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json, 3/3 cases, 7/7 assertions
 pnpm run krn -- eval -> .krn/eval/20260619T224349Z-1769637/report.json, 5/5 modules, 15/15 cases, 37/37 assertions
-pnpm run krn -- review -> .krn/review/20260619T225245Z-1783309/report.json, ready_for_human_review
+pnpm run krn -- review -> .krn/review/20260619T230302Z-1808550/report.json, ready_for_human_review
 ```
 
 [FACT] The server advertises no MCP tools and rejects unknown resource URIs.
@@ -103,7 +103,23 @@ pnpm typecheck -> passed
 
 [FACT] The proposal contract still does not register MCP tools, implement append-only persistence, approve memory/source changes, or publish dashboard events.
 
-[DECISION] The next implementation phase is Phase 5, first dashboard view-model contract over real product objects.
+[DECISION] Phase 5 is the first dashboard view-model contract over real product objects. Do not create dashboard UI until this view model remains schema-backed and tested.
+
+[FACT] Phase 5 now has local evidence:
+
+- `packages/contracts/src/dashboard-view-model.ts` exports `KrnDashboardViewModelSchema`, `parseKrnDashboardViewModel`, and `krnDashboardViewModelJsonSchema`.
+- `docs/specs/krn-dashboard-view-model/` contains a valid example and a known-bad mock-state fixture.
+- `packages/mcp` exports `buildKrnDashboardViewModel`, which builds the view model from the read-only MCP resource model and latest `krn review` report.
+- `packages/mcp/test/dashboard-view-model.test.ts` verifies that the builder reads real runtime resources, counts pending review proposals from the latest review report, uses explicit zero when no review report exists, and does not mutate the target.
+
+```text
+pnpm test -- packages/contracts/test/dashboard-view-model.test.ts packages/mcp/test/dashboard-view-model.test.ts packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts -> 14 files, 33 tests passed
+pnpm typecheck -> passed
+```
+
+[FACT] The dashboard view model is not dashboard UI, does not publish events, does not approve proposals, and does not prove productivity lift.
+
+[DECISION] The next implementation phase is Phase 6, memory/source/goal update and final audit.
 
 ## Eight-Hour Work Plan
 
@@ -252,7 +268,7 @@ Disproves completion:
 - Known-bad fixture fails only from JSON syntax.
 - Contract enables writes without append-only/idempotency semantics.
 
-### 5. First Dashboard View-Model Contract - 60 minutes - pending
+### 5. First Dashboard View-Model Contract - 60 minutes - completed
 
 Purpose: start dashboard work from typed product objects, not mocked UI state.
 
@@ -446,10 +462,10 @@ The overnight goal is complete only when:
 
 ## Next Command
 
-Resume with Phase 5:
+Resume with Phase 6 final checks:
 
 ```bash
-pnpm typecheck
+python3 scripts/evals/codex_memory_compliance.py --mode validate
 ```
 
-Then add the first dashboard view-model contract over real product objects. Do not create dashboard UI before that view model has fixtures and tests.
+Then run final audit, commit with a semantic message, and push. Do not mark `goal-006` complete; measured lift and full dashboard/API surfaces remain incomplete.

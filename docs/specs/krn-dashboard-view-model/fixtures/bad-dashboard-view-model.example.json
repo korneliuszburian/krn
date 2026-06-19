@@ -1,0 +1,45 @@
+{
+  "schema_version": "krn-dashboard-view-model.v1",
+  "kind": "krn_dashboard_view_model",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-20T00:00:00.000Z",
+  "no_mock_state": false,
+  "resource_health": {
+    "owner": "krn",
+    "source_refs": [
+      "docs/goals/goal-006.md"
+    ],
+    "next_action": "Render the dashboard UI from guessed state.",
+    "failure_mode": "Bad fixture.",
+    "status": "ready",
+    "total_resources": 5,
+    "available_resources": 5,
+    "missing_resources": 0,
+    "invalid_resources": 0
+  },
+  "latest_runtime_artifacts": [],
+  "pending_review": {
+    "owner": "krn",
+    "source_refs": [
+      "chat"
+    ],
+    "next_action": "Trust hidden chat state.",
+    "failure_mode": "Bad fixture.",
+    "pending_proposals": 0,
+    "source": "chat_state"
+  },
+  "next_allowed_action": {
+    "action_id": "build-dashboard-ui-now",
+    "target_surface": "dashboard_ui",
+    "label": "Build dashboard UI from mock data",
+    "rationale": "Bad fixture.",
+    "source_refs": [
+      "chat"
+    ]
+  },
+  "source_refs": [
+    "chat"
+  ],
+  "failure_mode": "Bad fixture.",
+  "interpretation_caveat": "Bad fixture."
+}

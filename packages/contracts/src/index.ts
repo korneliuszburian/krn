@@ -47,3 +47,13 @@ export {
   type ControlPlaneProposalTarget,
   type KrnControlPlaneProposal,
 } from "./control-plane-proposal.js";
+export {
+  KrnDashboardViewModelSchema,
+  krnDashboardViewModelJsonSchema,
+  parseKrnDashboardViewModel,
+  type DashboardNextAllowedAction,
+  type DashboardPendingReview,
+  type DashboardResourceHealth,
+  type DashboardRuntimeArtifact,
+  type KrnDashboardViewModel,
+} from "./dashboard-view-model.js";

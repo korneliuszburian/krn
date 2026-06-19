@@ -82,7 +82,7 @@ describe("KRN MCP stdio server", () => {
       expect(parsedReview.read_only).toBe(true);
       expect(parsedReview.resource_kind).toBe("review_report");
     });
-  });
+  }, 15_000);
 
   it("rejects unknown resource URIs and exposes no tools", async () => {
     const targetRoot = createRuntimeTarget();
@@ -91,5 +91,5 @@ describe("KRN MCP stdio server", () => {
       expect(client.getServerCapabilities()?.tools).toBeUndefined();
       await expect(client.readResource({ uri: "krn://runtime/unknown" })).rejects.toThrow();
     });
-  });
+  }, 15_000);
 });

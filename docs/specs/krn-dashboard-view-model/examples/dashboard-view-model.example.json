@@ -1,0 +1,116 @@
+{
+  "schema_version": "krn-dashboard-view-model.v1",
+  "kind": "krn_dashboard_view_model",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-20T00:00:00.000Z",
+  "no_mock_state": true,
+  "resource_health": {
+    "owner": "krn",
+    "source_refs": [
+      "docs/specs/krn-mcp-read-model/README.md",
+      "docs/goals/goal-006.md"
+    ],
+    "next_action": "Use the available runtime artifacts as dashboard source rows.",
+    "failure_mode": "Dashboard resource health is overclaimed if any count is invented or detached from the MCP read model.",
+    "status": "ready",
+    "total_resources": 5,
+    "available_resources": 5,
+    "missing_resources": 0,
+    "invalid_resources": 0
+  },
+  "latest_runtime_artifacts": [
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/specs/krn-init/README.md",
+        "docs/goals/goal-006.md"
+      ],
+      "next_action": "Keep this runtime artifact read-only until a proposal tool contract exists.",
+      "failure_mode": "Dashboard artifact rows become misleading if missing or invalid reports are rendered as ready.",
+      "id": "runtime-init-latest",
+      "resource_uri": "krn://runtime/init/latest",
+      "resource_kind": "init_manifest",
+      "status": "available",
+      "latest_report_path": ".krn/init/20260619T220000Z-test/manifest.json",
+      "title": "Latest KRN init manifest",
+      "summary": "Latest KRN init manifest is available."
+    },
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/specs/krn-doctor/README.md",
+        "docs/goals/goal-006.md"
+      ],
+      "next_action": "Keep this runtime artifact read-only until a proposal tool contract exists.",
+      "failure_mode": "Dashboard artifact rows become misleading if missing or invalid reports are rendered as ready.",
+      "id": "runtime-doctor-latest",
+      "resource_uri": "krn://runtime/doctor/latest",
+      "resource_kind": "doctor_report",
+      "status": "available",
+      "latest_report_path": ".krn/doctor/20260619T220100Z-test/report.json",
+      "title": "Latest KRN doctor report",
+      "summary": "Latest KRN doctor report is available."
+    },
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/specs/krn-eval/README.md",
+        "docs/goals/goal-006.md"
+      ],
+      "next_action": "Keep this runtime artifact read-only until a proposal tool contract exists.",
+      "failure_mode": "Dashboard artifact rows become misleading if missing or invalid reports are rendered as ready.",
+      "id": "runtime-eval-latest",
+      "resource_uri": "krn://runtime/eval/latest",
+      "resource_kind": "eval_report",
+      "status": "available",
+      "latest_report_path": ".krn/eval/20260619T220200Z-test/report.json",
+      "title": "Latest KRN eval aggregate",
+      "summary": "Latest KRN eval aggregate is available."
+    },
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/specs/krn-review/README.md",
+        "docs/goals/goal-006.md"
+      ],
+      "next_action": "Keep this runtime artifact read-only until a proposal tool contract exists.",
+      "failure_mode": "Dashboard artifact rows become misleading if missing or invalid reports are rendered as ready.",
+      "id": "runtime-review-latest",
+      "resource_uri": "krn://runtime/review/latest",
+      "resource_kind": "review_report",
+      "status": "available",
+      "latest_report_path": ".krn/review/20260619T220300Z-test/report.json",
+      "title": "Latest KRN review report",
+      "summary": "Latest KRN review report is available."
+    }
+  ],
+  "pending_review": {
+    "owner": "krn",
+    "source_refs": [
+      "docs/specs/krn-review/README.md",
+      "docs/goals/goal-006.md"
+    ],
+    "next_action": "Review the latest proposal-only runtime report before promoting any memory or source changes.",
+    "failure_mode": "Pending review count is unsafe if it is inferred from chat or hidden state instead of the latest review report.",
+    "pending_proposals": 2,
+    "source": "latest_review_report"
+  },
+  "next_allowed_action": {
+    "action_id": "review-runtime-proposals",
+    "target_surface": "pending_review",
+    "label": "Review latest proposal-only runtime report",
+    "rationale": "The latest review report contains proposal-only items that require human review before promotion.",
+    "source_refs": [
+      "docs/specs/krn-review/README.md",
+      "docs/goals/goal-006.md"
+    ]
+  },
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-008.md",
+    "docs/specs/krn-dashboard-view-model/README.md",
+    "docs/specs/krn-mcp-read-model/README.md"
+  ],
+  "failure_mode": "The dashboard view model becomes harmful if it is treated as UI readiness, approval, or productivity proof.",
+  "interpretation_caveat": "This view model is a typed dashboard input over real local KRN runtime resources only; it does not approve proposals, mutate ledgers, prove dashboard UI readiness, or prove productivity lift."
+}
