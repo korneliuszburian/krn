@@ -9,7 +9,8 @@
     "test": "vitest run",
     "krn": "tsx packages/cli/src/main.ts",
     "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate",
-    "eval:krn-doctor": "tsx packages/evals/src/validate-krn-doctor.ts --mode validate"
+    "eval:krn-doctor": "tsx packages/evals/src/validate-krn-doctor.ts --mode validate",
+    "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {
     "@types/node": "25.9.4",

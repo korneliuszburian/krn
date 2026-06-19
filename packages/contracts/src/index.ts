@@ -11,3 +11,10 @@ export {
   type DoctorCheck,
   type DoctorReport,
 } from "./doctor-report.js";
+export {
+  KrnEvalReportSchema,
+  krnEvalReportJsonSchema,
+  parseKrnEvalReport,
+  type EvalModuleResult,
+  type KrnEvalReport,
+} from "./eval-report.js";

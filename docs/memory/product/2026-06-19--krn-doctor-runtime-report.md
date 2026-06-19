@@ -10,7 +10,7 @@ Sources:
 - [packages/contracts/src/doctor-report.ts](/home/krn/coding/krn/active/krn-gastown/packages/contracts/src/doctor-report.ts)
 - [packages/cli/src/main.ts](/home/krn/coding/krn/active/krn-gastown/packages/cli/src/main.ts)
 - [packages/evals/src/validate-krn-doctor.ts](/home/krn/coding/krn/active/krn-gastown/packages/evals/src/validate-krn-doctor.ts)
-- Local runtime evidence: `.krn/evals/krn-doctor-contracts/20260619T211955Z-1607369/report.json`
+- Local runtime evidence: `.krn/evals/krn-doctor-contracts/20260619T213124Z-1633050/report.json`
 
 ## Observation
 
@@ -47,9 +47,9 @@ The doctor command detects local surfaces and reports missing pieces as warnings
 
 ## KRN Implication
 
-Slice 2 now has two typed CLI/runtime paths: `krn init --dry-run` and `krn doctor`.
+Slice 2 now has three typed CLI/runtime paths: `krn init --dry-run`, `krn doctor`, and `krn eval`.
 
-Next Slice 2 work should implement `krn eval` and `krn review` as schema-backed commands before any API/MCP/dashboard work begins.
+Next Slice 2 work should implement `krn review` as a schema-backed command before any API/MCP/dashboard work begins.
 
 This does not prove hook semantic correctness, productivity lift, dashboard readiness, or MCP readiness.
 
@@ -59,4 +59,4 @@ This becomes harmful if a `ready` doctor report is treated as proof that hooks c
 
 ## Review Trigger
 
-Update this note when doctor checks add new surfaces, when `krn eval` or `krn review` starts consuming doctor reports, when hook trust semantics change, or when a read-only API/MCP layer exposes doctor state.
+`krn eval` now aggregates the `krn-doctor-contracts` eval module. Update this note again when doctor checks add new surfaces, when `krn review` starts consuming doctor reports, when hook trust semantics change, or when a read-only API/MCP layer exposes doctor state.

@@ -74,6 +74,7 @@ Before major planning work:
 - [Product spine object contracts](./product/2026-06-19--product-spine-object-contracts.md)
 - [KRN init runtime spine](./product/2026-06-19--krn-init-runtime-spine.md)
 - [KRN doctor runtime report](./product/2026-06-19--krn-doctor-runtime-report.md)
+- [KRN eval runtime report](./product/2026-06-19--krn-eval-runtime-report.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

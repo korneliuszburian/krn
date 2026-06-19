@@ -24,8 +24,9 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | LOCAL006 | `docs/specs/product-spine/` defines eight product-spine object schemas, real examples, one known-bad fixture, and `.krn/specs/product-spine/20260619T124200342866Z-700904/report.json` shows 17/17 checks passing. | API/MCP, runtime skills, and dashboard work can now target validated objects instead of raw markdown. |
 | LOCAL007 | `docs/specs/technology-stack/decision.md` documents a proposed TypeScript-first product stack on the Node.js runtime and stops the implicit Python default in `goal-005`. | `krn init --dry-run` should resume only after stack acceptance and should not add new Python product code. |
 | LOCAL008 | `docs/product/final-product-plan.md` and `docs/goals/goal-006.md` define one final-product architecture executed through three dependency-ordered slices, and supersede `goal-005` as the active direction. | Future `/goal` runs should start with Slice 1 Operator Build System; `krn init --dry-run` is Slice 2 context, not the whole product plan. |
-| LOCAL009 | `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-init.ts`, and `docs/specs/krn-init/` implement the first TypeScript `krn init --dry-run` runtime slice; `.krn/evals/krn-init-contracts/20260619T211955Z-1607359/report.json` shows 3/3 cases and 8/8 assertions passing. | Slice 2 now has a minimal typed CLI/eval path, but API/MCP/dashboard remain blocked until more typed reports exist. |
-| LOCAL010 | `packages/contracts/src/doctor-report.ts`, `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-doctor.ts`, and `docs/specs/krn-doctor/` implement `krn doctor`; `.krn/evals/krn-doctor-contracts/20260619T211955Z-1607369/report.json` shows 3/3 cases and 7/7 assertions passing. | Slice 2 now has a schema-backed readiness report for AGENTS, memory, skills, hooks, evals, and runtime surfaces. |
+| LOCAL009 | `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-init.ts`, and `docs/specs/krn-init/` implement the first TypeScript `krn init --dry-run` runtime slice; `.krn/evals/krn-init-contracts/20260619T213123Z-1633039/report.json` shows 3/3 cases and 8/8 assertions passing. | Slice 2 now has a minimal typed CLI/eval path, but API/MCP/dashboard remain blocked until more typed reports exist. |
+| LOCAL010 | `packages/contracts/src/doctor-report.ts`, `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-doctor.ts`, and `docs/specs/krn-doctor/` implement `krn doctor`; `.krn/evals/krn-doctor-contracts/20260619T213124Z-1633050/report.json` shows 3/3 cases and 7/7 assertions passing. | Slice 2 now has a schema-backed readiness report for AGENTS, memory, skills, hooks, evals, and runtime surfaces. |
+| LOCAL011 | `packages/contracts/src/eval-report.ts`, `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-eval.ts`, and `docs/specs/krn-eval/` implement `krn eval`; `.krn/evals/krn-eval-contracts/20260619T213124Z-1633062/report.json` shows 3/3 cases and 7/7 assertions passing, and `.krn/eval/20260619T213124Z-1633062/report.json` aggregates 2/2 modules. | Slice 2 now has a schema-backed eval aggregation report, but green deterministic modules still do not prove productivity lift or unblock dashboard/API/MCP by themselves. |
 
 ## Source Index
 
@@ -153,6 +154,7 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | C020 | KRN is the product/tool name; Gas Town is only this repo's codename/reference to the Steve Yegge agent-orchestration discourse and loose Mad Max theming. | S093-S095, LOCAL008 | C/local | yes | The repo accidentally borrows another discourse's brand and creates two product identities. |
 | C021 | The first `krn init --dry-run` runtime slice proves a typed bootstrap contract path, not product lift or readiness for dashboard/API/MCP. | C018-C019, LOCAL009 | local | yes | A green CLI/eval run is overclaimed as full product readiness. |
 | C022 | `krn doctor` readiness reports prove detection of local KRN surfaces, not semantic hook trust, memory correctness, or control-plane readiness. | C018-C019, LOCAL010 | local | yes | A green doctor report is overclaimed as product readiness or safety proof. |
+| C023 | `krn eval` aggregate reports prove deterministic local eval execution and aggregation, not productivity lift, benchmark lift, human review quality, or dashboard/API/MCP readiness. | C018-C019, LOCAL011 | local | yes | A green aggregate eval report is overclaimed as product quality or measured improvement. |
 
 ## Decision Evidence Map
 
@@ -176,6 +178,7 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | Final-product execution replaces bootstrap-only `goal-005` | C006, C013, C017-C019 | LOCAL008 | high | A smaller bootstrap goal may feel faster. | decision |
 | First `krn init --dry-run` typed runtime path | C018-C019, C021 | LOCAL009 | medium | One CLI/eval path is still too narrow to unblock dashboard/API/MCP. | decision |
 | `krn doctor` readiness report before API/MCP/dashboard work | C018-C019, C022 | LOCAL010 | medium | Readiness detection may be mistaken for semantic correctness. | decision |
+| `krn eval` aggregate report before API/MCP/dashboard work | C018-C019, C023 | LOCAL011 | medium | Aggregating deterministic modules may be mistaken for measured product lift. | decision |
 
 ## Blocked / Future Research
 

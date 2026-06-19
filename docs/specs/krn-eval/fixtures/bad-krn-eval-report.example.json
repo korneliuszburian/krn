@@ -1,0 +1,41 @@
+{
+  "schema_version": "krn-eval-report.v1",
+  "kind": "krn_eval_report",
+  "run_id": "bad-missing-caveat",
+  "created_at": "2026-06-19T22:00:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "command": "krn eval",
+  "mode": "validate",
+  "overall_status": "passed",
+  "modules": [
+    {
+      "module_id": "krn-init-contracts",
+      "command": ["pnpm", "run", "eval:krn-init"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-init-contracts/bad/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 8,
+      "passed_assertions": 8,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": ["docs/evals/krn-init-contracts/README.md"],
+      "interpretation_caveat": "This eval proves contract behavior only."
+    }
+  ],
+  "summary": {
+    "total_modules": 1,
+    "passed_modules": 1,
+    "failed_modules": 0,
+    "total_cases": 3,
+    "passed_cases": 3,
+    "failed_cases": 0,
+    "total_assertions": 8,
+    "passed_assertions": 8,
+    "failed_assertions": 0
+  },
+  "runtime_report_path": ".krn/eval/bad/report.json",
+  "source_refs": ["docs/goals/goal-006.md"]
+}

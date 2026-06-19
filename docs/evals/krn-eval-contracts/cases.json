@@ -1,0 +1,57 @@
+[
+  {
+    "id": "valid-fixture-parses",
+    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes both current Slice 2 eval modules.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "required eval modules present"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "runtime_contract_score"
+    ],
+    "failure_mode": "The krn eval aggregate contract can no longer validate its own canonical example."
+  },
+  {
+    "id": "known-bad-fixture-fails",
+    "expected_behavior": "The known-bad fixture missing the interpretation caveat fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "known-bad fixture rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The validator accepts an aggregate eval report that can be overclaimed without a caveat."
+  },
+  {
+    "id": "generated-krn-eval-report-parses",
+    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval and the generated report parses through @krn/contracts with init and doctor module summaries.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "CLI exits zero",
+      "generated report exists",
+      "generated report parses",
+      "required eval modules present"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "goal_alignment_score"
+    ],
+    "failure_mode": "The krn eval command no longer produces a schema-backed aggregate runtime artifact."
+  }
+]

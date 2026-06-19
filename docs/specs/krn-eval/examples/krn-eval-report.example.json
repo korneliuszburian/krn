@@ -1,0 +1,69 @@
+{
+  "schema_version": "krn-eval-report.v1",
+  "kind": "krn_eval_report",
+  "run_id": "20260619T220000Z-example",
+  "created_at": "2026-06-19T22:00:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "command": "krn eval",
+  "mode": "validate",
+  "overall_status": "passed",
+  "modules": [
+    {
+      "module_id": "krn-init-contracts",
+      "command": ["pnpm", "run", "eval:krn-init"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-init-contracts/20260619T215900Z-example/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 8,
+      "passed_assertions": 8,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-init-contracts/README.md",
+        "docs/specs/krn-init/README.md"
+      ],
+      "interpretation_caveat": "This eval proves krn-init contract behavior only; it does not prove productivity lift, dashboard readiness, MCP readiness, or write-mode safety."
+    },
+    {
+      "module_id": "krn-doctor-contracts",
+      "command": ["pnpm", "run", "eval:krn-doctor"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-doctor-contracts/20260619T215901Z-example/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 7,
+      "passed_assertions": 7,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-doctor-contracts/README.md",
+        "docs/specs/krn-doctor/README.md"
+      ],
+      "interpretation_caveat": "This eval proves krn doctor readiness-report contract behavior only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness."
+    }
+  ],
+  "summary": {
+    "total_modules": 2,
+    "passed_modules": 2,
+    "failed_modules": 0,
+    "total_cases": 6,
+    "passed_cases": 6,
+    "failed_cases": 0,
+    "total_assertions": 15,
+    "passed_assertions": 15,
+    "failed_assertions": 0
+  },
+  "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/specs/krn-eval/README.md",
+    "docs/evals/STANDARD.md",
+    "docs/product/final-product-plan.md"
+  ],
+  "interpretation_caveat": "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness."
+}

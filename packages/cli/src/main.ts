@@ -1,6 +1,16 @@
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { basename, resolve } from "node:path";
-import { parseDoctorReport, parseInitManifest, type DoctorCheck, type DoctorReport, type InitManifest } from "@krn/contracts";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { basename, relative, resolve } from "node:path";
+import {
+  parseDoctorReport,
+  parseInitManifest,
+  parseKrnEvalReport,
+  type DoctorCheck,
+  type DoctorReport,
+  type EvalModuleResult,
+  type InitManifest,
+  type KrnEvalReport,
+} from "@krn/contracts";
 
 type CliResult = {
   exitCode: number;
@@ -16,6 +26,29 @@ type DoctorArgs = {
   target: string;
 };
 
+type EvalArgs = {
+  target: string;
+  modules: string[];
+};
+
+type EvalModuleDescriptor = {
+  moduleId: string;
+  command: readonly string[];
+  sourceRefs: readonly string[];
+};
+
+type ModuleReportSummary = {
+  total_cases: number;
+  passed_cases: number;
+  failed_cases: number;
+  case_pass_rate: number;
+  total_assertions: number;
+  passed_assertions: number;
+  failed_assertions: number;
+  assertion_pass_rate: number;
+  interpretation_caveat: string;
+};
+
 const DETECTED_PATHS = [
   { path: "AGENTS.md", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
@@ -24,8 +57,21 @@ const DETECTED_PATHS = [
   { path: ".krn", expectedKind: "directory" },
 ] as const;
 
+const EVAL_MODULES: EvalModuleDescriptor[] = [
+  {
+    moduleId: "krn-init-contracts",
+    command: ["pnpm", "run", "eval:krn-init"],
+    sourceRefs: ["docs/evals/krn-init-contracts/README.md", "docs/specs/krn-init/README.md"],
+  },
+  {
+    moduleId: "krn-doctor-contracts",
+    command: ["pnpm", "run", "eval:krn-doctor"],
+    sourceRefs: ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"],
+  },
+];
+
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n";
 }
 
 function parseInitArgs(argv: readonly string[]): InitArgs {
@@ -88,6 +134,43 @@ function parseDoctorArgs(argv: readonly string[]): DoctorArgs {
   }
 
   return { target };
+}
+
+function parseEvalArgs(argv: readonly string[]): EvalArgs {
+  if (argv[0] !== "eval") {
+    throw new Error("Expected command: eval");
+  }
+
+  let target = ".";
+  const modules: string[] = [];
+
+  for (let index = 1; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--target") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --target");
+      }
+      target = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--module") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --module");
+      }
+      modules.push(value);
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
+  }
+
+  return { target, modules };
 }
 
 function pathKind(targetRoot: string, relativePath: string): "file" | "directory" | "missing" {
@@ -435,6 +518,212 @@ function writeDoctorReport(targetInput: string, report: DoctorReport): string {
   return reportPath;
 }
 
+function readJsonFile(path: string): unknown {
+  return JSON.parse(readFileSync(path, "utf8")) as unknown;
+}
+
+function stringField(record: Record<string, unknown>, key: string): string {
+  const value = record[key];
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`Module report missing string field: ${key}`);
+  }
+  return value;
+}
+
+function numberField(record: Record<string, unknown>, key: string): number {
+  const value = record[key];
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    throw new Error(`Module report missing numeric field: ${key}`);
+  }
+  return value;
+}
+
+function parseModuleReportSummary(input: unknown): ModuleReportSummary {
+  if (!input || typeof input !== "object") {
+    throw new Error("Module report must be an object");
+  }
+
+  const record = input as Record<string, unknown>;
+
+  return {
+    total_cases: numberField(record, "total_cases"),
+    passed_cases: numberField(record, "passed_cases"),
+    failed_cases: numberField(record, "failed_cases"),
+    case_pass_rate: numberField(record, "case_pass_rate"),
+    total_assertions: numberField(record, "total_assertions"),
+    passed_assertions: numberField(record, "passed_assertions"),
+    failed_assertions: numberField(record, "failed_assertions"),
+    assertion_pass_rate: numberField(record, "assertion_pass_rate"),
+    interpretation_caveat: stringField(record, "interpretation_caveat"),
+  };
+}
+
+function extractReportPath(output: string): string {
+  const reportLine = output
+    .split(/\r?\n/)
+    .reverse()
+    .find((line) => line.startsWith("report: "));
+
+  if (!reportLine) {
+    throw new Error("Eval module output did not include a report path");
+  }
+
+  return reportLine.replace(/^report:\s*/, "").trim();
+}
+
+function toTargetRelativePath(targetRoot: string, absolutePath: string): string {
+  const relativePath = relative(targetRoot, absolutePath).replaceAll("\\", "/");
+  if (relativePath.length > 0 && !relativePath.startsWith("..") && !relativePath.startsWith("/")) {
+    return relativePath;
+  }
+  return absolutePath;
+}
+
+function selectEvalModules(moduleIds: readonly string[]): EvalModuleDescriptor[] {
+  if (moduleIds.length === 0) {
+    return EVAL_MODULES;
+  }
+
+  return moduleIds.map((moduleId) => {
+    const descriptor = EVAL_MODULES.find((module) => module.moduleId === moduleId);
+    if (!descriptor) {
+      throw new Error(`Unknown eval module: ${moduleId}`);
+    }
+    return descriptor;
+  });
+}
+
+function runEvalModule(targetRoot: string, descriptor: EvalModuleDescriptor): EvalModuleResult {
+  const [command, ...args] = descriptor.command;
+  if (!command) {
+    throw new Error(`Eval module ${descriptor.moduleId} has no command`);
+  }
+
+  try {
+    const output = execFileSync(command, args, {
+      cwd: targetRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const reportPath = extractReportPath(output);
+    const summary = parseModuleReportSummary(readJsonFile(reportPath));
+    const status = summary.failed_cases === 0 ? "passed" : "failed";
+
+    return {
+      module_id: descriptor.moduleId,
+      command: [...descriptor.command],
+      status,
+      report_path: toTargetRelativePath(targetRoot, reportPath),
+      ...summary,
+      source_refs: [...descriptor.sourceRefs],
+    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "unknown eval module error";
+
+    return {
+      module_id: descriptor.moduleId,
+      command: [...descriptor.command],
+      status: "error",
+      report_path: null,
+      total_cases: 0,
+      passed_cases: 0,
+      failed_cases: 0,
+      case_pass_rate: 0,
+      total_assertions: 0,
+      passed_assertions: 0,
+      failed_assertions: 0,
+      assertion_pass_rate: 0,
+      source_refs: [...descriptor.sourceRefs],
+      interpretation_caveat: `The eval module failed before KRN could parse its report: ${message}`,
+    };
+  }
+}
+
+function summarizeEvalModules(modules: readonly EvalModuleResult[]): KrnEvalReport["summary"] {
+  return modules.reduce(
+    (summary, moduleResult) => {
+      summary.total_modules += 1;
+      if (moduleResult.status === "passed") {
+        summary.passed_modules += 1;
+      } else {
+        summary.failed_modules += 1;
+      }
+      summary.total_cases += moduleResult.total_cases;
+      summary.passed_cases += moduleResult.passed_cases;
+      summary.failed_cases += moduleResult.failed_cases;
+      summary.total_assertions += moduleResult.total_assertions;
+      summary.passed_assertions += moduleResult.passed_assertions;
+      summary.failed_assertions += moduleResult.failed_assertions;
+      return summary;
+    },
+    {
+      total_modules: 0,
+      passed_modules: 0,
+      failed_modules: 0,
+      total_cases: 0,
+      passed_cases: 0,
+      failed_cases: 0,
+      total_assertions: 0,
+      passed_assertions: 0,
+      failed_assertions: 0,
+    },
+  );
+}
+
+function evalOverallStatus(modules: readonly EvalModuleResult[]): "passed" | "failed" | "error" {
+  if (modules.some((moduleResult) => moduleResult.status === "error")) {
+    return "error";
+  }
+  if (modules.some((moduleResult) => moduleResult.status === "failed")) {
+    return "failed";
+  }
+  return "passed";
+}
+
+function buildKrnEvalReport(args: EvalArgs, now = new Date()): KrnEvalReport {
+  const targetRoot = resolve(args.target);
+  const runId = createRunId(now);
+  const runtimeReportPath = `.krn/eval/${runId}/report.json`;
+  const selectedModules = selectEvalModules(args.modules);
+  const modules = selectedModules.map((module) => runEvalModule(targetRoot, module));
+  const summary = summarizeEvalModules(modules);
+
+  const candidateReport: unknown = {
+    schema_version: "krn-eval-report.v1",
+    kind: "krn_eval_report",
+    run_id: runId,
+    created_at: now.toISOString(),
+    target_root: targetRoot,
+    command: "krn eval",
+    mode: "validate",
+    overall_status: evalOverallStatus(modules),
+    modules,
+    summary,
+    runtime_report_path: runtimeReportPath,
+    source_refs: [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/STANDARD.md",
+      "docs/product/final-product-plan.md",
+    ],
+    interpretation_caveat:
+      "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness.",
+  };
+
+  return parseKrnEvalReport(candidateReport);
+}
+
+function writeKrnEvalReport(targetInput: string, report: KrnEvalReport): string {
+  const targetRoot = resolve(targetInput);
+  const reportDir = resolve(targetRoot, ".krn", "eval", report.run_id);
+  const reportPath = resolve(reportDir, "report.json");
+
+  mkdirSync(reportDir, { recursive: true });
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+  return reportPath;
+}
+
 export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliResult {
   const normalizedArgv = argv[0] === "--" ? argv.slice(1) : argv;
 
@@ -455,6 +744,14 @@ export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliR
       const report = buildDoctorReport(args.target);
       const reportPath = writeDoctorReport(args.target, report);
       return { exitCode: 0, stdout: `${reportPath}\n`, stderr: "" };
+    }
+
+    if (normalizedArgv[0] === "eval") {
+      const args = parseEvalArgs(normalizedArgv);
+      const report = buildKrnEvalReport(args);
+      const reportPath = writeKrnEvalReport(args.target, report);
+      const exitCode = report.overall_status === "passed" ? 0 : 1;
+      return { exitCode, stdout: `${reportPath}\n`, stderr: "" };
     }
 
     throw new Error(`Unknown command: ${normalizedArgv[0] ?? "<empty>"}`);
