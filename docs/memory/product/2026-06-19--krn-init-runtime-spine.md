@@ -10,7 +10,7 @@ Sources:
 - [packages/contracts/src/init-manifest.ts](/home/krn/coding/krn/active/krn-gastown/packages/contracts/src/init-manifest.ts)
 - [packages/cli/src/main.ts](/home/krn/coding/krn/active/krn-gastown/packages/cli/src/main.ts)
 - [packages/evals/src/validate-krn-init.ts](/home/krn/coding/krn/active/krn-gastown/packages/evals/src/validate-krn-init.ts)
-- Local runtime evidence: `.krn/evals/krn-init-contracts/20260619T210558Z-1577120/report.json`
+- Local runtime evidence: `.krn/evals/krn-init-contracts/20260619T211955Z-1607359/report.json`
 
 ## Observation
 
@@ -54,4 +54,6 @@ This becomes harmful if later commands duplicate manifest validation outside `pa
 
 ## Review Trigger
 
-Update this note when `krn doctor`, `krn eval`, or `krn review` ships; when `InitManifest` changes; when a read-only MCP/API layer consumes `.krn/init`; or if the dry-run command gains any write mode.
+`krn doctor` shipped after this note and is recorded separately in [2026-06-19--krn-doctor-runtime-report.md](./2026-06-19--krn-doctor-runtime-report.md).
+
+Update this note again when `krn eval` or `krn review` ships; when `InitManifest` changes; when a read-only MCP/API layer consumes `.krn/init`; or if the dry-run command gains any write mode.

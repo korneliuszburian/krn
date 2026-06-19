@@ -16,6 +16,9 @@ __pycache__/
 .krn/compact/*
 !.krn/compact/.gitignore
 !.krn/compact/README.md
+.krn/doctor/*
+!.krn/doctor/.gitignore
+!.krn/doctor/README.md
 .krn/evals/*
 !.krn/evals/.gitignore
 !.krn/evals/README.md

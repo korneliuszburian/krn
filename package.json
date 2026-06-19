@@ -8,7 +8,8 @@
     "typecheck": "tsc -b packages/contracts packages/cli packages/evals",
     "test": "vitest run",
     "krn": "tsx packages/cli/src/main.ts",
-    "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate"
+    "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate",
+    "eval:krn-doctor": "tsx packages/evals/src/validate-krn-doctor.ts --mode validate"
   },
   "devDependencies": {
     "@types/node": "25.9.4",

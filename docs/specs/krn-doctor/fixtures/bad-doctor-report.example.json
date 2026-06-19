@@ -1,0 +1,27 @@
+{
+  "schema_version": "krn-doctor-report.v1",
+  "kind": "krn_doctor_report",
+  "run_id": "bad-doctor-report-001",
+  "created_at": "2026-06-19T00:00:00.000Z",
+  "target_root": ".",
+  "command": "krn doctor",
+  "overall_status": "ready",
+  "checks": [
+    {
+      "id": "agents-root-instructions",
+      "surface": "agents",
+      "path": "AGENTS.md",
+      "status": "ready",
+      "exists": true,
+      "summary": "Root AGENTS.md exists.",
+      "source_refs": ["AGENTS.md"]
+    }
+  ],
+  "summary": {
+    "ready": 1,
+    "warning": 0,
+    "blocked": 0
+  },
+  "runtime_report_path": ".krn/doctor/bad-doctor-report-001/report.json",
+  "source_refs": ["docs/goals/goal-006.md"]
+}

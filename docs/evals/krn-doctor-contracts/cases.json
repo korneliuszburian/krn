@@ -1,0 +1,57 @@
+[
+  {
+    "id": "valid-fixture-parses",
+    "expected_behavior": "The valid krn-doctor report fixture parses through @krn/contracts and includes all required readiness surfaces.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-doctor/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "required readiness surfaces present"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "runtime_contract_score"
+    ],
+    "failure_mode": "The doctor contract can no longer validate its own canonical example."
+  },
+  {
+    "id": "known-bad-fixture-fails",
+    "expected_behavior": "The known-bad fixture missing the interpretation caveat fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-doctor/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "known-bad fixture rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The validator accepts a doctor report that can be overclaimed without a caveat."
+  },
+  {
+    "id": "generated-doctor-report-parses",
+    "expected_behavior": "The CLI writes a doctor report under .krn/doctor and the generated report parses through @krn/contracts with all required readiness surfaces.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-doctor/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "CLI exits zero",
+      "generated report exists",
+      "generated report parses",
+      "required readiness surfaces present"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "goal_alignment_score"
+    ],
+    "failure_mode": "The doctor command no longer produces a schema-backed readiness runtime artifact."
+  }
+]

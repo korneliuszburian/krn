@@ -21,6 +21,10 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
 - Operator skill impact validation now covers 10 fixtures, including the five new Slice 1 skills.
 - `docs/evals/operator-skill-impact/fixtures/bad-premature-completion-claim.md` is a known-bad fixture for release verification.
 - Impact eval validation runs, but live A/B impact and review-burden proof remain future work and must not be treated as productivity proof.
+- Slice 2 now has two TypeScript runtime paths:
+  - `krn init --dry-run` emits schema-backed manifests under `.krn/init/`.
+  - `krn doctor` emits schema-backed readiness reports under `.krn/doctor/`.
+- `krn eval` and `krn review` remain required before Slice 2 can be treated as complete.
 
 ## Objective
 
@@ -254,11 +258,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Start Slice 1 by implementing missing operator skills and their eval coverage, then run:
+Continue Slice 2 by implementing the next typed CLI/runtime path:
 
 ```bash
-python3 scripts/evals/operator_skill_contracts.py --mode validate
-python3 scripts/evals/operator_skill_impact.py --mode validate
+krn eval
 ```
 
-After Slice 1 validation passes, start Slice 2 by creating the TypeScript workspace and the first typed contract/CLI/eval vertical slice.
+The command must emit schema-backed reports under `.krn/`, reuse `packages/contracts`, and preserve the current rule that API/MCP/dashboard work waits for typed runtime reports.

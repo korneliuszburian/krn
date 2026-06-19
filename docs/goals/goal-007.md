@@ -426,8 +426,8 @@ pnpm run eval:krn-init
 Latest local report paths:
 
 ```text
-.krn/evals/krn-init-contracts/20260619T210558Z-1577120/report.json
-.krn/init/20260619T210559Z-1577120/manifest.json
+.krn/evals/krn-init-contracts/20260619T211955Z-1607359/report.json
+.krn/init/20260619T211955Z-1607359/manifest.json
 ```
 
 Final gates passed in this pass:
