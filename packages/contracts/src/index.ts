@@ -18,3 +18,12 @@ export {
   type EvalModuleResult,
   type KrnEvalReport,
 } from "./eval-report.js";
+export {
+  KrnReviewReportSchema,
+  krnReviewReportJsonSchema,
+  parseKrnReviewReport,
+  type KrnReviewReport,
+  type ReviewArtifact,
+  type ReviewFinding,
+  type ReviewProposal,
+} from "./review-report.js";

@@ -28,6 +28,9 @@ __pycache__/
 .krn/init/*
 !.krn/init/.gitignore
 !.krn/init/README.md
+.krn/review/*
+!.krn/review/.gitignore
+!.krn/review/README.md
 .krn/specs/*
 !.krn/specs/.gitignore
 !.krn/specs/README.md

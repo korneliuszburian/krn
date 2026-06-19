@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseKrnEvalReport } from "@krn/contracts";
+import { parseKrnReviewReport } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
 
 type EvalCase = {
@@ -19,8 +19,8 @@ type CaseResult = {
 };
 
 type EvalReport = {
-  schema_version: "krn-eval-contracts-result.v1";
-  kind: "krn_eval_contracts_result";
+  schema_version: "krn-review-contracts-result.v1";
+  kind: "krn_review_contracts_result";
   run_id: string;
   created_at: string;
   total_cases: number;
@@ -36,7 +36,7 @@ type EvalReport = {
   interpretation_caveat: string;
 };
 
-const REQUIRED_MODULES = ["krn-init-contracts", "krn-doctor-contracts", "krn-review-contracts"];
+const REQUIRED_ARTIFACTS = ["latest-init-manifest", "latest-doctor-report", "latest-eval-report"];
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -89,15 +89,19 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
-function hasRequiredModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
-  const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
-  return REQUIRED_MODULES.every((moduleId) => moduleIds.includes(moduleId));
+function hasRequiredArtifacts(report: ReturnType<typeof parseKrnReviewReport>): boolean {
+  const artifactIds = report.artifacts.map((artifact) => artifact.id);
+  return REQUIRED_ARTIFACTS.every((artifactId) => artifactIds.includes(artifactId));
+}
+
+function proposalsAreReviewOnly(report: ReturnType<typeof parseKrnReviewReport>): boolean {
+  return report.proposals.every((proposal) => proposal.status === "proposal_only");
 }
 
 function runValidation(): EvalReport {
   const now = new Date();
   const runId = createRunId(now);
-  const cases = parseCases(readJson(resolve("docs/evals/krn-eval-contracts/cases.json")));
+  const cases = parseCases(readJson(resolve("docs/evals/krn-review-contracts/cases.json")));
   const results: CaseResult[] = [];
   let generatedReportPath: string | null = null;
 
@@ -108,14 +112,14 @@ function runValidation(): EvalReport {
     throw new Error("Missing case valid-fixture-parses");
   }
   try {
-    const report = parseKrnEvalReport(readJson(resolve("docs/specs/krn-eval/examples/krn-eval-report.example.json")));
+    const report = parseKrnReviewReport(readJson(resolve("docs/specs/krn-review/examples/krn-review-report.example.json")));
     results.push(
       result(
         validFixtureCase.id,
-        report.command === "krn eval" && hasRequiredModules(report),
-        ["valid fixture parses", "required eval modules present"],
+        report.command === "krn review" && hasRequiredArtifacts(report) && proposalsAreReviewOnly(report),
+        ["valid fixture parses", "required runtime artifacts present", "proposals are proposal-only"],
         validFixtureCase.failure_mode,
-        "Valid krn-eval fixture parsed through @krn/contracts.",
+        "Valid krn-review fixture parsed through @krn/contracts.",
       ),
     );
   } catch (error: unknown) {
@@ -135,14 +139,14 @@ function runValidation(): EvalReport {
     throw new Error("Missing case known-bad-fixture-fails");
   }
   try {
-    parseKrnEvalReport(readJson(resolve("docs/specs/krn-eval/fixtures/bad-krn-eval-report.example.json")));
+    parseKrnReviewReport(readJson(resolve("docs/specs/krn-review/fixtures/bad-krn-review-report.example.json")));
     results.push(
       result(
         knownBadCase.id,
         false,
         ["known-bad fixture rejected"],
         knownBadCase.failure_mode,
-        "Known-bad krn-eval fixture unexpectedly parsed.",
+        "Known-bad krn-review fixture unexpectedly parsed.",
       ),
     );
   } catch {
@@ -152,16 +156,16 @@ function runValidation(): EvalReport {
         true,
         ["known-bad fixture rejected"],
         knownBadCase.failure_mode,
-        "Known-bad krn-eval fixture failed as expected.",
+        "Known-bad krn-review fixture failed as expected.",
       ),
     );
   }
 
-  const generatedCase = caseById.get("generated-krn-eval-report-parses");
+  const generatedCase = caseById.get("generated-review-report-parses");
   if (!generatedCase) {
-    throw new Error("Missing case generated-krn-eval-report-parses");
+    throw new Error("Missing case generated-review-report-parses");
   }
-  const cliResult = runKrnCli(["eval"]);
+  const cliResult = runKrnCli(["review", "--target", "."]);
   const cliReportPath = cliResult.stdout.trim();
   generatedReportPath = cliReportPath;
   if (cliResult.exitCode !== 0) {
@@ -170,14 +174,17 @@ function runValidation(): EvalReport {
     );
   } else {
     try {
-      const report = parseKrnEvalReport(readJson(cliReportPath));
+      const report = parseKrnReviewReport(readJson(cliReportPath));
       results.push(
         result(
           generatedCase.id,
-          report.command === "krn eval" && existsSync(cliReportPath) && hasRequiredModules(report),
-          ["CLI exits zero", "generated report exists", "generated report parses", "required eval modules present"],
+          report.command === "krn review" &&
+            existsSync(cliReportPath) &&
+            hasRequiredArtifacts(report) &&
+            proposalsAreReviewOnly(report),
+          ["CLI exits zero", "generated report exists", "generated report parses", "proposals are proposal-only"],
           generatedCase.failure_mode,
-          "Generated krn eval report parsed through @krn/contracts.",
+          "Generated krn review report parsed through @krn/contracts.",
         ),
       );
     } catch (error: unknown) {
@@ -202,8 +209,8 @@ function runValidation(): EvalReport {
   );
 
   return {
-    schema_version: "krn-eval-contracts-result.v1",
-    kind: "krn_eval_contracts_result",
+    schema_version: "krn-review-contracts-result.v1",
+    kind: "krn_review_contracts_result",
     run_id: runId,
     created_at: now.toISOString(),
     total_cases: totalCases,
@@ -217,13 +224,13 @@ function runValidation(): EvalReport {
     cases: results,
     generated_report_path: generatedReportPath,
     interpretation_caveat:
-      "This eval proves krn eval aggregate-report contract behavior only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness.",
+      "This eval proves krn review proposal-report contract behavior only; it does not prove human approval, productivity lift, API/MCP readiness, or dashboard readiness.",
   };
 }
 
 export function main(): void {
   const report = runValidation();
-  const reportDir = resolve(".krn/evals/krn-eval-contracts", report.run_id);
+  const reportDir = resolve(".krn/evals/krn-review-contracts", report.run_id);
   const reportPath = resolve(reportDir, "report.json");
 
   mkdirSync(reportDir, { recursive: true });

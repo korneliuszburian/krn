@@ -33,7 +33,7 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md); the next eight-hour child goal is [docs/goals/goal-007.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-007.md). Use [docs/goals/goal-005.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-005.md) only as superseded Slice 2 `krn init --dry-run` context.
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest eight-hour child goal is [docs/goals/goal-007.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-007.md); a Slice 3 child goal has not been created yet. Use [docs/goals/goal-005.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-005.md) only as superseded Slice 2 `krn init --dry-run` context.
 3. Read current final product direction:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
 4. Read current canonical synthesis:
@@ -75,6 +75,7 @@ Before major planning work:
 - [KRN init runtime spine](./product/2026-06-19--krn-init-runtime-spine.md)
 - [KRN doctor runtime report](./product/2026-06-19--krn-doctor-runtime-report.md)
 - [KRN eval runtime report](./product/2026-06-19--krn-eval-runtime-report.md)
+- [KRN review runtime report](./product/2026-06-19--krn-review-runtime-report.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

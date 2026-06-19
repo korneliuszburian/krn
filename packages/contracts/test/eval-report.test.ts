@@ -18,6 +18,7 @@ describe("KrnEvalReport contract", () => {
     expect(report.modules.map((moduleResult) => moduleResult.module_id)).toEqual([
       "krn-init-contracts",
       "krn-doctor-contracts",
+      "krn-review-contracts",
     ]);
   });
 

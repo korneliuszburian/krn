@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready as the next active execution contract. Slice 1 has started with final-product planning, naming, and static operator-skill coverage.
+Active parent execution contract. Slice 1 is complete enough to support product implementation, and Slice 2 typed CLI/runtime commands are implemented and locally verified. The parent goal remains incomplete until Slice 3 control-plane surfaces and measured lift evidence exist.
 
 This goal supersedes `goal-005` as the product direction. `goal-005` remains useful as the Slice 2 `krn init --dry-run` contract, but it must not drive the whole repo.
 
@@ -21,11 +21,16 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
 - Operator skill impact validation now covers 10 fixtures, including the five new Slice 1 skills.
 - `docs/evals/operator-skill-impact/fixtures/bad-premature-completion-claim.md` is a known-bad fixture for release verification.
 - Impact eval validation runs, but live A/B impact and review-burden proof remain future work and must not be treated as productivity proof.
-- Slice 2 now has three TypeScript runtime paths:
+- Slice 2 now has four TypeScript runtime paths:
   - `krn init --dry-run` emits schema-backed manifests under `.krn/init/`.
   - `krn doctor` emits schema-backed readiness reports under `.krn/doctor/`.
   - `krn eval` emits schema-backed aggregate eval reports under `.krn/eval/`.
-- `krn review` remains required before Slice 2 can be treated as complete.
+  - `krn review` emits schema-backed proposal-only review reports under `.krn/review/`.
+- Latest Slice 2 local proof:
+  - `pnpm typecheck` passed.
+  - `pnpm test` passed with 8/8 files and 16/16 tests.
+  - `pnpm run eval:krn-eval` passed 3/3 cases, and the latest generated aggregate `.krn/eval/20260619T215520Z-1674196/report.json` has 3/3 modules, 9/9 cases, and 23/23 assertions passing.
+  - `pnpm run krn -- review` generated `.krn/review/20260619T215617Z-1675416/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
 
 ## Objective
 
@@ -198,6 +203,7 @@ Build the final local runtime foundation that produces typed evidence for later 
 - `krn init --dry-run` produces a manifest without mutating target files.
 - `krn doctor` reports AGENTS/memory/skills/hooks/eval readiness.
 - `krn eval` emits schema-backed reports.
+- `krn review` emits proposal-only review reports over typed local runtime artifacts.
 - No new Python product code is introduced.
 
 ### Disproves Completion
@@ -259,10 +265,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Continue Slice 2 by implementing the next typed CLI/runtime path:
+Start Slice 3 with the first read-only/proposal-only control-plane path:
 
 ```bash
-krn review
+packages/mcp read-only resource contract over .krn runtime reports
 ```
 
-The command must emit schema-backed review/proposal reports under `.krn/`, reuse `packages/contracts`, and preserve the current rule that API/MCP/dashboard work waits for typed runtime reports.
+This must consume existing typed `.krn/init`, `.krn/doctor`, `.krn/eval`, and `.krn/review` reports. It must not expose destructive MCP/API tools or mocked dashboard state.

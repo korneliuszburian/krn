@@ -5,11 +5,16 @@ import {
   parseDoctorReport,
   parseInitManifest,
   parseKrnEvalReport,
+  parseKrnReviewReport,
   type DoctorCheck,
   type DoctorReport,
   type EvalModuleResult,
   type InitManifest,
   type KrnEvalReport,
+  type KrnReviewReport,
+  type ReviewArtifact,
+  type ReviewFinding,
+  type ReviewProposal,
 } from "@krn/contracts";
 
 type CliResult = {
@@ -29,6 +34,10 @@ type DoctorArgs = {
 type EvalArgs = {
   target: string;
   modules: string[];
+};
+
+type ReviewArgs = {
+  target: string;
 };
 
 type EvalModuleDescriptor = {
@@ -68,10 +77,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     command: ["pnpm", "run", "eval:krn-doctor"],
     sourceRefs: ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"],
   },
+  {
+    moduleId: "krn-review-contracts",
+    command: ["pnpm", "run", "eval:krn-review"],
+    sourceRefs: ["docs/evals/krn-review-contracts/README.md", "docs/specs/krn-review/README.md"],
+  },
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n";
 }
 
 function parseInitArgs(argv: readonly string[]): InitArgs {
@@ -171,6 +185,32 @@ function parseEvalArgs(argv: readonly string[]): EvalArgs {
   }
 
   return { target, modules };
+}
+
+function parseReviewArgs(argv: readonly string[]): ReviewArgs {
+  if (argv[0] !== "review") {
+    throw new Error("Expected command: review");
+  }
+
+  let target = ".";
+
+  for (let index = 1; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--target") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --target");
+      }
+      target = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
+  }
+
+  return { target };
 }
 
 function pathKind(targetRoot: string, relativePath: string): "file" | "directory" | "missing" {
@@ -724,6 +764,323 @@ function writeKrnEvalReport(targetInput: string, report: KrnEvalReport): string 
   return reportPath;
 }
 
+function latestRuntimeFile(targetRoot: string, runtimeDir: string, fileName: string): string | null {
+  const absoluteRuntimeDir = resolve(targetRoot, runtimeDir);
+  if (!existsSync(absoluteRuntimeDir) || !statSync(absoluteRuntimeDir).isDirectory()) {
+    return null;
+  }
+
+  const candidates = readdirSync(absoluteRuntimeDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => resolve(absoluteRuntimeDir, entry.name, fileName))
+    .filter((candidatePath) => existsSync(candidatePath) && statSync(candidatePath).isFile())
+    .sort();
+
+  return candidates.at(-1) ?? null;
+}
+
+function artifactPathForEvidence(path: string | null): string[] {
+  if (!path) {
+    return [];
+  }
+  return [path];
+}
+
+function reviewArtifact(
+  id: string,
+  kind: ReviewArtifact["kind"],
+  status: ReviewArtifact["status"],
+  path: string | null,
+  summary: string,
+  sourceRefs: readonly string[],
+): ReviewArtifact {
+  return {
+    id,
+    kind,
+    status,
+    path,
+    summary,
+    source_refs: [...sourceRefs],
+  };
+}
+
+function buildInitReviewArtifact(targetRoot: string): ReviewArtifact {
+  const manifestPath = latestRuntimeFile(targetRoot, ".krn/init", "manifest.json");
+  if (!manifestPath) {
+    return reviewArtifact(
+      "latest-init-manifest",
+      "init_manifest",
+      "missing",
+      null,
+      "No init dry-run manifest was found.",
+      ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+
+  try {
+    const manifest = parseInitManifest(readJsonFile(manifestPath));
+    return reviewArtifact(
+      "latest-init-manifest",
+      "init_manifest",
+      "present",
+      toTargetRelativePath(targetRoot, manifestPath),
+      `Latest init manifest ${manifest.run_id} parsed in ${manifest.mode} mode.`,
+      ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"],
+    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "unknown parse error";
+    return reviewArtifact(
+      "latest-init-manifest",
+      "init_manifest",
+      "invalid",
+      toTargetRelativePath(targetRoot, manifestPath),
+      `Latest init manifest could not be parsed: ${message}`,
+      ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+}
+
+function buildDoctorReviewArtifact(targetRoot: string): ReviewArtifact {
+  const reportPath = latestRuntimeFile(targetRoot, ".krn/doctor", "report.json");
+  if (!reportPath) {
+    return reviewArtifact(
+      "latest-doctor-report",
+      "doctor_report",
+      "missing",
+      null,
+      "No doctor readiness report was found.",
+      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+
+  try {
+    const report = parseDoctorReport(readJsonFile(reportPath));
+    return reviewArtifact(
+      "latest-doctor-report",
+      "doctor_report",
+      "present",
+      toTargetRelativePath(targetRoot, reportPath),
+      `Latest doctor report ${report.run_id} parsed with overall status ${report.overall_status}.`,
+      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"],
+    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "unknown parse error";
+    return reviewArtifact(
+      "latest-doctor-report",
+      "doctor_report",
+      "invalid",
+      toTargetRelativePath(targetRoot, reportPath),
+      `Latest doctor report could not be parsed: ${message}`,
+      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+}
+
+function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
+  const reportPath = latestRuntimeFile(targetRoot, ".krn/eval", "report.json");
+  if (!reportPath) {
+    return reviewArtifact(
+      "latest-eval-report",
+      "eval_report",
+      "missing",
+      null,
+      "No aggregate eval report was found.",
+      ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+
+  try {
+    const report = parseKrnEvalReport(readJsonFile(reportPath));
+    return reviewArtifact(
+      "latest-eval-report",
+      "eval_report",
+      "present",
+      toTargetRelativePath(targetRoot, reportPath),
+      `Latest eval aggregate ${report.run_id} parsed with ${report.summary.passed_modules}/${report.summary.total_modules} modules passing.`,
+      ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"],
+    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "unknown parse error";
+    return reviewArtifact(
+      "latest-eval-report",
+      "eval_report",
+      "invalid",
+      toTargetRelativePath(targetRoot, reportPath),
+      `Latest aggregate eval report could not be parsed: ${message}`,
+      ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"],
+    );
+  }
+}
+
+function buildReviewFindings(artifacts: readonly ReviewArtifact[]): ReviewFinding[] {
+  const findings: ReviewFinding[] = [];
+
+  for (const artifact of artifacts) {
+    if (artifact.status === "present") {
+      findings.push({
+        id: `${artifact.id}-present`,
+        severity: "info",
+        artifact_id: artifact.id,
+        summary: artifact.summary,
+        evidence_refs: artifactPathForEvidence(artifact.path),
+        source_refs: artifact.source_refs,
+      });
+      continue;
+    }
+
+    findings.push({
+      id: `${artifact.id}-${artifact.status}`,
+      severity: artifact.status === "missing" ? "warning" : "blocking",
+      artifact_id: artifact.id,
+      summary: artifact.summary,
+      evidence_refs: artifactPathForEvidence(artifact.path),
+      source_refs: artifact.source_refs,
+    });
+  }
+
+  return findings;
+}
+
+function proposal(
+  id: string,
+  proposalType: ReviewProposal["proposal_type"],
+  title: string,
+  rationale: string,
+  evidenceRefs: readonly string[],
+  sourceRefs: readonly string[],
+  blockedSurfaces: readonly string[],
+): ReviewProposal {
+  return {
+    id,
+    proposal_type: proposalType,
+    status: "proposal_only",
+    title,
+    rationale,
+    evidence_refs: [...evidenceRefs],
+    source_refs: [...sourceRefs],
+    blocked_surfaces: [...blockedSurfaces],
+  };
+}
+
+function buildReviewProposals(artifacts: readonly ReviewArtifact[]): ReviewProposal[] {
+  const evidenceRefs = artifacts.flatMap((artifact) => (artifact.path ? [artifact.path] : []));
+  const proposals: ReviewProposal[] = [];
+  const missingOrInvalid = artifacts.filter((artifact) => artifact.status !== "present");
+
+  if (missingOrInvalid.length > 0) {
+    proposals.push(
+      proposal(
+        "repair-missing-runtime-evidence",
+        "repair_record",
+        "Regenerate missing or invalid Slice 2 runtime evidence before promotion.",
+        "KRN review cannot promote runtime evidence when one or more required artifacts are missing or invalid.",
+        missingOrInvalid.map((artifact) => artifact.id),
+        ["docs/goals/goal-006.md", "docs/evals/STANDARD.md"],
+        ["packages/mcp", "apps/dashboard", "runtime skills"],
+      ),
+    );
+  } else {
+    proposals.push(
+      proposal(
+        "promote-slice-2-runtime-evidence",
+        "source_claim_update",
+        "Review and promote Slice 2 runtime evidence into the source ledger.",
+        "The latest init, doctor, and eval runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
+        evidenceRefs,
+        ["docs/goals/goal-006.md", "docs/plans/canonical/SOURCES.md"],
+        ["packages/mcp", "apps/dashboard", "runtime skills"],
+      ),
+    );
+    proposals.push(
+      proposal(
+        "advance-after-human-review",
+        "next_action",
+        "After human review, start Slice 3 with a read-only MCP/API resource contract.",
+        "Slice 3 must consume real typed runtime reports and stay read-only/proposal-only at first.",
+        evidenceRefs,
+        ["docs/goals/goal-006.md", "docs/product/final-product-plan.md"],
+        ["destructive MCP tools", "dashboard mocked state", "runtime skills"],
+      ),
+    );
+  }
+
+  return proposals;
+}
+
+function summarizeReview(artifacts: readonly ReviewArtifact[], findings: readonly ReviewFinding[], proposals: readonly ReviewProposal[]): KrnReviewReport["summary"] {
+  return {
+    total_artifacts: artifacts.length,
+    present_artifacts: artifacts.filter((artifact) => artifact.status === "present").length,
+    missing_artifacts: artifacts.filter((artifact) => artifact.status === "missing").length,
+    invalid_artifacts: artifacts.filter((artifact) => artifact.status === "invalid").length,
+    findings: findings.length,
+    blocking_findings: findings.filter((finding) => finding.severity === "blocking").length,
+    proposals: proposals.length,
+  };
+}
+
+function reviewOverallStatus(summary: KrnReviewReport["summary"]): "ready_for_human_review" | "needs_attention" | "blocked" {
+  if (summary.blocking_findings > 0 || summary.invalid_artifacts > 0) {
+    return "blocked";
+  }
+  if (summary.missing_artifacts > 0) {
+    return "needs_attention";
+  }
+  return "ready_for_human_review";
+}
+
+function buildKrnReviewReport(targetInput: string, now = new Date()): KrnReviewReport {
+  const targetRoot = resolve(targetInput);
+  const runId = createRunId(now);
+  const runtimeReportPath = `.krn/review/${runId}/report.json`;
+  const artifacts = [
+    buildInitReviewArtifact(targetRoot),
+    buildDoctorReviewArtifact(targetRoot),
+    buildEvalReviewArtifact(targetRoot),
+  ];
+  const findings = buildReviewFindings(artifacts);
+  const proposals = buildReviewProposals(artifacts);
+  const summary = summarizeReview(artifacts, findings, proposals);
+
+  const candidateReport: unknown = {
+    schema_version: "krn-review-report.v1",
+    kind: "krn_review_report",
+    run_id: runId,
+    created_at: now.toISOString(),
+    target_root: targetRoot,
+    command: "krn review",
+    mode: "proposal-only",
+    overall_status: reviewOverallStatus(summary),
+    artifacts,
+    findings,
+    proposals,
+    summary,
+    no_touch_paths: ["AGENTS.md", ".codex", ".agents", "docs/memory", "docs/evals", "docs/plans"],
+    runtime_report_path: runtimeReportPath,
+    source_refs: [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-review/README.md",
+      "docs/evals/STANDARD.md",
+      "docs/product/final-product-plan.md",
+    ],
+    interpretation_caveat:
+      "This report proposes human review actions from local runtime artifacts only; it does not approve memory/source changes, prove productivity lift, or unblock destructive API/MCP/dashboard behavior by itself.",
+  };
+
+  return parseKrnReviewReport(candidateReport);
+}
+
+function writeKrnReviewReport(targetInput: string, report: KrnReviewReport): string {
+  const targetRoot = resolve(targetInput);
+  const reportDir = resolve(targetRoot, ".krn", "review", report.run_id);
+  const reportPath = resolve(reportDir, "report.json");
+
+  mkdirSync(reportDir, { recursive: true });
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+  return reportPath;
+}
+
 export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliResult {
   const normalizedArgv = argv[0] === "--" ? argv.slice(1) : argv;
 
@@ -752,6 +1109,13 @@ export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliR
       const reportPath = writeKrnEvalReport(args.target, report);
       const exitCode = report.overall_status === "passed" ? 0 : 1;
       return { exitCode, stdout: `${reportPath}\n`, stderr: "" };
+    }
+
+    if (normalizedArgv[0] === "review") {
+      const args = parseReviewArgs(normalizedArgv);
+      const report = buildKrnReviewReport(args.target);
+      const reportPath = writeKrnReviewReport(args.target, report);
+      return { exitCode: 0, stdout: `${reportPath}\n`, stderr: "" };
     }
 
     throw new Error(`Unknown command: ${normalizedArgv[0] ?? "<empty>"}`);

@@ -44,7 +44,7 @@ The CLI writes only `.krn/init/{run_id}/manifest.json` by default. It reports se
 
 ## KRN Implication
 
-KRN has moved from docs-only product-spine contracts to a minimal typed runtime path. Later Slice 2 work has extended the same shape to `krn doctor` and `krn eval`; the remaining CLI runtime path is `krn review`.
+KRN has moved from docs-only product-spine contracts to a typed runtime path. Later Slice 2 work extended the same shape to `krn doctor`, `krn eval`, and `krn review`.
 
 This does not prove productivity lift, write-mode safety, dashboard readiness, or MCP readiness.
 
@@ -54,9 +54,10 @@ This becomes harmful if later commands duplicate manifest validation outside `pa
 
 ## Review Trigger
 
-`krn doctor` and `krn eval` shipped after this note and are recorded separately:
+`krn doctor`, `krn eval`, and `krn review` shipped after this note and are recorded separately:
 
 - [2026-06-19--krn-doctor-runtime-report.md](./2026-06-19--krn-doctor-runtime-report.md)
 - [2026-06-19--krn-eval-runtime-report.md](./2026-06-19--krn-eval-runtime-report.md)
+- [2026-06-19--krn-review-runtime-report.md](./2026-06-19--krn-review-runtime-report.md)
 
-Update this note again when `krn review` ships; when `InitManifest` changes; when a read-only MCP/API layer consumes `.krn/init`; or if the dry-run command gains any write mode.
+Update this note again when `InitManifest` changes; when a read-only MCP/API layer consumes `.krn/init`; or if the dry-run command gains any write mode.

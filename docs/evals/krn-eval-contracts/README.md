@@ -23,7 +23,7 @@ It does not claim productivity lift, benchmark lift, hook semantic correctness, 
 
 - The valid `krn-eval` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
-- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes both `krn-init-contracts` and `krn-doctor-contracts`.
+- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, and `krn-review-contracts`.
 - The eval writes a machine-readable report under `.krn/evals/krn-eval-contracts/{run_id}/report.json`.
 
 ## Command

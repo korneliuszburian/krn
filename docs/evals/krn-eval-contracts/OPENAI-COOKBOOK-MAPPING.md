@@ -4,6 +4,6 @@
 
 | Case | Source pattern | Mechanism |
 |---|---|---|
-| `valid-fixture-parses` | `docs/evals/STANDARD.md` plus source-backed contract fixtures | Machine-readable eval artifacts must parse before downstream use. |
+| `valid-fixture-parses` | `docs/evals/STANDARD.md` plus source-backed contract fixtures | Machine-readable eval artifacts must parse before downstream use and include current Slice 2 modules. |
 | `known-bad-fixture-fails` | Repair-loop anti-overclaim rule | Reports without interpretation caveats must fail before they become evidence. |
 | `generated-krn-eval-report-parses` | Eval flywheel and local/CI gate pattern | The CLI must emit a schema-backed runtime report, not only human prose. |

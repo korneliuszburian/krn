@@ -17,7 +17,7 @@ sources:
 
 `krn eval` runs deterministic local KRN eval modules and writes one schema-backed aggregate report.
 
-It is the third Slice 2 CLI command after `krn init --dry-run` and `krn doctor`. Its job is to prove that runtime eval reports are executable and machine-readable before API/MCP/dashboard work starts.
+It is the third Slice 2 CLI command after `krn init --dry-run` and `krn doctor`. Its job is to prove that runtime eval reports are executable and machine-readable before API/MCP/dashboard work starts. It also aggregates the `krn review` contract eval.
 
 ## Command
 
@@ -35,6 +35,7 @@ Supported module IDs:
 
 - `krn-init-contracts`
 - `krn-doctor-contracts`
+- `krn-review-contracts`
 
 If no module is supplied, the command runs all supported modules.
 
@@ -60,7 +61,7 @@ Allowed writes:
 
 - `.krn/eval/{run_id}/report.json`
 - `.krn/evals/{module_id}/{module_run_id}/report.json`
-- runtime reports created by evaluated commands under `.krn/init/**` or `.krn/doctor/**`
+- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, or `.krn/review/**`
 
 Forbidden default writes:
 

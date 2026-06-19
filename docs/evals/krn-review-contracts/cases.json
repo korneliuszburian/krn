@@ -1,28 +1,29 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 eval modules.",
+    "expected_behavior": "The valid krn-review report fixture parses through @krn/contracts and includes the required Slice 2 runtime artifact references.",
     "source_patterns": [
       "docs/goals/goal-006.md",
-      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
     "assertions": [
       "valid fixture parses",
-      "required eval modules present"
+      "required runtime artifacts present",
+      "proposals are proposal-only"
     ],
     "metrics": [
       "schema_contract_score",
       "runtime_contract_score"
     ],
-    "failure_mode": "The krn eval aggregate contract can no longer validate its own canonical example."
+    "failure_mode": "The krn review report contract can no longer validate its own canonical example."
   },
   {
     "id": "known-bad-fixture-fails",
     "expected_behavior": "The known-bad fixture missing the interpretation caveat fails deterministically.",
     "source_patterns": [
       "docs/goals/goal-006.md",
-      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
     "assertions": [
@@ -32,26 +33,26 @@
       "schema_contract_score",
       "anti_slop_score"
     ],
-    "failure_mode": "The validator accepts an aggregate eval report that can be overclaimed without a caveat."
+    "failure_mode": "The validator accepts a review report that can be overclaimed without a caveat."
   },
   {
-    "id": "generated-krn-eval-report-parses",
-    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval and the generated report parses through @krn/contracts with init, doctor, and review module summaries.",
+    "id": "generated-review-report-parses",
+    "expected_behavior": "The CLI writes a proposal-only review report under .krn/review and the generated report parses through @krn/contracts.",
     "source_patterns": [
       "docs/goals/goal-006.md",
-      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
     "assertions": [
       "CLI exits zero",
       "generated report exists",
       "generated report parses",
-      "required eval modules present"
+      "proposals are proposal-only"
     ],
     "metrics": [
       "runtime_contract_score",
       "goal_alignment_score"
     ],
-    "failure_mode": "The krn eval command no longer produces a schema-backed aggregate runtime artifact."
+    "failure_mode": "The krn review command no longer produces a schema-backed proposal-only runtime artifact."
   }
 ]

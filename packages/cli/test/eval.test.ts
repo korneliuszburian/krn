@@ -23,11 +23,12 @@ describe("krn eval", () => {
     expect(report.modules.map((moduleResult) => moduleResult.module_id)).toEqual([
       "krn-init-contracts",
       "krn-doctor-contracts",
+      "krn-review-contracts",
     ]);
-    expect(report.summary.total_modules).toBe(2);
+    expect(report.summary.total_modules).toBe(3);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(6);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(9);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
-  });
+  }, 20_000);
 });

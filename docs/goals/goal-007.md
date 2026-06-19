@@ -2,9 +2,11 @@
 
 ## Status
 
-Ready as the next eight-hour execution goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
+Historical eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
 
-This is an overnight child goal, not a replacement for `goal-006`. It exists because the normal one-to-two-hour KRN goals are too small for the first complete TypeScript runtime spine vertical slice.
+This was the overnight child goal for the first Slice 2 TypeScript runtime spine path. It is not a replacement for `goal-006`, and it is no longer the next active work item.
+
+The original `krn init --dry-run` path from this child goal was completed, and later Slice 2 work extended the runtime spine through `krn doctor`, `krn eval`, and `krn review`. The next work should be a new Slice 3 child goal, not a restart of this init-only plan.
 
 ## Objective
 
