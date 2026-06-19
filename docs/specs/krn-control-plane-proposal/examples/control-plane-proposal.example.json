@@ -1,0 +1,43 @@
+{
+  "schema_version": "krn-control-plane-proposal.v1",
+  "kind": "krn_control_plane_proposal",
+  "proposal_id": "proposal-memory-note-krn-mcp-stdio-transport",
+  "proposal_kind": "memory_update",
+  "status": "proposal_only",
+  "title": "Record KRN MCP STDIO transport boundary",
+  "rationale": "The local STDIO transport is verified enough to become reviewed project memory, but it must not be treated as a deployed connector or write surface.",
+  "proposed_change": "Add a reviewed memory note describing the allowlisted read-only STDIO transport and its non-claims.",
+  "target": {
+    "target_type": "path",
+    "path": "docs/memory/product/2026-06-20--krn-mcp-stdio-transport.md"
+  },
+  "write_policy": {
+    "default_effect": "no_mutation",
+    "allowed_persistence": "append_only",
+    "idempotency_key": "memory-update:krn-mcp-stdio-transport:2026-06-20"
+  },
+  "review_gate": {
+    "required": true,
+    "state": "not_reviewed",
+    "reviewer": null
+  },
+  "evidence_refs": [
+    ".krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json",
+    ".krn/eval/20260619T224349Z-1769637/report.json"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-008.md",
+    "docs/specs/krn-mcp-read-model/README.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "blocked_surfaces": [
+    "mcp_tools",
+    "memory_mutation",
+    "source_ledger_mutation",
+    "dashboard_event_publish"
+  ],
+  "created_at": "2026-06-20T00:00:00.000Z",
+  "created_by": "krn",
+  "interpretation_caveat": "This proposal is a reviewable request only; it does not approve memory changes, mutate source ledgers, expose MCP tools, prove dashboard readiness, or prove productivity lift."
+}

@@ -36,8 +36,10 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-mcp` passed 3/3 cases and 7/7 assertions.
   - `pnpm run eval:krn-mcp-transport` generated `.krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json` with 3/3 cases and 7/7 assertions passing.
   - `pnpm run krn -- eval` generated `.krn/eval/20260619T224349Z-1769637/report.json` with 5/5 modules, 15/15 cases, and 37/37 assertions passing.
-  - `pnpm run krn -- review` generated `.krn/review/20260619T224416Z-1770516/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
-  - The STDIO transport advertises no MCP tools; no proposal/write/destructive tools exist yet.
+  - `pnpm run krn -- review` generated `.krn/review/20260619T225245Z-1783309/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
+  - The STDIO transport advertises no MCP tools; no proposal/write/destructive tools are registered yet.
+  - `packages/contracts` now exports the standalone `KrnControlPlaneProposal` contract with valid and known-bad fixtures under `docs/specs/krn-control-plane-proposal/`.
+  - `pnpm test -- packages/contracts/test/control-plane-proposal.test.ts` passed with the known-bad approved mutation fixture rejected.
 
 ## Objective
 

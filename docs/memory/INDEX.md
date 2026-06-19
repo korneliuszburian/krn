@@ -78,6 +78,7 @@ Before major planning work:
 - [KRN review runtime report](./product/2026-06-19--krn-review-runtime-report.md)
 - [KRN MCP read model](./product/2026-06-19--krn-mcp-read-model.md)
 - [KRN MCP STDIO transport](./product/2026-06-20--krn-mcp-stdio-transport.md)
+- [KRN control-plane proposal contract](./product/2026-06-20--krn-control-plane-proposal-contract.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

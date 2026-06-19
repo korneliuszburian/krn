@@ -39,3 +39,11 @@ export {
   type KrnControlPlaneResource,
   type KrnControlPlaneResourceIndex,
 } from "./control-plane-resource.js";
+export {
+  KrnControlPlaneProposalSchema,
+  krnControlPlaneProposalJsonSchema,
+  parseKrnControlPlaneProposal,
+  type ControlPlaneProposalKind,
+  type ControlPlaneProposalTarget,
+  type KrnControlPlaneProposal,
+} from "./control-plane-proposal.js";

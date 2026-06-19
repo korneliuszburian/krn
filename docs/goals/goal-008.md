@@ -6,7 +6,7 @@ Active eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn
 
 This goal starts after commit `1339b74 feat: add krn mcp read model`. It is not a replacement for `goal-006`; it is the next overnight Slice 3 execution contract.
 
-Current implementation status: phases 0-3 are completed and verified; phases 4-7 remain pending.
+Current implementation status: phases 0-4 are completed and verified; phases 5-7 remain pending.
 
 ## Objective
 
@@ -81,14 +81,29 @@ pnpm typecheck -> passed
 pnpm test -- packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts packages/contracts/test/control-plane-resource.test.ts -> 11 files, 25 tests passed
 pnpm run eval:krn-mcp-transport -> .krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json, 3/3 cases, 7/7 assertions
 pnpm run krn -- eval -> .krn/eval/20260619T224349Z-1769637/report.json, 5/5 modules, 15/15 cases, 37/37 assertions
-pnpm run krn -- review -> .krn/review/20260619T224416Z-1770516/report.json, ready_for_human_review
+pnpm run krn -- review -> .krn/review/20260619T225245Z-1783309/report.json, ready_for_human_review
 ```
 
 [FACT] The server advertises no MCP tools and rejects unknown resource URIs.
 
 [FACT] This does not prove ChatGPT connector behavior, registered Codex MCP config, proposal-tool safety, dashboard readiness, or productivity lift.
 
-[DECISION] The next implementation phase is Phase 4, proposal-only control-plane contracts. Do not add MCP tools before the proposal object contract, known-bad fixtures, and deterministic eval exist.
+[DECISION] Phase 4 is the proposal-only object contract layer. Do not add MCP proposal tools before a separate tool/persistence contract and deterministic eval exist.
+
+[FACT] Phase 4 now has local evidence:
+
+- `packages/contracts/src/control-plane-proposal.ts` exports `KrnControlPlaneProposalSchema`, `parseKrnControlPlaneProposal`, and `krnControlPlaneProposalJsonSchema`.
+- `docs/specs/krn-control-plane-proposal/` contains a valid example and a known-bad approved mutation fixture.
+- `packages/contracts/test/control-plane-proposal.test.ts` verifies the parser, known-bad rejection, and JSON Schema export.
+
+```text
+pnpm test -- packages/contracts/test/control-plane-proposal.test.ts -> 12 files, 28 tests passed
+pnpm typecheck -> passed
+```
+
+[FACT] The proposal contract still does not register MCP tools, implement append-only persistence, approve memory/source changes, or publish dashboard events.
+
+[DECISION] The next implementation phase is Phase 5, first dashboard view-model contract over real product objects.
 
 ## Eight-Hour Work Plan
 
@@ -204,7 +219,7 @@ Disproves completion:
 - Eval requires external services or non-deterministic network.
 - `krn eval` includes a flaky transport module.
 
-### 4. Proposal-Only Control-Plane Contract - 80 minutes - pending
+### 4. Proposal-Only Control-Plane Contract - 80 minutes - completed
 
 Purpose: prepare safe future write surfaces without exposing write tools yet.
 
@@ -431,10 +446,10 @@ The overnight goal is complete only when:
 
 ## Next Command
 
-Resume with Phase 4:
+Resume with Phase 5:
 
 ```bash
 pnpm typecheck
 ```
 
-Then add the proposal-only control-plane object contract before exposing any MCP tools.
+Then add the first dashboard view-model contract over real product objects. Do not create dashboard UI before that view model has fixtures and tests.
