@@ -2,11 +2,11 @@
 
 ## Status
 
-Active eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
+Completed eight-hour child goal under [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md).
 
 This goal starts after commit `1b3632c feat: add dashboard view model contract`. It is not a replacement for `goal-006`; it is the next Slice 3 execution contract.
 
-Current implementation status: phases 0-6 are completed and verified; phase 7 remains pending until the final semantic commit and push.
+Current implementation status: phases 0-7 are completed and verified in implementation commit `9ba35f8 feat: add source-backed proposal persistence`.
 
 ## Objective
 
@@ -196,7 +196,7 @@ python3 scripts/evals/codex_memory_compliance.py --mode validate
 git diff --check
 ```
 
-### 7. Final Audit, Commit, And Push - pending
+### 7. Final Audit, Commit, And Push - completed
 
 Purpose: finish this vertical slice without leaving a half-updated checkout.
 
@@ -251,10 +251,10 @@ This goal is complete only when:
 
 ## Next Command
 
-Resume with Phase 7 final audit:
+Resume by creating the next bounded Slice 3 child goal:
 
 ```bash
-git status -sb
+docs/goals/goal-006.md
 ```
 
-Then complete Phase 7 with a semantic commit and push. Do not mark `goal-006` complete.
+Use this goal as completed context. Do not mark `goal-006` complete.

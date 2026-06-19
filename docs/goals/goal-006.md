@@ -289,10 +289,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Continue Slice 3 through the latest eight-hour child goal:
+Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
 docs/goals/goal-009.md
 ```
 
-Continue source-backed proposal persistence before MCP proposal tools. This must keep proposal writes append-only, idempotent, backed by `docs/plans/canonical/SOURCES.md` or existing target-root files, and must not expose destructive MCP/API tools or mocked dashboard state.
+Next child-goal candidates are MCP/API proposal tools over `storeKrnControlPlaneProposal` or dashboard Pending Review over real proposal-store records. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, or productivity claims without benchmark evidence.
