@@ -15,6 +15,7 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 - [codex-memory-compliance](./codex-memory-compliance/README.md) checks whether Codex follows repo-local instructions and memory conventions from neutral prompts, without being explicitly told to read `docs/memory`.
 - [krn-doctor-contracts](./krn-doctor-contracts/README.md) checks whether `krn doctor` emits a schema-backed readiness report covering AGENTS, memory, skills, hooks, evals, and runtime surfaces.
 - [krn-eval-contracts](./krn-eval-contracts/README.md) checks whether `krn eval` emits a schema-backed aggregate report over deterministic local eval modules.
+- [krn-mcp-read-model](./krn-mcp-read-model/README.md) checks whether the first Slice 3 `packages/mcp` read model exposes allowlisted read-only resources over typed `.krn` runtime reports.
 - [krn-review-contracts](./krn-review-contracts/README.md) checks whether `krn review` emits a schema-backed proposal-only report over typed local runtime artifacts.
 - [operator-skill-contracts](./operator-skill-contracts/README.md) checks whether P1 repo-local operator skills exist under `.agents/skills` and expose the required static contract.
 - [operator-skill-impact](./operator-skill-impact/README.md) compares neutral Codex runs against explicit repo-local operator-skill runs and reports metric deltas.

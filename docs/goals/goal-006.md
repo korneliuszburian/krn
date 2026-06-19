@@ -29,8 +29,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
 - Latest Slice 2 local proof:
   - `pnpm typecheck` passed.
   - `pnpm test` passed with 8/8 files and 16/16 tests.
-  - `pnpm run eval:krn-eval` passed 3/3 cases, and the latest generated aggregate `.krn/eval/20260619T215520Z-1674196/report.json` has 3/3 modules, 9/9 cases, and 23/23 assertions passing.
-  - `pnpm run krn -- review` generated `.krn/review/20260619T215617Z-1675416/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
+- Latest Slice 3 progress:
+  - `packages/mcp` exists as a read-only resource model over typed `.krn` runtime reports.
+  - `krn://runtime/summary`, `krn://runtime/init/latest`, `krn://runtime/doctor/latest`, `krn://runtime/eval/latest`, and `krn://runtime/review/latest` are the current allowlisted resources.
+  - `pnpm run eval:krn-mcp` passed 3/3 cases and 7/7 assertions.
+  - `pnpm run krn -- eval` generated `.krn/eval/20260619T222100Z-1727537/report.json` with 4/4 modules, 12/12 cases, and 30/30 assertions passing.
+  - `pnpm run krn -- review` generated `.krn/review/20260619T222108Z-1727852/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
 
 ## Objective
 
@@ -265,10 +269,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Start Slice 3 with the first read-only/proposal-only control-plane path:
+Continue Slice 3 by wiring the read-only resource model into a real transport or the next proposal-only control-plane contract:
 
 ```bash
-packages/mcp read-only resource contract over .krn runtime reports
+packages/mcp STDIO MCP server transport over allowlisted read-only resources
 ```
 
-This must consume existing typed `.krn/init`, `.krn/doctor`, `.krn/eval`, and `.krn/review` reports. It must not expose destructive MCP/API tools or mocked dashboard state.
+This must reuse `packages/mcp` resource parsing, keep write/proposal tools disabled until their own contract exists, and must not expose destructive MCP/API tools or mocked dashboard state.

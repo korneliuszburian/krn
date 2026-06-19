@@ -7,11 +7,12 @@ Sources:
 - [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md)
 - [docs/specs/krn-eval/README.md](/home/krn/coding/krn/active/krn-gastown/docs/specs/krn-eval/README.md)
 - [docs/evals/krn-eval-contracts/README.md](/home/krn/coding/krn/active/krn-gastown/docs/evals/krn-eval-contracts/README.md)
+- [docs/evals/krn-mcp-read-model/README.md](/home/krn/coding/krn/active/krn-gastown/docs/evals/krn-mcp-read-model/README.md)
 - [packages/contracts/src/eval-report.ts](/home/krn/coding/krn/active/krn-gastown/packages/contracts/src/eval-report.ts)
 - [packages/cli/src/main.ts](/home/krn/coding/krn/active/krn-gastown/packages/cli/src/main.ts)
 - [packages/evals/src/validate-krn-eval.ts](/home/krn/coding/krn/active/krn-gastown/packages/evals/src/validate-krn-eval.ts)
-- Local runtime evidence: `.krn/evals/krn-eval-contracts/20260619T215144Z-1670039/report.json`
-- Local aggregate report: `.krn/eval/20260619T215520Z-1674196/report.json`
+- Local runtime evidence: `.krn/evals/krn-eval-contracts/20260619T222100Z-1727537/report.json`
+- Local aggregate report: `.krn/eval/20260619T222100Z-1727537/report.json`
 
 ## Observation
 
@@ -22,6 +23,7 @@ It writes `.krn/eval/{run_id}/report.json` and aggregates deterministic local ev
 - `krn-init-contracts`
 - `krn-doctor-contracts`
 - `krn-review-contracts`
+- `krn-mcp-read-model`
 
 The aggregate report is parsed through `parseKrnEvalReport` before it is written.
 
@@ -33,7 +35,7 @@ pnpm test -- packages/contracts/test/eval-report.test.ts packages/cli/test/eval.
 pnpm run eval:krn-eval
 ```
 
-The latest `krn-eval` contract eval passed 3/3 cases and 7/7 assertions. The generated aggregate report shows 3/3 modules passing, with 9/9 module cases and 23/23 module assertions passing.
+The latest `krn-eval` contract eval passed 3/3 cases and 7/7 assertions. The generated aggregate report shows 4/4 modules passing, with 12/12 module cases and 30/30 module assertions passing.
 
 ## Useful Pattern
 
@@ -47,7 +49,7 @@ The aggregate command executes existing eval module commands instead of duplicat
 
 ## KRN Implication
 
-Slice 2 now has `krn init --dry-run`, `krn doctor`, `krn eval`, and `krn review` as typed CLI/runtime paths.
+`krn eval` now covers the four Slice 2 runtime commands plus the first Slice 3 MCP read-model contract eval.
 
 This does not prove productivity lift, benchmark lift, dashboard readiness, MCP readiness, or human review quality.
 
@@ -57,4 +59,4 @@ This becomes harmful if a green aggregate eval report is treated as broad produc
 
 ## Review Trigger
 
-`krn review` now consumes aggregate eval reports. Update this note when `krn eval` adds modules, when module result contracts change, or when a read-only API/MCP layer exposes eval state.
+`krn review` now consumes aggregate eval reports, and `packages/mcp` now exposes eval state through a read-only resource model. Update this note when `krn eval` adds modules, when module result contracts change, or when a real MCP/API transport exposes eval state.

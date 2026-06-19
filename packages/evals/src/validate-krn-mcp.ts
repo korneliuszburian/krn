@@ -1,7 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { parseKrnEvalReport } from "@krn/contracts";
-import { runKrnCli } from "@krn/cli";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import {
+  parseKrnControlPlaneResource,
+  parseKrnControlPlaneResourceIndex,
+} from "@krn/contracts";
+import { listKrnControlPlaneResources, readKrnControlPlaneResource } from "@krn/mcp";
 
 type EvalCase = {
   id: string;
@@ -19,8 +23,8 @@ type CaseResult = {
 };
 
 type EvalReport = {
-  schema_version: "krn-eval-contracts-result.v1";
-  kind: "krn_eval_contracts_result";
+  schema_version: "krn-mcp-read-model-result.v1";
+  kind: "krn_mcp_read_model_result";
   run_id: string;
   created_at: string;
   total_cases: number;
@@ -32,15 +36,16 @@ type EvalReport = {
   failed_assertions: number;
   assertion_pass_rate: number;
   cases: CaseResult[];
-  generated_report_path: string | null;
+  generated_resource_uri: string | null;
   interpretation_caveat: string;
 };
 
-const REQUIRED_MODULES = [
-  "krn-init-contracts",
-  "krn-doctor-contracts",
-  "krn-review-contracts",
-  "krn-mcp-read-model",
+const REQUIRED_URIS = [
+  "krn://runtime/summary",
+  "krn://runtime/init/latest",
+  "krn://runtime/doctor/latest",
+  "krn://runtime/eval/latest",
+  "krn://runtime/review/latest",
 ];
 
 function readJson(path: string): unknown {
@@ -94,33 +99,68 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
-function hasRequiredModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
-  const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
-  return REQUIRED_MODULES.every((moduleId) => moduleIds.includes(moduleId));
+function hasRequiredUris(uris: readonly string[]): boolean {
+  return REQUIRED_URIS.every((uri) => uris.includes(uri));
+}
+
+function copyJsonFixture(targetRoot: string, fixturePath: string, runtimePath: string): void {
+  const absoluteRuntimePath = join(targetRoot, runtimePath);
+  mkdirSync(dirname(absoluteRuntimePath), { recursive: true });
+  writeFileSync(absoluteRuntimePath, readFileSync(resolve(fixturePath), "utf8"), "utf8");
+}
+
+function createRuntimeTarget(): string {
+  const targetRoot = mkdtempSync(join(tmpdir(), "krn-mcp-eval-"));
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-init/examples/init-manifest.example.json",
+    ".krn/init/20260619T220000Z-eval/manifest.json",
+  );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-doctor/examples/doctor-report.example.json",
+    ".krn/doctor/20260619T220100Z-eval/report.json",
+  );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-eval/examples/krn-eval-report.example.json",
+    ".krn/eval/20260619T220200Z-eval/report.json",
+  );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-review/examples/krn-review-report.example.json",
+    ".krn/review/20260619T220300Z-eval/report.json",
+  );
+  return targetRoot;
 }
 
 function runValidation(): EvalReport {
   const now = new Date();
   const runId = createRunId(now);
-  const cases = parseCases(readJson(resolve("docs/evals/krn-eval-contracts/cases.json")));
+  const cases = parseCases(readJson(resolve("docs/evals/krn-mcp-read-model/cases.json")));
   const results: CaseResult[] = [];
-  let generatedReportPath: string | null = null;
+  let generatedResourceUri: string | null = null;
 
   const caseById = new Map(cases.map((testCase) => [testCase.id, testCase]));
 
-  const validFixtureCase = caseById.get("valid-fixture-parses");
+  const validFixtureCase = caseById.get("valid-fixtures-parse");
   if (!validFixtureCase) {
-    throw new Error("Missing case valid-fixture-parses");
+    throw new Error("Missing case valid-fixtures-parse");
   }
   try {
-    const report = parseKrnEvalReport(readJson(resolve("docs/specs/krn-eval/examples/krn-eval-report.example.json")));
+    const index = parseKrnControlPlaneResourceIndex(
+      readJson(resolve("docs/specs/krn-mcp-read-model/examples/control-plane-resource-index.example.json")),
+    );
+    const resource = parseKrnControlPlaneResource(
+      readJson(resolve("docs/specs/krn-mcp-read-model/examples/control-plane-resource.example.json")),
+    );
     results.push(
       result(
         validFixtureCase.id,
-        report.command === "krn eval" && hasRequiredModules(report),
-        ["valid fixture parses", "required eval modules present"],
+        hasRequiredUris(index.allowlisted_uris) && resource.read_only,
+        ["valid index fixture parses", "valid resource fixture parses"],
         validFixtureCase.failure_mode,
-        "Valid krn-eval fixture parsed through @krn/contracts.",
+        "Valid control-plane read-model fixtures parsed through @krn/contracts.",
       ),
     );
   } catch (error: unknown) {
@@ -128,7 +168,7 @@ function runValidation(): EvalReport {
       result(
         validFixtureCase.id,
         false,
-        ["valid fixture parses"],
+        ["valid fixtures parse"],
         validFixtureCase.failure_mode,
         error instanceof Error ? error.message : "unknown parse error",
       ),
@@ -140,14 +180,16 @@ function runValidation(): EvalReport {
     throw new Error("Missing case known-bad-fixture-fails");
   }
   try {
-    parseKrnEvalReport(readJson(resolve("docs/specs/krn-eval/fixtures/bad-krn-eval-report.example.json")));
+    parseKrnControlPlaneResource(
+      readJson(resolve("docs/specs/krn-mcp-read-model/fixtures/bad-control-plane-resource.example.json")),
+    );
     results.push(
       result(
         knownBadCase.id,
         false,
         ["known-bad fixture rejected"],
         knownBadCase.failure_mode,
-        "Known-bad krn-eval fixture unexpectedly parsed.",
+        "Known-bad control-plane resource fixture unexpectedly parsed.",
       ),
     );
   } catch {
@@ -157,45 +199,44 @@ function runValidation(): EvalReport {
         true,
         ["known-bad fixture rejected"],
         knownBadCase.failure_mode,
-        "Known-bad krn-eval fixture failed as expected.",
+        "Known-bad control-plane resource fixture failed as expected.",
       ),
     );
   }
 
-  const generatedCase = caseById.get("generated-krn-eval-report-parses");
+  const generatedCase = caseById.get("generated-read-model-parses");
   if (!generatedCase) {
-    throw new Error("Missing case generated-krn-eval-report-parses");
+    throw new Error("Missing case generated-read-model-parses");
   }
-  const cliResult = runKrnCli(["eval"]);
-  const cliReportPath = cliResult.stdout.trim();
-  generatedReportPath = cliReportPath;
-  if (cliResult.exitCode !== 0) {
+  try {
+    const targetRoot = createRuntimeTarget();
+    const index = listKrnControlPlaneResources(targetRoot);
+    const summary = readKrnControlPlaneResource("krn://runtime/summary", targetRoot);
+    const review = readKrnControlPlaneResource("krn://runtime/review/latest", targetRoot);
+    generatedResourceUri = summary.uri;
     results.push(
-      result(generatedCase.id, false, ["CLI exits zero", "generated report parses"], generatedCase.failure_mode, cliResult.stderr),
+      result(
+        generatedCase.id,
+        hasRequiredUris(index.allowlisted_uris) &&
+          summary.read_only &&
+          review.status === "available" &&
+          !index.summary.write_tools_enabled &&
+          !index.summary.proposal_tools_enabled,
+        ["resource index parses", "summary resource parses", "latest review resource parses", "write tools disabled"],
+        generatedCase.failure_mode,
+        "Generated read model parsed isolated .krn runtime reports through @krn/contracts.",
+      ),
     );
-  } else {
-    try {
-      const report = parseKrnEvalReport(readJson(cliReportPath));
-      results.push(
-        result(
-          generatedCase.id,
-          report.command === "krn eval" && existsSync(cliReportPath) && hasRequiredModules(report),
-          ["CLI exits zero", "generated report exists", "generated report parses", "required eval modules present"],
-          generatedCase.failure_mode,
-          "Generated krn eval report parsed through @krn/contracts.",
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          generatedCase.id,
-          false,
-          ["generated report parses"],
-          generatedCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated report error",
-        ),
-      );
-    }
+  } catch (error: unknown) {
+    results.push(
+      result(
+        generatedCase.id,
+        false,
+        ["generated read model parses"],
+        generatedCase.failure_mode,
+        error instanceof Error ? error.message : "unknown generated read-model error",
+      ),
+    );
   }
 
   const totalCases = results.length;
@@ -207,8 +248,8 @@ function runValidation(): EvalReport {
   );
 
   return {
-    schema_version: "krn-eval-contracts-result.v1",
-    kind: "krn_eval_contracts_result",
+    schema_version: "krn-mcp-read-model-result.v1",
+    kind: "krn_mcp_read_model_result",
     run_id: runId,
     created_at: now.toISOString(),
     total_cases: totalCases,
@@ -220,15 +261,15 @@ function runValidation(): EvalReport {
     failed_assertions: totalAssertions - passedAssertions,
     assertion_pass_rate: totalAssertions === 0 ? 0 : passedAssertions / totalAssertions,
     cases: results,
-    generated_report_path: generatedReportPath,
+    generated_resource_uri: generatedResourceUri,
     interpretation_caveat:
-      "This eval proves krn eval aggregate-report contract behavior only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness.",
+      "This eval proves the KRN MCP read-model contract only; it does not prove a deployed MCP transport, dashboard readiness, write-tool safety, human approval, or productivity lift.",
   };
 }
 
 export function main(): void {
   const report = runValidation();
-  const reportDir = resolve(".krn/evals/krn-eval-contracts", report.run_id);
+  const reportDir = resolve(".krn/evals/krn-mcp-read-model", report.run_id);
   const reportPath = resolve(reportDir, "report.json");
 
   mkdirSync(reportDir, { recursive: true });

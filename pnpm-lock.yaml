@@ -45,6 +45,15 @@ importers:
       '@krn/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@krn/mcp':
+        specifier: workspace:*
+        version: link:../mcp
+
+  packages/mcp:
+    dependencies:
+      '@krn/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
 packages:
 

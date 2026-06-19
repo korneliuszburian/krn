@@ -1,0 +1,60 @@
+[
+  {
+    "id": "valid-fixtures-parse",
+    "expected_behavior": "The valid control-plane resource index and resource fixtures parse through @krn/contracts.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-mcp-read-model/README.md",
+      "docs/evals/STANDARD.md",
+      "https://developers.openai.com/codex/mcp"
+    ],
+    "assertions": [
+      "valid index fixture parses",
+      "valid resource fixture parses"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "runtime_contract_score"
+    ],
+    "failure_mode": "The MCP read-model contract can no longer validate its canonical examples."
+  },
+  {
+    "id": "known-bad-fixture-fails",
+    "expected_behavior": "The known-bad fixture missing the read_only boundary fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-mcp-read-model/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "known-bad fixture rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The validator accepts a control-plane resource that does not prove read-only behavior."
+  },
+  {
+    "id": "generated-read-model-parses",
+    "expected_behavior": "The generated read model lists and reads allowlisted read-only resources over current .krn runtime reports.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-mcp-read-model/README.md",
+      "docs/evals/STANDARD.md",
+      "https://developers.openai.com/codex/mcp"
+    ],
+    "assertions": [
+      "resource index parses",
+      "summary resource parses",
+      "latest review resource parses",
+      "write tools disabled"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "goal_alignment_score",
+      "drift_resistance_score"
+    ],
+    "failure_mode": "The first Slice 3 read model no longer exposes typed runtime evidence without write surfaces."
+  }
+]

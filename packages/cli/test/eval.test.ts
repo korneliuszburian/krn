@@ -24,11 +24,12 @@ describe("krn eval", () => {
       "krn-init-contracts",
       "krn-doctor-contracts",
       "krn-review-contracts",
+      "krn-mcp-read-model",
     ]);
-    expect(report.summary.total_modules).toBe(3);
+    expect(report.summary.total_modules).toBe(4);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(9);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(12);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
-  }, 20_000);
+  }, 40_000);
 });

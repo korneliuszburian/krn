@@ -76,6 +76,7 @@ Before major planning work:
 - [KRN doctor runtime report](./product/2026-06-19--krn-doctor-runtime-report.md)
 - [KRN eval runtime report](./product/2026-06-19--krn-eval-runtime-report.md)
 - [KRN review runtime report](./product/2026-06-19--krn-review-runtime-report.md)
+- [KRN MCP read model](./product/2026-06-19--krn-mcp-read-model.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

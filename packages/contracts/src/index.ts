@@ -27,3 +27,15 @@ export {
   type ReviewFinding,
   type ReviewProposal,
 } from "./review-report.js";
+export {
+  KrnControlPlaneResourceIndexSchema,
+  KrnControlPlaneResourceSchema,
+  krnControlPlaneResourceIndexJsonSchema,
+  krnControlPlaneResourceJsonSchema,
+  parseKrnControlPlaneResource,
+  parseKrnControlPlaneResourceIndex,
+  type ControlPlaneResourceDescriptor,
+  type ControlPlaneResourcePayload,
+  type KrnControlPlaneResource,
+  type KrnControlPlaneResourceIndex,
+} from "./control-plane-resource.js";

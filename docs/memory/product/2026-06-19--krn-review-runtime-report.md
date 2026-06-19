@@ -10,8 +10,8 @@ Sources:
 - [packages/contracts/src/review-report.ts](/home/krn/coding/krn/active/krn-gastown/packages/contracts/src/review-report.ts)
 - [packages/cli/src/main.ts](/home/krn/coding/krn/active/krn-gastown/packages/cli/src/main.ts)
 - [packages/evals/src/validate-krn-review.ts](/home/krn/coding/krn/active/krn-gastown/packages/evals/src/validate-krn-review.ts)
-- Local runtime evidence: `.krn/evals/krn-review-contracts/20260619T215524Z-1674391/report.json`
-- Local review report: `.krn/review/20260619T215617Z-1675416/report.json`
+- Local runtime evidence: `.krn/evals/krn-review-contracts/20260619T222104Z-1727694/report.json`
+- Local review report: `.krn/review/20260619T222108Z-1727852/report.json`
 
 ## Observation
 
@@ -34,7 +34,7 @@ pnpm run eval:krn-review
 pnpm run krn -- review
 ```
 
-The latest `krn-review` eval report passed 3/3 cases and 8/8 assertions.
+The latest `krn-review` eval report passed 3/3 cases and 8/8 assertions. The latest direct review report sees the aggregate eval report `.krn/eval/20260619T222100Z-1727537/report.json` with 4/4 modules passing.
 
 ## Useful Pattern
 
@@ -50,7 +50,7 @@ The command writes only `.krn/review/{run_id}/report.json` by default. It does n
 
 Slice 2 now has all four required typed CLI/runtime commands: `krn init --dry-run`, `krn doctor`, `krn eval`, and `krn review`.
 
-The next implementation slice can start only as a read-only/proposal-only Slice 3 control-plane path over these typed reports.
+The next implementation slice has started as a read-only Slice 3 control-plane path over these typed reports: [2026-06-19--krn-mcp-read-model.md](./2026-06-19--krn-mcp-read-model.md).
 
 This does not prove productivity lift, benchmark lift, human approval, dashboard readiness, or destructive MCP/API safety.
 
@@ -60,4 +60,4 @@ This becomes harmful if proposal-only review output is treated as approved memor
 
 ## Review Trigger
 
-Update this note when `krn review` proposals gain an approval workflow, when the report consumes new artifact kinds, when a read-only MCP/API layer exposes review state, or when dashboard pending-review views render these reports.
+Update this note when `krn review` proposals gain an approval workflow, when the report consumes new artifact kinds, when the MCP/API layer gains transport or proposal tools, or when dashboard pending-review views render these reports.

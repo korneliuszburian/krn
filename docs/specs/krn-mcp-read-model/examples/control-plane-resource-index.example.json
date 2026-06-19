@@ -1,0 +1,90 @@
+{
+  "schema_version": "krn-control-plane-resource-index.v1",
+  "kind": "krn_control_plane_resource_index",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-19T22:40:00.000Z",
+  "resources": [
+    {
+      "uri": "krn://runtime/summary",
+      "name": "KRN runtime summary",
+      "description": "Read-only summary of latest KRN runtime reports.",
+      "resource_kind": "runtime_summary",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": null,
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/specs/krn-mcp-read-model/README.md",
+        "docs/product/final-product-plan.md",
+        "https://developers.openai.com/codex/mcp"
+      ]
+    },
+    {
+      "uri": "krn://runtime/init/latest",
+      "name": "Latest KRN init manifest",
+      "description": "Latest schema-backed krn init --dry-run manifest.",
+      "resource_kind": "init_manifest",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": ".krn/init/20260619T220000Z-example/manifest.json",
+      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"]
+    },
+    {
+      "uri": "krn://runtime/doctor/latest",
+      "name": "Latest KRN doctor report",
+      "description": "Latest schema-backed krn doctor readiness report.",
+      "resource_kind": "doctor_report",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": ".krn/doctor/20260619T220100Z-example/report.json",
+      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"]
+    },
+    {
+      "uri": "krn://runtime/eval/latest",
+      "name": "Latest KRN eval aggregate",
+      "description": "Latest schema-backed krn eval aggregate report.",
+      "resource_kind": "eval_report",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": ".krn/eval/20260619T220200Z-example/report.json",
+      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"]
+    },
+    {
+      "uri": "krn://runtime/review/latest",
+      "name": "Latest KRN review report",
+      "description": "Latest schema-backed proposal-only krn review report.",
+      "resource_kind": "review_report",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": ".krn/review/20260619T220300Z-example/report.json",
+      "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"]
+    }
+  ],
+  "summary": {
+    "total_resources": 5,
+    "available_resources": 5,
+    "missing_resources": 0,
+    "invalid_resources": 0,
+    "write_tools_enabled": false,
+    "proposal_tools_enabled": false
+  },
+  "allowlisted_uris": [
+    "krn://runtime/summary",
+    "krn://runtime/init/latest",
+    "krn://runtime/doctor/latest",
+    "krn://runtime/eval/latest",
+    "krn://runtime/review/latest"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/specs/krn-mcp-read-model/README.md",
+    "docs/product/final-product-plan.md",
+    "https://developers.openai.com/codex/mcp"
+  ],
+  "interpretation_caveat": "This index lists read-only KRN control-plane resources only; it does not expose write tools, approve proposals, or prove productivity lift."
+}

@@ -5,12 +5,13 @@
   "type": "module",
   "packageManager": "pnpm@10.25.0",
   "scripts": {
-    "typecheck": "tsc -b packages/contracts packages/cli packages/evals",
+    "typecheck": "tsc -b packages/contracts packages/cli packages/mcp packages/evals",
     "test": "vitest run",
     "krn": "tsx packages/cli/src/main.ts",
     "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate",
     "eval:krn-doctor": "tsx packages/evals/src/validate-krn-doctor.ts --mode validate",
     "eval:krn-review": "tsx packages/evals/src/validate-krn-review.ts --mode validate",
+    "eval:krn-mcp": "tsx packages/evals/src/validate-krn-mcp.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {

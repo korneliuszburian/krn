@@ -1,0 +1,16 @@
+{
+  "schema_version": "krn-control-plane-resource.v1",
+  "kind": "krn_control_plane_resource",
+  "uri": "krn://runtime/summary",
+  "name": "KRN runtime summary",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-19T22:40:00.000Z",
+  "resource_kind": "runtime_summary",
+  "mime_type": "application/json",
+  "status": "available",
+  "latest_report_path": null,
+  "payload": null,
+  "error_summary": null,
+  "source_refs": ["docs/goals/goal-006.md"],
+  "interpretation_caveat": "This bad fixture is missing the read_only boundary."
+}

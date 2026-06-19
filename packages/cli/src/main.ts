@@ -82,6 +82,11 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     command: ["pnpm", "run", "eval:krn-review"],
     sourceRefs: ["docs/evals/krn-review-contracts/README.md", "docs/specs/krn-review/README.md"],
   },
+  {
+    moduleId: "krn-mcp-read-model",
+    command: ["pnpm", "run", "eval:krn-mcp"],
+    sourceRefs: ["docs/evals/krn-mcp-read-model/README.md", "docs/specs/krn-mcp-read-model/README.md"],
+  },
 ];
 
 function usage(): string {

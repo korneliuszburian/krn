@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@krn/cli": "workspace:*",
-    "@krn/contracts": "workspace:*"
+    "@krn/contracts": "workspace:*",
+    "@krn/mcp": "workspace:*"
   }
 }

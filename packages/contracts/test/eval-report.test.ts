@@ -19,6 +19,7 @@ describe("KrnEvalReport contract", () => {
       "krn-init-contracts",
       "krn-doctor-contracts",
       "krn-review-contracts",
+      "krn-mcp-read-model",
     ]);
   });
 
