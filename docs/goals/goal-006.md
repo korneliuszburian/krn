@@ -269,10 +269,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Continue Slice 3 by wiring the read-only resource model into a real transport or the next proposal-only control-plane contract:
+Continue Slice 3 through the latest eight-hour child goal:
 
 ```bash
-packages/mcp STDIO MCP server transport over allowlisted read-only resources
+docs/goals/goal-008.md
 ```
 
-This must reuse `packages/mcp` resource parsing, keep write/proposal tools disabled until their own contract exists, and must not expose destructive MCP/API tools or mocked dashboard state.
+Start with the STDIO MCP server transport over allowlisted read-only resources. This must reuse `packages/mcp` resource parsing, keep write/proposal tools disabled until their own contract exists, and must not expose destructive MCP/API tools or mocked dashboard state.
