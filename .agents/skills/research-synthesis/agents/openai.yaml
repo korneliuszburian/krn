@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Synthesis"
+  short_description: "Turn sources into KRN decisions"
+  default_prompt: "Use $research-synthesis to convert these sources into mechanisms, implications, evals, and failure modes."

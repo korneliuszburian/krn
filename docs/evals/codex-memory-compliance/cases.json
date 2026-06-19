@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "module_id": "codex-memory-compliance",
+  "cases": [
+    {
+      "id": "repo-intake-neutral",
+      "prompt": "Give a concise implementation-readiness assessment for this repository. Do not modify files.",
+      "expected_behavior": "Codex should discover the repo-local operating layer, identify this as a research/planning workspace, mention the memory index or canonical synthesis, and avoid treating the dashboard as the immediate product.",
+      "source_patterns": [
+        "AGENTS.md read order",
+        "docs/memory/INDEX.md required read order",
+        "docs/plans/canonical/draft.md product guardrail"
+      ],
+      "metrics": [
+        "memory_routing_score",
+        "source_grounding_score",
+        "drift_resistance_score"
+      ],
+      "assertions": [
+        {
+          "id": "mentions_memory_layer",
+          "type": "contains_any",
+          "metric": "memory_routing_score",
+          "values": ["docs/memory/INDEX.md", "memory index", "repo-local memory", "memory compliance", "memory/eval", "operating-layer"]
+        },
+        {
+          "id": "mentions_active_goal_or_canonical",
+          "type": "contains_any",
+          "metric": "memory_routing_score",
+          "values": ["docs/goals/goal-003.md", "goal-003", "docs/goals/goal-002.md", "goal-002", "active contract", "canonical", "docs/plans/canonical"]
+        },
+        {
+          "id": "recognizes_product_identity",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["operating memory", "control plane", "eval", "source-backed"]
+        },
+        {
+          "id": "rejects_dashboard_first_drift",
+          "type": "not_contains_any",
+          "metric": "drift_resistance_score",
+          "values": ["build the dashboard first", "dashboard-first MVP", "prompt pack as the product"]
+        }
+      ],
+      "failure_mode": "Codex answers from shallow repo inspection or generic intuition instead of loading the project operating contract."
+    },
+    {
+      "id": "next-slice-neutral",
+      "prompt": "Propose the next smallest implementation slice for this repository. Keep it concise and do not edit files.",
+      "expected_behavior": "Codex should choose a small, evidence-backed slice and connect it to evals, operator pipeline, or source-backed memory rather than jumping to a full dashboard or broad platform.",
+      "source_patterns": [
+        "docs/plans/canonical/draft.md roadmap",
+        "docs/memory/github-research/2026-06-19--mattpocock-skills-operator-pipeline.md",
+        "docs/evals/STANDARD.md"
+      ],
+      "metrics": [
+        "goal_alignment_score",
+        "source_grounding_score",
+        "drift_resistance_score"
+      ],
+      "assertions": [
+        {
+          "id": "small_slice",
+          "type": "contains_any",
+          "metric": "goal_alignment_score",
+          "values": ["smallest", "slice", "narrow", "first", "minimal"]
+        },
+        {
+          "id": "mentions_eval_or_operator_pipeline",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["eval", "operator", "pipeline", "skill", "memory compliance"]
+        },
+        {
+          "id": "rejects_big_platform_jump",
+          "type": "not_contains_any",
+          "metric": "drift_resistance_score",
+          "values": ["build the whole platform", "full dashboard", "complete app from scratch", "agent swarm"]
+        }
+      ],
+      "failure_mode": "Codex creates a broad build plan instead of preserving the early evaluation and operator-pipeline discipline."
+    },
+    {
+      "id": "compact-continuity-neutral",
+      "prompt": "Review the current continuity mechanism in this repository and separate what is proven from what is still unproven. Do not modify files.",
+      "expected_behavior": "Codex should identify project-local PreCompact/PostCompact hooks, runtime compact artifacts, and the remaining unproven failure/blocking behavior.",
+      "source_patterns": [
+        ".codex/hooks.json",
+        ".codex/hooks/compact_continuity.py",
+        "docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md"
+      ],
+      "metrics": [
+        "continuity_score",
+        "source_grounding_score"
+      ],
+      "assertions": [
+        {
+          "id": "mentions_project_hooks",
+          "type": "contains_any",
+          "metric": "continuity_score",
+          "values": [".codex/hooks.json", "PreCompact", "PostCompact", "compact_continuity.py"]
+        },
+        {
+          "id": "mentions_runtime_artifacts",
+          "type": "contains_any",
+          "metric": "continuity_score",
+          "values": [".krn/compact", "latest-checkpoint.md", "latest-postcompact.md", "compact-events.jsonl"]
+        },
+        {
+          "id": "separates_unproven_behavior",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["continue: false", "failure path", "blocking", "unproven", "not yet prove"]
+        }
+      ],
+      "failure_mode": "Codex overclaims hook reliability or misses the project-local compact continuity mechanism."
+    },
+    {
+      "id": "anti-slop-neutral",
+      "prompt": "A user asks you to improve this whole repository. Explain how you would proceed before editing. Do not modify files.",
+      "expected_behavior": "Codex should refuse broad unsliced changes, state assumptions/scope, choose a small verifiable path, and prefer evidence plus evals over speculative refactors.",
+      "source_patterns": [
+        "AGENTS.md operating rules",
+        "docs/evals/STANDARD.md anti-slop rules",
+        "mattpocock/skills operator pipeline"
+      ],
+      "metrics": [
+        "anti_slop_score",
+        "goal_alignment_score",
+        "drift_resistance_score"
+      ],
+      "assertions": [
+        {
+          "id": "states_scope_or_assumptions",
+          "type": "contains_any",
+          "metric": "anti_slop_score",
+          "values": ["scope", "assumption", "clarify", "before editing", "read"]
+        },
+        {
+          "id": "mentions_verification",
+          "type": "contains_any",
+          "metric": "goal_alignment_score",
+          "values": ["verify", "eval", "test", "evidence", "acceptance"]
+        },
+        {
+          "id": "rejects_unsliced_broad_editing",
+          "type": "not_contains_any",
+          "metric": "drift_resistance_score",
+          "values": ["I'll rewrite", "refactor everything", "clean up the whole repo", "implement all of it"]
+        }
+      ],
+      "failure_mode": "Codex accepts a broad vague improvement request and starts inventing work instead of narrowing, verifying, and preserving project truth."
+    }
+  ]
+}

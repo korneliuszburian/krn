@@ -1,0 +1,22 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "proposal-product-spine-contracts-v1",
+  "kind": "proposal",
+  "status": "needs_review",
+  "proposal_type": "schema",
+  "title": "Adopt product-spine object contracts v1",
+  "created_at": "2026-06-19T12:20:00Z",
+  "owner": "krn",
+  "proposed_change": "Use docs/specs/product-spine objects as the first shared contract for future krn init, read-only API/MCP, runtime skills, and dashboard views.",
+  "target_refs": [
+    "docs/specs/product-spine/README.md",
+    "docs/specs/product-spine/objects/"
+  ],
+  "source_refs": [
+    "docs/goals/goal-004.md",
+    "docs/plans/canonical/draft.md",
+    "docs/memory/product/2026-06-19--krn-product-principles.md"
+  ],
+  "review_required": true,
+  "failure_mode": "Treating draft schemas as approved runtime truth before validator and review gates pass."
+}

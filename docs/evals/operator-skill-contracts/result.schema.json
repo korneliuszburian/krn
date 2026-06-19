@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["module_id", "run_id", "mode", "generated_at", "summary", "metrics", "skills"],
+  "additionalProperties": false,
+  "properties": {
+    "module_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "mode": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "required": ["total_skills", "passed_skills", "failed_skills", "skill_pass_rate", "total_assertions", "passed_assertions", "failed_assertions", "assertion_pass_rate"],
+      "additionalProperties": false,
+      "properties": {
+        "total_skills": { "type": "integer" },
+        "passed_skills": { "type": "integer" },
+        "failed_skills": { "type": "integer" },
+        "skill_pass_rate": { "type": "number" },
+        "total_assertions": { "type": "integer" },
+        "passed_assertions": { "type": "integer" },
+        "failed_assertions": { "type": "integer" },
+        "assertion_pass_rate": { "type": "number" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["total", "passed", "failed", "score"],
+        "additionalProperties": false,
+        "properties": {
+          "total": { "type": "integer" },
+          "passed": { "type": "integer" },
+          "failed": { "type": "integer" },
+          "score": { "type": "number" }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "passed", "assertion_summary", "assertions"],
+        "additionalProperties": true
+      }
+    }
+  }
+}

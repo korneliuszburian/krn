@@ -1,0 +1,5 @@
+interface:
+  display_name: "Release Verifier"
+  short_description: "Audit KRN completion evidence"
+  default_prompt: "Use $release-verifier to verify this KRN slice before claiming it is complete."
+

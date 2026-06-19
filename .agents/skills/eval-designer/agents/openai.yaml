@@ -1,0 +1,4 @@
+interface:
+  display_name: "Eval Designer"
+  short_description: "Design deterministic KRN eval cases"
+  default_prompt: "Use $eval-designer to design source-backed eval cases with metrics and known-bad fixtures."

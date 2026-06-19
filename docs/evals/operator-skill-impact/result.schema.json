@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["module_id", "run_id", "mode", "generated_at", "summary", "metrics", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "module_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "mode": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total_cases",
+        "completed_required_cases",
+        "blocked_required_cases",
+        "explicit_passed_cases",
+        "explicit_failed_cases",
+        "required_completion_rate",
+        "explicit_case_pass_rate",
+        "total_assertions",
+        "passed_assertions",
+        "failed_assertions",
+        "assertion_pass_rate",
+        "recommendations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_cases": { "type": "integer" },
+        "completed_required_cases": { "type": "integer" },
+        "blocked_required_cases": { "type": "integer" },
+        "explicit_passed_cases": { "type": "integer" },
+        "explicit_failed_cases": { "type": "integer" },
+        "required_completion_rate": { "type": "number" },
+        "explicit_case_pass_rate": { "type": "number" },
+        "total_assertions": { "type": "integer" },
+        "passed_assertions": { "type": "integer" },
+        "failed_assertions": { "type": "integer" },
+        "assertion_pass_rate": { "type": "number" },
+        "recommendations": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": ["total", "passed", "failed", "score"],
+          "additionalProperties": false,
+          "properties": {
+            "total": { "type": "integer" },
+            "passed": { "type": "integer" },
+            "failed": { "type": "integer" },
+            "score": { "type": "number" }
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target_skill", "passed", "variants", "comparison"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "target_skill": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "variants": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "comparison": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  }
+}

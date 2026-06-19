@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repair Handoff"
+  short_description: "Convert eval failures into repairs"
+  default_prompt: "Use $repair-handoff to classify this eval failure and produce the next bounded repair action."

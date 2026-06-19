@@ -1,0 +1,5 @@
+interface:
+  display_name: "Domain Grill Interviewer"
+  short_description: "Clarify KRN terms and tradeoffs"
+  default_prompt: "Use $domain-grill-interviewer to clarify this KRN product direction before implementation."
+

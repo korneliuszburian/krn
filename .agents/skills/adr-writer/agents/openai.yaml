@@ -1,0 +1,5 @@
+interface:
+  display_name: "ADR Writer"
+  short_description: "Record durable KRN decisions"
+  default_prompt: "Use $adr-writer to record this KRN decision only if it is ADR-worthy."
+

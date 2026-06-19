@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["module_id", "run_id", "mode", "generated_at", "summary", "metrics", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "module_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "mode": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total_cases",
+        "passed_cases",
+        "failed_cases",
+        "case_pass_rate",
+        "total_assertions",
+        "passed_assertions",
+        "failed_assertions",
+        "assertion_pass_rate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_cases": { "type": "integer" },
+        "passed_cases": { "type": "integer" },
+        "failed_cases": { "type": "integer" },
+        "case_pass_rate": { "type": "number" },
+        "total_assertions": { "type": "integer" },
+        "passed_assertions": { "type": "integer" },
+        "failed_assertions": { "type": "integer" },
+        "assertion_pass_rate": { "type": "number" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["total", "passed", "failed", "score"],
+        "additionalProperties": false,
+        "properties": {
+          "total": { "type": "integer" },
+          "passed": { "type": "integer" },
+          "failed": { "type": "integer" },
+          "score": { "type": "number" }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "passed", "assertions"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "metrics": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "assertion_summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "total": { "type": "integer" },
+              "passed": { "type": "integer" },
+              "failed": { "type": "integer" },
+              "pass_rate": { "type": "number" }
+            }
+          },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "type", "passed"],
+              "additionalProperties": true,
+              "properties": {
+                "id": { "type": "string" },
+                "type": { "type": "string" },
+                "metric": { "type": "string" },
+                "passed": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

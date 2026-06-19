@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goal ExecPlan"
+  short_description: "Shape broad work into verifiable goals"
+  default_prompt: "Use $goal-execplan to turn this broad KRN work into a verifiable goal and execution plan."

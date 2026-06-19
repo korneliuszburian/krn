@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operator Intake"
+  short_description: "Route KRN work into the right phase"
+  default_prompt: "Use $operator-intake to classify this KRN task and choose the next operating phase."

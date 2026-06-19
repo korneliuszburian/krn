@@ -1,0 +1,24 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "decision-dashboard-reads-real-objects",
+  "kind": "decision",
+  "status": "approved",
+  "decision_type": "product",
+  "title": "Dashboard reads product-spine objects before UI work",
+  "created_at": "2026-06-19T12:20:00Z",
+  "decision": "Dashboard/API/runtime skills must read stable memory, source, eval, proposal, decision, and compact checkpoint objects before any dashboard UI is built.",
+  "rationale": "The canonical product direction rejects dashboard-first vanity metrics and requires owner/action/source/failure-mode objects.",
+  "source_refs": [
+    "docs/plans/canonical/draft.md",
+    "docs/plans/canonical/pattern-matrix.md",
+    "docs/memory/product/2026-06-19--krn-product-principles.md",
+    "docs/goals/goal-004.md"
+  ],
+  "alternatives_rejected": [
+    "Build dashboard UI directly over markdown.",
+    "Expose broad write-capable API/MCP before read-only object contracts.",
+    "Treat eval reports as productivity proof without review context."
+  ],
+  "risk_if_wrong": "KRN may over-invest in schemas and delay the first useful UI feedback loop.",
+  "review_trigger": "Revisit after the first read-only API/MCP prototype or dashboard object model."
+}

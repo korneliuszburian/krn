@@ -1,0 +1,649 @@
+{
+  "version": 1,
+  "module_id": "operator-skill-impact",
+  "description": "Compare neutral Codex runs with explicit repo-local operator-skill runs on KRN operating tasks.",
+  "metrics": [
+    "task_success_score",
+    "source_grounding_score",
+    "phase_discipline_score",
+    "verification_score",
+    "review_burden_score",
+    "context_cost_score",
+    "skill_routing_score",
+    "repeat_failure_reduction_score"
+  ],
+  "cases": [
+    {
+      "id": "broad-next-step",
+      "target_skill": "operator-intake",
+      "expected_behavior": "The answer chooses the next smallest KRN operating-layer slice, ties it to goal-006/operator-skill-impact, and avoids dashboard/API drift.",
+      "source_patterns": [
+        "docs/goals/goal-006.md",
+        "docs/product/final-product-plan.md",
+        "docs/skills/operator-pipeline.md",
+        "docs/memory/evals/2026-06-19--operator-skill-impact-loop.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Propose the next smallest implementation slice for this repository. Keep it concise and do not edit files.",
+        "explicit": "Use $operator-intake to propose the next smallest implementation slice for this repository. Keep it concise and do not edit files.",
+        "routing": "Propose the next smallest implementation slice for this repository. If a repo-local skill clearly applies, choose it explicitly; keep it concise and do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "names_current_impact_goal",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["goal-006", "operator-skill-impact", "impact gate", "skill-assisted", "baseline"]
+        },
+        {
+          "id": "chooses_eval_or_operator_slice",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["eval", "operator-skill", "impact", "P2", "skill contract", "skill-assisted"]
+        },
+        {
+          "id": "names_verification_surface",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["report", "run", "python3 scripts/evals", ".krn/evals", "verify", "baseline"]
+        },
+        {
+          "id": "avoids_dashboard_api_drift",
+          "type": "not_contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["build the dashboard first", "start with dashboard", "API first", "full app", "dashboard MVP"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 500
+        }
+      ],
+      "failure_mode": "Codex jumps to dashboard/API/product build or proposes vague repo work instead of the current impact-eval slice."
+    },
+    {
+      "id": "source-list-synthesis",
+      "target_skill": "research-synthesis",
+      "expected_behavior": "The answer extracts mechanisms from OpenAI/Matt sources and maps them to KRN implications, evals, and failure modes instead of listing links.",
+      "source_patterns": [
+        "docs/memory/openai-codex/2026-06-19--openai-cookbook-to-krn-pattern-map.md",
+        "docs/memory/github-research/2026-06-19--mattpocock-skills-operator-pipeline.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Given this repo's existing notes on OpenAI Cookbook eval loops and mattpocock/skills, state what KRN should extract as mechanisms. Do not edit files.",
+        "explicit": "Use $research-synthesis. Given this repo's existing notes on OpenAI Cookbook eval loops and mattpocock/skills, state what KRN should extract as mechanisms. Do not edit files.",
+        "routing": "Given this repo's existing notes on OpenAI Cookbook eval loops and mattpocock/skills, choose any repo-local skill that materially helps and state what KRN should extract as mechanisms. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "extracts_mechanism",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["mechanism", "pattern", "intervention", "workflow"]
+        },
+        {
+          "id": "maps_to_krn_implication",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["KRN implication", "for KRN", "operator skill", "operator pipeline"]
+        },
+        {
+          "id": "includes_eval_or_falsification",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["eval", "falsification", "metric", "assertion", "compare", "baseline"]
+        },
+        {
+          "id": "includes_failure_mode",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["failure mode", "risk", "harmful", "drift", "when it fails"]
+        },
+        {
+          "id": "not_bibliography_only",
+          "type": "not_contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["just a list of links", "only a bibliography", "stars prove", "ranking proves"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 700
+        }
+      ],
+      "failure_mode": "Codex produces a bibliography or hype list instead of mechanism-level KRN knowledge."
+    },
+    {
+      "id": "vague-multiphase-objective",
+      "target_skill": "goal-execplan",
+      "expected_behavior": "The answer converts a vague objective into a verifiable goal with outcome, boundaries, iteration policy, evidence, and blocked stop condition.",
+      "source_patterns": [
+        "docs/evals/STANDARD.md",
+        "docs/goals/goal-006.md",
+        "docs/memory/openai-codex/2026-06-19--long-running-goals-and-codex-exec.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Turn 'make KRN's Codex workflow better' into an execution goal. Do not edit files.",
+        "explicit": "Use $goal-execplan to turn 'make KRN's Codex workflow better' into an execution goal. Do not edit files.",
+        "routing": "Turn 'make KRN's Codex workflow better' into an execution goal. If a repo-local skill clearly applies, choose it explicitly. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "states_outcome",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["outcome", "mission", "objective", "goal"]
+        },
+        {
+          "id": "states_verification",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["verification", "acceptance", "evidence", "report", "eval"]
+        },
+        {
+          "id": "states_boundaries_or_constraints",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["boundary", "boundaries", "constraint", "constraints", "scope"]
+        },
+        {
+          "id": "states_blocked_stop",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["blocked", "stop condition", "kill rule", "do not mark complete", "completion"]
+        },
+        {
+          "id": "avoids_dashboard_product_jump",
+          "type": "not_contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["build the dashboard", "implement the API", "ship the full product", "create the app first"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 750
+        }
+      ],
+      "failure_mode": "Codex writes a motivational plan or product roadmap without evidence-based completion criteria."
+    },
+    {
+      "id": "new-operating-rule",
+      "target_skill": "eval-designer",
+      "expected_behavior": "The answer turns a new operating rule into an eval shape with deterministic assertions, metrics, known-bad path, report location, and source pattern.",
+      "source_patterns": [
+        "docs/evals/STANDARD.md",
+        "docs/goals/goal-006.md",
+        "docs/memory/evals/2026-06-19--operator-skill-impact-loop.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "repeat_failure_reduction_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "A new rule says Codex must not treat skills as productivity proof. Design the eval shape. Do not edit files.",
+        "explicit": "Use $eval-designer. A new rule says Codex must not treat skills as productivity proof. Design the eval shape. Do not edit files.",
+        "routing": "A new rule says Codex must not treat skills as productivity proof. If a repo-local skill clearly applies, choose it explicitly and design the eval shape. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "has_deterministic_assertions",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["deterministic assertion", "deterministic assertions", "contains_any", "assertion"]
+        },
+        {
+          "id": "has_metric",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["metric", "score", "pass rate"]
+        },
+        {
+          "id": "has_known_bad_or_failure_mode",
+          "type": "contains_any",
+          "metric": "repeat_failure_reduction_score",
+          "values": ["known-bad", "known bad", "failure mode", "bad fixture", "regression"]
+        },
+        {
+          "id": "has_report_surface",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["report.json", ".krn/evals", "result schema", "runner", "cases.json"]
+        },
+        {
+          "id": "requires_baseline_comparison",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["baseline", "comparison", "metric delta", "skill-assisted", "explicit"]
+        },
+        {
+          "id": "requires_review_burden_evidence",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["human review", "review_burden_score", "correction burden", "review burden"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 750
+        }
+      ],
+      "failure_mode": "Codex adds vague policy or enforcement before defining a measurable regression guard."
+    },
+    {
+      "id": "failing-eval-report",
+      "target_skill": "repair-handoff",
+      "expected_behavior": "The answer converts an eval failure into a bounded repair handoff with source, classification, repair surface, validation, metric delta, and stop reason.",
+      "source_patterns": [
+        "docs/evals/STANDARD.md repair loop contract",
+        "docs/evals/codex-memory-compliance/repairs/2026-06-19--repo-intake-goal-002-assertions.md",
+        "docs/memory/evals/2026-06-19--repair-loops-promptfoo-quality-gates.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "repeat_failure_reduction_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "A live eval failed: repo-intake-neutral passed 2 of 4 assertions because it expected stale goal-001 wording and used too narrow a memory phrase. Propose a repair handoff. Do not edit files.",
+        "explicit": "Use $repair-handoff. A live eval failed: repo-intake-neutral passed 2 of 4 assertions because it expected stale goal-001 wording and used too narrow a memory phrase. Propose a repair handoff. Do not edit files.",
+        "routing": "A live eval failed: repo-intake-neutral passed 2 of 4 assertions because it expected stale goal-001 wording and used too narrow a memory phrase. If a repo-local skill clearly applies, choose it explicitly and propose a repair handoff. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "states_failure_source",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["failure source", "repo-intake-neutral", "2 of 4", "stale goal-001"]
+        },
+        {
+          "id": "classifies_failure",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["classification", "classified", "observability defect", "stale", "assertion"]
+        },
+        {
+          "id": "names_repair_surface",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["repair surface", "cases.json", "assertion", "eval", "memory phrase"]
+        },
+        {
+          "id": "names_validator",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["validator", "rerun", "python3 scripts/evals", "validate", "live"]
+        },
+        {
+          "id": "states_stop_reason_or_metric_delta",
+          "type": "contains_any",
+          "metric": "repeat_failure_reduction_score",
+          "values": ["metric delta", "before/after", "stop reason", "pass", "max attempts"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 750
+        }
+      ],
+      "failure_mode": "Codex proposes blind instruction tuning or broad cleanup without a bounded repair record."
+    },
+    {
+      "id": "ambiguous-product-naming",
+      "target_skill": "domain-grill-interviewer",
+      "expected_behavior": "The answer identifies ambiguous KRN/Gas Town naming, acceptance standards, sharp tradeoffs, assumptions, and update targets before implementation.",
+      "source_patterns": [
+        "CONTEXT.md",
+        "docs/product/final-product-plan.md",
+        "docs/memory/product/2026-06-19--krn-naming-and-gas-town-codename.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "The project is sometimes called KRN and sometimes Gas Town. Clarify what should be decided before implementation. Do not edit files.",
+        "explicit": "Use $domain-grill-interviewer. The project is sometimes called KRN and sometimes Gas Town. Clarify what should be decided before implementation. Do not edit files.",
+        "routing": "The project is sometimes called KRN and sometimes Gas Town. If a repo-local skill clearly applies, choose it explicitly and clarify what should be decided before implementation. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "identifies_domain_terms",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["domain terms", "naming", "KRN", "Gas Town", "codename"]
+        },
+        {
+          "id": "states_acceptance_standards",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["acceptance standards", "acceptance criteria", "success criteria", "evidence"]
+        },
+        {
+          "id": "states_sharp_tradeoffs",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["sharp tradeoff", "tradeoff", "decision", "public name", "codename"]
+        },
+        {
+          "id": "states_assumptions_or_blockers",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["assumption", "assumptions", "blocker", "unresolved"]
+        },
+        {
+          "id": "names_update_target",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["CONTEXT.md", "final-product-plan", "goal-006", "memory"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 650
+        }
+      ],
+      "failure_mode": "Codex treats ambiguous product language as harmless and starts implementation without locking naming, assumptions, or acceptance standards."
+    },
+    {
+      "id": "final-product-slice-requirement",
+      "target_skill": "product-requirements-writer",
+      "expected_behavior": "The answer turns a final-product slice into a compact requirement with user value, success criteria, non-goals, public interfaces, and acceptance evidence.",
+      "source_patterns": [
+        "docs/product/final-product-plan.md",
+        "docs/goals/goal-006.md",
+        "docs/skills/operator-pipeline.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Write the product requirement for KRN Slice 2 Typed Runtime Spine. Do not edit files.",
+        "explicit": "Use $product-requirements-writer. Write the product requirement for KRN Slice 2 Typed Runtime Spine. Do not edit files.",
+        "routing": "Write the product requirement for KRN Slice 2 Typed Runtime Spine. If a repo-local skill clearly applies, choose it explicitly. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "mentions_final_product_plan",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["final-product plan", "goal-006", "Slice 2", "Typed Runtime Spine"]
+        },
+        {
+          "id": "states_user_value",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["user value", "operator value", "job", "problem"]
+        },
+        {
+          "id": "states_success_criteria",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["success criteria", "acceptance evidence", "acceptance criteria", "validation"]
+        },
+        {
+          "id": "states_non_goals",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["non-goals", "non-goal", "out of scope", "not in scope"]
+        },
+        {
+          "id": "names_public_interfaces",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["public interface", "CLI", "contracts", "parser", "schema"]
+        },
+        {
+          "id": "avoids_mvp_language",
+          "type": "not_contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["MVP first", "ship an MVP", "v1 later", "v2 later", "prototype first"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 850
+        }
+      ],
+      "failure_mode": "Codex writes a roadmap or implementation brainstorm instead of a requirement with boundaries and evidence."
+    },
+    {
+      "id": "hard-to-reverse-storage-choice",
+      "target_skill": "adr-writer",
+      "expected_behavior": "The answer decides whether a proposed storage choice deserves an ADR and, if so, includes decision, rejected alternatives, consequences, and review trigger.",
+      "source_patterns": [
+        "docs/adr/0001-typescript-first-product-stack.md",
+        "docs/product/final-product-plan.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "KRN may need to choose between file-backed product objects and a database for memory/source/eval state. Record the decision shape. Do not edit files.",
+        "explicit": "Use $adr-writer. KRN may need to choose between file-backed product objects and a database for memory/source/eval state. Record the decision shape. Do not edit files.",
+        "routing": "KRN may need to choose between file-backed product objects and a database for memory/source/eval state. If a repo-local skill clearly applies, choose it explicitly and record the decision shape. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "recognizes_hard_to_reverse_choice",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["hard-to-reverse", "hard to reverse", "ADR", "decision record"]
+        },
+        {
+          "id": "states_decision",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["decision", "choose", "decide", "record"]
+        },
+        {
+          "id": "lists_rejected_alternatives",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["rejected alternatives", "alternatives", "file-backed", "database"]
+        },
+        {
+          "id": "states_consequences",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["consequence", "consequences", "tradeoff", "risk"]
+        },
+        {
+          "id": "states_review_trigger",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["review trigger", "revisit", "update when", "invalidate"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 750
+        }
+      ],
+      "failure_mode": "Codex hides a durable architecture decision in prose or creates an ADR-shaped essay without rejected alternatives or review trigger."
+    },
+    {
+      "id": "goal-006-issue-slices",
+      "target_skill": "issue-slice-writer",
+      "expected_behavior": "The answer turns goal-006 work into dependency-ordered implementation slices with acceptance evidence, validation commands, and disproving checks.",
+      "source_patterns": [
+        "docs/goals/goal-006.md",
+        "docs/product/final-product-plan.md",
+        "docs/evals/STANDARD.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Turn goal-006 into the next implementation slices. Do not edit files.",
+        "explicit": "Use $issue-slice-writer. Turn goal-006 into the next implementation slices. Do not edit files.",
+        "routing": "Turn goal-006 into the next implementation slices. If a repo-local skill clearly applies, choose it explicitly. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "uses_dependency_order",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["dependency-ordered", "dependency order", "Slice 1", "Slice 2", "Slice 3"]
+        },
+        {
+          "id": "states_acceptance_evidence",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["acceptance evidence", "acceptance criteria", "evidence", "proof"]
+        },
+        {
+          "id": "names_validation_commands",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["validation command", "python3 scripts/evals", "pnpm typecheck", "pnpm test"]
+        },
+        {
+          "id": "states_disproves_completion",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["disproves completion", "disprove", "not complete", "fails if"]
+        },
+        {
+          "id": "avoids_mvp_language",
+          "type": "not_contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["MVP first", "ship an MVP", "v1 later", "v2 later", "prototype first"]
+        },
+        {
+          "id": "mentions_goal_006",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["goal-006", "final-product plan", "KRN"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 850
+        }
+      ],
+      "failure_mode": "Codex creates a vague backlog, file list, or MVP ladder instead of bounded final-product slices."
+    },
+    {
+      "id": "premature-completion-claim",
+      "target_skill": "release-verifier",
+      "expected_behavior": "The answer audits a KRN completion claim against acceptance evidence, validation commands, residual risk, and unsupported productivity claims.",
+      "source_patterns": [
+        "docs/goals/goal-006.md completion criteria",
+        "docs/evals/STANDARD.md",
+        "docs/skills/operator-pipeline.md"
+      ],
+      "metrics": [
+        "task_success_score",
+        "source_grounding_score",
+        "phase_discipline_score",
+        "verification_score",
+        "review_burden_score",
+        "context_cost_score"
+      ],
+      "variants": {
+        "baseline": "Someone claims Slice 1 is complete because the docs look good and skill contract tests pass. Audit the claim. Do not edit files.",
+        "explicit": "Use $release-verifier. Someone claims Slice 1 is complete because the docs look good and skill contract tests pass. Audit the claim. Do not edit files.",
+        "routing": "Someone claims Slice 1 is complete because the docs look good and skill contract tests pass. If a repo-local skill clearly applies, choose it explicitly and audit the claim. Do not edit files."
+      },
+      "assertions": [
+        {
+          "id": "checks_acceptance_evidence",
+          "type": "contains_any",
+          "metric": "verification_score",
+          "values": ["acceptance evidence", "acceptance criteria", "evidence"]
+        },
+        {
+          "id": "names_validation_commands",
+          "type": "contains_any",
+          "metric": "task_success_score",
+          "values": ["validation commands", "operator_skill_contracts", "operator_skill_impact", "report"]
+        },
+        {
+          "id": "states_residual_risk",
+          "type": "contains_any",
+          "metric": "review_burden_score",
+          "values": ["residual risk", "missing evidence", "not proven", "risk"]
+        },
+        {
+          "id": "rejects_productivity_claim",
+          "type": "contains_any",
+          "metric": "phase_discipline_score",
+          "values": ["productivity claim", "not productivity proof", "not proven", "benchmark"]
+        },
+        {
+          "id": "gives_completion_recommendation",
+          "type": "contains_any",
+          "metric": "source_grounding_score",
+          "values": ["complete", "refine", "repair", "blocked", "recommendation"]
+        },
+        {
+          "id": "concise_answer",
+          "type": "word_count_at_most",
+          "metric": "context_cost_score",
+          "max_words": 750
+        }
+      ],
+      "failure_mode": "Codex marks Slice 1 complete from static docs/tests while impact evidence and residual risk remain unresolved."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Contract Engineer"
+  short_description: "Apply KRN TypeScript contract standards"
+  default_prompt: "Use $typescript-contract-engineer to implement or review this KRN TypeScript contract slice."

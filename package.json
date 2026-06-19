@@ -1,0 +1,22 @@
+{
+  "name": "krn-gastown",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -b packages/contracts packages/cli packages/evals",
+    "test": "vitest run",
+    "krn": "tsx packages/cli/src/main.ts",
+    "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  },
+  "dependencies": {
+    "zod": "^4.1.0"
+  }
+}
+

@@ -1,0 +1,38 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "project-profile-krn-gas-town",
+  "kind": "project_profile",
+  "status": "active",
+  "project_name": "krn-gas-town",
+  "created_at": "2026-06-19T12:20:00Z",
+  "identity": "A Codex-native operating memory, eval, and control-plane layer.",
+  "product_boundary": "KRN is not a prompt pack or dashboard-first app. It is useful only if source-backed memory, evals, hooks, MCP/API, and a review dashboard measurably reduce repeated Codex failure modes.",
+  "current_phase": "goal-004 product-spine object contracts",
+  "source_refs": [
+    "AGENTS.md",
+    "docs/goals/goal-004.md",
+    "docs/memory/product/2026-06-19--krn-product-principles.md",
+    "docs/plans/canonical/draft.md"
+  ],
+  "guardrails": [
+    "OpenAI/Codex behavior requires official docs first.",
+    "Memory is source-backed and reviewable.",
+    "Skills are measured interventions, not productivity proof.",
+    "Dashboard work starts only after stable objects exist.",
+    "MCP/API writes are append-only, idempotent, schema-backed, and reviewable."
+  ],
+  "next_allowed_surfaces": [
+    "product-spine schemas",
+    "product-spine examples",
+    "local validator",
+    "known-bad fixture",
+    "memory condensation"
+  ],
+  "blocked_surfaces": [
+    "dashboard UI",
+    "runtime/product skills",
+    "network API",
+    "MCP server",
+    "database migration"
+  ]
+}

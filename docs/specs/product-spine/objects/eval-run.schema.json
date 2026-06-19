@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvalRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "status",
+    "created_at",
+    "module_id",
+    "run_id",
+    "mode",
+    "generated_at",
+    "result_path",
+    "source_refs",
+    "summary",
+    "metrics",
+    "interpretation_caveat"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["product-spine.v1"] },
+    "id": { "type": "string" },
+    "kind": { "type": "string", "enum": ["eval_run"] },
+    "status": { "type": "string", "enum": ["local_artifact", "reviewed", "stale", "superseded"] },
+    "created_at": { "type": "string" },
+    "module_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "mode": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "result_path": { "type": "string" },
+    "source_refs": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_cases", "passed_cases", "failed_cases", "assertion_pass_rate"],
+      "properties": {
+        "total_cases": { "type": "integer" },
+        "passed_cases": { "type": "integer" },
+        "failed_cases": { "type": "integer" },
+        "assertion_pass_rate": { "type": "number" }
+      }
+    },
+    "metrics": { "type": "array", "items": { "type": "string" } },
+    "interpretation_caveat": { "type": "string" }
+  }
+}

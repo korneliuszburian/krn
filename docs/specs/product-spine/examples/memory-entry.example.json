@@ -1,0 +1,30 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "mem-operator-skill-impact-first-results",
+  "kind": "memory_entry",
+  "status": "approved",
+  "memory_type": "decision",
+  "title": "Operator skill impact first results",
+  "claim": "The first operator-skill-impact run supports keeping P1 skills cautiously: research-synthesis showed one positive measured lift, while the other P1 skills are keep_observe and do not justify a productivity claim.",
+  "created_at": "2026-06-19T12:12:00Z",
+  "valid_from": "2026-06-19T12:12:00Z",
+  "expires_at": null,
+  "invalidates_when": "A later full live impact batch contradicts the per-skill decisions or adds human review-burden evidence.",
+  "source_refs": [
+    "docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md",
+    "docs/memory/evals/2026-06-19--operator-skill-impact-loop.md"
+  ],
+  "evidence_refs": [
+    ".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json",
+    ".krn/evals/operator-skill-impact/20260619T121119667653Z-644421/report.json"
+  ],
+  "linked_entry_ids": [],
+  "eval_refs": [
+    "eval-run-operator-skill-impact-20260619T113614965572Z-546909"
+  ],
+  "confidence": 0.78,
+  "owner": "krn",
+  "access": "workspace",
+  "failure_mode": "Treating one live batch as proof that skills improve productivity.",
+  "review_trigger": "Update after another full live batch, routing-variant measurement, or human review-burden scoring."
+}

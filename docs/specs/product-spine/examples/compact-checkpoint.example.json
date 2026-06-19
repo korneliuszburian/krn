@@ -1,0 +1,32 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "compact-checkpoint-goal-002-smoke",
+  "kind": "compact_checkpoint",
+  "status": "local_artifact",
+  "created_at": "2026-06-19T10:43:44Z",
+  "event": "PreCompact",
+  "trigger": "manual",
+  "turn_id": "goal-002-smoke",
+  "checkpoint_path": ".krn/compact/latest-checkpoint.md",
+  "project_root": "/home/krn/coding/krn/active/krn-gastown",
+  "source_refs": [
+    ".krn/compact/latest-checkpoint.md",
+    "docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md",
+    ".codex/hooks/compact_continuity.py"
+  ],
+  "key_file_refs": [
+    "AGENTS.md",
+    "docs/memory/INDEX.md",
+    "docs/goals/goal-002.md",
+    "docs/goals/goal-001.md",
+    "docs/plans/canonical/draft.md",
+    "docs/plans/canonical/pattern-matrix.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "resume_rule": "After compaction, read the latest user message and repo-local state before continuing.",
+  "cautions": [
+    "Continuity metadata is not source truth.",
+    "Verify filesystem state before implementation claims.",
+    "Keep hook output concise and secret-free."
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "module_id": "operator-skill-contracts",
+  "required_sections": [
+    "## Overview",
+    "## Workflow",
+    "## Input",
+    "## Output",
+    "## Phase Boundary",
+    "## When Not To Use",
+    "## Eval Case"
+  ],
+  "required_metrics": [
+    "skill_contract_score",
+    "trigger_clarity_score",
+    "phase_boundary_score",
+    "eval_binding_score"
+  ],
+  "skills": [
+    {
+      "id": "operator-intake",
+      "path": ".agents/skills/operator-intake/SKILL.md",
+      "metadata_path": ".agents/skills/operator-intake/agents/openai.yaml",
+      "required_phrases": ["active execution contract", "P1", "P2", "dashboard/API"],
+      "failure_mode": "KRN tasks route directly to product surfaces without current-truth intake."
+    },
+    {
+      "id": "research-synthesis",
+      "path": ".agents/skills/research-synthesis/SKILL.md",
+      "metadata_path": ".agents/skills/research-synthesis/agents/openai.yaml",
+      "required_phrases": ["mechanism", "KRN implication", "eval or falsification", "failure mode"],
+      "failure_mode": "Source work becomes a link list instead of usable engineering knowledge."
+    },
+    {
+      "id": "goal-execplan",
+      "path": ".agents/skills/goal-execplan/SKILL.md",
+      "metadata_path": ".agents/skills/goal-execplan/agents/openai.yaml",
+      "required_phrases": ["outcome", "verification surface", "constraints", "blocked stop condition"],
+      "failure_mode": "Broad work lacks evidence-based completion criteria."
+    },
+    {
+      "id": "eval-designer",
+      "path": ".agents/skills/eval-designer/SKILL.md",
+      "metadata_path": ".agents/skills/eval-designer/agents/openai.yaml",
+      "required_phrases": ["deterministic assertions", "metrics", "known-bad", "result schema"],
+      "failure_mode": "Eval modules become subjective or green-only."
+    },
+    {
+      "id": "repair-handoff",
+      "path": ".agents/skills/repair-handoff/SKILL.md",
+      "metadata_path": ".agents/skills/repair-handoff/agents/openai.yaml",
+      "required_phrases": ["failure source", "classification", "validator result", "stop reason"],
+      "failure_mode": "Repair work changes instructions or memory without a bounded failure record."
+    },
+    {
+      "id": "typescript-contract-engineer",
+      "path": ".agents/skills/typescript-contract-engineer/SKILL.md",
+      "metadata_path": ".agents/skills/typescript-contract-engineer/agents/openai.yaml",
+      "required_phrases": ["unknown", "runtime parser", "public interface", "vertical slice", "typecheck"],
+      "failure_mode": "KRN TypeScript work becomes type cleverness, unchecked casts, or broad framework scaffolding instead of verified contract slices."
+    },
+    {
+      "id": "domain-grill-interviewer",
+      "path": ".agents/skills/domain-grill-interviewer/SKILL.md",
+      "metadata_path": ".agents/skills/domain-grill-interviewer/agents/openai.yaml",
+      "required_phrases": ["domain terms", "acceptance standards", "sharp tradeoffs", "assumptions"],
+      "failure_mode": "KRN product work starts with ambiguous language and hidden assumptions."
+    },
+    {
+      "id": "product-requirements-writer",
+      "path": ".agents/skills/product-requirements-writer/SKILL.md",
+      "metadata_path": ".agents/skills/product-requirements-writer/agents/openai.yaml",
+      "required_phrases": ["product requirement", "final-product plan", "success criteria", "non-goals"],
+      "failure_mode": "KRN implementation slices lack user value, boundaries, and acceptance evidence."
+    },
+    {
+      "id": "adr-writer",
+      "path": ".agents/skills/adr-writer/SKILL.md",
+      "metadata_path": ".agents/skills/adr-writer/agents/openai.yaml",
+      "required_phrases": ["hard-to-reverse", "rejected alternatives", "decision", "review trigger"],
+      "failure_mode": "Durable architecture choices disappear into comments, chat, or scattered docs."
+    },
+    {
+      "id": "issue-slice-writer",
+      "path": ".agents/skills/issue-slice-writer/SKILL.md",
+      "metadata_path": ".agents/skills/issue-slice-writer/agents/openai.yaml",
+      "required_phrases": ["dependency-ordered", "acceptance evidence", "disproves completion", "MVP"],
+      "failure_mode": "Final-product work turns into vague backlog stages or MVP/v1/v2 drift."
+    },
+    {
+      "id": "release-verifier",
+      "path": ".agents/skills/release-verifier/SKILL.md",
+      "metadata_path": ".agents/skills/release-verifier/agents/openai.yaml",
+      "required_phrases": ["acceptance evidence", "validation commands", "residual risk", "productivity claims"],
+      "failure_mode": "KRN work is marked done from summaries or green demos without completion evidence."
+    }
+  ]
+}

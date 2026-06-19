@@ -1,0 +1,5 @@
+interface:
+  display_name: "Issue Slice Writer"
+  short_description: "Write bounded KRN implementation slices"
+  default_prompt: "Use $issue-slice-writer to turn this KRN goal into bounded implementation slices."
+

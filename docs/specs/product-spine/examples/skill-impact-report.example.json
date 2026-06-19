@@ -1,0 +1,53 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "skill-impact-operator-skill-impact-first-results",
+  "kind": "skill_impact_report",
+  "status": "reviewed",
+  "created_at": "2026-06-19T12:12:00Z",
+  "based_on_eval_run_id": "eval-run-operator-skill-impact-20260619T113614965572Z-546909",
+  "source_refs": [
+    "docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md",
+    ".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"
+  ],
+  "no_productivity_claim": true,
+  "skill_decisions": [
+    {
+      "skill": "operator-intake",
+      "decision": "keep_observe",
+      "reason": "Passed first impact fixture, but baseline also passed.",
+      "explicit_minus_baseline": 0.0,
+      "evidence_refs": [".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"]
+    },
+    {
+      "skill": "research-synthesis",
+      "decision": "keep",
+      "reason": "Explicit skill improved failure-mode coverage over baseline on the source-list fixture.",
+      "explicit_minus_baseline": 0.1667,
+      "evidence_refs": [".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"]
+    },
+    {
+      "skill": "goal-execplan",
+      "decision": "keep_observe",
+      "reason": "Passed first impact fixture, but no measured lift over baseline.",
+      "explicit_minus_baseline": 0.0,
+      "evidence_refs": [".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"]
+    },
+    {
+      "skill": "eval-designer",
+      "decision": "keep_observe",
+      "reason": "Passed after brittle assertion repair, but no measured lift over baseline.",
+      "explicit_minus_baseline": 0.0,
+      "evidence_refs": [
+        ".krn/evals/operator-skill-impact/20260619T121119667653Z-644421/report.json"
+      ]
+    },
+    {
+      "skill": "repair-handoff",
+      "decision": "keep_observe",
+      "reason": "Passed first impact fixture, but no measured lift over baseline.",
+      "explicit_minus_baseline": 0.0,
+      "evidence_refs": [".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"]
+    }
+  ],
+  "interpretation_caveat": "Skill decisions are first-pass operating-layer evidence. They are not product-level productivity claims."
+}

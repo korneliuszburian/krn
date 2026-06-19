@@ -1,0 +1,5 @@
+interface:
+  display_name: "Product Requirements Writer"
+  short_description: "Write compact KRN requirements"
+  default_prompt: "Use $product-requirements-writer to turn this KRN slice into a compact product requirement."
+

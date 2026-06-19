@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "module_id": "product-spine-contracts",
+  "runner": "scripts/specs/validate_product_spine.py",
+  "cases": [
+    {
+      "id": "schema-shape",
+      "expected_behavior": "Every product-spine schema is valid JSON, uses the supported schema shape, and includes shared product-spine identity fields.",
+      "source_patterns": [
+        "docs/goals/goal-004.md",
+        "docs/evals/STANDARD.md",
+        "docs/memory/openai-codex/2026-06-19--openai-cookbook-to-krn-pattern-map.md"
+      ],
+      "metrics": ["schema_contract_score", "source_grounding_score"],
+      "failure_mode": "Future API/MCP/dashboard work consumes unstable or inconsistent object contracts."
+    },
+    {
+      "id": "real-example-validation",
+      "expected_behavior": "Each object schema has a real example mapped from current repo artifacts, and every example validates.",
+      "source_patterns": [
+        "docs/specs/product-spine/current-state-audit.md",
+        "docs/specs/product-spine/mappings.md"
+      ],
+      "metrics": ["artifact_grounding_score", "schema_contract_score"],
+      "failure_mode": "Schemas describe imaginary future state instead of current KRN artifacts."
+    },
+    {
+      "id": "known-bad-rejection",
+      "expected_behavior": "The known-bad EvalRun fixture fails validation because it omits the interpretation caveat.",
+      "source_patterns": [
+        "docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md",
+        "docs/memory/evals/2026-06-19--repair-loops-promptfoo-quality-gates.md"
+      ],
+      "metrics": ["anti_slop_score", "schema_contract_score"],
+      "failure_mode": "Green eval reports can be treated as broad product or productivity proof without caveats."
+    }
+  ]
+}

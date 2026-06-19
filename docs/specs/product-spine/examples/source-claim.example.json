@@ -1,0 +1,22 @@
+{
+  "schema_version": "product-spine.v1",
+  "id": "claim-C017",
+  "kind": "source_claim",
+  "status": "approved",
+  "claim": "Operator skills must be evaluated as interventions against baseline Codex, not accepted because they sound senior.",
+  "created_at": "2026-06-19T12:12:00Z",
+  "source_ids": ["S004", "S014", "S015", "S016", "S056"],
+  "source_refs": [
+    "docs/plans/canonical/SOURCES.md",
+    "docs/plans/canonical/pattern-matrix.md",
+    "docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md"
+  ],
+  "local_evidence_refs": [
+    ".agents/skills/research-synthesis/SKILL.md",
+    ".krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json"
+  ],
+  "evidence_grade": "mixed",
+  "used_for_decision": true,
+  "risk_if_wrong": "KRN could keep or promote skills that add ceremony without measurable workflow lift.",
+  "review_trigger": "Revisit after P1 skill routing evals or a larger baseline-vs-skill benchmark."
+}

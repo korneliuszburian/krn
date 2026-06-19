@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["spec_id", "run_id", "mode", "generated_at", "summary", "groups"],
+  "additionalProperties": false,
+  "properties": {
+    "spec_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "mode": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total_checks",
+        "passed_checks",
+        "failed_checks",
+        "check_pass_rate",
+        "schema_count",
+        "example_count",
+        "known_bad_count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_checks": { "type": "integer" },
+        "passed_checks": { "type": "integer" },
+        "failed_checks": { "type": "integer" },
+        "check_pass_rate": { "type": "number" },
+        "schema_count": { "type": "integer" },
+        "example_count": { "type": "integer" },
+        "known_bad_count": { "type": "integer" }
+      }
+    },
+    "groups": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
