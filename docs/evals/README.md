@@ -15,6 +15,7 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 - [codex-memory-compliance](./codex-memory-compliance/README.md) checks whether Codex follows repo-local instructions and memory conventions from neutral prompts, without being explicitly told to read `docs/memory`.
 - [operator-skill-contracts](./operator-skill-contracts/README.md) checks whether P1 repo-local operator skills exist under `.agents/skills` and expose the required static contract.
 - [operator-skill-impact](./operator-skill-impact/README.md) compares neutral Codex runs against explicit repo-local operator-skill runs and reports metric deltas.
+- [krn-init-contracts](./krn-init-contracts/README.md) checks whether `krn init --dry-run` emits a schema-backed manifest and rejects a known-bad write-mode fixture.
 - [product-spine-contracts](./product-spine-contracts/README.md) checks whether the first product object contracts validate real examples and reject known-bad fixtures before API/MCP/dashboard work.
 
 ## Rules

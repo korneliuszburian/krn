@@ -72,6 +72,7 @@ Before major planning work:
 - [Final product plan and three realization slices](./product/2026-06-19--final-product-plan-and-slices.md)
 - [Technology stack decision](./product/2026-06-19--technology-stack-decision.md)
 - [Product spine object contracts](./product/2026-06-19--product-spine-object-contracts.md)
+- [KRN init runtime spine](./product/2026-06-19--krn-init-runtime-spine.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

@@ -400,3 +400,49 @@ pnpm install
 ```
 
 If dependency resolution fails, pin the failing package versions in `package.json`, rerun `pnpm install`, and continue only after `pnpm-lock.yaml` exists.
+
+## Current Progress Evidence
+
+Updated: 2026-06-19.
+
+Completed in this pass:
+
+- pinned workspace dependencies and generated `pnpm-lock.yaml`,
+- created runnable `packages/cli` and `packages/evals`,
+- added `docs/specs/krn-init/` command contract, valid fixture, and known-bad fixture,
+- implemented `krn init --dry-run`,
+- added `docs/evals/krn-init-contracts/`,
+- added CLI behavior test for no default setup mutation,
+- added product memory note and source-ledger update for the first runtime slice.
+
+Latest passing evidence:
+
+```bash
+pnpm typecheck
+pnpm test -- packages/contracts/test/init-manifest.test.ts packages/cli/test/init-dry-run.test.ts
+pnpm run eval:krn-init
+```
+
+Latest local report paths:
+
+```text
+.krn/evals/krn-init-contracts/20260619T210558Z-1577120/report.json
+.krn/init/20260619T210559Z-1577120/manifest.json
+```
+
+Final gates passed in this pass:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm run eval:krn-init
+python3 scripts/evals/operator_skill_contracts.py --mode validate
+python3 scripts/evals/operator_skill_impact.py --mode validate
+python3 scripts/evals/codex_memory_compliance.py --mode validate
+python3 scripts/specs/validate_product_spine.py --mode validate
+```
+
+Still required before this overnight goal is fully closed:
+
+- inspect final diff for ignored runtime artifacts,
+- commit with semantic message and push.

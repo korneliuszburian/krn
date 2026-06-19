@@ -1,0 +1,149 @@
+{
+  "schema_version": "krn-init-manifest.v1",
+  "kind": "krn_init_manifest",
+  "run_id": "krn-init-example-001",
+  "created_at": "2026-06-19T00:00:00.000Z",
+  "target_root": ".",
+  "mode": "dry-run",
+  "project_profile": {
+    "schema_version": "product-spine.v1",
+    "id": "krn-gastown",
+    "kind": "project_profile",
+    "status": "active",
+    "project_name": "KRN",
+    "identity": "TypeScript-first Codex operating memory, eval, and control-plane product.",
+    "product_boundary": "Local Codex-first runtime spine; no dashboard/API/MCP implementation before typed reports exist.",
+    "current_phase": "Slice 2 Typed Runtime Spine",
+    "source_refs": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-007.md",
+      "docs/product/final-product-plan.md"
+    ],
+    "guardrails": [
+      "dry-run only",
+      "source-backed manifest",
+      "runtime artifacts stay under .krn/"
+    ],
+    "next_allowed_surfaces": [
+      "packages/contracts",
+      "packages/cli",
+      "packages/evals"
+    ],
+    "blocked_surfaces": [
+      "packages/mcp",
+      "apps/dashboard",
+      "runtime skills"
+    ]
+  },
+  "detected_artifacts": [
+    {
+      "path": "AGENTS.md",
+      "kind": "file",
+      "exists": true,
+      "reason": "Root agent instructions already exist and must not be overwritten."
+    },
+    {
+      "path": ".codex/",
+      "kind": "directory",
+      "exists": true,
+      "reason": "Project-local Codex hooks/config may already exist."
+    },
+    {
+      "path": ".agents/",
+      "kind": "directory",
+      "exists": true,
+      "reason": "Operator skills already exist in this workspace."
+    },
+    {
+      "path": "docs/memory/INDEX.md",
+      "kind": "file",
+      "exists": true,
+      "reason": "Reviewed memory index already exists."
+    },
+    {
+      "path": ".krn/",
+      "kind": "directory",
+      "exists": true,
+      "reason": "KRN runtime artifact directory exists."
+    }
+  ],
+  "planned_files": [
+    {
+      "path": "AGENTS.md",
+      "action": "skip",
+      "reason": "Existing root instructions are preserved; KRN init must not overwrite them.",
+      "source_refs": [
+        "docs/memory/INDEX.md",
+        "docs/goals/goal-007.md"
+      ]
+    },
+    {
+      "path": "docs/memory/INDEX.md",
+      "action": "proposal_only",
+      "reason": "Memory changes require review before becoming durable truth.",
+      "source_refs": [
+        "docs/memory/INDEX.md",
+        "docs/product/final-product-plan.md"
+      ]
+    },
+    {
+      "path": ".krn/init/krn-init-example-001/manifest.json",
+      "action": "create",
+      "reason": "Dry-run runtime manifest is the only default write surface.",
+      "source_refs": [
+        "docs/specs/krn-init/README.md",
+        "docs/goals/goal-007.md"
+      ]
+    }
+  ],
+  "planned_runtime_dirs": [
+    {
+      "path": ".krn/init",
+      "purpose": "Dry-run init manifests and local bootstrap runtime reports."
+    }
+  ],
+  "collisions": [
+    {
+      "path": "AGENTS.md",
+      "strategy": "skip",
+      "reason": "Existing agent instructions must be reviewed instead of overwritten."
+    },
+    {
+      "path": "docs/memory/INDEX.md",
+      "strategy": "proposal_only",
+      "reason": "Memory index changes are durable and require review."
+    }
+  ],
+  "no_touch_paths": [
+    ".git",
+    "node_modules",
+    "AGENTS.md",
+    ".codex",
+    ".agents",
+    "docs/memory"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-007.md",
+    "docs/specs/krn-init/README.md",
+    "docs/product/final-product-plan.md"
+  ],
+  "product_spine_refs": [
+    "project_profile",
+    "memory_entry",
+    "source_claim",
+    "eval_run",
+    "proposal",
+    "decision"
+  ],
+  "validation": {
+    "status": "valid",
+    "checks": [
+      "schema-backed manifest",
+      "dry-run mode only",
+      "source refs present",
+      "no-touch paths present"
+    ]
+  },
+  "interpretation_caveat": "This manifest proves dry-run contract shape only; it does not prove productivity lift, write-mode safety, MCP readiness, or dashboard readiness."
+}

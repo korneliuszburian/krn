@@ -1,0 +1,46 @@
+{
+  "schema_version": "krn-init-manifest.v1",
+  "kind": "krn_init_manifest",
+  "run_id": "bad-init-manifest-001",
+  "created_at": "2026-06-19T00:00:00.000Z",
+  "target_root": ".",
+  "mode": "write",
+  "project_profile": {
+    "schema_version": "product-spine.v1",
+    "id": "krn-gastown",
+    "kind": "project_profile",
+    "status": "active",
+    "project_name": "KRN",
+    "identity": "Bad fixture that tries to use write mode.",
+    "product_boundary": "This fixture must fail because init is dry-run only.",
+    "current_phase": "Slice 2 Typed Runtime Spine",
+    "source_refs": ["docs/goals/goal-007.md"],
+    "guardrails": ["dry-run only"],
+    "next_allowed_surfaces": ["packages/cli"],
+    "blocked_surfaces": ["apps/dashboard", "packages/mcp"]
+  },
+  "detected_artifacts": [],
+  "planned_files": [
+    {
+      "path": "AGENTS.md",
+      "action": "modify",
+      "reason": "This fixture must fail before a write plan can be accepted.",
+      "source_refs": ["docs/goals/goal-007.md"]
+    }
+  ],
+  "planned_runtime_dirs": [
+    {
+      "path": ".krn/init",
+      "purpose": "Dry-run init manifests."
+    }
+  ],
+  "collisions": [],
+  "no_touch_paths": [".git", "node_modules"],
+  "source_refs": ["docs/goals/goal-007.md"],
+  "product_spine_refs": ["project_profile"],
+  "validation": {
+    "status": "invalid",
+    "checks": ["write mode is forbidden"]
+  },
+  "interpretation_caveat": "This known-bad fixture must fail because krn init only supports dry-run mode."
+}

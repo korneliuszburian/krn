@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.25.0",
   "scripts": {
     "typecheck": "tsc -b packages/contracts packages/cli packages/evals",
     "test": "vitest run",
@@ -10,13 +11,12 @@
     "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate"
   },
   "devDependencies": {
-    "@types/node": "^25.0.0",
-    "tsx": "^4.20.0",
-    "typescript": "^5.9.0",
-    "vitest": "^4.0.0"
+    "@types/node": "25.9.4",
+    "tsx": "4.22.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.9"
   },
   "dependencies": {
-    "zod": "^4.1.0"
+    "zod": "4.4.3"
   }
 }
-

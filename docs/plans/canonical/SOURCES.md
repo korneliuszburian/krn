@@ -24,6 +24,7 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | LOCAL006 | `docs/specs/product-spine/` defines eight product-spine object schemas, real examples, one known-bad fixture, and `.krn/specs/product-spine/20260619T124200342866Z-700904/report.json` shows 17/17 checks passing. | API/MCP, runtime skills, and dashboard work can now target validated objects instead of raw markdown. |
 | LOCAL007 | `docs/specs/technology-stack/decision.md` documents a proposed TypeScript-first product stack on the Node.js runtime and stops the implicit Python default in `goal-005`. | `krn init --dry-run` should resume only after stack acceptance and should not add new Python product code. |
 | LOCAL008 | `docs/product/final-product-plan.md` and `docs/goals/goal-006.md` define one final-product architecture executed through three dependency-ordered slices, and supersede `goal-005` as the active direction. | Future `/goal` runs should start with Slice 1 Operator Build System; `krn init --dry-run` is Slice 2 context, not the whole product plan. |
+| LOCAL009 | `packages/cli/src/main.ts`, `packages/evals/src/validate-krn-init.ts`, and `docs/specs/krn-init/` implement the first TypeScript `krn init --dry-run` runtime slice; `.krn/evals/krn-init-contracts/20260619T210558Z-1577120/report.json` shows 3/3 cases and 8/8 assertions passing. | Slice 2 now has a minimal typed CLI/eval path, but API/MCP/dashboard remain blocked until more typed reports exist. |
 
 ## Source Index
 
@@ -149,6 +150,7 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | C018 | KRN product implementation should be TypeScript-first on the Node.js runtime because its core surfaces are typed CLI/API/MCP/dashboard/eval contracts, not Python scripts. | S056, S059, S089-S092, LOCAL007 | B/C | yes | A Python-first implementation splits product contracts across languages and weakens long-term dashboard/API/eval cohesion. |
 | C019 | KRN should be executed through one final-product plan and three dependency-ordered slices, not PoC/MVP/v1/v2 stages. | C006, C013, C017, C018, LOCAL008 | A/B/local | yes | The repo optimizes for a bootstrap demo and postpones the final standards that make the product defensible. |
 | C020 | KRN is the product/tool name; Gas Town is only this repo's codename/reference to the Steve Yegge agent-orchestration discourse and loose Mad Max theming. | S093-S095, LOCAL008 | C/local | yes | The repo accidentally borrows another discourse's brand and creates two product identities. |
+| C021 | The first `krn init --dry-run` runtime slice proves a typed bootstrap contract path, not product lift or readiness for dashboard/API/MCP. | C018-C019, LOCAL009 | local | yes | A green CLI/eval run is overclaimed as full product readiness. |
 
 ## Decision Evidence Map
 
@@ -170,6 +172,7 @@ This source index supports the canonical KRN synthesis in the `krn-gas-town` wor
 | Product-spine object contracts must precede API/MCP/dashboard implementation | S007, S014-S016, S022, S041-S046, S078-S085 | LOCAL006 | high | Object contracts may overfit early repo artifacts if not revised after first implementation consumer. | decision |
 | TypeScript-first product stack on Node.js runtime before `krn init` implementation | S056, S059, S089-S092 | LOCAL007 | medium | Python is faster for scripts and existing validators already work; Go/Rust may produce stronger binaries later. | proposed |
 | Final-product execution replaces bootstrap-only `goal-005` | C006, C013, C017-C019 | LOCAL008 | high | A smaller bootstrap goal may feel faster. | decision |
+| First `krn init --dry-run` typed runtime path | C018-C019, C021 | LOCAL009 | medium | One CLI/eval path is still too narrow to unblock dashboard/API/MCP. | decision |
 
 ## Blocked / Future Research
 

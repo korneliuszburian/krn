@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+*.tsbuildinfo
 
 *.log
 .DS_Store
@@ -18,6 +19,9 @@ __pycache__/
 .krn/evals/*
 !.krn/evals/.gitignore
 !.krn/evals/README.md
+.krn/init/*
+!.krn/init/.gitignore
+!.krn/init/README.md
 .krn/specs/*
 !.krn/specs/.gitignore
 !.krn/specs/README.md

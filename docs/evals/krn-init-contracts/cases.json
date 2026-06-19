@@ -1,0 +1,58 @@
+[
+  {
+    "id": "valid-fixture-parses",
+    "expected_behavior": "The valid krn-init manifest fixture parses through @krn/contracts and preserves dry-run mode plus an interpretation caveat.",
+    "source_patterns": [
+      "docs/goals/goal-007.md",
+      "docs/specs/krn-init/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "dry-run mode",
+      "interpretation caveat present"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "drift_resistance_score"
+    ],
+    "failure_mode": "The init contract can no longer validate its own canonical example."
+  },
+  {
+    "id": "known-bad-fixture-fails",
+    "expected_behavior": "The known-bad fixture using forbidden write mode fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-007.md",
+      "docs/specs/krn-init/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "known-bad fixture rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The validator accepts a manifest that violates dry-run-only semantics."
+  },
+  {
+    "id": "generated-dry-run-manifest-parses",
+    "expected_behavior": "The CLI writes a dry-run manifest under .krn/init and the generated manifest parses through @krn/contracts.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-007.md",
+      "docs/specs/krn-init/README.md"
+    ],
+    "assertions": [
+      "CLI exits zero",
+      "generated manifest exists",
+      "generated manifest parses",
+      "dry-run mode"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "goal_alignment_score"
+    ],
+    "failure_mode": "The first CLI consumer no longer produces a schema-backed dry-run runtime artifact."
+  }
+]

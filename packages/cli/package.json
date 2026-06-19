@@ -1,12 +1,12 @@
 {
-  "name": "@krn/contracts",
+  "name": "@krn/cli",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/main.ts"
   },
   "dependencies": {
-    "zod": "4.4.3"
+    "@krn/contracts": "workspace:*"
   }
 }
