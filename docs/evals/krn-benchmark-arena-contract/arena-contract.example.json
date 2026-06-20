@@ -1,0 +1,77 @@
+{
+  "schema_version": "krn-benchmark-arena-contract.v1",
+  "kind": "krn_benchmark_arena_contract",
+  "arena_id": "krn-expanded-autoresearch-arena",
+  "status": "review_ready_contract",
+  "parent_goal_ref": "docs/goals/goal-006.md",
+  "latest_completed_child_goal_ref": "docs/goals/goal-029.md",
+  "minimum_live_task_count_for_lift_claim": 20,
+  "initial_task_count": 20,
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-029.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-repeat-clean-live-stability.md",
+    "docs/memory/evals/2026-06-20--coding-quality-rubric.md",
+    "docs/product/final-product-plan.md",
+    "docs/plans/canonical/SOURCES.md",
+    "docs/evals/STANDARD.md"
+  ],
+  "source_claim_refs": ["C031", "C052", "C053", "S088", "LOCAL039", "LOCAL040"],
+  "measurement_modes": {
+    "default_eval_includes_live": false,
+    "supported_modes": ["fixture_contract", "live_codex_exec"],
+    "live_mode_requires_explicit_command": true,
+    "separate_fixture_and_live_stores_required": true
+  },
+  "live_execution_policy": {
+    "max_concurrent_codex_exec_runs": 1,
+    "concurrency_expansion_requires_separate_eval": true,
+    "resume_completed_workers_required": true,
+    "progress_log_required": true
+  },
+  "pipeline_ergonomics": {
+    "progress_log_required": true,
+    "resume_completed_workers_required": true,
+    "quick_smoke_lane_required": true,
+    "full_suite_lane_required": true,
+    "separate_fixture_and_live_evidence_required": true
+  },
+  "quality_rubric": {
+    "required_metrics": [
+      "assumption_clarity_score",
+      "simplicity_score",
+      "surgical_diff_score",
+      "verification_coverage_score",
+      "review_burden_score",
+      "source_grounding_score",
+      "goal_alignment_score",
+      "anti_slop_score"
+    ],
+    "minimum_metrics_per_task": 5,
+    "review_burden_metric_required": true
+  },
+  "task_mix": {
+    "required_task_families": [
+      "implementation",
+      "debugging",
+      "refactor",
+      "review",
+      "continuity_after_compaction",
+      "benchmark_repair"
+    ],
+    "minimum_implementation_heavy_tasks": 8,
+    "implementation_heavy_families": ["implementation", "debugging", "refactor", "benchmark_repair"]
+  },
+  "claim_policy": {
+    "productivity_lift_claim_allowed": false,
+    "suite_expansion_completion_claim_allowed": false,
+    "next_allowed_action": "implement expanded suite from this contract without claiming productivity lift",
+    "overclaim_boundary": "Repeated clean three-task evidence unlocks arena expansion review only; productivity lift remains blocked until a clean positive live run reaches the 20-task gate."
+  },
+  "review_requirements": {
+    "known_bad_fixture_required": true,
+    "deterministic_validate_mode_required": true,
+    "live_mode_stays_explicit": true,
+    "human_review_burden_must_be_scored": true
+  }
+}

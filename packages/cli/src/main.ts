@@ -192,6 +192,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     ],
   },
   {
+    moduleId: "krn-benchmark-arena-contract",
+    command: ["pnpm", "run", "eval:krn-benchmark-arena-contract"],
+    sourceRefs: [
+      "docs/evals/krn-benchmark-arena-contract/README.md",
+      "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+      "docs/goals/goal-030.md",
+    ],
+  },
+  {
     moduleId: "krn-repair-record",
     command: ["pnpm", "run", "eval:krn-repair-record"],
     sourceRefs: [

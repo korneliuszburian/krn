@@ -28,6 +28,7 @@
     "eval:krn-benchmark-live-suite": "tsx packages/evals/src/validate-krn-benchmark-live-suite.ts --mode validate",
     "eval:krn-benchmark-live-suite:live": "tsx packages/evals/src/validate-krn-benchmark-live-suite.ts --mode live",
     "eval:krn-benchmark-live-stability": "tsx packages/evals/src/validate-krn-benchmark-live-stability.ts",
+    "eval:krn-benchmark-arena-contract": "tsx packages/evals/src/validate-krn-benchmark-arena-contract.ts --mode validate",
     "eval:krn-repair-record": "tsx packages/evals/src/validate-krn-repair-record.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },

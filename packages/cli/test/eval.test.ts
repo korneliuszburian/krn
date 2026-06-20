@@ -38,9 +38,10 @@ describe("krn eval", () => {
       "krn-dashboard-benchmark-reports-ui",
       "krn-benchmark-live-suite",
       "krn-benchmark-live-stability",
+      "krn-benchmark-arena-contract",
       "krn-repair-record",
     ]);
-    expect(report.summary.total_modules).toBe(18);
+    expect(report.summary.total_modules).toBe(19);
     expect(report.summary.failed_modules).toBe(0);
     expect(report.summary.total_cases).toBeGreaterThanOrEqual(74);
     expect(existsSync(reportPath)).toBe(true);

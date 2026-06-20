@@ -33,7 +33,7 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-029.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-029.md); [docs/goals/goal-028.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-028.md) is the immediately previous live-runner stability repair. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-030.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-030.md); [docs/goals/goal-029.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-029.md) is the immediately previous repeat-clean live stability gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
 3. Read current final product direction only when product direction is unclear or changing:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
 4. Read current canonical synthesis only for synthesis/source-ledger work:
@@ -103,6 +103,7 @@ Before major planning work:
 - [KRN Benchmark Live Stability Readiness Gate](./product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md)
 - [KRN Benchmark Live Runner Stability Repair](./product/2026-06-20--krn-benchmark-live-runner-stability-repair.md)
 - [KRN Benchmark Repeat-Clean Live Stability](./product/2026-06-20--krn-benchmark-repeat-clean-live-stability.md)
+- [KRN Benchmark Arena Contract](./product/2026-06-20--krn-benchmark-arena-contract.md)
 - [KRN operating architecture and memory layers](./product/2026-06-20--krn-operating-architecture-and-memory-layers.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "valid-arena-contract-parses",
+    "expected_behavior": "The valid arena contract parses and preserves the active goal, latest child goal, source refs, and review-only expansion status.",
+    "source_patterns": ["C031", "C052", "docs/goals/goal-006.md", "docs/goals/goal-029.md"],
+    "assertions": [
+      "valid contract parses",
+      "active parent goal preserved",
+      "latest completed child goal preserved",
+      "source refs include repeat-clean evidence"
+    ],
+    "metrics": ["schema_contract_score", "source_grounding_score", "goal_alignment_score"],
+    "failure_mode": "The next benchmark arena is not anchored to the current parent goal and repeat-clean evidence."
+  },
+  {
+    "id": "minimum-live-task-gate",
+    "expected_behavior": "The arena contract requires at least 20 initial live tasks before any productivity lift claim can be considered.",
+    "source_patterns": ["C050", "C052", "docs/goals/goal-006.md"],
+    "assertions": [
+      "initial task count reaches lift gate",
+      "minimum live task count remains twenty",
+      "productivity lift remains unclaimed"
+    ],
+    "metrics": ["anti_slop_score", "benchmark_validity_score"],
+    "failure_mode": "KRN expands from repeat-clean three-task evidence into a smaller or overclaiming suite."
+  },
+  {
+    "id": "quality-rubric-coverage",
+    "expected_behavior": "The arena contract requires coding-quality dimensions for assumptions, simplicity, surgical diffs, verification, review burden, source grounding, goal alignment, and anti-slop behavior.",
+    "source_patterns": ["C053", "LOCAL040", "docs/memory/evals/2026-06-20--coding-quality-rubric.md"],
+    "assertions": [
+      "assumption clarity metric required",
+      "simplicity metric required",
+      "surgical diff metric required",
+      "verification coverage metric required",
+      "review burden metric required",
+      "source grounding metric required",
+      "goal alignment metric required",
+      "anti slop metric required"
+    ],
+    "metrics": ["coding_quality_score", "review_burden_score", "anti_slop_score"],
+    "failure_mode": "The expanded arena optimizes for polished answers while ignoring implementation quality and human cleanup cost."
+  },
+  {
+    "id": "pipeline-ergonomics-and-live-boundary",
+    "expected_behavior": "The arena contract keeps live codex exec explicit and requires progress logging, resume, smoke/full lanes, separate evidence stores, and a sequential concurrency policy.",
+    "source_patterns": ["S009", "S088", "C048", "C052"],
+    "assertions": [
+      "default eval excludes live mode",
+      "live mode requires explicit command",
+      "progress log required",
+      "resume completed workers required",
+      "quick smoke lane required",
+      "full suite lane required",
+      "fixture and live evidence separated",
+      "concurrency remains sequential"
+    ],
+    "metrics": ["runtime_contract_score", "repair_readiness_score", "drift_resistance_score"],
+    "failure_mode": "The larger arena becomes slow, non-resumable, hidden-cost, or indistinguishable from deterministic evals."
+  },
+  {
+    "id": "task-mix-requires-coding-work",
+    "expected_behavior": "The arena contract requires implementation-heavy task families, not only meta-planning or JSON-answer tasks.",
+    "source_patterns": ["S016", "C053", "LOCAL040"],
+    "assertions": [
+      "implementation task family required",
+      "debugging task family required",
+      "refactor task family required",
+      "review task family required",
+      "continuity task family required",
+      "benchmark repair task family required",
+      "implementation-heavy minimum present"
+    ],
+    "metrics": ["coding_quality_score", "goal_alignment_score"],
+    "failure_mode": "The expanded arena measures only easy planning answers and misses real coding-agent failure modes."
+  },
+  {
+    "id": "known-bad-overclaim-fixture-fails",
+    "expected_behavior": "The known-bad arena contract that overclaims lift from a three-task suite and adds live execution to default eval fails deterministically.",
+    "source_patterns": ["C052", "C053", "docs/evals/STANDARD.md"],
+    "assertions": ["known-bad overclaim fixture rejected"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "KRN accepts small-suite productivity claims, hidden live execution, or missing coding-quality rubric."
+  },
+  {
+    "id": "eval-report-preserves-review-only-boundary",
+    "expected_behavior": "The eval report states that this contract is only an arena-expansion readiness gate and not live productivity lift or completed suite expansion.",
+    "source_patterns": ["C052", "C053", "docs/product/final-product-plan.md"],
+    "assertions": [
+      "eval report caveat names no productivity lift",
+      "eval report caveat names suite not implemented",
+      "eval report caveat names live mode explicit"
+    ],
+    "metrics": ["goal_alignment_score", "anti_slop_score"],
+    "failure_mode": "A green arena-contract eval is overclaimed as a completed expanded suite or product breakthrough."
+  }
+]
