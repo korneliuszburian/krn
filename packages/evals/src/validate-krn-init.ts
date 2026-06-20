@@ -347,6 +347,108 @@ function runValidation(): EvalReport {
       );
     }
   }
+  const localConfigApplyCase = caseById.get("generated-local-config-apply-writes-reviewed-target");
+  if (!localConfigApplyCase) {
+    throw new Error("Missing case generated-local-config-apply-writes-reviewed-target");
+  }
+  const localConfigTarget = mkdtempSync(join(tmpdir(), "krn-init-local-config-apply-eval-"));
+  const localConfigProposalResult = runKrnCli(["init", "--proposal", "local_config", "--target", localConfigTarget]);
+  const localConfigProposalPath = localConfigProposalResult.stdout.trim();
+  if (localConfigProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        localConfigApplyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        localConfigApplyCase.failure_mode,
+        localConfigProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(localConfigProposalPath));
+      const proposalRelativePath = relative(localConfigTarget, localConfigProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated local config is minimal, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: localConfigTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "local_config",
+        "--proposal-path",
+        localConfigProposalPath,
+        "--decision-path",
+        join(localConfigTarget, storedDecision.decision_path),
+        "--target",
+        localConfigTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetConfigPath = join(localConfigTarget, ".krn", "config.toml");
+      const configContent = existsSync(targetConfigPath) ? readFileSync(targetConfigPath, "utf8") : "";
+
+      results.push(
+        result(
+          localConfigApplyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetConfigPath) &&
+            configContent === promotion.target.file_content &&
+            configContent.includes('memory_store_env = "KRN_MEMORY_STORE_PATH"') &&
+            !configContent.includes("goal-038") &&
+            !configContent.includes("docs/plans/canonical/draft.md"),
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target .krn/config.toml matches exact payload",
+            "config avoids active-goal runtime truth",
+          ],
+          localConfigApplyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed local config payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          localConfigApplyCase.id,
+          false,
+          ["generated local config apply"],
+          localConfigApplyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated local config apply error",
+        ),
+      );
+    }
+  }
   const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
   const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
   const proposalPath = proposalResult.stdout.trim();
@@ -422,7 +524,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run, proposal-only, and one reviewed exact agent-instructions apply path only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

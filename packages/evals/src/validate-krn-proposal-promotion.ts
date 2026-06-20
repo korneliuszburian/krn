@@ -115,6 +115,10 @@ function initAgentInstructionsContent(): string {
   return "# Agent Instructions\n\nThis repository is KRN-enabled.\n";
 }
 
+function initLocalConfigContent(): string {
+  return "schema_version = \"krn-local-config.v1\"\n";
+}
+
 function validProposal(): KrnControlPlaneProposal {
   return parseKrnControlPlaneProposal(
     readJson(resolve("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json")),
@@ -167,6 +171,49 @@ function validInitProposal(): KrnControlPlaneProposal {
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate AGENTS.md until explicit apply mode.",
+  });
+}
+
+function validInitLocalConfigProposal(): KrnControlPlaneProposal {
+  const fileContent = initLocalConfigContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-local-config-eval",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init local-config bootstrap",
+    rationale: "The local config target must be reviewed before target mutation.",
+    proposed_change: "Write a minimal .krn/config.toml only after approved review.",
+    promotion_payload: {
+      payload_type: "init_local_config",
+      bootstrap_capability: "local_config",
+      target_path: ".krn/config.toml",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/config.toml",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:local_config:eval",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/eval/manifest.json"],
+    source_refs: [".krn/init/eval/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+    created_at: "2026-06-20T22:55:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/config.toml until explicit apply mode.",
   });
 }
 
@@ -463,6 +510,61 @@ function runValidation(): EvalReport {
         ["apply exact init bootstrap promotion"],
         initApplyCase.failure_mode,
         error instanceof Error ? error.message : "unknown init apply promotion error",
+      ),
+    );
+  }
+
+  const initLocalConfigApplyCase = caseById(cases, "apply-exact-init-local-config-promotion");
+  try {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-config-eval-"));
+    const proposal = validInitLocalConfigProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-local-config-eval",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-local-config-eval:decision",
+      },
+    });
+    const stored = storeKrnProposalPromotion(promotion, { targetInput: targetRoot, now });
+    const targetPath = join(targetRoot, ".krn", "config.toml");
+    appliedTargetPath = ".krn/config.toml";
+
+    results.push(
+      result(
+        initLocalConfigApplyCase.id,
+        stored.status === "stored" &&
+          stored.target_written === true &&
+          readFileSync(targetPath, "utf8") === initLocalConfigContent() &&
+          existsSync(join(targetRoot, stored.promotion_path)),
+        [
+          "approved init local-config proposal stored",
+          "init local-config apply promotion stored",
+          ".krn/config.toml written in explicit apply mode",
+          "promotion record persisted",
+        ],
+        initLocalConfigApplyCase.failure_mode,
+        "Explicit apply mode wrote exact reviewed init local-config payload after approved review.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        initLocalConfigApplyCase.id,
+        false,
+        ["apply exact init local-config promotion"],
+        initLocalConfigApplyCase.failure_mode,
+        error instanceof Error ? error.message : "unknown init local-config apply promotion error",
       ),
     );
   }

@@ -37,6 +37,10 @@ function initAgentInstructionsContent(): string {
   return "# Agent Instructions\n\nThis repository is KRN-enabled.\n";
 }
 
+function initLocalConfigContent(): string {
+  return "schema_version = \"krn-local-config.v1\"\n";
+}
+
 function validProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
   const proposal = parseKrnControlPlaneProposal(
     readJson("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json"),
@@ -88,6 +92,50 @@ function validInitProposal(overrides: Partial<KrnControlPlaneProposal> = {}): Kr
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate AGENTS.md until explicit apply mode.",
+    ...overrides,
+  });
+}
+
+function validInitLocalConfigProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initLocalConfigContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-local-config-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init local-config bootstrap",
+    rationale: "The local config target must be reviewed before target mutation.",
+    proposed_change: "Write minimal local config only after approved review.",
+    promotion_payload: {
+      payload_type: "init_local_config",
+      bootstrap_capability: "local_config",
+      target_path: ".krn/config.toml",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/config.toml",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:local_config:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/config.toml until explicit apply mode.",
     ...overrides,
   });
 }
@@ -253,6 +301,36 @@ describe("KRN proposal promotion store", () => {
     expect(result.status).toBe("stored");
     expect(result.target_written).toBe(true);
     expect(readFileSync(join(targetRoot, "AGENTS.md"), "utf8")).toBe(initAgentInstructionsContent());
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
+  });
+
+  it("applies exact init local config only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-config-store-"));
+    const proposal = validInitLocalConfigProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-local-config",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-local-config-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(readFileSync(join(targetRoot, ".krn", "config.toml"), "utf8")).toBe(initLocalConfigContent());
     expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 

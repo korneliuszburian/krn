@@ -258,7 +258,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  init --proposal agent_instructions [--target <path>]\n  init --apply agent_instructions --proposal-path <path> --decision-path <path> [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  sources check --context <path> --graph <path> [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  init --proposal agent_instructions|local_config [--target <path>]\n  init --apply agent_instructions|local_config --proposal-path <path> --decision-path <path> [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  sources check --context <path> --graph <path> [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
 }
 
 function parseDoctorArgs(argv: readonly string[]): DoctorArgs {

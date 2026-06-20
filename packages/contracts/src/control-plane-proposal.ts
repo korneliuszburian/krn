@@ -65,9 +65,21 @@ const InitAgentInstructionsPromotionPayloadSchema = z
   })
   .strict();
 
+const InitLocalConfigPromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("init_local_config"),
+    bootstrap_capability: z.literal("local_config"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
 const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [
   MemoryPromotionPayloadSchema,
   InitAgentInstructionsPromotionPayloadSchema,
+  InitLocalConfigPromotionPayloadSchema,
 ]);
 
 export const KrnControlPlaneProposalSchema = z
@@ -102,13 +114,14 @@ export const KrnControlPlaneProposalSchema = z
     }
 
     if (
-      proposal.promotion_payload?.payload_type === "init_agent_instructions" &&
+      (proposal.promotion_payload?.payload_type === "init_agent_instructions" ||
+        proposal.promotion_payload?.payload_type === "init_local_config") &&
       proposal.proposal_kind !== "init_bootstrap"
     ) {
       context.addIssue({
         code: "custom",
         path: ["promotion_payload"],
-        message: "init_agent_instructions promotion payload is supported only for init_bootstrap proposals",
+        message: "init bootstrap promotion payloads are supported only for init_bootstrap proposals",
       });
     }
 
@@ -120,6 +133,17 @@ export const KrnControlPlaneProposalSchema = z
         code: "custom",
         path: ["promotion_payload", "target_path"],
         message: "init agent instructions payload must target AGENTS.md",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "init_local_config" &&
+      proposal.promotion_payload.target_path !== ".krn/config.toml"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "init local config payload must target .krn/config.toml",
       });
     }
 

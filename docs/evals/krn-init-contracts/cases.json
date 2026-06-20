@@ -121,5 +121,32 @@
       "bootstrap_safety_score"
     ],
     "failure_mode": "The first init apply path can write AGENTS.md without an approved decision or without exact payload provenance."
+  },
+  {
+    "id": "generated-local-config-apply-writes-reviewed-target",
+    "expected_behavior": "The CLI applies a generated local_config proposal only after an approved review decision and writes .krn/config.toml from the exact promotion payload without embedding active-goal truth.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "proposal CLI exits zero",
+      "approved review decision stored",
+      "apply CLI exits zero",
+      "promotion parses",
+      "target .krn/config.toml matches exact payload",
+      "config avoids active-goal runtime truth"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "unsafe_write_prevention_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "The local config init apply path can write config without an approved decision, without exact payload provenance, or with live product truth embedded in runtime config."
   }
 ]

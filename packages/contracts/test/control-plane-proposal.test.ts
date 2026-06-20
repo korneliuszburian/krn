@@ -100,6 +100,57 @@ describe("KRN control-plane proposal contract", () => {
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
   });
 
+  it("parses an init local-config proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-local-config-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init local-config bootstrap",
+      rationale: "The local config target must be reviewed before target mutation.",
+      proposed_change: "Review the .krn/config.toml bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_local_config",
+        bootstrap_capability: "local_config",
+        target_path: ".krn/config.toml",
+        write_mode: "exact_file_content",
+        file_content: "schema_version = \"krn-local-config.v1\"\n",
+        content_sha256: "ba31fcc69959c0e2ba441096e10a2bb687653df3e392cc6493bdff77fec8d6d1",
+      },
+      target: {
+        target_type: "path",
+        path: ".krn/config.toml",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:local_config:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate .krn/config.toml or prove write-mode safety.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_local_config",
+      bootstrap_capability: "local_config",
+      target_path: ".krn/config.toml",
+    });
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("rejects an init payload attached to a non-init proposal", () => {
     expect(() =>
       parseKrnControlPlaneProposal({
@@ -127,6 +178,49 @@ describe("KRN control-plane proposal contract", () => {
           default_effect: "no_mutation",
           allowed_persistence: "append_only",
           idempotency_key: "bad-init-payload:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an init local-config payload targeting a different path", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-init-local-config-target",
+        proposal_kind: "init_bootstrap",
+        status: "proposal_only",
+        title: "Bad local config target",
+        rationale: "Local config payloads must target the local config path.",
+        proposed_change: "Write local config to the wrong place.",
+        promotion_payload: {
+          payload_type: "init_local_config",
+          bootstrap_capability: "local_config",
+          target_path: "docs/memory/config.toml",
+          write_mode: "exact_file_content",
+          file_content: "schema_version = \"krn-local-config.v1\"\n",
+          content_sha256: "ba31fcc69959c0e2ba441096e10a2bb687653df3e392cc6493bdff77fec8d6d1",
+        },
+        target: {
+          target_type: "path",
+          path: "docs/memory/config.toml",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-local-config-target:test",
         },
         review_gate: {
           required: true,

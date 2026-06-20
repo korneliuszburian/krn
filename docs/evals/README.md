@@ -33,7 +33,7 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 - [krn-review-contracts](./krn-review-contracts/README.md) checks whether `krn review` emits a schema-backed proposal-only report over typed local runtime artifacts.
 - [operator-skill-contracts](./operator-skill-contracts/README.md) checks whether P1 repo-local operator skills exist under `.agents/skills` and expose the required static contract.
 - [operator-skill-impact](./operator-skill-impact/README.md) compares neutral Codex runs against explicit repo-local operator-skill runs and reports metric deltas.
-- [krn-init-contracts](./krn-init-contracts/README.md) checks whether `krn init --dry-run` emits a schema-backed manifest, whether `krn init --proposal agent_instructions` stores a source-backed append-only `init_bootstrap` proposal without mutating `AGENTS.md`, and whether known-bad write/missing-capability fixtures fail.
+- [krn-init-contracts](./krn-init-contracts/README.md) checks whether `krn init --dry-run` emits a schema-backed manifest, whether `krn init --proposal agent_instructions|local_config` stores source-backed append-only `init_bootstrap` proposals without mutating targets, whether reviewed apply writes exact `AGENTS.md` / `.krn/config.toml` payloads, and whether known-bad write/missing-capability fixtures fail.
 - [product-spine-contracts](./product-spine-contracts/README.md) checks whether the first product object contracts validate real examples and reject known-bad fixtures before API/MCP/dashboard work.
 
 ## Rules

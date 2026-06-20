@@ -72,6 +72,24 @@
     "failure_mode": "KRN init can skip the review/promotion spine and write AGENTS.md without an exact approved payload."
   },
   {
+    "id": "apply-exact-init-local-config-promotion",
+    "expected_behavior": "Explicit apply mode writes exact init local-config payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "approved init local-config proposal stored",
+      "init local-config apply promotion stored",
+      ".krn/config.toml written in explicit apply mode",
+      "promotion record persisted"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "drift_resistance_score", "bootstrap_safety_score"],
+    "failure_mode": "KRN init can skip the review/promotion spine and write .krn/config.toml without an exact approved payload."
+  },
+  {
     "id": "rejected-decision-promotion-rejected",
     "expected_behavior": "A rejected proposal review decision cannot be promoted.",
     "source_patterns": [

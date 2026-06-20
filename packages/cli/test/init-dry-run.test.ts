@@ -161,6 +161,89 @@ describe("krn init --dry-run", () => {
     expect(existsSync(join(targetRoot, ".krn", "promotions"))).toBe(true);
   }, 30_000);
 
+  it("applies reviewed local-config proposal through an approved decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-config-apply-target-"));
+    const proposalStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "local_config", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const proposalPath = proposalStdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    const decision = parseKrnProposalReviewDecision({
+      schema_version: "krn-proposal-review-decision.v1",
+      kind: "krn_proposal_review_decision",
+      decision_id: `decision-${proposal.proposal_id}`,
+      proposal_id: proposal.proposal_id,
+      proposal_path: proposalRelativePath,
+      decision: "approved_for_promotion",
+      review_scope: "proposal_review_only",
+      target_mutated: false,
+      promotion_state: "not_promoted",
+      reviewer: "krn-init-test",
+      rationale: "The generated local config is minimal, target is absent, and the exact payload is safe to apply.",
+      write_policy: {
+        default_effect: "no_target_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+      },
+      evidence_refs: proposal.evidence_refs,
+      source_refs: proposal.source_refs,
+      blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+      created_at: "2026-06-20T22:50:00.000Z",
+      created_by: "krn init test",
+      interpretation_caveat:
+        "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+    });
+    const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
+
+    const promotionStdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "init",
+        "--apply",
+        "local_config",
+        "--proposal-path",
+        proposalPath,
+        "--decision-path",
+        join(targetRoot, storedDecision.decision_path),
+        "--target",
+        targetRoot,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const promotionPath = promotionStdout.trim();
+    const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+    const configContent = readFileSync(join(targetRoot, ".krn", "config.toml"), "utf8");
+
+    expect(proposal.target).toEqual({ target_type: "path", path: ".krn/config.toml" });
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_local_config",
+      bootstrap_capability: "local_config",
+      target_path: ".krn/config.toml",
+    });
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.apply_mode).toBe("apply_exact_target_write");
+    expect(promotion.target_mutated).toBe(true);
+    expect(configContent).toBe(promotion.target.file_content);
+    expect(configContent).toContain('memory_store_env = "KRN_MEMORY_STORE_PATH"');
+    expect(configContent).not.toContain("goal-038");
+    expect(configContent).not.toContain("docs/plans/canonical/draft.md");
+  }, 30_000);
+
   it("rejects apply paths outside the target root before reading them", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-apply-outside-target-"));
 

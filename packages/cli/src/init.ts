@@ -8,10 +8,16 @@ import {
   type KrnControlPlaneProposal,
 } from "@krn/contracts";
 import { storeKrnControlPlaneProposal } from "@krn/mcp";
-import { applyInitProposal, buildInitAgentInstructionsPayload } from "./init-agent-instructions.js";
+import {
+  applyInitProposal,
+  buildInitBootstrapPayload,
+  type InitBootstrapCapability,
+} from "./init-bootstrap.js";
 import { createRunId, pathKind } from "./runtime-utils.js";
 
-type InitProposalCapability = "agent_instructions";
+type InitProposalCapability = InitBootstrapCapability;
+
+const INIT_PROPOSAL_CAPABILITIES = ["agent_instructions", "local_config"] as const satisfies readonly InitProposalCapability[];
 
 type InitArgs = {
   target: string;
@@ -39,11 +45,23 @@ export type InitCliResult = {
 
 const DETECTED_PATHS = [
   { path: "AGENTS.md", expectedKind: "file" },
+  { path: ".krn/config.toml", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
   { path: "docs/memory/INDEX.md", expectedKind: "file" },
   { path: ".krn", expectedKind: "directory" },
 ] as const;
+
+function initCapabilityList(): string {
+  return INIT_PROPOSAL_CAPABILITIES.join(", ");
+}
+
+function parseInitCapability(value: string, mode: "proposal" | "apply"): InitProposalCapability {
+  if (INIT_PROPOSAL_CAPABILITIES.includes(value as InitProposalCapability)) {
+    return value as InitProposalCapability;
+  }
+  throw new Error(`krn init ${mode} currently supports only: ${initCapabilityList()}`);
+}
 
 export function parseInitArgs(argv: readonly string[]): InitArgs {
   if (argv[0] !== "init") {
@@ -70,10 +88,7 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
       if (!value || value.startsWith("--")) {
         throw new Error("Missing value for --proposal");
       }
-      if (value !== "agent_instructions") {
-        throw new Error("krn init proposals currently support only: agent_instructions");
-      }
-      proposalCapability = value;
+      proposalCapability = parseInitCapability(value, "proposal");
       index += 1;
       continue;
     }
@@ -83,10 +98,7 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
       if (!value || value.startsWith("--")) {
         throw new Error("Missing value for --apply");
       }
-      if (value !== "agent_instructions") {
-        throw new Error("krn init apply currently supports only: agent_instructions");
-      }
-      applyCapability = value;
+      applyCapability = parseInitCapability(value, "apply");
       index += 1;
       continue;
     }
@@ -148,7 +160,7 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
   }
 
   if (!sawDryRun) {
-    throw new Error("krn init currently requires --dry-run or --proposal agent_instructions");
+    throw new Error(`krn init currently requires --dry-run or --proposal ${initCapabilityList()}`);
   }
 
   return { target, mode: "dry-run" };
@@ -162,6 +174,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
   switch (relativePath) {
     case "AGENTS.md":
       return "Root Codex instructions already exist and must not be overwritten by dry-run init.";
+    case ".krn/config.toml":
+      return "KRN local config already exists and must not be overwritten by dry-run init.";
     case ".codex":
       return "Project-local Codex config/hooks directory already exists.";
     case ".agents":
@@ -201,6 +215,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
   });
 
   const agentsExists = detectedArtifacts.find((artifact) => artifact.path === "AGENTS.md")?.exists ?? false;
+  const localConfigExists = detectedArtifacts.find((artifact) => artifact.path === ".krn/config.toml")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
 
@@ -242,6 +257,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
+        path: ".krn/config.toml",
+        action: localConfigExists ? "skip" : "proposal_only",
+        reason: localConfigExists
+          ? "Existing KRN local config is preserved; changes require a reviewed proposal."
+          : "KRN would propose a minimal local-first config in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-init/README.md"],
+      },
+      {
         path: "docs/memory/INDEX.md",
         action: memoryIndexExists ? "proposal_only" : "create",
         reason: memoryIndexExists
@@ -271,6 +294,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           : "No collision detected; future writes would still require an explicit write-mode contract.",
       },
       {
+        path: ".krn/config.toml",
+        strategy: collisionStrategy(localConfigExists),
+        reason: localConfigExists
+          ? "Existing local config must be reviewed instead of overwritten."
+          : "No local config collision detected; future writes still require approved promotion.",
+      },
+      {
         path: "docs/memory/INDEX.md",
         strategy: "proposal_only",
         reason: memoryIndexExists
@@ -290,7 +320,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       {
         capability: "local_config",
         path: ".krn/config.toml",
-        action: "proposal_only",
+        action: localConfigExists ? "skip" : "proposal_only",
         purpose: "Describe local-first KRN project settings without requiring cloud/API sync.",
         boundary: "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
         source_refs: ["docs/specs/krn-init/README.md"],
@@ -389,7 +419,12 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
       ? "review the existing target file and preserve it unless a later explicit merge proposal is approved"
       : "review a future exact-file proposal before any target mutation";
   const promotionPayload =
-    bootstrapItem.action === "skip" ? undefined : buildInitAgentInstructionsPayload(bootstrapItem.path);
+    bootstrapItem.action === "skip" ? undefined : buildInitBootstrapPayload(capability, bootstrapItem.path);
+  const targetLabel = capability === "agent_instructions" ? "agent-instructions" : "local-config";
+  const targetDescription =
+    capability === "agent_instructions"
+      ? "Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database."
+      : "Local config is the next bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.";
 
   return parseKrnControlPlaneProposal({
     schema_version: "krn-control-plane-proposal.v1",
@@ -397,9 +432,8 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     proposal_id: proposalId,
     proposal_kind: proposalKind,
     status: "proposal_only",
-    title: "Review KRN init agent-instructions bootstrap",
-    rationale:
-      "KRN needs a reviewed first bootstrap target before write mode. Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database.",
+    title: `Review KRN init ${targetLabel} bootstrap`,
+    rationale: `KRN needs reviewed bootstrap targets before write mode. ${targetDescription}`,
     proposed_change: `For ${bootstrapItem.path}, ${actionSummary}. Capability purpose: ${bootstrapItem.purpose} Boundary: ${bootstrapItem.boundary}`,
     promotion_payload: promotionPayload,
     target: {
@@ -428,7 +462,7 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     created_at: manifest.created_at,
     created_by: "krn init",
     interpretation_caveat:
-      "This init proposal is append-only review input for one bootstrap capability; it does not mutate AGENTS.md, approve write mode, create memory core, publish a dashboard event, or prove productivity lift.",
+      "This init proposal is append-only review input for one bootstrap capability; it does not mutate target setup files, approve write mode, create memory core, publish a dashboard event, or prove productivity lift.",
   });
 }
 

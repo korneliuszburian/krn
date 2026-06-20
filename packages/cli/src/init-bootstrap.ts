@@ -17,6 +17,9 @@ type InitAgentInstructionsPayload = Extract<
   ControlPlanePromotionPayload,
   { payload_type: "init_agent_instructions" }
 >;
+type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_local_config" }>;
+type InitBootstrapPayload = InitAgentInstructionsPayload | InitLocalConfigPayload;
+export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
 function sha256(content: string): string {
   return createHash("sha256").update(content).digest("hex");
@@ -54,6 +57,28 @@ This repository is KRN-enabled.
 `;
 }
 
+function localConfigFileContent(): string {
+  return `schema_version = "krn-local-config.v1"
+mode = "local-first"
+
+[runtime]
+root = ".krn"
+evidence_root = ".krn"
+source_graph = ".krn/sources/index.json"
+context_root = ".krn/context"
+eval_lane = "current"
+memory_store_env = "KRN_MEMORY_STORE_PATH"
+
+[boundaries]
+docs_memory = "pattern_bank_audit_export"
+krn_runtime = "evidence_cache_ledger"
+memory_core = "external_local_store"
+target_writes = "reviewed_promotion_only"
+api_sync = "disabled"
+dashboard = "disabled"
+`;
+}
+
 export function buildInitAgentInstructionsPayload(targetPath: string): InitAgentInstructionsPayload {
   const fileContent = agentInstructionsFileContent();
   return {
@@ -66,12 +91,36 @@ export function buildInitAgentInstructionsPayload(targetPath: string): InitAgent
   };
 }
 
-function assertInitAgentInstructionsPayload(proposal: KrnControlPlaneProposal): void {
+export function buildInitLocalConfigPayload(targetPath: string): InitLocalConfigPayload {
+  const fileContent = localConfigFileContent();
+  return {
+    payload_type: "init_local_config",
+    bootstrap_capability: "local_config",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
+export function buildInitBootstrapPayload(capability: InitBootstrapCapability, targetPath: string): InitBootstrapPayload {
+  switch (capability) {
+    case "agent_instructions":
+      return buildInitAgentInstructionsPayload(targetPath);
+    case "local_config":
+      return buildInitLocalConfigPayload(targetPath);
+  }
+}
+
+function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
   if (proposal.proposal_kind !== "init_bootstrap") {
     throw new Error(`krn init apply requires an init_bootstrap proposal: ${proposal.proposal_kind}`);
   }
-  if (proposal.promotion_payload?.payload_type !== "init_agent_instructions") {
-    throw new Error(`krn init apply requires an init_agent_instructions payload: ${proposal.proposal_id}`);
+  if (
+    proposal.promotion_payload?.payload_type !== "init_agent_instructions" &&
+    proposal.promotion_payload?.payload_type !== "init_local_config"
+  ) {
+    throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
 }
 
@@ -82,10 +131,13 @@ export function buildInitPromotion(
   decisionPath: string,
   now = new Date(),
 ): KrnProposalPromotion {
-  assertInitAgentInstructionsPayload(proposal);
+  assertInitBootstrapPayload(proposal);
   const payload = proposal.promotion_payload;
-  if (!payload || payload.payload_type !== "init_agent_instructions") {
-    throw new Error(`krn init apply requires an init_agent_instructions payload: ${proposal.proposal_id}`);
+  if (
+    !payload ||
+    (payload.payload_type !== "init_agent_instructions" && payload.payload_type !== "init_local_config")
+  ) {
+    throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
 
   return parseKrnProposalPromotion({
@@ -125,7 +177,7 @@ export function buildInitPromotion(
     created_at: now.toISOString(),
     created_by: "krn init",
     interpretation_caveat:
-      "This promotion applies one reviewed init agent-instructions payload only; it does not prove broad repo bootstrap, merge-mode safety, memory-core quality, dashboard/API readiness, or productivity lift.",
+      "This promotion applies one reviewed init bootstrap payload only; it does not prove broad repo bootstrap, merge-mode safety, memory-core quality, dashboard/API readiness, or productivity lift.",
   });
 }
 

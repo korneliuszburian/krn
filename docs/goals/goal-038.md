@@ -545,6 +545,13 @@ first and stores a source-backed append-only `init_bootstrap` proposal for
 `init_agent_instructions` payload before writing an absent `AGENTS.md` through
 the proposal promotion spine.
 
+[FACT] `krn init --proposal local_config` and `krn init --apply local_config`
+reuse the same reviewed promotion spine for the second absent bootstrap target:
+`.krn/config.toml`. The exact `init_local_config` payload points to an external
+local `KRN_MEMORY_STORE_PATH` and runtime directories, but does not embed memory
+bodies, active-goal truth, copied source lists, dashboard state, API sync, or
+cloud defaults.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -554,12 +561,12 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with the next narrow `krn init`
-bootstrap capability or repo-bootstrap readiness check before adding dashboard,
-benchmark, broad API/cloud sync, research runtime, or passive docs. Do not turn
-init into a broad scaffold writer and do not add another target mutation without
-review/promotion, no-overwrite behavior, source/evidence lineage, and focused
-eval coverage.
+[NEXT] After this checkpoint, continue with source pointers, context pointers,
+eval baseline, skill wiring, policy boundaries, or repo-bootstrap readiness
+before adding dashboard, benchmark, broad API/cloud sync, research runtime, or
+passive docs. Do not turn init into a broad scaffold writer and do not add
+another target mutation without review/promotion, no-overwrite behavior,
+source/evidence lineage, and focused eval coverage.
 
 ## Progress Ledger
 
@@ -666,18 +673,34 @@ eval coverage.
 - [FACT] `krn init --apply agent_instructions` reads an existing `init_bootstrap` proposal and approved review decision, builds a `KrnProposalPromotion` with `promotion_scope: "approved_init_bootstrap_only"`, and writes `AGENTS.md` only from the exact `init_agent_instructions` payload when the target is absent.
 - [FACT] `KrnControlPlaneProposal` now supports exact `init_agent_instructions` payloads only for `init_bootstrap` proposals, while `KrnProposalPromotion` supports only `memory_update` and `init_bootstrap` promotion scopes.
 - [FACT] `packages/mcp/src/proposal-promotion-store.ts` reuses the existing approved-decision, source-ref, exact-payload, idempotency, safe-path, and no-overwrite promotion boundary for init bootstrap writes.
-- [FACT] The CLI apply implementation was extracted into `packages/cli/src/init-agent-instructions.ts` so `packages/cli/src/init.ts` remains the init manifest/proposal dispatcher instead of absorbing the first write boundary.
+- [FACT] The CLI apply implementation was extracted into `packages/cli/src/init-bootstrap.ts` so `packages/cli/src/init.ts` remains the init manifest/proposal dispatcher instead of absorbing bootstrap write boundaries.
 - [FACT] `krn init` no longer emits `goal-038` or the canonical draft as runtime product truth inside generated manifests; the bootstrap phase label is now generic `KRN Init Bootstrap Planning`.
 - [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-promotion-store.test.ts packages/cli/test/init-dry-run.test.ts` passed 4 files / 22 tests.
 - [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T231654Z-699484` with 6/6 cases and 21/21 assertions.
 - [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `20260620T231654Z-699473` with 8/8 cases and 26/26 assertions.
 - [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260620T231724Z-700759` with 5/5 modules, 18/18 cases, and 52/52 assertions.
 - [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
-- [SIMPLIFY] Keep: exact `init_agent_instructions` proposal payload, `approved_init_bootstrap_only` promotion scope, `krn init --apply agent_instructions`, safe target-local apply path validation, focused init/promotion eval cases, and `init-agent-instructions.ts` extraction because each protects one reviewed bootstrap write boundary.
+- [SIMPLIFY] Keep: exact `init_agent_instructions` proposal payload, `approved_init_bootstrap_only` promotion scope, `krn init --apply agent_instructions`, safe target-local apply path validation, focused init/promotion eval cases, and `init-bootstrap.ts` extraction because each protects one reviewed bootstrap write boundary.
 - [SIMPLIFY] Delete/avoid: no broad scaffold writer, no merge/overwrite mode for existing `AGENTS.md`, no dashboard, no benchmark expansion, no broad API/cloud sync, no memory-core write, no second promotion store, and no inferred target content from proposal prose.
 - [SIMPLIFY] Next candidate: choose the next narrow `krn init` capability from local config, source pointers, context pointers, eval baseline, skill wiring, or policy boundaries; run the pre-edit gate before adding any new target mutation.
 - [OVERCLAIM] This slice proves one reviewed exact absent-`AGENTS.md` apply boundary. It does not prove broad repo bootstrap usefulness, merge-mode safety, human review quality, dashboard/API readiness, final memory quality, or productivity lift.
 - [NEXT] Commit and push this checkpoint; then continue with the next narrow `krn init` bootstrap capability or repo-bootstrap readiness check.
+- [FACT] Second reviewed `krn init` apply-target slice added `krn init --proposal local_config` and `krn init --apply local_config --proposal-path <path> --decision-path <path>`.
+- [FACT] `krn init --apply local_config` reads an existing `init_bootstrap` proposal and approved review decision, builds a `KrnProposalPromotion` with `promotion_scope: "approved_init_bootstrap_only"`, and writes `.krn/config.toml` only from the exact `init_local_config` payload when the target is absent.
+- [FACT] `KrnControlPlaneProposal` now supports exact `init_local_config` payloads only for `init_bootstrap` proposals targeting `.krn/config.toml`, while the shared promotion boundary still rejects target mismatches, unsafe paths, and unapproved decisions.
+- [FACT] The init bootstrap apply implementation now lives in `packages/cli/src/init-bootstrap.ts`, which owns the exact bootstrap payload/apply boundary for both `agent_instructions` and `local_config` instead of hardcoding one target-specific file module.
+- [FACT] The generated local config keeps memory core external by using `memory_store_env = "KRN_MEMORY_STORE_PATH"` and does not copy authoritative memory bodies, active-goal truth, source lists, dashboard state, API sync, or cloud defaults into `.krn`.
+- [EVIDENCE] Pre-edit gate passed: `pnpm run krn -- gate --task "Add reviewed local_config init bootstrap capability without hardcoding live product truth or broad scaffold writes" --path packages/cli/src/init.ts` wrote `.krn/gates/20260620T232156Z-707103/engineering-gate.json`.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-promotion-store.test.ts packages/cli/test/init-dry-run.test.ts` passed 4 files / 27 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T233553Z-741322` with 7/7 cases and 27/27 assertions.
+- [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `20260620T233553Z-741332` with 9/9 cases and 30/30 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260620T233553Z-741343` with 5/5 modules, 19/19 cases, and 58/58 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: exact `init_local_config` payload, shared `init_bootstrap` proposal/promotion boundary, no-overwrite `.krn/config.toml` apply path, `KRN_MEMORY_STORE_PATH` pointer, and focused init/promotion eval cases because each protects the repo-bootstrap boundary without making `.krn` memory core.
+- [SIMPLIFY] Delete/avoid: no broad scaffold writer, no merge/overwrite mode for existing `.krn/config.toml`, no dashboard, no benchmark expansion, no broad API/cloud sync, no memory bodies in repo config, no active-goal/source-list hardcoding, and no parallel local-config writer outside proposal promotion.
+- [SIMPLIFY] Next candidate: source pointers, context pointers, eval baseline, skill wiring, policy boundaries, or repo-bootstrap readiness; each must reuse reviewed payload boundaries before target mutation.
+- [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/config.toml` apply boundary. It does not prove broad config consumption, full repo bootstrap usefulness, merge-mode safety, dashboard/API readiness, final memory quality, or productivity lift.
+- [NEXT] Commit and push this checkpoint; then continue with the next non-memory-core bootstrap boundary or repo-bootstrap readiness check.
 
 ## Disproves Completion
 
