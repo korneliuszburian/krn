@@ -18,6 +18,17 @@ export {
   type KrnBenchmarkReportsViewModel,
 } from "./benchmark-reports-view-model.js";
 export {
+  KrnRepairRecordSchema,
+  krnRepairRecordJsonSchema,
+  parseKrnRepairRecord,
+  type KrnRepairRecord,
+  type RepairAttempt,
+  type RepairClassification,
+  type RepairFailureSourceType,
+  type RepairStatus,
+  type RepairSurface,
+} from "./repair-record.js";
+export {
   InitManifestSchema,
   initManifestJsonSchema,
   parseInitManifest,

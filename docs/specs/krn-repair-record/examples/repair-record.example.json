@@ -1,0 +1,65 @@
+{
+  "schema_version": "krn-repair-record.v1",
+  "kind": "krn_repair_record",
+  "repair_id": "repair-benchmark-live-suite-no-lift-20260620",
+  "created_at": "2026-06-20T08:00:00.000Z",
+  "owner": "krn",
+  "status": "proposed",
+  "failure_source": {
+    "source_type": "benchmark_report",
+    "source_ref": ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json",
+    "summary": "Three-task live benchmark produced assisted_minus_baseline -0.0033, below the positive lift gate.",
+    "evidence_refs": [
+      ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json",
+      ".krn/evals/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json"
+    ],
+    "source_refs": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-020.md",
+      "docs/evals/krn-benchmark-live-suite/README.md",
+      "docs/specs/krn-benchmark-report/README.md"
+    ],
+    "observed_metric_id": "assisted_minus_baseline",
+    "observed_metric_value": -0.0033,
+    "expected_metric_direction": "increase"
+  },
+  "classification": "benchmark_no_lift",
+  "repair_surface": "benchmark_suite",
+  "proposed_repair": "Create a focused repair attempt against the low-scoring assisted benchmark paths before tuning prompts, skills, memory, or expanding the suite.",
+  "next_action": "Inspect the no-lift task evidence, propose one bounded repair to the assisted guidance or scoring assumptions, then rerun the live benchmark suite explicitly.",
+  "attempts": [
+    {
+      "attempt_id": "attempt-001-record-no-lift",
+      "sequence": 1,
+      "attempted_change": "No product repair applied yet; this attempt records the no-lift benchmark evidence before tuning.",
+      "changed_surfaces": ["none"],
+      "validator_command": "pnpm run eval:krn-benchmark-live-suite:live",
+      "validator_report_path": ".krn/evals/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json",
+      "validator_status": "failed",
+      "metric_before": -0.0033,
+      "metric_after": null,
+      "metric_delta": null,
+      "stop_reason": "record_created",
+      "interpretation_caveat": "The live run completed but failed the repair target because assisted did not beat baseline."
+    }
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-020.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/evals/krn-benchmark-live-suite/README.md",
+    "docs/evals/STANDARD.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "evidence_refs": [
+    ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json",
+    ".krn/evals/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json"
+  ],
+  "blocked_surfaces": [
+    "productivity_lift_claim",
+    "prompt_tuning_without_repair_record",
+    "default_live_eval",
+    "dashboard_auto_repair"
+  ],
+  "interpretation_caveat": "This record proves only that no-lift evidence has a typed repair handoff. It does not prove repair quality, productivity lift, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+}

@@ -1,0 +1,49 @@
+[
+  {
+    "id": "valid-repair-record-fixture-parses",
+    "expected_behavior": "The valid repair record fixture parses through @krn/contracts while preserving benchmark_no_lift classification and proposed status.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-021.md",
+      "docs/specs/krn-repair-record/README.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "valid fixture remains proposed"
+    ],
+    "metrics": ["schema_contract_score", "anti_slop_score"],
+    "failure_mode": "Benchmark no-lift repair evidence can no longer be represented as a typed proposed repair record."
+  },
+  {
+    "id": "known-bad-repair-record-fails",
+    "expected_behavior": "The known-bad fixture that claims validated repair without a passed validator fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-021.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": ["known-bad fixture rejected"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "KRN accepts a repair record that claims validation without validator evidence."
+  },
+  {
+    "id": "benchmark-no-lift-generates-repair-record",
+    "expected_behavior": "A benchmark no-lift report fixture generates a parseable proposed repair record under .krn/repairs with classification benchmark_no_lift and productivity-lift claims blocked.",
+    "source_patterns": [
+      "docs/goals/goal-020.md",
+      "docs/goals/goal-021.md",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-repair-record/README.md"
+    ],
+    "assertions": [
+      "benchmark fixture parses",
+      "generated repair record exists",
+      "generated repair record parses",
+      "classification is benchmark_no_lift",
+      "repair status is proposed",
+      "productivity lift is blocked"
+    ],
+    "metrics": ["runtime_contract_score", "repair_readiness_score", "source_grounding_score"],
+    "failure_mode": "No-lift benchmark evidence cannot produce a typed repair handoff without overclaiming."
+  }
+]

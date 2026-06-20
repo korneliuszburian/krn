@@ -1,0 +1,177 @@
+{
+  "schema_version": "krn-benchmark-report.v1",
+  "kind": "krn_benchmark_report",
+  "run_id": "20260620T072154Z-2675156",
+  "created_at": "2026-06-20T07:21:54.405Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "benchmark_id": "krn-benchmark-live-suite",
+  "suite_id": "goal006-expanded-routing-suite",
+  "measurement_mode": "live_codex_exec",
+  "baseline_label": "baseline_codex",
+  "assisted_label": "krn_assisted_codex",
+  "minimum_task_count_for_lift_claim": 20,
+  "productivity_lift_claimed": false,
+  "lift_status": "no_lift_evidence",
+  "task_count": 3,
+  "completed_task_count": 3,
+  "blocked_task_count": 0,
+  "failed_task_count": 0,
+  "baseline_score": 0.9433,
+  "assisted_score": 0.94,
+  "assisted_minus_baseline": -0.0033,
+  "tasks": [
+    {
+      "task_id": "goal006-next-benchmark-action",
+      "title": "Route the next KRN benchmark action after Benchmark Reports",
+      "status": "completed",
+      "task_source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-020.md",
+        "docs/specs/krn-benchmark-report/README.md"
+      ],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0.92,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/goal006-next-benchmark-action.baseline.final.json"
+        ],
+        "interpretation_caveat": "Baseline condition uses normal Codex repo-reading behavior."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.86,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/goal006-next-benchmark-action.assisted.final.json"
+        ],
+        "interpretation_caveat": "Assisted condition adds explicit KRN read-order and source-boundary guidance."
+      },
+      "assisted_minus_baseline": -0.06,
+      "metrics": [
+        {
+          "metric_id": "task_score",
+          "baseline_score": 0.92,
+          "assisted_score": 0.86,
+          "assisted_minus_baseline": -0.06,
+          "weight": 1,
+          "source_refs": [
+            "docs/evals/krn-benchmark-live-suite/tasks.json",
+            "docs/goals/goal-006.md"
+          ],
+          "interpretation_caveat": "Task score is deterministic for this fixture and does not prove productivity lift."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task contributes to suite-level benchmark evidence only."
+    },
+    {
+      "task_id": "memory-layers-vs-file-substrate",
+      "title": "Preserve layered memory direction without vector-store drift",
+      "status": "completed",
+      "task_source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/product/final-product-plan.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0.91,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/memory-layers-vs-file-substrate.baseline.final.json"
+        ],
+        "interpretation_caveat": "Baseline condition uses normal Codex repo-reading behavior."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 1,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/memory-layers-vs-file-substrate.assisted.final.json"
+        ],
+        "interpretation_caveat": "Assisted condition adds explicit KRN read-order and source-boundary guidance."
+      },
+      "assisted_minus_baseline": 0.09,
+      "metrics": [
+        {
+          "metric_id": "task_score",
+          "baseline_score": 0.91,
+          "assisted_score": 1,
+          "assisted_minus_baseline": 0.09,
+          "weight": 1,
+          "source_refs": [
+            "docs/evals/krn-benchmark-live-suite/tasks.json",
+            "docs/goals/goal-006.md"
+          ],
+          "interpretation_caveat": "Task score is deterministic for this fixture and does not prove productivity lift."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task contributes to suite-level benchmark evidence only."
+    },
+    {
+      "task_id": "codex-exec-worker-boundary",
+      "title": "Keep codex exec as an explicit worker lane",
+      "status": "completed",
+      "task_source_refs": [
+        "AGENTS.md",
+        "docs/goals/goal-006.md",
+        "docs/evals/STANDARD.md"
+      ],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 1,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/codex-exec-worker-boundary.baseline.final.json"
+        ],
+        "interpretation_caveat": "Baseline condition uses normal Codex repo-reading behavior."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.96,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/codex-exec-worker-boundary.assisted.final.json"
+        ],
+        "interpretation_caveat": "Assisted condition adds explicit KRN read-order and source-boundary guidance."
+      },
+      "assisted_minus_baseline": -0.04,
+      "metrics": [
+        {
+          "metric_id": "task_score",
+          "baseline_score": 1,
+          "assisted_score": 0.96,
+          "assisted_minus_baseline": -0.04,
+          "weight": 1,
+          "source_refs": [
+            "docs/evals/krn-benchmark-live-suite/tasks.json",
+            "docs/goals/goal-006.md"
+          ],
+          "interpretation_caveat": "Task score is deterministic for this fixture and does not prove productivity lift."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task contributes to suite-level benchmark evidence only."
+    }
+  ],
+  "repair_targets": [
+    {
+      "id": "repair-live-suite-no-lift",
+      "owner": "krn",
+      "next_action": "Create a typed repair record before changing prompts, skills, memory, benchmark tasks, or dashboard/API behavior.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-020.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/evals/krn-benchmark-live-suite/README.md"
+      ],
+      "failure_mode": "The assisted condition did not beat baseline in the three-task live suite."
+    }
+  ],
+  "benchmark_report_path": ".krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json",
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-020.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/evals/krn-benchmark-live-suite/README.md",
+    "docs/evals/STANDARD.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "interpretation_caveat": "This live suite proves only a multi-task codex exec benchmark path; three tasks remain below the 20-task lift gate and do not prove measured productivity lift."
+}

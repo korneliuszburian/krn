@@ -182,6 +182,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/goals/goal-020.md",
     ],
   },
+  {
+    moduleId: "krn-repair-record",
+    command: ["pnpm", "run", "eval:krn-repair-record"],
+    sourceRefs: [
+      "docs/evals/krn-repair-record/README.md",
+      "docs/specs/krn-repair-record/README.md",
+      "docs/goals/goal-021.md",
+    ],
+  },
 ];
 
 function usage(): string {

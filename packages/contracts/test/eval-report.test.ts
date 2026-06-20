@@ -32,6 +32,7 @@ describe("KrnEvalReport contract", () => {
       "krn-benchmark-spine",
       "krn-dashboard-benchmark-reports-ui",
       "krn-benchmark-live-suite",
+      "krn-repair-record",
     ]);
   });
 

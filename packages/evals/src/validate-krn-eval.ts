@@ -53,6 +53,7 @@ const REQUIRED_MODULES = [
   "krn-benchmark-spine",
   "krn-dashboard-benchmark-reports-ui",
   "krn-benchmark-live-suite",
+  "krn-repair-record",
 ];
 
 function readJson(path: string): unknown {

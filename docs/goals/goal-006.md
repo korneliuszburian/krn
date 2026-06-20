@@ -123,6 +123,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - The generated benchmark report `.krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json` parsed through `KrnBenchmarkReport`, used `measurement_mode: "live_codex_exec"`, kept `productivity_lift_claimed: false`, and reported 3/3 completed tasks, baseline score `0.9433`, assisted score `0.94`, and delta `-0.0033`.
   - `krn eval` now includes `krn-benchmark-live-suite` validate mode as deterministic aggregate coverage, while live mode remains explicit and outside default `krn eval`.
   - This proves the multi-task benchmark harness and no-lift guard only. It still does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, dashboard command readiness, or `krn benchmark` CLI readiness.
+  - `packages/contracts` now exports `KrnRepairRecord`, the first typed repair handoff object for benchmark no-lift evidence.
+  - `docs/specs/krn-repair-record/` contains a valid proposed no-lift repair fixture, a known-bad validated-overclaim fixture, and a benchmark no-lift fixture.
+  - `packages/evals/src/validate-krn-repair-record.ts` generates parseable proposed repair records under `.krn/repairs/krn-repair-record/{run_id}/repair-record.json` from benchmark no-lift evidence.
+  - `pnpm run eval:krn-repair-record` generated `.krn/evals/krn-repair-record/20260620T075903Z-2754248/report.json` with 3/3 cases and 9/9 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T080015Z-2757479/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions, including `krn-repair-record`.
+  - This proves typed no-lift repair handoff only. It still does not prove repair quality, measured productivity lift, prompt improvement, benchmark statistical validity, HTTP/API readiness, ChatGPT connector behavior, human review quality, dashboard command readiness, or `krn repair` CLI readiness.
 
 ## Objective
 
@@ -369,7 +375,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-020.md
+docs/goals/goal-021.md
 ```
 
-Next child-goal candidates after `goal-020` are repairing the assisted benchmark path on neutral/negative live tasks, expanding the fixed live suite toward the 20-task lift gate, surfacing benchmark repair records, additional dashboard views over existing typed objects, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence.
+Next child-goal candidates after `goal-021` are a first bounded repair attempt from the generated no-lift `KrnRepairRecord`, expanding the fixed live suite toward the 20-task lift gate only after a repair hypothesis is tested, surfacing repair records through read-only MCP/dashboard views, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence or a proposed repair record.

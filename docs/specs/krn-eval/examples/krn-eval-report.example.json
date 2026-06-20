@@ -319,17 +319,37 @@
         "docs/goals/goal-020.md"
       ],
       "interpretation_caveat": "This eval proves the deterministic multi-task benchmark suite harness only; it does not prove measured productivity lift, benchmark statistical validity, live Codex suite quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
+      "module_id": "krn-repair-record",
+      "command": ["pnpm", "run", "eval:krn-repair-record"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-repair-record/20260619T215914Z-example/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 9,
+      "passed_assertions": 9,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-repair-record/README.md",
+        "docs/specs/krn-repair-record/README.md",
+        "docs/goals/goal-021.md"
+      ],
+      "interpretation_caveat": "This eval proves benchmark no-lift repair-record contract behavior only; it does not prove repair quality, productivity lift, prompt improvement, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     }
   ],
   "summary": {
-    "total_modules": 16,
-    "passed_modules": 16,
+    "total_modules": 17,
+    "passed_modules": 17,
     "failed_modules": 0,
-    "total_cases": 71,
-    "passed_cases": 71,
+    "total_cases": 74,
+    "passed_cases": 74,
     "failed_cases": 0,
-    "total_assertions": 240,
-    "passed_assertions": 240,
+    "total_assertions": 249,
+    "passed_assertions": 249,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",
