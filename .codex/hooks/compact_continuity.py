@@ -30,8 +30,9 @@ EVENT_LOG = EVENT_DIR / "compact-events.jsonl"
 KEY_FILES = [
     "AGENTS.md",
     "docs/memory/INDEX.md",
-    "docs/product/final-product-plan.md",
-    "docs/goals/goal-006.md",
+    "docs/goals/INDEX.md",
+    "docs/goals/goal-038.md",
+    "docs/plans/canonical/draft.md",
     "docs/plans/canonical/SOURCES.md",
 ]
 
@@ -177,13 +178,13 @@ def checkpoint_markdown(
         "2. Read `.krn/compact/latest-postcompact.md` and this selector.",
         "3. Run `git status -sb` and inspect only changed or task-relevant files.",
         "4. Read `AGENTS.md` for hard repo rules if the resumed context does not already include it.",
-        "5. Read the active child goal if continuing one; otherwise use `docs/goals/goal-006.md` with targeted `rg`/`sed`, not a full reread.",
+        "5. Read `docs/goals/INDEX.md` and `docs/goals/goal-038.md` if continuing KRN final-product work; use older goals only when the selector names them.",
         "6. Use `docs/memory/INDEX.md` only as a selector for relevant notes.",
         "7. Use `docs/plans/canonical/SOURCES.md` through `rg` for specific source/claim IDs; do not load it wholesale by default.",
         "",
         "Load on demand only:",
         "",
-        "- `docs/product/final-product-plan.md` when product direction is unclear or changing.",
+        "- `docs/plans/canonical/draft.md` when product direction is unclear or changing.",
         "- `CONTEXT.md` when domain terms are unclear.",
         "- `docs/specs/technology-stack/decision.md` when stack boundaries are changing.",
         "- `docs/plans/canonical/draft.md` or `pattern-matrix.md` only for synthesis/refactor work that names them.",

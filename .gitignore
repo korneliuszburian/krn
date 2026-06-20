@@ -25,6 +25,9 @@ __pycache__/
 .krn/evals/*
 !.krn/evals/.gitignore
 !.krn/evals/README.md
+.krn/gates/*
+!.krn/gates/.gitignore
+!.krn/gates/README.md
 .krn/benchmarks/*
 !.krn/benchmarks/.gitignore
 !.krn/benchmarks/README.md

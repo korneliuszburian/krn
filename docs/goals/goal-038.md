@@ -62,7 +62,9 @@ Newest user message wins. Treat shorthand such as "simplify", "condense",
 and "final-shaped slice" as operational commands defined in goal-038.md.
 
 Current next slice:
-Build the MemoryStore boundary and memory selection/application proof.
+Build or run the pre-edit engineering gate before continuing new non-trivial
+implementation work; then continue the next dependency-ordered final-product
+slice from this goal.
 
 Constraints:
 - docs/memory/** is pattern bank / audit export, not memory core.
@@ -81,6 +83,10 @@ Constraints:
 - Selected memory without application guidance must fail.
 - Before expanding behavior, run the goal-038 simplify/condense check on the
   touched surface.
+- Before non-trivial product edits, produce or run `krn gate --task <text>`
+  semantics and make these checks explicit: mechanism, scope boundary,
+  consumer, verification, rollback/kill, hardcoded truth, skill routing,
+  simplify cadence, and overclaim boundary.
 - For non-trivial TypeScript contracts, CLI, eval, MCP/API, or dashboard work,
   use the typescript-contract-engineer skill.
 - For eval design, use eval-designer.
@@ -116,6 +122,24 @@ Constraints:
 - audit record,
 - kill criteria.
 
+[DECISION] Every non-trivial product edit must pass a pre-edit engineering gate.
+
+The gate is not ceremony. It is the smallest runtime artifact that forces the
+agent/operator to name:
+
+- mechanism;
+- scope boundary;
+- consumer;
+- verification;
+- rollback or kill path;
+- hardcoded-truth boundary;
+- required skills;
+- simplify/condense trigger;
+- overclaim boundary.
+
+If any item is missing, the work must stop in planning/repair mode instead of
+editing from momentum.
+
 ## Compressed Operator Vocabulary
 
 The user often uses short phrases as compact operational instructions. Interpret them as follows.
@@ -129,6 +153,7 @@ The user often uses short phrases as compact operational instructions. Interpret
 | `anti-slop` | Reject proof-shaped artifacts that do not reduce context waste, review burden, memory rot, task drift, unsafe writes, or duplicate concepts. |
 | `final-shaped slice` | Build the smallest dependency-ordered piece of the final architecture, not a throwaway MVP shortcut. It must keep the final ownership boundaries. |
 | `hardcoded truth` | Do not embed product direction, memory records, active source lists, user-specific paths, benchmark assumptions, or current-goal state in product code. Use typed config/store/source graph/test fixtures. |
+| `gate` / `pre-edit gate` | Before non-trivial edits, produce the engineering gate checklist and use it to block unclear mechanism, missing consumer, missing verification, missing rollback, broad dashboard/benchmark/API expansion, or hardcoded volatile truth. |
 
 Hardcoding schema versions, enum values, stable command names, and explicit test fixtures is allowed. Hardcoding live product truth or memory truth is not.
 
@@ -145,6 +170,43 @@ Skills are build-time operating rules for this repo. They are not optional decor
 | Hard-to-reverse architecture/product decision | `adr-writer` |
 | Completion claim, release proof, or "is this done?" audit | `release-verifier` |
 | Eval failure, reviewer finding, broken operating rule, or failed proof | `repair-handoff` |
+
+## Pre-Edit Engineering Gate
+
+Non-trivial product work must satisfy this gate before implementation:
+
+```text
+task intent
+  -> mechanism
+  -> exact scope boundary
+  -> current consumer
+  -> verification surface
+  -> rollback/kill path
+  -> hardcoded-truth boundary
+  -> required skills
+  -> simplify/condense trigger
+  -> overclaim boundary
+```
+
+CLI/runtime contract:
+
+```bash
+pnpm run krn -- gate --task "<task>" [--path <path>]
+```
+
+The gate writes `.krn/gates/{run_id}/engineering-gate.json`. That file is
+runtime evidence only; it is not product truth and it does not replace actual
+tests, review, or simplify/condense.
+
+The gate must block or force planning mode when:
+
+- the mechanism is just a label like "best practices";
+- no current consumer exists;
+- verification is not named;
+- rollback/kill criteria are missing;
+- volatile product truth would be hardcoded;
+- broad dashboard, benchmark, API/cloud sync, or passive docs are proposed
+  before a typed consumed behavior exists.
 
 If a relevant skill does not trigger automatically, manually use it and record the missing-trigger as a skill-quality improvement candidate. Do not solve the same class of work from memory if a repo skill exists for it.
 
@@ -415,6 +477,21 @@ Acceptance:
 - [SIMPLIFY] Next candidate: a global pre-edit engineering gate/hook/skill eval that enforces mechanism, boundary, consumer, verification, rollback/kill, and hardcoded-truth checks before non-trivial edits.
 - [OVERCLAIM] This slice proves local MemoryStore selection/application wiring and schema-backed operating briefs, not final memory quality, productivity lift, team sync, or dashboard usefulness.
 - [NEXT] Commit and push this checkpoint; then build the global pre-edit engineering gate so the standards are enforced by tooling rather than repeated manual reminders.
+- [FACT] Pre-edit engineering gate slice added `KrnEngineeringGate` contract, valid and known-bad fixtures, parser exports, `krn gate --task <text> [--path <path>]`, and runtime evidence under `.krn/gates/{run_id}/engineering-gate.json`.
+- [FACT] `krn gate` enforces the non-trivial edit checklist: mechanism, scope boundary, consumer, verification, rollback/kill, hardcoded-truth boundary, skill routing, simplify cadence, and overclaim boundary.
+- [FACT] `krn gate` exits blocked for broad dashboard/benchmark/API/cloud-sync work when no typed consumed behavior is named.
+- [FACT] `AGENTS.md` now names the pre-edit engineering gate as the global rule for non-trivial product edits.
+- [FACT] `.codex/hooks/compact_continuity.py` now fingerprints `docs/goals/goal-038.md` and `docs/plans/canonical/draft.md` instead of defaulting compact continuity to historical `goal-006` / compatibility plan.
+- [FACT] Runtime gate output is ignored under `.krn/gates/**` while `.krn/gates/.gitignore` and `.krn/gates/README.md` are tracked.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/engineering-gate.test.ts packages/cli/test/gate.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [EVIDENCE] Real command: `pnpm run krn -- gate --task "Implement TypeScript contracts and CLI runtime evidence for the goal-038 pre-edit engineering gate" --path packages/contracts/src/engineering-gate.ts` wrote `.krn/gates/20260620T210426Z-375669/engineering-gate.json`.
+- [SIMPLIFY] Keep: `KrnEngineeringGate`, `krn gate`, `.krn/gates` runtime boundary, focused fixtures/tests, and the single `AGENTS.md` pointer because each has a current consumer.
+- [SIMPLIFY] Delete/avoid: no dashboard, no broad API/cloud sync, no benchmark lane, no passive memory note, no hook enforcement claim before the CLI gate proves useful.
+- [SIMPLIFY] Condensed: `gate` argument parsing lives in `packages/cli/src/gate.ts`; `packages/cli/src/main.ts` only dispatches the command so the new slice does not worsen the CLI monolith.
+- [SIMPLIFY] Next candidate: extract more command-specific argument parsing from `packages/cli/src/main.ts` only when touching those commands for real behavior.
+- [OVERCLAIM] This slice proves a schema-backed pre-edit gate and CLI runtime artifact. It does not prove Codex hook-level enforcement, productivity lift, full skill trigger quality, or that every future agent will obey the gate without running it.
+- [NEXT] Commit and push this checkpoint; then continue the next dependency-ordered final-product slice with `krn gate` as the first step for non-trivial edits.
 
 ## Disproves Completion
 

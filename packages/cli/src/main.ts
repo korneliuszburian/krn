@@ -15,6 +15,7 @@ import {
   type SourceBudgetMode,
 } from "@krn/contracts";
 import { buildKrnOperatingBrief, writeKrnOperatingBrief, type BriefArgs } from "./brief.js";
+import { buildKrnEngineeringGate, parseKrnGateArgs, writeKrnEngineeringGate } from "./gate.js";
 import { buildKrnReviewReport, writeKrnReviewReport } from "./review.js";
 
 type CliResult = {
@@ -242,7 +243,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
 }
 
 function parseInitArgs(argv: readonly string[]): InitArgs {
@@ -1174,6 +1175,14 @@ export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliR
       const brief = buildKrnOperatingBrief(args);
       const briefPath = writeKrnOperatingBrief(args.target, brief);
       return { exitCode: 0, stdout: `${briefPath}\n`, stderr: "" };
+    }
+
+    if (normalizedArgv[0] === "gate") {
+      const args = parseKrnGateArgs(normalizedArgv);
+      const gate = buildKrnEngineeringGate(args);
+      const gatePath = writeKrnEngineeringGate(args.target, gate);
+      const exitCode = gate.gate_status === "blocked" ? 1 : 0;
+      return { exitCode, stdout: `${gatePath}\n`, stderr: "" };
     }
 
     if (normalizedArgv[0] === "research-pack") {

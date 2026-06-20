@@ -25,6 +25,7 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 - For long-running work, keep a self-contained goal/plan and use project-local `.codex` hooks for compact checkpoints when possible.
 - GitHub stars, rankings, and hype are discovery signals only. Extract the mechanism before using any project as a pattern.
 - Use the senior engineering lens for every non-trivial decision: name the mechanism, tradeoff, simplest viable design, verification surface, and overclaim boundary. Details live in [KRN senior engineering lens](docs/memory/product/2026-06-20--krn-senior-engineering-lens.md).
+- Before non-trivial product edits, produce or run a pre-edit engineering gate with `krn gate --task <text>` semantics: mechanism, scope, consumer, verification, rollback/kill, hardcoded-truth, skill routing, simplify cadence, and overclaim boundary must be explicit.
 
 ## Engineering Kernel
 

@@ -1,4 +1,14 @@
 export {
+  KrnEngineeringGateSchema,
+  krnEngineeringGateJsonSchema,
+  parseKrnEngineeringGate,
+  type EngineeringGateCheckId,
+  type EngineeringGateCheckStatus,
+  type EngineeringGateStatus,
+  type KrnEngineeringGate,
+  type ScopeClassification,
+} from "./engineering-gate.js";
+export {
   KrnOperatingBriefSchema,
   krnOperatingBriefJsonSchema,
   parseKrnOperatingBrief,

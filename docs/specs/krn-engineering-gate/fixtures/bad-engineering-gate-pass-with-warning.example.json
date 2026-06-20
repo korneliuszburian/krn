@@ -1,0 +1,101 @@
+{
+  "schema_version": "krn-engineering-gate.v1",
+  "kind": "krn_engineering_gate",
+  "run_id": "20260620T210000Z-1000",
+  "created_at": "2026-06-20T21:00:00.000Z",
+  "target_root": "/tmp/krn-target",
+  "command": "krn gate",
+  "task_intent": "Implement a non-trivial KRN feature",
+  "target_path": "packages/contracts/src/example.ts",
+  "scope_classification": "non_trivial",
+  "gate_status": "pass",
+  "checks": [
+    {
+      "id": "mechanism",
+      "status": "pass",
+      "requirement": "Name the concrete mechanism.",
+      "action": "Use a typed object.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "scope_boundary",
+      "status": "pass",
+      "requirement": "Name scope.",
+      "action": "Touch only one slice.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "consumer",
+      "status": "warn",
+      "requirement": "Name consumer.",
+      "action": "Consumer not yet known.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "verification",
+      "status": "pass",
+      "requirement": "Name verification.",
+      "action": "Run tests.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "rollback_or_kill",
+      "status": "pass",
+      "requirement": "Name rollback.",
+      "action": "Delete if useless.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "hardcoded_truth",
+      "status": "pass",
+      "requirement": "Avoid hardcoded truth.",
+      "action": "Use config.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "skill_routing",
+      "status": "pass",
+      "requirement": "Use skills.",
+      "action": "Use matching skill.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "simplify_cadence",
+      "status": "pass",
+      "requirement": "Simplify.",
+      "action": "Review diff.",
+      "evidence": "docs/goals/goal-038.md"
+    },
+    {
+      "id": "overclaim_boundary",
+      "status": "pass",
+      "requirement": "Name boundary.",
+      "action": "Do not overclaim.",
+      "evidence": "docs/goals/goal-038.md"
+    }
+  ],
+  "required_skills": [],
+  "blocked_actions": [
+    "Do not edit before gate."
+  ],
+  "hardcoded_truth_policy": {
+    "allowed": [
+      "schema versions"
+    ],
+    "forbidden": [
+      "live product truth"
+    ]
+  },
+  "next_steps": [
+    {
+      "step": "Implement",
+      "verification": "Run tests"
+    }
+  ],
+  "runtime_report_path": ".krn/gates/20260620T210000Z-1000/engineering-gate.json",
+  "source_refs": [
+    "docs/goals/goal-038.md"
+  ],
+  "overclaim_boundary": "Bad fixture.",
+  "interpretation_caveat": "Bad fixture."
+}
