@@ -18,6 +18,7 @@ sources:
   - docs/skills/operator-pipeline.md
   - docs/evals/STANDARD.md
   - docs/goals/goal-009.md
+  - docs/goals/goal-010.md
 ---
 
 # KRN Final Product Plan
@@ -92,7 +93,7 @@ repo + task
   -> krn CLI creates typed local runtime reports under .krn/
   -> contracts parse every external object before use
   -> evals test behavior and failure modes
-  -> proposal store records source-backed append-only changes
+  -> MCP proposal tool records source-backed append-only review input in the proposal store
   -> human/dashboard review promotes approved memory/source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -105,7 +106,7 @@ Layer responsibilities:
 - `packages/contracts` owns durable schemas and parsers. Consumers must not reimplement validation.
 - `packages/cli` is the local runtime ledger. Commands emit schema-backed reports and default to no target mutation.
 - `packages/evals` turns patterns and failures into deterministic gates before dashboard/API claims.
-- `packages/mcp` exposes the control plane: read-only resources first, proposal-only writes second, destructive tools never by default.
+- `packages/mcp` exposes the control plane: read-only resources first, proposal-only append-only writes second, destructive tools never by default.
 - `.krn/` stores runtime artifacts. Reviewed knowledge moves into `docs/memory`, `docs/plans/canonical/SOURCES.md`, ADRs, or goal files.
 - `apps/dashboard` comes after view models and proposal records. It reads typed product objects only.
 

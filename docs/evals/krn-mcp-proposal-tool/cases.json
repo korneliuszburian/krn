@@ -1,0 +1,102 @@
+[
+  {
+    "id": "proposal-tool-listed-with-read-resources",
+    "expected_behavior": "The STDIO MCP server lists the five read-only runtime resources and exactly one proposal-only tool named krn_store_control_plane_proposal.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-010.md",
+      "docs/specs/krn-mcp-proposal-tool/README.md",
+      "https://developers.openai.com/codex/mcp"
+    ],
+    "assertions": [
+      "allowlisted resources remain listed",
+      "one proposal tool listed",
+      "tool annotations are non-destructive hints only"
+    ],
+    "metrics": [
+      "control_plane_transport_score",
+      "runtime_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "KRN either hides the proposal tool, exposes extra tools, or breaks read-only resources while adding proposal capability."
+  },
+  {
+    "id": "source-backed-proposal-tool-stores",
+    "expected_behavior": "Calling the MCP proposal tool with a valid source-backed proposal stores one append-only proposal record and returns a typed non-approval result.",
+    "source_patterns": [
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/specs/krn-mcp-proposal-tool/README.md",
+      "C004",
+      "LOCAL017"
+    ],
+    "assertions": [
+      "tool call succeeds",
+      "typed tool result parses",
+      "proposal stored under .krn/proposals",
+      "target path not mutated",
+      "result does not approve proposal"
+    ],
+    "metrics": [
+      "source_grounding_score",
+      "runtime_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The MCP tool accepts proposal-looking input but bypasses source-backed persistence, mutates target state, or implies approval."
+  },
+  {
+    "id": "duplicate-idempotency-through-tool-stable",
+    "expected_behavior": "Calling the MCP proposal tool twice with identical input returns the existing proposal path and does not create duplicate records.",
+    "source_patterns": [
+      "docs/specs/krn-mcp-proposal-tool/README.md",
+      "docs/evals/krn-proposal-store/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "first call stored",
+      "second call already stored",
+      "same proposal path returned",
+      "single proposal record exists"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "drift_resistance_score"
+    ],
+    "failure_mode": "The MCP tool is not idempotent enough to back a future proposal workflow."
+  },
+  {
+    "id": "unbacked-source-ref-tool-error",
+    "expected_behavior": "Calling the MCP proposal tool with schema-valid but unbacked source refs returns a tool error and creates no proposal record.",
+    "source_patterns": [
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/krn-proposal-store/README.md",
+      "C015"
+    ],
+    "assertions": [
+      "tool call returns error",
+      "no proposal record created"
+    ],
+    "metrics": [
+      "source_grounding_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The MCP tool accepts source-looking strings as evidence without checking the source ledger or local files."
+  },
+  {
+    "id": "unsafe-target-path-tool-error",
+    "expected_behavior": "Calling the MCP proposal tool with a target path outside the target root returns a tool error and creates no proposal record.",
+    "source_patterns": [
+      "docs/specs/krn-mcp-proposal-tool/README.md",
+      "docs/evals/krn-proposal-store/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "tool call returns error",
+      "no proposal record created"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The MCP tool weakens path safety before dashboard or approval surfaces exist."
+  }
+]

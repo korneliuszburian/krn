@@ -1,9 +1,15 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { parseKrnControlPlaneResource } from "@krn/contracts";
+import {
+  KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+  parseKrnControlPlaneProposal,
+  parseKrnControlPlaneResource,
+  parseKrnMcpProposalToolResult,
+  type KrnControlPlaneProposal,
+} from "@krn/contracts";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
@@ -12,6 +18,15 @@ function copyJsonFixture(targetRoot: string, fixturePath: string, runtimePath: s
   const absoluteRuntimePath = join(targetRoot, runtimePath);
   mkdirSync(dirname(absoluteRuntimePath), { recursive: true });
   writeFileSync(absoluteRuntimePath, readFileSync(join(root, fixturePath), "utf8"), "utf8");
+}
+
+function writeText(path: string, content: string): void {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content, "utf8");
+}
+
+function readJson(path: string): unknown {
+  return JSON.parse(readFileSync(join(root, path), "utf8")) as unknown;
 }
 
 function createRuntimeTarget(): string {
@@ -36,7 +51,59 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-test/report.json",
   );
+  writeText(join(targetRoot, "docs/goals/goal-006.md"), "# Goal 006\n");
+  writeText(join(targetRoot, "docs/goals/goal-008.md"), "# Goal 008\n");
+  writeText(join(targetRoot, "docs/specs/krn-mcp-read-model/README.md"), "# MCP read model\n");
+  writeText(
+    join(targetRoot, "docs/plans/canonical/SOURCES.md"),
+    [
+      "# Canonical Sources",
+      "",
+      "| ID | Tier | Sector | Source | Use / caveat |",
+      "|---|---|---|---|---|",
+      "| S007 | A | MCP | https://developers.openai.com/codex/mcp | MCP resources/tools/prompts, config, auth, approvals. |",
+      "",
+      "| Claim ID | Claim | Source IDs | Evidence grade | Used for decision? | Risk if wrong |",
+      "|---|---|---|---|---|---|",
+      "| C004 | MCP/API writes need schemas, approvals, idempotency, and audit. | S007 | A | yes | Unsafe state mutation. |",
+      "",
+      "| ID | Evidence | Product implication |",
+      "|---|---|---|",
+      "| LOCAL017 | Source-backed proposal store exists. | Proposal tools must reuse the store. |",
+      "",
+    ].join("\n"),
+  );
   return targetRoot;
+}
+
+function collectFiles(targetRoot: string, prefix = ""): string[] {
+  const absoluteRoot = join(targetRoot, prefix);
+  if (!existsSync(absoluteRoot)) {
+    return [];
+  }
+  return readdirSync(absoluteRoot, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = join(prefix, entry.name);
+    if (entry.isDirectory()) {
+      return collectFiles(targetRoot, entryPath);
+    }
+    return entryPath.replaceAll("\\", "/");
+  });
+}
+
+function proposalFiles(targetRoot: string): string[] {
+  return collectFiles(targetRoot, ".krn/proposals").filter((file) => file.endsWith("proposal.json"));
+}
+
+function validProposal(): KrnControlPlaneProposal {
+  return parseKrnControlPlaneProposal(
+    readJson("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json"),
+  );
+}
+
+function badSourceRefProposal(): KrnControlPlaneProposal {
+  return parseKrnControlPlaneProposal(
+    readJson("docs/specs/krn-control-plane-proposal/fixtures/bad-unbacked-source-ref.example.json"),
+  );
 }
 
 async function withClient<T>(targetRoot: string, callback: (client: Client) => Promise<T>): Promise<T> {
@@ -84,12 +151,88 @@ describe("KRN MCP stdio server", () => {
     });
   }, 15_000);
 
-  it("rejects unknown resource URIs and exposes no tools", async () => {
+  it("rejects unknown resource URIs and exposes only the proposal store tool", async () => {
     const targetRoot = createRuntimeTarget();
 
     await withClient(targetRoot, async (client) => {
-      expect(client.getServerCapabilities()?.tools).toBeUndefined();
+      const tools = await client.listTools();
+      expect(tools.tools.map((tool) => tool.name)).toEqual([KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL]);
+      expect(tools.tools[0]?.annotations).toMatchObject({
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      });
       await expect(client.readResource({ uri: "krn://runtime/unknown" })).rejects.toThrow();
     });
   }, 15_000);
+
+  it("stores a source-backed proposal through the MCP tool without mutating the target path", async () => {
+    const targetRoot = createRuntimeTarget();
+
+    await withClient(targetRoot, async (client) => {
+      const proposal = validProposal();
+      const targetPath = proposal.target.target_type === "path" ? proposal.target.path : null;
+      const first = await client.callTool({
+        name: KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+        arguments: proposal,
+      });
+      if (!("structuredContent" in first)) {
+        throw new Error("MCP tool result did not include structuredContent");
+      }
+      const firstResult = parseKrnMcpProposalToolResult(first.structuredContent);
+
+      expect(first.isError).not.toBe(true);
+      expect(firstResult.status).toBe("stored");
+      expect(firstResult.approved).toBe(false);
+      expect(firstResult.mutated_target).toBe(false);
+      expect(firstResult.proposal_store.proposal_path).toMatch(/^\.krn\/proposals\/.+\/proposal\.json$/);
+      expect(existsSync(join(targetRoot, firstResult.proposal_store.proposal_path))).toBe(true);
+      expect(targetPath === null || existsSync(join(targetRoot, targetPath))).toBe(false);
+
+      const second = await client.callTool({
+        name: KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+        arguments: proposal,
+      });
+      if (!("structuredContent" in second)) {
+        throw new Error("MCP duplicate result did not include structuredContent");
+      }
+      const secondResult = parseKrnMcpProposalToolResult(second.structuredContent);
+
+      expect(secondResult.status).toBe("already_stored");
+      expect(secondResult.proposal_store.proposal_path).toBe(firstResult.proposal_store.proposal_path);
+      expect(proposalFiles(targetRoot)).toHaveLength(1);
+    });
+  }, 15_000);
+
+  it("returns tool errors for invalid proposals without creating proposal records", async () => {
+    const badSourceTarget = createRuntimeTarget();
+    await withClient(badSourceTarget, async (client) => {
+      const result = await client.callTool({
+        name: KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+        arguments: badSourceRefProposal(),
+      });
+
+      expect(result.isError).toBe(true);
+      expect(proposalFiles(badSourceTarget)).toEqual([]);
+    });
+
+    const unsafePathTarget = createRuntimeTarget();
+    await withClient(unsafePathTarget, async (client) => {
+      const proposal = validProposal();
+      const result = await client.callTool({
+        name: KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+        arguments: {
+          ...proposal,
+          target: {
+            target_type: "path",
+            path: "../outside.md",
+          },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(proposalFiles(unsafePathTarget)).toEqual([]);
+    });
+  }, 20_000);
 });

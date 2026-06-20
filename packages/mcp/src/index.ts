@@ -288,6 +288,14 @@ export function readKrnControlPlaneResource(
   return loadArtifactResource(targetRoot, spec, now);
 }
 
+export {
+  KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+  KrnControlPlaneProposalSchema,
+  KrnMcpProposalToolResultSchema,
+  parseKrnMcpProposalToolResult,
+  type KrnMcpProposalToolResult,
+} from "@krn/contracts";
+
 function dashboardResourceHealthStatus(summary: KrnControlPlaneResourceIndex["summary"]): "ready" | "degraded" | "blocked" {
   if (summary.invalid_resources > 0) {
     return "blocked";

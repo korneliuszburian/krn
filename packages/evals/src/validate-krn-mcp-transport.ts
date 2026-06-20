@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { parseKrnControlPlaneResource } from "@krn/contracts";
+import { KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL, parseKrnControlPlaneResource } from "@krn/contracts";
 
 type EvalCase = {
   id: string;
@@ -179,14 +179,17 @@ async function runValidation(): Promise<EvalReport> {
     await withClient(targetRoot, async (client) => {
       const resources = await client.listResources();
       const uris = resources.resources.map((resource) => resource.uri);
-      const noToolsCapability = client.getServerCapabilities()?.tools === undefined;
+      const tools = await client.listTools();
+      const toolNames = tools.tools.map((tool) => tool.name);
+      const singleProposalTool =
+        toolNames.length === 1 && toolNames[0] === KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL;
       results.push(
         result(
           listCase.id,
-          hasRequiredUris(uris) && uris.length === REQUIRED_URIS.length && noToolsCapability,
-          ["stdio server starts", "allowlisted resources listed", "no tools capability advertised"],
+          hasRequiredUris(uris) && uris.length === REQUIRED_URIS.length && singleProposalTool,
+          ["stdio server starts", "allowlisted resources listed", "single proposal tool advertised separately"],
           listCase.failure_mode,
-          "STDIO MCP server listed allowlisted resources and advertised no tools capability.",
+          "STDIO MCP server listed allowlisted resources and advertised exactly one separate proposal-only tool.",
         ),
       );
     });
@@ -301,7 +304,7 @@ async function runValidation(): Promise<EvalReport> {
     cases: results,
     generated_resource_uri: generatedResourceUri,
     interpretation_caveat:
-      "This eval proves the local KRN MCP STDIO transport for read-only resources only; it does not prove ChatGPT connector behavior, dashboard readiness, write-tool safety, human approval, or productivity lift.",
+      "This eval proves local KRN MCP STDIO read-resource transport and tool listing only; proposal-tool behavior is covered by krn-mcp-proposal-tool, and this does not prove ChatGPT connector behavior, dashboard readiness, human approval, or productivity lift.",
   };
 }
 

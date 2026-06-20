@@ -57,3 +57,10 @@ export {
   type DashboardRuntimeArtifact,
   type KrnDashboardViewModel,
 } from "./dashboard-view-model.js";
+export {
+  KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
+  KrnMcpProposalToolResultSchema,
+  krnMcpProposalToolResultJsonSchema,
+  parseKrnMcpProposalToolResult,
+  type KrnMcpProposalToolResult,
+} from "./mcp-proposal-tool.js";

@@ -8,10 +8,10 @@
 
 ## KRN Mapping
 
-- `stdio-server-lists-allowlisted-resources` checks the first real transport boundary without enabling tools.
+- `stdio-server-lists-allowlisted-resources` checks the first real transport boundary and verifies that the separate proposal-only tool is the only advertised tool.
 - `stdio-server-reads-schema-backed-resources` checks that transport responses preserve typed resource contracts and caveats.
-- `stdio-server-rejects-unknown-uri` checks the allowlist failure mode before any proposal/write tools exist.
+- `stdio-server-rejects-unknown-uri` checks the resource allowlist failure mode separately from proposal-tool behavior.
 
 ## Non-Claim
 
-This mapping does not prove ChatGPT connector behavior, dashboard readiness, write-tool safety, human approval, or productivity lift.
+This mapping does not prove ChatGPT connector behavior, dashboard readiness, proposal-tool behavior, human approval, or productivity lift.

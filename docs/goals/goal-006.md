@@ -34,10 +34,9 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `packages/mcp` now also has a local STDIO MCP server entrypoint over that read-only resource model.
   - `krn://runtime/summary`, `krn://runtime/init/latest`, `krn://runtime/doctor/latest`, `krn://runtime/eval/latest`, and `krn://runtime/review/latest` are the current allowlisted resources.
   - `pnpm run eval:krn-mcp` passed 3/3 cases and 7/7 assertions.
-  - `pnpm run eval:krn-mcp-transport` generated `.krn/evals/krn-mcp-transport/20260619T224349Z-1769625/report.json` with 3/3 cases and 7/7 assertions passing.
-  - `pnpm run krn -- eval` generated `.krn/eval/20260619T224349Z-1769637/report.json` with 5/5 modules, 15/15 cases, and 37/37 assertions passing.
+  - The initial `krn-mcp-transport` eval proved the local STDIO resource transport before proposal tools were added; the current transport evidence is listed below.
   - `pnpm run krn -- review` generated `.krn/review/20260619T230302Z-1808550/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
-  - The STDIO transport advertises no MCP tools; no proposal/write/destructive tools are registered yet.
+  - The STDIO transport now advertises exactly one proposal-only MCP tool: `krn_store_control_plane_proposal`.
   - `packages/contracts` now exports the standalone `KrnControlPlaneProposal` contract with valid and known-bad fixtures under `docs/specs/krn-control-plane-proposal/`.
   - `pnpm test -- packages/contracts/test/control-plane-proposal.test.ts` passed with the known-bad approved mutation fixture rejected.
   - `packages/contracts` now exports the standalone `KrnDashboardViewModel` contract with valid and known-bad fixtures under `docs/specs/krn-dashboard-view-model/`.
@@ -46,6 +45,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `packages/mcp` now exports `validateProposalSourceRefs` and `storeKrnControlPlaneProposal` for source-backed append-only proposal persistence under `.krn/proposals`.
   - `pnpm run eval:krn-proposal-store` generated `.krn/evals/krn-proposal-store/20260619T231608Z-1828089/report.json` with 4/4 cases and 9/9 assertions passing.
   - `krn eval` now includes `krn-proposal-store` as a deterministic Slice 3 module.
+  - `packages/contracts` now exports `KrnMcpProposalToolResult` and `KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL` for the first MCP proposal-only tool result boundary.
+  - `packages/mcp` registers exactly one MCP tool, `krn_store_control_plane_proposal`, which parses `KrnControlPlaneProposal`, calls `storeKrnControlPlaneProposal`, and returns `approved: false` / `mutated_target: false`.
+  - `pnpm run eval:krn-mcp-transport` generated `.krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json` with 3/3 cases and 7/7 assertions after the transport began advertising the proposal-only tool.
+  - `pnpm run eval:krn-mcp-proposal-tool` generated `.krn/evals/krn-mcp-proposal-tool/20260620T000445Z-1940364/report.json` with 5/5 cases and 16/16 assertions.
+  - `pnpm run krn -- eval` generated `.krn/eval/20260620T000445Z-1940365/report.json` with 7/7 modules, 24/24 cases, and 62/62 assertions, including `krn-mcp-proposal-tool`.
+  - This still does not prove human approval quality, dashboard UI readiness, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, or measured lift.
 
 ## Objective
 

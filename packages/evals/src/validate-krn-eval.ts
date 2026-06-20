@@ -43,6 +43,7 @@ const REQUIRED_MODULES = [
   "krn-mcp-read-model",
   "krn-mcp-transport",
   "krn-proposal-store",
+  "krn-mcp-proposal-tool",
 ];
 
 function readJson(path: string): unknown {

@@ -43,7 +43,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | MCP/API | Small allowlisted MCP | S007, S022 | A | Resources/tools/prompts with approvals | Strong fit | Unsafe broad API | adopt |
 | MCP/API | ChatGPT read-only reviewer gateway | S078-S083 | A | HTTPS MCP connector exposes source/claim/eval/memory state | Later optional fit after local KRN loop proves useful | Plan/workspace availability and stale context | defer |
 | MCP/API | Direct ChatGPT-to-local-Codex stdio | S081-S085 | A | Skips gateway/tunnel and permission model | Bad fit | Not the documented connector architecture | reject |
-| MCP/API | Append-only idempotent writes | S007, S015 | A | Traceable mutation with IDs | Strong fit | Coupling and storage overhead | adopt |
+| MCP/API | Append-only idempotent writes | S007, S015, LOCAL017, LOCAL019 | A/local | Traceable proposal mutation with IDs, source-ref validation, and typed non-approval results | Strong fit | Coupling, storage overhead, or proposal output overclaimed as approval | adopt |
 | MCP/API | Destructive autonomous tools | S007, S022 | A | Agent writes production state | Bad fit | Unapproved state mutation | reject |
 | Evals | Trace-derived micro/macro evals | S013-S016, S053 | A | Convert failures into fixtures and metrics | Strong fit | Green demos not tied to work | adopt |
 | Evals | Fixed-budget metric loop | S088 | B | Baseline, one bounded change, fixed eval, metric delta, keep/discard | Strong fit for worker lanes | Endless autonomous loop or overfitting one metric | test |

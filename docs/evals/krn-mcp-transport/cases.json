@@ -1,7 +1,7 @@
 [
   {
     "id": "stdio-server-lists-allowlisted-resources",
-    "expected_behavior": "The STDIO MCP server starts through the SDK client, advertises no tools, and lists only the five allowlisted runtime resource URIs.",
+    "expected_behavior": "The STDIO MCP server starts through the SDK client, lists only the five allowlisted runtime resource URIs, and advertises exactly one separate proposal-only tool covered by krn-mcp-proposal-tool.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/goals/goal-008.md",
@@ -11,10 +11,10 @@
     "assertions": [
       "stdio server starts",
       "allowlisted resources listed",
-      "no tools capability advertised"
+      "single proposal tool advertised separately"
     ],
     "metrics": ["control_plane_transport_score", "drift_resistance_score"],
-    "failure_mode": "The transport layer is missing, exposes tools too early, or diverges from the allowlisted read model."
+    "failure_mode": "The transport layer is missing, diverges from the allowlisted read model, or exposes an unexpected tool surface."
   },
   {
     "id": "stdio-server-reads-schema-backed-resources",

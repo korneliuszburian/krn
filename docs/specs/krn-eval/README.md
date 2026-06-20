@@ -38,6 +38,8 @@ Supported module IDs:
 - `krn-review-contracts`
 - `krn-mcp-read-model`
 - `krn-mcp-transport`
+- `krn-proposal-store`
+- `krn-mcp-proposal-tool`
 
 If no module is supplied, the command runs all supported modules.
 
@@ -63,7 +65,7 @@ Allowed writes:
 
 - `.krn/eval/{run_id}/report.json`
 - `.krn/evals/{module_id}/{module_run_id}/report.json`
-- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, or transport eval output under `.krn/evals/krn-mcp-transport/**`
+- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, transport eval output under `.krn/evals/krn-mcp-transport/**`, proposal-store eval output under `.krn/evals/krn-proposal-store/**`, or proposal-tool eval output under `.krn/evals/krn-mcp-proposal-tool/**`
 
 Forbidden default writes:
 

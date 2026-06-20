@@ -1,7 +1,7 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 modules plus Slice 3 MCP read/transport/proposal-store modules.",
+    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 modules plus Slice 3 MCP read/transport/proposal-store/proposal-tool modules.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/specs/krn-eval/README.md",
@@ -36,7 +36,7 @@
   },
   {
     "id": "generated-krn-eval-report-parses",
-    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval and the generated report parses through @krn/contracts with init, doctor, review, MCP read-model, MCP transport, and proposal-store module summaries.",
+    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval and the generated report parses through @krn/contracts with init, doctor, review, MCP read-model, MCP transport, proposal-store, and proposal-tool module summaries.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/specs/krn-eval/README.md",
