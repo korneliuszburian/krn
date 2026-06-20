@@ -129,6 +129,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-repair-record` generated `.krn/evals/krn-repair-record/20260620T075903Z-2754248/report.json` with 3/3 cases and 9/9 assertions.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T080015Z-2757479/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions, including `krn-repair-record`.
   - This proves typed no-lift repair handoff only. It still does not prove repair quality, measured productivity lift, prompt improvement, benchmark statistical validity, HTTP/API readiness, ChatGPT connector behavior, human review quality, dashboard command readiness, or `krn repair` CLI readiness.
+  - `docs/goals/goal-022.md` applied the first bounded repair attempt from the no-lift `KrnRepairRecord` by making live-suite current-parent/latest-child scoring data-driven, routing assisted fixtures through `goal-021`, and adding fallback final-output JSON for live timeout/spawn-error paths.
+  - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T083211Z-2826332/report.json` with 4/4 cases and 16/16 assertions after the repair.
+  - The first explicit live repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T081426Z-2776468/report.json` with 4/5 cases and 13/22 assertions, exposing a missing-final-artifact defect when `goal006-next-benchmark-action.assisted` timed out; its benchmark report showed baseline `0.9367`, assisted `0.6533`, and delta `-0.2834`.
+  - The final explicit live repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T083233Z-2828288/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T083233Z-2828288/report.json` with baseline `0.9644`, assisted `0.62`, and delta `-0.3444`.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T085427Z-2888524/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions after the repair-attempt changes.
+  - This proves repair-attempt measurement and timeout observability only. It still does not prove repair success, productivity lift, benchmark statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or `krn benchmark`/`krn repair` CLI readiness.
 
 ## Objective
 
@@ -375,7 +381,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-021.md
+docs/goals/goal-022.md
 ```
 
-Next child-goal candidates after `goal-021` are a first bounded repair attempt from the generated no-lift `KrnRepairRecord`, expanding the fixed live suite toward the 20-task lift gate only after a repair hypothesis is tested, surfacing repair records through read-only MCP/dashboard views, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence or a proposed repair record.
+Next child-goal candidates after `goal-022` are a bounded assisted-prompt-load/timeout repair for the first live-suite task, first-task next-action routing repair, live runner timeout-policy hardening, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until a repair attempt improves or at least stabilizes the live delta. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, or a green live shape report with negative delta.

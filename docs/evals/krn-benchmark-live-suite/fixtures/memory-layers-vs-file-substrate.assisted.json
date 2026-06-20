@@ -1,15 +1,17 @@
 {
   "selected_phase": "P8 benchmark",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-019.md",
+  "latest_child_goal": "docs/goals/goal-021.md",
   "source_refs": [
     "docs/goals/goal-006.md",
+    "docs/goals/goal-021.md",
     "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-no-lift-repair-record.md",
     "docs/product/final-product-plan.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Keep file-backed source-backed memory as the auditable substrate and expand the benchmark suite so memory/control changes are judged by measured behavior instead of premature infrastructure.",
+  "next_action": "Keep file-backed source-backed memory as the auditable substrate and run a bounded benchmark repair attempt so memory/control changes are judged by measured behavior instead of premature infrastructure.",
   "should_claim_productivity_lift": false,
   "overclaim_boundary": "File-backed memory is not the breakthrough by itself, and a benchmark suite still must not claim lift until the evidence passes the gate.",
-  "rationale": "The current gap is not a missing vector store; it is proving that the layered memory/control/eval loop improves Codex behavior."
+  "rationale": "The current gap is not a missing vector store; goal 021 shows the immediate product need is using repair records and reruns to prove whether the layered memory/control/eval loop improves Codex behavior."
 }

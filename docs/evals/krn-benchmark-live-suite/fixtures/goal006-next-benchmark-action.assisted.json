@@ -1,18 +1,20 @@
 {
   "selected_phase": "P8 benchmark",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-019.md",
+  "latest_child_goal": "docs/goals/goal-021.md",
   "source_refs": [
     "AGENTS.md",
     "docs/memory/INDEX.md",
     "docs/goals/goal-006.md",
-    "docs/goals/goal-019.md",
+    "docs/goals/goal-020.md",
+    "docs/goals/goal-021.md",
     "docs/specs/krn-benchmark-report/README.md",
-    "docs/evals/krn-benchmark-live-pilot/README.md",
+    "docs/specs/krn-repair-record/README.md",
+    "docs/evals/krn-repair-record/README.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Create a multi-task live codex exec benchmark suite with a fixed task registry and KrnBenchmarkReport output before adding more benchmark dashboard commands.",
+  "next_action": "Apply one bounded repair attempt from the KrnRepairRecord, rerun the live codex exec benchmark suite explicitly, and compare the before/after delta before expanding the suite or adding dashboard/API commands.",
   "should_claim_productivity_lift": false,
-  "overclaim_boundary": "The one-task pilot and a three-task suite do not prove productivity lift; lift needs the minimum benchmark gate and positive live evidence.",
-  "rationale": "Benchmark Reports already made no-lift evidence visible, so the next dependency is broader benchmark measurement coverage."
+  "overclaim_boundary": "A proposed repair record does not prove repair quality or productivity lift. The three-task suite remains below the lift gate, so the repair attempt can only compare live delta before/after.",
+  "rationale": "Goal 021 converted the no-lift benchmark evidence into a typed repair record. Goal 006 requires failures to move through repair record, smallest fix, rerun, and keep/refine/remove decision before prompt tuning, suite expansion, dashboard commands, or productivity claims."
 }

@@ -24,6 +24,8 @@ const BenchmarkTaskDefinitionSchema = z
     prompt: z.string().min(1),
     assisted_guidance: z.array(z.string().min(1)).min(1),
     source_refs: z.array(z.string().min(1)).min(1),
+    parent_goal_keywords: z.array(z.string().min(1)).min(1),
+    latest_child_goal_keywords: z.array(z.string().min(1)).min(1),
     expected_phase_keywords: z.array(z.string().min(1)).min(1),
     required_source_ref_keywords: z.array(z.string().min(1)).min(1),
     next_action_keywords: z.array(z.string().min(1)).min(1),
@@ -279,10 +281,10 @@ function scoreOutput(task: BenchmarkTaskDefinition, input: unknown): ScoredOutpu
   );
   const goalAlignmentScore = roundScore(
     [
-      includesAny(output.current_parent_goal, ["docs/goals/goal-006.md", "goal-006"]),
-      includesAny(output.latest_child_goal, ["docs/goals/goal-019.md", "goal-019", "docs/goals/goal-020.md", "goal-020"]),
-      sourceIncludes(output, "docs/goals/goal-006.md"),
-      sourceIncludes(output, "docs/goals/goal-019.md") || sourceIncludes(output, "docs/goals/goal-020.md"),
+      includesAny(output.current_parent_goal, task.parent_goal_keywords),
+      includesAny(output.latest_child_goal, task.latest_child_goal_keywords),
+      task.parent_goal_keywords.some((keyword) => sourceIncludes(output, keyword)),
+      task.latest_child_goal_keywords.some((keyword) => sourceIncludes(output, keyword)),
     ].filter(Boolean).length / 4,
   );
   const nextActionScore = keywordHitRate(output.next_action, task.next_action_keywords);
@@ -312,6 +314,34 @@ function writeText(path: string, content: string): void {
   writeFileSync(path, content, "utf8");
 }
 
+function writeFallbackFinalOutput(
+  path: string,
+  task: BenchmarkTaskDefinition,
+  label: "baseline" | "assisted",
+  error: {
+    reason: string;
+    exitCode: number | null;
+    timedOut: boolean;
+    stderrPath: string;
+  },
+): void {
+  writeText(
+    path,
+    `${JSON.stringify(
+      {
+        error: error.reason,
+        task_id: task.task_id,
+        label,
+        exit_code: error.exitCode,
+        timed_out: error.timedOut,
+        stderr_path: relativeRuntimePath(error.stderrPath),
+      },
+      null,
+      2,
+    )}\n`,
+  );
+}
+
 function buildPrompt(task: BenchmarkTaskDefinition, kind: "baseline" | "assisted"): string {
   const schemaInstruction =
     "Return only the JSON object requested by the provided schema. Do not edit files. Do not claim productivity lift unless benchmark evidence explicitly satisfies the lift gate.";
@@ -336,6 +366,8 @@ Use KRN's project-local operating layer explicitly:
 - read docs/goals/goal-006.md,
 - read docs/goals/goal-019.md if it exists,
 - read docs/goals/goal-020.md if it exists,
+- read docs/goals/goal-021.md if it exists,
+- read docs/specs/krn-repair-record/README.md if it exists,
 - read docs/evals/krn-benchmark-live-suite/tasks.json,
 - read docs/plans/canonical/SOURCES.md.
 
@@ -383,22 +415,20 @@ function runCodexExec(
 
   if (completed.error) {
     errorMessage = completed.error.message;
+    writeFallbackFinalOutput(finalPath, task, label, {
+      reason: completed.error.message,
+      exitCode: completed.status,
+      timedOut: completed.error.message.includes("ETIMEDOUT"),
+      stderrPath,
+    });
   } else if (!existsSync(finalPath)) {
     errorMessage = "codex exec did not write final JSON output";
-    writeText(
-      finalPath,
-      `${JSON.stringify(
-        {
-          error: "missing_codex_final_output",
-          task_id: task.task_id,
-          label,
-          exit_code: completed.status,
-          stderr_path: relativeRuntimePath(stderrPath),
-        },
-        null,
-        2,
-      )}\n`,
-    );
+    writeFallbackFinalOutput(finalPath, task, label, {
+      reason: "missing_codex_final_output",
+      exitCode: completed.status,
+      timedOut: false,
+      stderrPath,
+    });
   } else {
     try {
       const finalOutput = readJson(finalPath);
@@ -432,17 +462,21 @@ function relativeRuntimePath(path: string): string {
 function repairTargets(): KrnBenchmarkReport["repair_targets"] {
   return [
     {
-      id: "reach-live-benchmark-lift-gate",
+      id: "repair-live-suite-current-child-routing",
       owner: "krn",
       next_action:
-        "Expand live_codex_exec benchmark coverage toward the minimum task gate and keep repair targets tied to failed or low-scoring tasks.",
+        "Apply bounded repair attempts from the no-lift KrnRepairRecord, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
       source_refs: [
         "docs/goals/goal-006.md",
         "docs/goals/goal-020.md",
+        "docs/goals/goal-021.md",
+        "docs/goals/goal-022.md",
         "docs/specs/krn-benchmark-report/README.md",
+        "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
-      failure_mode: "A small or fixture-backed benchmark suite is overclaimed as measured productivity improvement.",
+      failure_mode:
+        "A no-lift benchmark result is routed to broad tuning or suite expansion without a measured repair attempt.",
     },
   ];
 }
@@ -543,7 +577,10 @@ function buildBenchmarkReport(
     source_refs: [
       "docs/goals/goal-006.md",
       "docs/goals/goal-020.md",
+      "docs/goals/goal-021.md",
+      "docs/goals/goal-022.md",
       "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-repair-record/README.md",
       "docs/evals/krn-benchmark-live-suite/README.md",
       "docs/evals/krn-benchmark-live-suite/tasks.json",
       "docs/evals/STANDARD.md",
@@ -551,8 +588,8 @@ function buildBenchmarkReport(
     ],
     interpretation_caveat:
       mode === "live"
-        ? "This live suite proves only a multi-task codex exec benchmark path; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
+        ? "This live suite proves only a multi-task codex exec benchmark path and repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
   } satisfies KrnBenchmarkReport;
 
   return parseKrnBenchmarkReport(report);
