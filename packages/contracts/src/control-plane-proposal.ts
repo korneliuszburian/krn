@@ -4,6 +4,7 @@ const SourceRefSchema = z.string().min(1);
 const EvidenceRefSchema = z.string().min(1);
 
 const ControlPlaneProposalKindSchema = z.enum([
+  "init_bootstrap",
   "memory_update",
   "source_claim_update",
   "goal_update",

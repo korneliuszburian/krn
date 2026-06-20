@@ -536,6 +536,10 @@ lane split now exist as local typed runtime slices.
 typed `bootstrap_plan` for agent instructions, local config, source pointers,
 context pointers, eval baseline, skill wiring, and policy boundaries.
 
+[FACT] `krn init --proposal agent_instructions` now emits the dry-run manifest
+first and stores a source-backed append-only `init_bootstrap` proposal for
+`AGENTS.md` without mutating the target file.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -545,11 +549,11 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with the first reviewed `krn init`
-proposal/write target or extract the init command boundary if touching init
-behavior again. Do not add dashboard, benchmark, broad API/cloud sync, research
-runtime, or passive docs before repo bootstrap can create/update a useful local
-operating layer safely.
+[NEXT] After this checkpoint, continue with either the reviewed apply boundary
+for the `agent_instructions` proposal or a surgical `init` command extraction
+before adding more init behavior. Do not add dashboard, benchmark, broad
+API/cloud sync, research runtime, or passive docs before repo bootstrap can
+create/update a useful local operating layer safely.
 
 ## Progress Ledger
 
@@ -638,6 +642,20 @@ operating layer safely.
 - [SIMPLIFY] Next candidate: extract `krn init` manifest building and command handling out of `packages/cli/src/main.ts` only when adding the first reviewed proposal/write target or otherwise touching init behavior again.
 - [OVERCLAIM] This slice proves dry-run bootstrap contract behavior only. It does not prove that bootstrapping a fresh repo improves review burden, that write-mode mutation is safe, or that KRN has a paper-ingestion/research brain.
 - [NEXT] Commit and push this checkpoint; then continue with either the first reviewed `krn init` proposal/write target for one bootstrap capability or the surgical init-command extraction required to keep the CLI from becoming a dumping ground.
+- [FACT] First reviewed `krn init` proposal-target slice added `proposal_kind: "init_bootstrap"` to `KrnControlPlaneProposal` and `krn init --proposal agent_instructions`.
+- [FACT] `krn init --proposal agent_instructions` writes the dry-run manifest first, stores a source-backed proposal under `.krn/proposals/**/proposal.json`, sets `target.path: "AGENTS.md"`, keeps `write_policy.default_effect: "no_mutation"`, and leaves target `AGENTS.md` untouched.
+- [FACT] The CLI reuses the existing append-only proposal store instead of creating a parallel init proposal store.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/cli/test/init-dry-run.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T224749Z-630583` with 5/5 cases and 16/16 assertions after the init extraction.
+- [EVIDENCE] `pnpm typecheck` passed after extraction.
+- [EVIDENCE] `pnpm run eval:krn-proposal-store` passed run `20260620T224612Z-622156` with 4/4 cases and 9/9 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260620T224836Z-634673` with 5/5 modules, 17/17 cases, and 47/47 assertions.
+- [EVIDENCE] `git diff --check` passed.
+- [SIMPLIFY] Keep: `init_bootstrap` proposal kind, proposal-only `agent_instructions` path, manifest-backed source/evidence refs, focused init eval case, proposal-store reuse, and `packages/cli/src/init.ts` extraction because each protects the bootstrap write boundary and reduces `main.ts` growth.
+- [SIMPLIFY] Delete/avoid: no direct `AGENTS.md` write, no apply mode yet, no dashboard, no benchmark, no broad API/cloud sync, no repo-local memory core, and no second proposal persistence path.
+- [SIMPLIFY] Next candidate: extract `krn init` command parsing/build/write helpers from `packages/cli/src/main.ts` before adding apply/write behavior if the touched surface continues growing.
+- [OVERCLAIM] This slice proves a proposal-only reviewed bootstrap input path. It does not prove human approval quality, apply-mode correctness, target mutation safety beyond `.krn/proposals`, fresh-repo usefulness, or productivity lift.
+- [NEXT] Commit and push this checkpoint; then continue with either the reviewed apply boundary for this exact `agent_instructions` proposal or the surgical init-command extraction required before more init behavior.
 
 ## Disproves Completion
 

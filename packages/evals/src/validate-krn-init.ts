@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { parseInitManifest } from "@krn/contracts";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { parseInitManifest, parseKrnControlPlaneProposal } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
 
 type EvalCase = {
@@ -233,6 +234,61 @@ function runValidation(): EvalReport {
           ["generated manifest parses"],
           generatedCase.failure_mode,
           error instanceof Error ? error.message : "unknown generated manifest error",
+        ),
+      );
+    }
+  }
+
+  const proposalCase = caseById.get("generated-agent-instructions-proposal-stores");
+  if (!proposalCase) {
+    throw new Error("Missing case generated-agent-instructions-proposal-stores");
+  }
+  const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
+  const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
+  const proposalPath = proposalResult.stdout.trim();
+  if (proposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        proposalCase.id,
+        false,
+        ["CLI exits zero", "proposal parses"],
+        proposalCase.failure_mode,
+        proposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+      const targetAgentsPath = join(proposalTarget, "AGENTS.md");
+      results.push(
+        result(
+          proposalCase.id,
+          proposal.proposal_kind === "init_bootstrap" &&
+            proposal.target.target_type === "path" &&
+            proposal.target.path === "AGENTS.md" &&
+            proposal.write_policy.default_effect === "no_mutation" &&
+            proposal.source_refs.every((sourceRef) => existsSync(join(proposalTarget, sourceRef))) &&
+            existsSync(proposalPath) &&
+            !existsSync(targetAgentsPath),
+          [
+            "CLI exits zero",
+            "proposal parses",
+            "proposal stored under .krn/proposals",
+            "proposal source refs resolve to generated init manifest",
+            "target AGENTS.md unchanged",
+          ],
+          proposalCase.failure_mode,
+          "Generated agent-instructions proposal parsed and stayed proposal-only in an isolated target.",
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          proposalCase.id,
+          false,
+          ["generated proposal parses"],
+          proposalCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated proposal error",
         ),
       );
     }

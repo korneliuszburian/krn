@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseInitManifest } from "@krn/contracts";
+import { parseInitManifest, parseKrnControlPlaneProposal } from "@krn/contracts";
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -46,6 +46,36 @@ describe("krn init --dry-run", () => {
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
     expect(existsSync(join(targetRoot, ".codex"))).toBe(false);
     expect(existsSync(join(targetRoot, ".agents"))).toBe(false);
+
+    const topLevelEntries = readdirSync(targetRoot).sort();
+    expect(topLevelEntries).toEqual([".krn"]);
+  }, 30_000);
+
+  it("stores a reviewed agent-instructions proposal without mutating the target file", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-proposal-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "agent_instructions", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const proposalPath = stdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.target).toEqual({ target_type: "path", path: "AGENTS.md" });
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+    expect(proposal.write_policy.allowed_persistence).toBe("append_only");
+    expect(proposal.source_refs[0]).toMatch(/^\.krn\/init\/.+\/manifest\.json$/);
+    expect(proposal.blocked_surfaces).toContain("target_file_mutation");
+    expect(existsSync(proposalPath)).toBe(true);
+    expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
+    expect(existsSync(join(targetRoot, ".krn", "proposals"))).toBe(true);
 
     const topLevelEntries = readdirSync(targetRoot).sort();
     expect(topLevelEntries).toEqual([".krn"]);

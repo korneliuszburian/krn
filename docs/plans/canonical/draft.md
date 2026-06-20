@@ -544,8 +544,8 @@ Kill or redesign the product if:
 - How aggressive should PreCompact blocking be?
 - Should Sandcastle-like sandboxing be a KRN feature or only a reference pattern?
 - What is the smallest dashboard object model worth prototyping?
-- What is the first `krn init` proposal/write target that creates real repo bootstrap value without broad write-mode mutation?
-- Does `packages/cli/src/main.ts` need a surgical `init` extraction before the next init behavior change?
+- What is the first reviewed `krn init` apply target after the `agent_instructions` proposal path?
+- Does `packages/cli/src/main.ts` need a surgical `init` extraction before the next init apply/write behavior change?
 
 ## 19. Decision Log
 
@@ -567,6 +567,7 @@ Kill or redesign the product if:
 | 2026-06-20 | Local source graph check joins the active execution path. | `krn sources check` can pass, warn, or block selected context source refs; the next dependency is eval-lane split so default verification stops carrying lab history. |
 | 2026-06-20 | Eval-lane split joins the active execution path. | Default `krn eval` now selects `core,current` and excludes `lab`; it is now the verification baseline for final-shaped init work instead of historical lab churn. |
 | 2026-06-20 | Final-shaped `krn init --dry-run` bootstrap joins the active execution path. | Init manifests now expose seven required bootstrap capabilities and reject direct dry-run mutation; the next dependency is a reviewed first proposal/write target or surgical init-command extraction. |
+| 2026-06-20 | First `krn init` bootstrap proposal target joins the active execution path. | `krn init --proposal agent_instructions` stores an append-only `init_bootstrap` proposal backed by the generated dry-run manifest and still leaves `AGENTS.md` untouched. |
 
 ## 20. Source Coverage Checklist
 
@@ -579,7 +580,7 @@ Kill or redesign the product if:
 - Competitor/open-source sources: S067-S073.
 - Deferred ChatGPT reviewer bridge sources: S078-S085.
 - Controlled experiment-loop source: S088.
-- Local evidence entries: LOCAL001-LOCAL052.
-- Active reset claims: C059-C067.
+- Local evidence entries: LOCAL001-LOCAL053.
+- Active reset claims: C059-C068.
 
 Final verdict: KRN is not proven breakthrough yet. The strongest path is a disciplined source-backed control plane where Codex work produces reviewable memory, eval, trace, and decision artifacts, and where every future dashboard feature reads those artifacts instead of inventing state.

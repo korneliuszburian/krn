@@ -3,7 +3,7 @@ id: krn-init-contract
 kind: command-contract
 status: active
 owner: krn
-updated: 2026-06-19
+updated: 2026-06-21
 sources:
   - docs/goals/goal-038.md
   - docs/plans/canonical/draft.md
@@ -13,27 +13,31 @@ sources:
   - docs/specs/krn-eval/README.md
 ---
 
-# KRN Init Final-Shaped Dry-Run Contract
+# KRN Init Final-Shaped Bootstrap Contract
 
 ## Purpose
 
-`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer.
+`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions` is the first reviewed bootstrap target path.
 
 It inspects a target project and writes a schema-backed dry-run manifest under `.krn/init/{run_id}/manifest.json`. It must not mutate target project setup files by default. The manifest must expose the final-shaped bootstrap plan without claiming write-mode safety or memory-core readiness.
+
+The proposal mode writes an append-only `KrnControlPlaneProposal` under `.krn/proposals/**/proposal.json`. It uses the generated init manifest as source/evidence lineage and does not write `AGENTS.md`.
 
 ## Command
 
 ```bash
 pnpm run krn -- init --dry-run --target .
+pnpm run krn -- init --proposal agent_instructions --target .
 ```
 
 Accepted shape:
 
 ```text
 krn init --dry-run [--target <path>]
+krn init --proposal agent_instructions [--target <path>]
 ```
 
-The command must reject missing `init`, missing `--dry-run`, unknown flags, and empty target values.
+The command must reject missing `init`, missing mode, unsupported proposal capability, unknown flags, and empty target values.
 
 ## Runtime Output
 
@@ -44,6 +48,14 @@ The command writes:
 ```
 
 The manifest uses `schema_version: "krn-init-manifest.v1"` and `kind: "krn_init_manifest"`.
+
+Proposal mode also writes:
+
+```text
+{target_root}/.krn/proposals/{idempotency_key}/proposal.json
+```
+
+The exact proposal directory is a filesystem-safe idempotency-key segment. The proposal uses `schema_version: "krn-control-plane-proposal.v1"`, `proposal_kind: "init_bootstrap"`, `status: "proposal_only"`, `target.path: "AGENTS.md"`, and `write_policy.default_effect: "no_mutation"`.
 
 ## Bootstrap Plan
 
@@ -64,6 +76,7 @@ This is a planning contract for a future reviewed write flow. The dry-run comman
 Allowed writes:
 
 - `.krn/init/{run_id}/manifest.json`
+- `.krn/proposals/**/proposal.json` only when `--proposal agent_instructions` is explicit
 
 Forbidden default writes:
 
@@ -74,6 +87,25 @@ Forbidden default writes:
 - source files outside `.krn/init/**`
 
 If an artifact already exists, the command reports it as detected and chooses `skip`, `proposal_only`, or `merge_required` instead of overwriting. Direct `modify` actions are invalid in dry-run manifests.
+
+## Reviewed Proposal Boundary
+
+`krn init --proposal agent_instructions` proves only that KRN can route one bootstrap target into the existing append-only proposal/review spine.
+
+Allowed behavior:
+
+- generate the dry-run manifest first;
+- use that manifest path as source/evidence lineage;
+- create a `proposal_only` record for `AGENTS.md`;
+- block target mutation, memory-core writes, source-ledger mutation, dashboard event publish, and broad API/cloud sync.
+
+Forbidden behavior:
+
+- no `AGENTS.md` write;
+- no apply mode;
+- no inferred merge into existing instructions;
+- no dashboard publish;
+- no memory-core creation.
 
 ## Minimum Detection
 
@@ -95,7 +127,9 @@ Run:
 
 ```bash
 pnpm test -- packages/contracts/test/init-manifest.test.ts
+pnpm test -- packages/contracts/test/control-plane-proposal.test.ts
 pnpm run krn -- init --dry-run --target .
+pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run eval:krn-init
 ```
 

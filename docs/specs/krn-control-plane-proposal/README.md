@@ -23,6 +23,8 @@ sources:
 
 A proposal is not approved truth. It is a schema-backed, append-only, idempotent, human-reviewable request to change or record product state later.
 
+Current proposal kinds include `memory_update`, `source_claim_update`, `goal_update`, `eval_request`, `repair_record`, `dashboard_event`, and `init_bootstrap`.
+
 ## Public Interface
 
 ```ts
@@ -57,6 +59,7 @@ Allowed behavior:
 - export JSON Schema for MCP/API/dashboard consumers,
 - represent future append-only reviewed write requests.
 - carry exact reviewed memory-entry content for later promotion when `promotion_payload` is present,
+- carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions` through `proposal_kind: "init_bootstrap"`,
 - validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
 - persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
 
@@ -78,7 +81,9 @@ A green proposal-store result means KRN can persist that action as append-only r
 
 A proposal with `promotion_payload` can later be consumed by `KrnProposalPromotion`; the proposal still does not approve or execute the change by itself.
 
-It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, promotion correctness by itself, or productivity lift.
+An `init_bootstrap` proposal can be consumed by proposal review surfaces as review input for a future repo bootstrap apply path; it still does not approve or execute the target mutation by itself.
+
+It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, promotion correctness by itself, `krn init` apply-mode readiness, or productivity lift.
 
 ## Validation
 

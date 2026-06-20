@@ -49,6 +49,44 @@ describe("KRN control-plane proposal contract", () => {
     ).toThrow();
   });
 
+  it("parses an init bootstrap proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-agent-instructions-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init agent-instructions bootstrap",
+      rationale: "The first init write target must be reviewed before target mutation.",
+      proposed_change: "Review the AGENTS.md bootstrap proposal without writing the target file.",
+      target: {
+        target_type: "path",
+        path: "AGENTS.md",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:agent_instructions:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate AGENTS.md or prove write-mode safety.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("exports a JSON schema for downstream tools", () => {
     expect(krnControlPlaneProposalJsonSchema).toMatchObject({
       type: "object",

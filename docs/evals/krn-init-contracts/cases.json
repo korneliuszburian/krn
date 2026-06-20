@@ -73,5 +73,28 @@
       "goal_alignment_score"
     ],
     "failure_mode": "The first CLI consumer no longer produces a schema-backed dry-run runtime artifact."
+  },
+  {
+    "id": "generated-agent-instructions-proposal-stores",
+    "expected_behavior": "The CLI stores an append-only init_bootstrap proposal for the agent_instructions capability under .krn/proposals, backed by the generated init manifest, without mutating AGENTS.md.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "CLI exits zero",
+      "proposal parses",
+      "proposal stored under .krn/proposals",
+      "proposal source refs resolve to generated init manifest",
+      "target AGENTS.md unchanged"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "unsafe_write_prevention_score"
+    ],
+    "failure_mode": "The first reviewed init proposal target mutates AGENTS.md directly, does not land in the proposal store, or lacks source-backed manifest evidence."
   }
 ]
