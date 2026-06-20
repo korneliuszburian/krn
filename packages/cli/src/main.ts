@@ -619,10 +619,10 @@ function buildInitManifest(targetInput: string, now = new Date()): InitManifest 
       project_name: basename(targetRoot) || "target-project",
       identity: "Target project inspected by KRN init dry-run.",
       product_boundary: "KRN init reports planned setup only; it does not mutate target project files.",
-      current_phase: "Slice 2 Typed Runtime Spine",
+      current_phase: "Goal 038 Final Product Bootstrap",
       source_refs: [
-        "docs/goals/goal-006.md",
-        "docs/goals/goal-007.md",
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/draft.md",
         "docs/specs/krn-init/README.md",
       ],
       guardrails: [
@@ -630,9 +630,10 @@ function buildInitManifest(targetInput: string, now = new Date()): InitManifest 
         "schema-backed manifest",
         "no target setup mutation by default",
         "runtime artifacts stay under .krn/",
+        "repo files are bootstrap/audit/export substrate, not memory core",
       ],
-      next_allowed_surfaces: ["packages/contracts", "packages/cli", "packages/evals"],
-      blocked_surfaces: ["packages/mcp", "apps/dashboard", "runtime skills"],
+      next_allowed_surfaces: ["AGENTS.md proposal", ".krn/config.toml proposal", ".krn/sources", ".krn/context", ".krn/evals"],
+      blocked_surfaces: ["dashboard", "broad API/cloud sync", "benchmark expansion", "repo-local memory core"],
     },
     detected_artifacts: detectedArtifacts,
     planned_files: [
@@ -642,21 +643,21 @@ function buildInitManifest(targetInput: string, now = new Date()): InitManifest 
         reason: agentsExists
           ? "Existing root instructions are preserved; KRN init must not overwrite them."
           : "KRN would propose a minimal AGENTS.md selector in a future reviewed write flow.",
-        source_refs: ["AGENTS.md", "docs/memory/INDEX.md", "docs/goals/goal-007.md"],
+        source_refs: ["AGENTS.md", "docs/memory/INDEX.md", "docs/goals/goal-038.md"],
       },
       {
         path: "docs/memory/INDEX.md",
         action: memoryIndexExists ? "proposal_only" : "create",
         reason: memoryIndexExists
-          ? "Memory changes require review before becoming durable truth."
-          : "KRN would propose a reviewed memory index in a future write flow.",
-        source_refs: ["docs/memory/INDEX.md", "docs/product/final-product-plan.md"],
+          ? "Pattern-bank changes require review and are not authoritative memory-core writes."
+          : "KRN would propose a reviewed pattern-bank index in a future write flow.",
+        source_refs: ["docs/memory/INDEX.md", "docs/goals/goal-038.md"],
       },
       {
         path: runtimeManifestPath,
         action: "create",
         reason: "Dry-run runtime manifest is the only default write surface.",
-        source_refs: ["docs/specs/krn-init/README.md", "docs/goals/goal-007.md"],
+        source_refs: ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
       },
     ],
     planned_runtime_dirs: [
@@ -677,16 +678,73 @@ function buildInitManifest(targetInput: string, now = new Date()): InitManifest 
         path: "docs/memory/INDEX.md",
         strategy: memoryIndexExists ? "proposal_only" : "proposal_only",
         reason: memoryIndexExists
-          ? "Memory index changes are durable and require review."
-          : "Memory index creation would require review before becoming durable project truth.",
+          ? "Pattern-bank index changes are durable and require review."
+          : "Pattern-bank index creation would require review before becoming durable project knowledge.",
+      },
+    ],
+    bootstrap_plan: [
+      {
+        capability: "agent_instructions",
+        path: "AGENTS.md",
+        action: agentsExists ? "skip" : "proposal_only",
+        purpose: "Create or preserve a thin Codex selector that points to active goal, memory index, and verification rules.",
+        boundary: "AGENTS.md must stay a compact router, not a generated encyclopedia or memory database.",
+        source_refs: ["AGENTS.md", "docs/goals/goal-038.md", "docs/memory/INDEX.md"],
+      },
+      {
+        capability: "local_config",
+        path: ".krn/config.toml",
+        action: "proposal_only",
+        purpose: "Describe local-first KRN project settings without requiring cloud/API sync.",
+        boundary: "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
+        source_refs: ["docs/goals/goal-038.md", "docs/plans/canonical/draft.md"],
+      },
+      {
+        capability: "source_pointers",
+        path: ".krn/sources/index.json",
+        action: "proposal_only",
+        purpose: "Point Codex/KRN at source graph entries used for source-backed planning and stale/conflict checks.",
+        boundary: "Source pointers are indexes and lineage, not a copied bibliography or hardcoded active source list.",
+        source_refs: ["docs/specs/krn-source-graph/README.md", "docs/plans/canonical/SOURCES.md"],
+      },
+      {
+        capability: "context_pointers",
+        path: ".krn/context/",
+        action: "proposal_only",
+        purpose: "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
+        boundary: "Context packets may record selected IDs and guidance; they must not store authoritative memory bodies.",
+        source_refs: ["docs/specs/krn-context-packet/README.md", "docs/goals/goal-038.md"],
+      },
+      {
+        capability: "eval_baseline",
+        path: ".krn/evals/",
+        action: "proposal_only",
+        purpose: "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
+        boundary: "Green evals are regression evidence only; lab, benchmark, and dashboard checks stay explicit.",
+        source_refs: ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
+      },
+      {
+        capability: "skill_wiring",
+        path: ".agents/skills/",
+        action: "proposal_only",
+        purpose: "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
+        boundary: "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
+        source_refs: ["docs/goals/goal-038.md", "docs/plans/canonical/pattern-matrix.md"],
+      },
+      {
+        capability: "policy_boundaries",
+        path: ".krn/policies/",
+        action: "proposal_only",
+        purpose: "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
+        boundary: "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
+        source_refs: ["docs/goals/goal-038.md", "docs/specs/krn-engineering-gate/README.md"],
       },
     ],
     no_touch_paths: [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
     source_refs: [
-      "docs/goals/goal-006.md",
-      "docs/goals/goal-007.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-init/README.md",
-      "docs/product/final-product-plan.md",
+      "docs/plans/canonical/draft.md",
     ],
     product_spine_refs: ["project_profile", "memory_entry", "source_claim", "eval_run", "proposal", "decision"],
     validation: {
@@ -695,11 +753,12 @@ function buildInitManifest(targetInput: string, now = new Date()): InitManifest 
         "schema-backed manifest",
         "dry-run mode only",
         "source refs present",
+        "bootstrap capabilities present",
         "no-touch paths present",
       ],
     },
     interpretation_caveat:
-      "This manifest proves dry-run contract behavior only; it does not prove productivity lift, write-mode safety, MCP readiness, or dashboard readiness.",
+      "This manifest proves dry-run bootstrap contract behavior only; it does not prove productivity lift, write-mode safety, memory-core quality, MCP readiness, dashboard readiness, or paper-research automation.",
   };
 
   return parseInitManifest(candidateManifest);

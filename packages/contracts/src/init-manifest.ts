@@ -52,6 +52,25 @@ const CollisionSchema = z
   })
   .strict();
 
+const BootstrapCapabilitySchema = z
+  .object({
+    capability: z.enum([
+      "agent_instructions",
+      "local_config",
+      "source_pointers",
+      "context_pointers",
+      "eval_baseline",
+      "skill_wiring",
+      "policy_boundaries",
+    ]),
+    path: z.string().min(1),
+    action: z.enum(["create", "skip", "proposal_only", "merge_required"]),
+    purpose: z.string().min(1),
+    boundary: z.string().min(1),
+    source_refs: z.array(SourceRefSchema).min(1),
+  })
+  .strict();
+
 const ValidationSchema = z
   .object({
     status: z.enum(["valid", "invalid"]),
@@ -72,13 +91,46 @@ export const InitManifestSchema = z
     planned_files: z.array(PlannedFileSchema),
     planned_runtime_dirs: z.array(RuntimeDirSchema),
     collisions: z.array(CollisionSchema),
+    bootstrap_plan: z.array(BootstrapCapabilitySchema).min(1),
     no_touch_paths: z.array(z.string().min(1)).min(1),
     source_refs: z.array(SourceRefSchema).min(1),
     product_spine_refs: z.array(z.string().min(1)).min(1),
     validation: ValidationSchema,
     interpretation_caveat: z.string().min(1),
   })
-  .strict();
+  .strict()
+  .superRefine((manifest, ctx) => {
+    const requiredCapabilities = [
+      "agent_instructions",
+      "local_config",
+      "source_pointers",
+      "context_pointers",
+      "eval_baseline",
+      "skill_wiring",
+      "policy_boundaries",
+    ] as const;
+    const plannedCapabilities = new Set(manifest.bootstrap_plan.map((item) => item.capability));
+
+    for (const capability of requiredCapabilities) {
+      if (!plannedCapabilities.has(capability)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["bootstrap_plan"],
+          message: `bootstrap_plan is missing capability ${capability}`,
+        });
+      }
+    }
+
+    manifest.planned_files.forEach((plannedFile, index) => {
+      if (plannedFile.action === "modify") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["planned_files", index, "action"],
+          message: "krn init dry-run cannot plan direct modify actions",
+        });
+      }
+    });
+  });
 
 export type InitManifest = z.infer<typeof InitManifestSchema>;
 
@@ -89,4 +141,3 @@ export function parseInitManifest(input: unknown): InitManifest {
 export const initManifestJsonSchema = z.toJSONSchema(InitManifestSchema, {
   target: "draft-2020-12",
 });
-

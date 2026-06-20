@@ -13,7 +13,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Product Stack | Go/Rust-first CLI core | S041-S046 | A | Strong binaries and runtime performance | Possible later fit | Slower iteration before object model stabilizes | defer |
 | Codex Bootstrap | Minimal `AGENTS.md` + progressive docs | S001, S003, S055, S074, S075 | A/C | Root prompt stays small, links to indexed knowledge | Strong fit | Important guidance hidden too deep | adopt |
 | Codex Bootstrap | Generated giant `AGENTS.md` | S055 | C | Dump many rules into every prompt | Bad fit | Context poison and drift | reject |
-| Codex Bootstrap | `krn init --dry-run` manifest | S011, S012, LOCAL001 | A | Shows file changes before write | Strong fit | Users cannot trust generated edits | adopt |
+| Codex Bootstrap | `krn init --dry-run` manifest | S011, S012, LOCAL001, LOCAL052 | A/local | Shows target changes before write and exposes final-shaped bootstrap capabilities for agent instructions, local config, sources, context, eval baseline, skills, and policy boundaries | Strong fit | Users cannot trust generated edits or init hardcodes product/source/memory truth | adopt |
 | Agent-Computer Interface | Agent-first CLI with schemas and JSONL | S009, S041, S045 | A | Agents consume machine-readable commands/results | Strong fit | CLI becomes human prose only | adopt |
 | Agent-Computer Interface | Sandboxed worktree execution | S020, S045, S059 | A/B | Isolate changes, collect logs/commits | Strong later fit | Adds runner scope too early | test |
 | Agent-Computer Interface | Public benchmark chasing | S042-S046 | A | Optimize to leaderboard tasks | Weak fit | Does not prove local workflow lift | reject |

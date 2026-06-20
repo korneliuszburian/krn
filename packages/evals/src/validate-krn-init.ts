@@ -87,6 +87,21 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
+const REQUIRED_BOOTSTRAP_CAPABILITIES = [
+  "agent_instructions",
+  "local_config",
+  "source_pointers",
+  "context_pointers",
+  "eval_baseline",
+  "skill_wiring",
+  "policy_boundaries",
+] as const;
+
+function hasRequiredBootstrapCapabilities(manifest: ReturnType<typeof parseInitManifest>): boolean {
+  const capabilities = new Set(manifest.bootstrap_plan.map((item) => item.capability));
+  return REQUIRED_BOOTSTRAP_CAPABILITIES.every((capability) => capabilities.has(capability));
+}
+
 function runValidation(): EvalReport {
   const now = new Date();
   const runId = createRunId(now);
@@ -105,8 +120,8 @@ function runValidation(): EvalReport {
     results.push(
       result(
         validFixtureCase.id,
-        manifest.mode === "dry-run" && manifest.interpretation_caveat.length > 0,
-        ["valid fixture parses", "dry-run mode", "interpretation caveat present"],
+        manifest.mode === "dry-run" && manifest.interpretation_caveat.length > 0 && hasRequiredBootstrapCapabilities(manifest),
+        ["valid fixture parses", "dry-run mode", "interpretation caveat present", "bootstrap capabilities present"],
         validFixtureCase.failure_mode,
         "Valid fixture parsed through @krn/contracts.",
       ),
@@ -150,6 +165,33 @@ function runValidation(): EvalReport {
     );
   }
 
+  const missingCapabilityCase = caseById.get("known-bad-missing-bootstrap-capability-fails");
+  if (!missingCapabilityCase) {
+    throw new Error("Missing case known-bad-missing-bootstrap-capability-fails");
+  }
+  try {
+    parseInitManifest(readJson(resolve("docs/specs/krn-init/fixtures/bad-init-manifest-missing-bootstrap-capability.example.json")));
+    results.push(
+      result(
+        missingCapabilityCase.id,
+        false,
+        ["known-bad missing bootstrap capability rejected"],
+        missingCapabilityCase.failure_mode,
+        "Known-bad missing bootstrap capability fixture unexpectedly parsed.",
+      ),
+    );
+  } catch {
+    results.push(
+      result(
+        missingCapabilityCase.id,
+        true,
+        ["known-bad missing bootstrap capability rejected"],
+        missingCapabilityCase.failure_mode,
+        "Known-bad missing bootstrap capability fixture failed as expected.",
+      ),
+    );
+  }
+
   const generatedCase = caseById.get("generated-dry-run-manifest-parses");
   if (!generatedCase) {
     throw new Error("Missing case generated-dry-run-manifest-parses");
@@ -174,8 +216,11 @@ function runValidation(): EvalReport {
       results.push(
         result(
           generatedCase.id,
-          manifest.mode === "dry-run" && existsSync(cliManifestPath) && onlyAllowedWrite,
-          ["CLI exits zero", "generated manifest exists", "generated manifest parses", "dry-run mode"],
+          manifest.mode === "dry-run" &&
+            existsSync(cliManifestPath) &&
+            onlyAllowedWrite &&
+            hasRequiredBootstrapCapabilities(manifest),
+          ["CLI exits zero", "generated manifest exists", "generated manifest parses", "dry-run mode", "bootstrap capabilities present"],
           generatedCase.failure_mode,
           "Generated dry-run manifest parsed through @krn/contracts.",
         ),
@@ -217,7 +262,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init contract behavior only; it does not prove productivity lift, dashboard readiness, MCP readiness, or write-mode safety.",
+      "This eval proves krn-init dry-run bootstrap contract behavior only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, or write-mode safety.",
   };
 }
 

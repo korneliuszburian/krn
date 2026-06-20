@@ -16,10 +16,25 @@ describe("InitManifest contract", () => {
     expect(manifest.kind).toBe("krn_init_manifest");
     expect(manifest.mode).toBe("dry-run");
     expect(manifest.planned_files.some((item) => item.action === "proposal_only")).toBe(true);
+    expect(manifest.bootstrap_plan.map((item) => item.capability)).toEqual([
+      "agent_instructions",
+      "local_config",
+      "source_pointers",
+      "context_pointers",
+      "eval_baseline",
+      "skill_wiring",
+      "policy_boundaries",
+    ]);
   });
 
   it("rejects the known-bad fixture", () => {
     expect(() => parseInitManifest(readJson("docs/specs/krn-init/fixtures/bad-init-manifest.example.json"))).toThrow();
+  });
+
+  it("rejects a bootstrap plan missing a required capability", () => {
+    expect(() =>
+      parseInitManifest(readJson("docs/specs/krn-init/fixtures/bad-init-manifest-missing-bootstrap-capability.example.json")),
+    ).toThrow();
   });
 
   it("exports a JSON schema for downstream tools", () => {
@@ -32,4 +47,3 @@ describe("InitManifest contract", () => {
     });
   });
 });
-

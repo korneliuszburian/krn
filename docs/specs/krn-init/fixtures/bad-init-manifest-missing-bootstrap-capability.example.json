@@ -1,37 +1,37 @@
 {
   "schema_version": "krn-init-manifest.v1",
   "kind": "krn_init_manifest",
-  "run_id": "bad-init-manifest-001",
-  "created_at": "2026-06-19T00:00:00.000Z",
+  "run_id": "bad-init-missing-bootstrap-capability",
+  "created_at": "2026-06-20T22:00:00.000Z",
   "target_root": ".",
-  "mode": "write",
+  "mode": "dry-run",
   "project_profile": {
     "schema_version": "product-spine.v1",
     "id": "krn-gastown",
     "kind": "project_profile",
     "status": "active",
     "project_name": "KRN",
-    "identity": "Bad fixture that tries to use write mode.",
-    "product_boundary": "This fixture must fail because init is dry-run only.",
+    "identity": "Bad fixture missing source pointers.",
+    "product_boundary": "This fixture must fail because final-shaped init needs all bootstrap capabilities.",
     "current_phase": "Goal 038 Final Product Bootstrap",
     "source_refs": ["docs/goals/goal-038.md"],
     "guardrails": ["dry-run only"],
-    "next_allowed_surfaces": ["packages/cli"],
-    "blocked_surfaces": ["apps/dashboard", "packages/mcp"]
+    "next_allowed_surfaces": ["AGENTS.md proposal"],
+    "blocked_surfaces": ["dashboard", "repo-local memory core"]
   },
   "detected_artifacts": [],
   "planned_files": [
     {
-      "path": "AGENTS.md",
-      "action": "modify",
-      "reason": "This fixture must fail before a write plan can be accepted.",
-      "source_refs": ["docs/goals/goal-038.md"]
+      "path": ".krn/init/bad-init-missing-bootstrap-capability/manifest.json",
+      "action": "create",
+      "reason": "Dry-run runtime manifest is the only default write surface.",
+      "source_refs": ["docs/specs/krn-init/README.md"]
     }
   ],
   "planned_runtime_dirs": [
     {
       "path": ".krn/init",
-      "purpose": "Dry-run init manifests."
+      "purpose": "Dry-run init manifests and local bootstrap runtime reports."
     }
   ],
   "collisions": [],
@@ -51,14 +51,6 @@
       "purpose": "Describe local-first KRN settings.",
       "boundary": "Config must not embed live memory records.",
       "source_refs": ["docs/goals/goal-038.md"]
-    },
-    {
-      "capability": "source_pointers",
-      "path": ".krn/sources/index.json",
-      "action": "proposal_only",
-      "purpose": "Point KRN at source graph entries.",
-      "boundary": "Source pointers are indexes and lineage.",
-      "source_refs": ["docs/specs/krn-source-graph/README.md"]
     },
     {
       "capability": "context_pointers",
@@ -93,12 +85,12 @@
       "source_refs": ["docs/specs/krn-engineering-gate/README.md"]
     }
   ],
-  "no_touch_paths": [".git", "node_modules"],
-  "source_refs": ["docs/goals/goal-038.md"],
+  "no_touch_paths": [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
+  "source_refs": ["docs/goals/goal-038.md", "docs/specs/krn-init/README.md"],
   "product_spine_refs": ["project_profile"],
   "validation": {
-    "status": "invalid",
-    "checks": ["write mode is forbidden"]
+    "status": "valid",
+    "checks": ["schema-backed manifest", "dry-run mode only", "bootstrap capabilities present"]
   },
-  "interpretation_caveat": "This known-bad fixture must fail because krn init only supports dry-run mode."
+  "interpretation_caveat": "Known-bad fixture: source_pointers capability is missing."
 }

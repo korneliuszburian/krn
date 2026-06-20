@@ -532,6 +532,10 @@ Acceptance:
 pre-edit `krn gate`, bounded context packet, local source graph check, and eval
 lane split now exist as local typed runtime slices.
 
+[FACT] `krn init --dry-run` now emits a final-shaped bootstrap manifest with a
+typed `bootstrap_plan` for agent instructions, local config, source pointers,
+context pointers, eval baseline, skill wiring, and policy boundaries.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -541,11 +545,11 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with `krn init` final-shaped repo
-bootstrap on top of the stable MemoryStore, context packet, source graph, and
-lean eval path. Do not add dashboard, benchmark, broad API/cloud sync, or
-passive docs before repo bootstrap can create/update a useful local operating
-layer safely.
+[NEXT] After this checkpoint, continue with the first reviewed `krn init`
+proposal/write target or extract the init command boundary if touching init
+behavior again. Do not add dashboard, benchmark, broad API/cloud sync, research
+runtime, or passive docs before repo bootstrap can create/update a useful local
+operating layer safely.
 
 ## Progress Ledger
 
@@ -621,6 +625,19 @@ layer safely.
 - [SIMPLIFY] Next candidate: extract eval module descriptors out of `packages/cli/src/main.ts` only when `krn init` or another real consumer needs the registry boundary; do not refactor the CLI monolith from aesthetics alone.
 - [OVERCLAIM] This slice proves lane-aware eval routing and parser invariants. It does not prove product quality, productivity lift, lab module quality, or that the eval registry is the final architecture.
 - [NEXT] Commit and push this checkpoint; then continue with final-shaped `krn init` repo bootstrap using the MemoryStore/context/source/eval boundaries already proven.
+- [FACT] Final-shaped `krn init` bootstrap slice added `bootstrap_plan` to `KrnInitManifest` with seven required capabilities: `agent_instructions`, `local_config`, `source_pointers`, `context_pointers`, `eval_baseline`, `skill_wiring`, and `policy_boundaries`.
+- [FACT] `KrnInitManifest` now rejects dry-run manifests that directly modify target files and rejects manifests missing any required bootstrap capability.
+- [FACT] `krn init --dry-run` now generates `project_profile.current_phase: "Goal 038 Final Product Bootstrap"`, capability-scoped boundaries, final-product source refs, and an explicit caveat that it does not prove write-mode safety, memory-core quality, MCP readiness, dashboard readiness, paper-research automation, or productivity lift.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/init-manifest.test.ts packages/cli/test/init-dry-run.test.ts` passed 2 files / 5 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T222158Z-567924` with 4/4 cases and 11/11 assertions.
+- [EVIDENCE] Generated manifest `.krn/init/20260620T221447Z-560679/manifest.json` contains the seven bootstrap capabilities and only writes the runtime manifest.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed and wrote `.krn/eval/20260620T222243Z-569502/report.json` with 5/5 modules, 16/16 cases, and 42/42 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: `bootstrap_plan`, the required capability enum, direct-modify dry-run rejection, the missing-capability known-bad fixture, and the focused init eval because each protects final-shaped bootstrap boundaries.
+- [SIMPLIFY] Delete/avoid: no write-mode apply path yet, no dashboard, no benchmark expansion, no broad API/cloud sync, no research runtime, no repo-local memory core, and no copied bibliography/source dump in init manifests.
+- [SIMPLIFY] Next candidate: extract `krn init` manifest building and command handling out of `packages/cli/src/main.ts` only when adding the first reviewed proposal/write target or otherwise touching init behavior again.
+- [OVERCLAIM] This slice proves dry-run bootstrap contract behavior only. It does not prove that bootstrapping a fresh repo improves review burden, that write-mode mutation is safe, or that KRN has a paper-ingestion/research brain.
+- [NEXT] Commit and push this checkpoint; then continue with either the first reviewed `krn init` proposal/write target for one bootstrap capability or the surgical init-command extraction required to keep the CLI from becoming a dumping ground.
 
 ## Disproves Completion
 

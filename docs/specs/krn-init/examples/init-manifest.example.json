@@ -13,11 +13,11 @@
     "project_name": "KRN",
     "identity": "TypeScript-first Codex operating memory, eval, and control-plane product.",
     "product_boundary": "Local Codex-first runtime spine; no dashboard/API/MCP implementation before typed reports exist.",
-    "current_phase": "Slice 2 Typed Runtime Spine",
+    "current_phase": "Goal 038 Final Product Bootstrap",
     "source_refs": [
-      "docs/goals/goal-006.md",
-      "docs/goals/goal-007.md",
-      "docs/product/final-product-plan.md"
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/draft.md",
+      "docs/specs/krn-init/README.md"
     ],
     "guardrails": [
       "dry-run only",
@@ -74,7 +74,7 @@
       "reason": "Existing root instructions are preserved; KRN init must not overwrite them.",
       "source_refs": [
         "docs/memory/INDEX.md",
-        "docs/goals/goal-007.md"
+        "docs/goals/goal-038.md"
       ]
     },
     {
@@ -83,7 +83,7 @@
       "reason": "Memory changes require review before becoming durable truth.",
       "source_refs": [
         "docs/memory/INDEX.md",
-        "docs/product/final-product-plan.md"
+        "docs/goals/goal-038.md"
       ]
     },
     {
@@ -92,7 +92,7 @@
       "reason": "Dry-run runtime manifest is the only default write surface.",
       "source_refs": [
         "docs/specs/krn-init/README.md",
-        "docs/goals/goal-007.md"
+        "docs/goals/goal-038.md"
       ]
     }
   ],
@@ -114,6 +114,86 @@
       "reason": "Memory index changes are durable and require review."
     }
   ],
+  "bootstrap_plan": [
+    {
+      "capability": "agent_instructions",
+      "path": "AGENTS.md",
+      "action": "skip",
+      "purpose": "Create or preserve a thin Codex selector that points to active goal, memory index, and verification rules.",
+      "boundary": "AGENTS.md must stay a compact router, not a generated encyclopedia or memory database.",
+      "source_refs": [
+        "AGENTS.md",
+        "docs/goals/goal-038.md",
+        "docs/memory/INDEX.md"
+      ]
+    },
+    {
+      "capability": "local_config",
+      "path": ".krn/config.toml",
+      "action": "proposal_only",
+      "purpose": "Describe local-first KRN project settings without requiring cloud/API sync.",
+      "boundary": "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
+      "source_refs": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/draft.md"
+      ]
+    },
+    {
+      "capability": "source_pointers",
+      "path": ".krn/sources/index.json",
+      "action": "proposal_only",
+      "purpose": "Point Codex/KRN at source graph entries used for source-backed planning and stale/conflict checks.",
+      "boundary": "Source pointers are indexes and lineage, not a copied bibliography or hardcoded active source list.",
+      "source_refs": [
+        "docs/specs/krn-source-graph/README.md",
+        "docs/plans/canonical/SOURCES.md"
+      ]
+    },
+    {
+      "capability": "context_pointers",
+      "path": ".krn/context/",
+      "action": "proposal_only",
+      "purpose": "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
+      "boundary": "Context packets may record selected IDs and guidance; they must not store authoritative memory bodies.",
+      "source_refs": [
+        "docs/specs/krn-context-packet/README.md",
+        "docs/goals/goal-038.md"
+      ]
+    },
+    {
+      "capability": "eval_baseline",
+      "path": ".krn/evals/",
+      "action": "proposal_only",
+      "purpose": "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
+      "boundary": "Green evals are regression evidence only; lab, benchmark, and dashboard checks stay explicit.",
+      "source_refs": [
+        "docs/specs/krn-eval/README.md",
+        "docs/evals/STANDARD.md"
+      ]
+    },
+    {
+      "capability": "skill_wiring",
+      "path": ".agents/skills/",
+      "action": "proposal_only",
+      "purpose": "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
+      "boundary": "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
+      "source_refs": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/pattern-matrix.md"
+      ]
+    },
+    {
+      "capability": "policy_boundaries",
+      "path": ".krn/policies/",
+      "action": "proposal_only",
+      "purpose": "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
+      "boundary": "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
+      "source_refs": [
+        "docs/goals/goal-038.md",
+        "docs/specs/krn-engineering-gate/README.md"
+      ]
+    }
+  ],
   "no_touch_paths": [
     ".git",
     "node_modules",
@@ -123,10 +203,9 @@
     "docs/memory"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md",
-    "docs/goals/goal-007.md",
+    "docs/goals/goal-038.md",
     "docs/specs/krn-init/README.md",
-    "docs/product/final-product-plan.md"
+    "docs/plans/canonical/draft.md"
   ],
   "product_spine_refs": [
     "project_profile",
@@ -145,5 +224,5 @@
       "no-touch paths present"
     ]
   },
-  "interpretation_caveat": "This manifest proves dry-run contract shape only; it does not prove productivity lift, write-mode safety, MCP readiness, or dashboard readiness."
+  "interpretation_caveat": "This manifest proves dry-run bootstrap contract shape only; it does not prove productivity lift, write-mode safety, memory-core quality, MCP readiness, dashboard readiness, or paper-research automation."
 }

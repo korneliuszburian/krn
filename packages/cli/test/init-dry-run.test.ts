@@ -29,6 +29,19 @@ describe("krn init --dry-run", () => {
     expect(manifest.mode).toBe("dry-run");
     expect(manifest.target_root).toBe(targetRoot);
     expect(manifest.interpretation_caveat).toContain("does not prove productivity lift");
+    expect(manifest.project_profile.current_phase).toBe("Goal 038 Final Product Bootstrap");
+    expect(manifest.bootstrap_plan.map((item) => item.capability)).toEqual([
+      "agent_instructions",
+      "local_config",
+      "source_pointers",
+      "context_pointers",
+      "eval_baseline",
+      "skill_wiring",
+      "policy_boundaries",
+    ]);
+    expect(manifest.bootstrap_plan.find((item) => item.capability === "source_pointers")?.boundary).toContain(
+      "not a copied bibliography",
+    );
     expect(existsSync(join(targetRoot, ".krn", "init", manifest.run_id, "manifest.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
     expect(existsSync(join(targetRoot, ".codex"))).toBe(false);
