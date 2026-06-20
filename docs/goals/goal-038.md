@@ -171,6 +171,40 @@ Skills are build-time operating rules for this repo. They are not optional decor
 | Completion claim, release proof, or "is this done?" audit | `release-verifier` |
 | Eval failure, reviewer finding, broken operating rule, or failed proof | `repair-handoff` |
 
+## Research-To-Pattern Condensation Contract
+
+Research is a product input only when it changes a decision, contract, eval,
+skill, source graph, or implementation boundary.
+
+Paper, repo, practitioner, and social sources enter KRN as **source
+candidates**, not product truth. Each retained candidate must be condensed into:
+
+- source ID and trust tier;
+- mechanism extracted from the source;
+- pattern name and failure mode it addresses;
+- KRN layer and current/future consumer;
+- decision or claim ID;
+- eval, falsifier, or kill criterion;
+- freshness/owner/confidence boundary;
+- overclaim boundary.
+
+If the output is only a note, it is not enough for product progress. The normal
+path is:
+
+```text
+source candidate
+  -> source ledger
+  -> pattern matrix
+  -> claim/decision
+  -> contract/eval/skill/code consumer
+  -> runtime evidence or reviewed rejection
+```
+
+Primary docs, papers, and inspected repos outrank social posts. Social posts can
+seed vocabulary and mechanisms, but remain hypotheses until primary source,
+source graph lineage, or local eval evidence confirms them. Futuristic language
+is allowed only after it is decomposed into measurable mechanisms.
+
 ## Pre-Edit Engineering Gate
 
 Non-trivial product work must satisfy this gate before implementation:
@@ -494,24 +528,24 @@ Acceptance:
 
 ## Current Dependency Cursor
 
-[FACT] The MemoryStore boundary, memory-aware `krn review`, `krn brief`, and
-the pre-edit `krn gate` now exist as local typed runtime slices.
+[FACT] The MemoryStore boundary, memory-aware `krn review`, `krn brief`,
+pre-edit `krn gate`, bounded context packet, local source graph check, and eval
+lane split now exist as local typed runtime slices.
 
-[FACT] The next dependency being closed is the bounded context packet:
+[FACT] The active default eval path is now:
 
 ```text
-task intent
-  -> MemoryStore selection
-  -> selected memory IDs/reasons/confidence/source lineage
-  -> application guidance
-  -> runtime context packet
-  -> feedback record
+krn eval
+  -> lane_selection: current
+  -> included_lanes: core,current
+  -> excluded_lanes: lab
 ```
 
-[NEXT] After the context packet checkpoint is committed, the next product slice
-should be source graph freshness/conflict blocking for selected decisions. Do
-not add dashboard, benchmark, broad API/cloud sync, or passive docs before that
-source graph has a real CLI/review/context consumer.
+[NEXT] After this checkpoint, continue with `krn init` final-shaped repo
+bootstrap on top of the stable MemoryStore, context packet, source graph, and
+lean eval path. Do not add dashboard, benchmark, broad API/cloud sync, or
+passive docs before repo bootstrap can create/update a useful local operating
+layer safely.
 
 ## Progress Ledger
 
@@ -574,6 +608,19 @@ source graph has a real CLI/review/context consumer.
 - [SIMPLIFY] Next candidate: split eval modules into core/current/lab lanes so normal verification stops paying for historical dashboard/benchmark/lab modules.
 - [OVERCLAIM] This slice proves local typed source-ref pass/warn/block behavior over one context packet and local graph adapter. It does not prove global source freshness, internet source refresh, final source service, productivity lift, or dashboard usefulness.
 - [NEXT] Commit and push this checkpoint; then build the eval-lane split as the next dependency-ordered slice.
+- [FACT] Eval-lane split slice added lane metadata to `KrnEvalReport`, lane invariants in the parser, `krn eval --lane core|current|lab|all`, and custom explicit `--module` reports.
+- [FACT] Default `krn eval` now selects the `current` lane, includes `core` plus `current`, excludes `lab`, and keeps dashboard/benchmark/repair/research-pack history explicit instead of default.
+- [FACT] Explicit `--lane lab` remains available for lab verification, and explicit `--module <module-id>` emits `requested_lane: "custom"` so focused module runs still work without reopening the default path.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/eval-report.test.ts packages/cli/test/eval.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] `pnpm run eval:krn-eval` passed run `20260620T220329Z-524319` with 5/5 cases and 12/12 assertions.
+- [EVIDENCE] `pnpm run eval:krn-dashboard-eval-runs-ui` passed run `20260620T215329Z-509801` with 5/5 cases and 20/20 assertions after updating its synthetic eval report fixture to the lane-aware contract.
+- [EVIDENCE] `pnpm run krn -- eval --lane lab` passed and wrote `.krn/eval/20260620T220452Z-528099/report.json` with 11/11 lab modules passed.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed after final source-ref cleanup.
+- [SIMPLIFY] Keep: lane metadata on `KrnEvalReport`, stable lane descriptors on eval modules, default current selection, explicit lab/custom paths, and known-bad excluded-lane fixture because each protects default verification from lab sediment.
+- [SIMPLIFY] Delete/avoid: no new dashboard panel, no new benchmark, no new API/cloud sync, no new passive research doc, and no external eval registry until a second consumer needs it.
+- [SIMPLIFY] Next candidate: extract eval module descriptors out of `packages/cli/src/main.ts` only when `krn init` or another real consumer needs the registry boundary; do not refactor the CLI monolith from aesthetics alone.
+- [OVERCLAIM] This slice proves lane-aware eval routing and parser invariants. It does not prove product quality, productivity lift, lab module quality, or that the eval registry is the final architecture.
+- [NEXT] Commit and push this checkpoint; then continue with final-shaped `krn init` repo bootstrap using the MemoryStore/context/source/eval boundaries already proven.
 
 ## Disproves Completion
 

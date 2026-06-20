@@ -8,6 +8,8 @@ import {
   parseKrnResearchPack,
   type DoctorCheck,
   type DoctorReport,
+  type EvalLane,
+  type EvalLaneSelection,
   type EvalModuleResult,
   type InitManifest,
   type KrnEvalReport,
@@ -37,6 +39,7 @@ type DoctorArgs = {
 type EvalArgs = {
   target: string;
   modules: string[];
+  lane: EvalLaneSelection;
 };
 
 type ReviewArgs = {
@@ -52,6 +55,7 @@ type ResearchPackArgs = {
 
 type EvalModuleDescriptor = {
   moduleId: string;
+  lane: EvalLane;
   command: readonly string[];
   sourceRefs: readonly string[];
 };
@@ -79,41 +83,49 @@ const DETECTED_PATHS = [
 const EVAL_MODULES: EvalModuleDescriptor[] = [
   {
     moduleId: "krn-init-contracts",
+    lane: "core",
     command: ["pnpm", "run", "eval:krn-init"],
     sourceRefs: ["docs/evals/krn-init-contracts/README.md", "docs/specs/krn-init/README.md"],
   },
   {
     moduleId: "krn-doctor-contracts",
+    lane: "core",
     command: ["pnpm", "run", "eval:krn-doctor"],
     sourceRefs: ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"],
   },
   {
     moduleId: "krn-review-contracts",
+    lane: "core",
     command: ["pnpm", "run", "eval:krn-review"],
     sourceRefs: ["docs/evals/krn-review-contracts/README.md", "docs/specs/krn-review/README.md"],
   },
   {
     moduleId: "krn-mcp-read-model",
+    lane: "core",
     command: ["pnpm", "run", "eval:krn-mcp"],
     sourceRefs: ["docs/evals/krn-mcp-read-model/README.md", "docs/specs/krn-mcp-read-model/README.md"],
   },
   {
     moduleId: "krn-mcp-transport",
+    lane: "core",
     command: ["pnpm", "run", "eval:krn-mcp-transport"],
     sourceRefs: ["docs/evals/krn-mcp-transport/README.md", "docs/specs/krn-mcp-read-model/README.md"],
   },
   {
     moduleId: "krn-proposal-store",
+    lane: "current",
     command: ["pnpm", "run", "eval:krn-proposal-store"],
     sourceRefs: ["docs/evals/krn-proposal-store/README.md", "docs/specs/krn-control-plane-proposal/README.md"],
   },
   {
     moduleId: "krn-mcp-proposal-tool",
+    lane: "current",
     command: ["pnpm", "run", "eval:krn-mcp-proposal-tool"],
     sourceRefs: ["docs/evals/krn-mcp-proposal-tool/README.md", "docs/specs/krn-mcp-proposal-tool/README.md"],
   },
   {
     moduleId: "krn-pending-review-view-model",
+    lane: "current",
     command: ["pnpm", "run", "eval:krn-pending-review-view-model"],
     sourceRefs: [
       "docs/evals/krn-pending-review-view-model/README.md",
@@ -122,6 +134,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-dashboard-pending-review-ui",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-dashboard-pending-review-ui"],
     sourceRefs: [
       "docs/evals/krn-dashboard-pending-review-ui/README.md",
@@ -131,6 +144,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-dashboard-promotion-review-ui",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
     sourceRefs: [
       "docs/evals/krn-dashboard-promotion-review-ui/README.md",
@@ -140,6 +154,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-dashboard-eval-runs-ui",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-dashboard-eval-runs-ui"],
     sourceRefs: [
       "docs/evals/krn-dashboard-eval-runs-ui/README.md",
@@ -149,6 +164,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-proposal-review-decision",
+    lane: "current",
     command: ["pnpm", "run", "eval:krn-proposal-review-decision"],
     sourceRefs: [
       "docs/evals/krn-proposal-review-decision/README.md",
@@ -158,6 +174,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-proposal-promotion",
+    lane: "current",
     command: ["pnpm", "run", "eval:krn-proposal-promotion"],
     sourceRefs: [
       "docs/evals/krn-proposal-promotion/README.md",
@@ -167,6 +184,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-benchmark-spine",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-benchmark-spine"],
     sourceRefs: [
       "docs/evals/krn-benchmark-spine/README.md",
@@ -176,6 +194,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-dashboard-benchmark-reports-ui",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-dashboard-benchmark-reports-ui"],
     sourceRefs: [
       "docs/evals/krn-dashboard-benchmark-reports-ui/README.md",
@@ -185,6 +204,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-benchmark-live-suite",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-benchmark-live-suite"],
     sourceRefs: [
       "docs/evals/krn-benchmark-live-suite/README.md",
@@ -194,6 +214,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-benchmark-live-stability",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-benchmark-live-stability"],
     sourceRefs: [
       "docs/evals/krn-benchmark-live-stability/README.md",
@@ -203,6 +224,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-benchmark-arena-contract",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-benchmark-arena-contract"],
     sourceRefs: [
       "docs/evals/krn-benchmark-arena-contract/README.md",
@@ -212,6 +234,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-benchmark-expanded-arena",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
     sourceRefs: [
       "docs/evals/krn-benchmark-expanded-arena/README.md",
@@ -226,6 +249,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-repair-record",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-repair-record"],
     sourceRefs: [
       "docs/evals/krn-repair-record/README.md",
@@ -235,6 +259,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
   },
   {
     moduleId: "krn-research-pack",
+    lane: "lab",
     command: ["pnpm", "run", "eval:krn-research-pack"],
     sourceRefs: [
       "docs/evals/krn-research-pack/README.md",
@@ -245,7 +270,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  sources check --context <path> --graph <path> [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  sources check --context <path> --graph <path> [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
 }
 
 function parseInitArgs(argv: readonly string[]): InitArgs {
@@ -317,6 +342,7 @@ function parseEvalArgs(argv: readonly string[]): EvalArgs {
 
   let target = ".";
   const modules: string[] = [];
+  let lane: EvalLaneSelection = "current";
 
   for (let index = 1; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -341,10 +367,27 @@ function parseEvalArgs(argv: readonly string[]): EvalArgs {
       continue;
     }
 
+    if (arg === "--lane") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --lane");
+      }
+      if (!["core", "current", "lab", "all"].includes(value)) {
+        throw new Error(`Unknown eval lane: ${value}`);
+      }
+      lane = value as EvalLaneSelection;
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
   }
 
-  return { target, modules };
+  if (modules.length > 0) {
+    return { target, modules, lane: "custom" };
+  }
+
+  return { target, modules, lane };
 }
 
 function parseReviewArgs(argv: readonly string[]): ReviewArgs {
@@ -898,18 +941,53 @@ function toTargetRelativePath(targetRoot: string, absolutePath: string): string 
   return absolutePath;
 }
 
-function selectEvalModules(moduleIds: readonly string[]): EvalModuleDescriptor[] {
-  if (moduleIds.length === 0) {
-    return EVAL_MODULES;
+function uniqueEvalLanes(laneValues: readonly EvalLane[]): EvalLane[] {
+  const lanes: EvalLane[] = [];
+  for (const lane of laneValues) {
+    if (!lanes.includes(lane)) {
+      lanes.push(lane);
+    }
+  }
+  return lanes;
+}
+
+function includedLanesForSelection(selection: EvalLaneSelection): EvalLane[] {
+  if (selection === "core") {
+    return ["core"];
+  }
+  if (selection === "current") {
+    return ["core", "current"];
+  }
+  if (selection === "lab") {
+    return ["lab"];
+  }
+  if (selection === "all") {
+    return ["core", "current", "lab"];
+  }
+  return ["core", "current", "lab"];
+}
+
+function excludedLanesForSelection(selection: EvalLaneSelection, includedLanes: readonly EvalLane[]): EvalLane[] {
+  if (selection === "custom" || selection === "all") {
+    return [];
   }
 
-  return moduleIds.map((moduleId) => {
-    const descriptor = EVAL_MODULES.find((module) => module.moduleId === moduleId);
-    if (!descriptor) {
-      throw new Error(`Unknown eval module: ${moduleId}`);
-    }
-    return descriptor;
-  });
+  return (["core", "current", "lab"] as const).filter((lane) => !includedLanes.includes(lane));
+}
+
+function selectEvalModules(args: EvalArgs): EvalModuleDescriptor[] {
+  if (args.modules.length > 0) {
+    return args.modules.map((moduleId) => {
+      const descriptor = EVAL_MODULES.find((module) => module.moduleId === moduleId);
+      if (!descriptor) {
+        throw new Error(`Unknown eval module: ${moduleId}`);
+      }
+      return descriptor;
+    });
+  }
+
+  const includedLanes = includedLanesForSelection(args.lane);
+  return EVAL_MODULES.filter((module) => includedLanes.includes(module.lane));
 }
 
 function runEvalModule(targetRoot: string, descriptor: EvalModuleDescriptor): EvalModuleResult {
@@ -930,6 +1008,7 @@ function runEvalModule(targetRoot: string, descriptor: EvalModuleDescriptor): Ev
 
     return {
       module_id: descriptor.moduleId,
+      lane: descriptor.lane,
       command: [...descriptor.command],
       status,
       report_path: toTargetRelativePath(targetRoot, reportPath),
@@ -941,6 +1020,7 @@ function runEvalModule(targetRoot: string, descriptor: EvalModuleDescriptor): Ev
 
     return {
       module_id: descriptor.moduleId,
+      lane: descriptor.lane,
       command: [...descriptor.command],
       status: "error",
       report_path: null,
@@ -956,6 +1036,21 @@ function runEvalModule(targetRoot: string, descriptor: EvalModuleDescriptor): Ev
       interpretation_caveat: `The eval module failed before KRN could parse its report: ${message}`,
     };
   }
+}
+
+function summarizeEvalLanes(modules: readonly EvalModuleResult[]): KrnEvalReport["lane_summary"] {
+  const lanes = uniqueEvalLanes(modules.map((moduleResult) => moduleResult.lane));
+
+  return lanes.map((lane) => {
+    const laneModules = modules.filter((moduleResult) => moduleResult.lane === lane);
+    return {
+      lane,
+      total_modules: laneModules.length,
+      passed_modules: laneModules.filter((moduleResult) => moduleResult.status === "passed").length,
+      failed_modules: laneModules.filter((moduleResult) => moduleResult.status === "failed").length,
+      error_modules: laneModules.filter((moduleResult) => moduleResult.status === "error").length,
+    };
+  });
 }
 
 function summarizeEvalModules(modules: readonly EvalModuleResult[]): KrnEvalReport["summary"] {
@@ -1003,9 +1098,12 @@ function buildKrnEvalReport(args: EvalArgs, now = new Date()): KrnEvalReport {
   const targetRoot = resolve(args.target);
   const runId = createRunId(now);
   const runtimeReportPath = `.krn/eval/${runId}/report.json`;
-  const selectedModules = selectEvalModules(args.modules);
+  const selectedModules = selectEvalModules(args);
   const modules = selectedModules.map((module) => runEvalModule(targetRoot, module));
   const summary = summarizeEvalModules(modules);
+  const includedLanes =
+    args.lane === "custom" ? uniqueEvalLanes(selectedModules.map((module) => module.lane)) : includedLanesForSelection(args.lane);
+  const excludedLanes = excludedLanesForSelection(args.lane, includedLanes);
 
   const candidateReport: unknown = {
     schema_version: "krn-eval-report.v1",
@@ -1016,14 +1114,24 @@ function buildKrnEvalReport(args: EvalArgs, now = new Date()): KrnEvalReport {
     command: "krn eval",
     mode: "validate",
     overall_status: evalOverallStatus(modules),
+    lane_selection: {
+      requested_lane: args.lane,
+      default_lane: "current",
+      included_lanes: includedLanes,
+      excluded_lanes: excludedLanes,
+      module_filter: [...args.modules],
+      policy:
+        "Default current runs core plus current eval modules. Lab modules require --lane lab, --lane all, or explicit --module selection.",
+    },
     modules,
+    lane_summary: summarizeEvalLanes(modules),
     summary,
     runtime_report_path: runtimeReportPath,
     source_refs: [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-eval/README.md",
       "docs/evals/STANDARD.md",
-      "docs/product/final-product-plan.md",
+      "docs/plans/canonical/draft.md",
     ],
     interpretation_caveat:
       "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality.",

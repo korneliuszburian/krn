@@ -11,10 +11,10 @@ runner: packages/evals/src/validate-krn-eval.ts
 
 ## Purpose
 
-This eval verifies the third Slice 2 runtime path:
+This eval verifies the lane-aware `krn eval` runtime path:
 
 ```text
-KrnEvalReport parser -> krn eval -> aggregate runtime eval report -> eval report
+KrnEvalReport parser -> krn eval lane selection -> aggregate runtime eval report -> eval report
 ```
 
 It does not claim productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, complete dashboard readiness, or human review quality.
@@ -23,7 +23,9 @@ It does not claim productivity lift, benchmark lift, hook semantic correctness, 
 
 - The valid `krn-eval` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
-- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, `krn-review-contracts`, `krn-mcp-read-model`, `krn-mcp-transport`, `krn-proposal-store`, `krn-mcp-proposal-tool`, `krn-pending-review-view-model`, `krn-dashboard-pending-review-ui`, `krn-dashboard-promotion-review-ui`, `krn-dashboard-eval-runs-ui`, `krn-proposal-review-decision`, `krn-proposal-promotion`, `krn-benchmark-spine`, `krn-dashboard-benchmark-reports-ui`, `krn-benchmark-live-suite`, `krn-benchmark-live-stability`, `krn-benchmark-arena-contract`, `krn-benchmark-expanded-arena`, and `krn-repair-record`. The expanded-arena aggregate entry is still validate mode only, including the bounded smoke-repair guard; explicit live-smoke/live-full remain outside default `krn eval`.
+- The known-bad excluded-lane fixture fails deterministically.
+- The CLI-generated default `krn eval` report exists, parses through `@krn/contracts`, includes only `core` plus `current` modules, and excludes `lab`.
+- Explicit `--module krn-research-pack` still works and emits a `custom` report with a lab module only because it was directly requested.
 - The eval writes a machine-readable report under `.krn/evals/krn-eval-contracts/{run_id}/report.json`.
 
 ## Command
@@ -42,4 +44,4 @@ Runtime outputs stay local. Reviewed durable lessons move to `docs/memory`.
 
 ## Interpretation Policy
 
-A green run means `krn eval` can execute and aggregate deterministic local eval modules. It does not mean the selected modules prove product quality or productivity lift.
+A green run means `krn eval` can execute and aggregate deterministic local eval modules through lane-aware routing. It does not mean the selected modules prove product quality or productivity lift.

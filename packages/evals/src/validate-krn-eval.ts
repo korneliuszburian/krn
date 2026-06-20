@@ -36,7 +36,7 @@ type EvalReport = {
   interpretation_caveat: string;
 };
 
-const REQUIRED_MODULES = [
+const DEFAULT_CURRENT_MODULES = [
   "krn-init-contracts",
   "krn-doctor-contracts",
   "krn-review-contracts",
@@ -45,11 +45,14 @@ const REQUIRED_MODULES = [
   "krn-proposal-store",
   "krn-mcp-proposal-tool",
   "krn-pending-review-view-model",
+  "krn-proposal-review-decision",
+  "krn-proposal-promotion",
+];
+
+const LAB_MODULES = [
   "krn-dashboard-pending-review-ui",
   "krn-dashboard-promotion-review-ui",
   "krn-dashboard-eval-runs-ui",
-  "krn-proposal-review-decision",
-  "krn-proposal-promotion",
   "krn-benchmark-spine",
   "krn-dashboard-benchmark-reports-ui",
   "krn-benchmark-live-suite",
@@ -111,9 +114,14 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
-function hasRequiredModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
+function hasDefaultCurrentModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
   const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
-  return REQUIRED_MODULES.every((moduleId) => moduleIds.includes(moduleId));
+  return DEFAULT_CURRENT_MODULES.every((moduleId) => moduleIds.includes(moduleId));
+}
+
+function hasNoLabModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
+  const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
+  return LAB_MODULES.every((moduleId) => !moduleIds.includes(moduleId));
 }
 
 function runValidation(): EvalReport {
@@ -134,8 +142,11 @@ function runValidation(): EvalReport {
     results.push(
       result(
         validFixtureCase.id,
-        report.command === "krn eval" && hasRequiredModules(report),
-        ["valid fixture parses", "required eval modules present"],
+        report.command === "krn eval" &&
+          report.lane_selection.requested_lane === "current" &&
+          report.lane_selection.excluded_lanes.includes("lab") &&
+          hasNoLabModules(report),
+        ["valid fixture parses", "default current lane excludes lab"],
         validFixtureCase.failure_mode,
         "Valid krn-eval fixture parsed through @krn/contracts.",
       ),
@@ -179,6 +190,33 @@ function runValidation(): EvalReport {
     );
   }
 
+  const badLaneCase = caseById.get("known-bad-excluded-lane-fails");
+  if (!badLaneCase) {
+    throw new Error("Missing case known-bad-excluded-lane-fails");
+  }
+  try {
+    parseKrnEvalReport(readJson(resolve("docs/specs/krn-eval/fixtures/bad-krn-eval-report-lab-in-excluded.example.json")));
+    results.push(
+      result(
+        badLaneCase.id,
+        false,
+        ["known-bad excluded lane rejected"],
+        badLaneCase.failure_mode,
+        "Known-bad krn-eval lane fixture unexpectedly parsed.",
+      ),
+    );
+  } catch {
+    results.push(
+      result(
+        badLaneCase.id,
+        true,
+        ["known-bad excluded lane rejected"],
+        badLaneCase.failure_mode,
+        "Known-bad krn-eval lane fixture failed as expected.",
+      ),
+    );
+  }
+
   const generatedCase = caseById.get("generated-krn-eval-report-parses");
   if (!generatedCase) {
     throw new Error("Missing case generated-krn-eval-report-parses");
@@ -196,8 +234,20 @@ function runValidation(): EvalReport {
       results.push(
         result(
           generatedCase.id,
-          report.command === "krn eval" && existsSync(cliReportPath) && hasRequiredModules(report),
-          ["CLI exits zero", "generated report exists", "generated report parses", "required eval modules present"],
+          report.command === "krn eval" &&
+            existsSync(cliReportPath) &&
+            report.lane_selection.requested_lane === "current" &&
+            report.lane_selection.included_lanes.join(",") === "core,current" &&
+            report.lane_selection.excluded_lanes.includes("lab") &&
+            hasDefaultCurrentModules(report) &&
+            hasNoLabModules(report),
+          [
+            "CLI exits zero",
+            "generated report exists",
+            "generated report parses",
+            "default current modules present",
+            "lab modules excluded by default",
+          ],
           generatedCase.failure_mode,
           "Generated krn eval report parsed through @krn/contracts.",
         ),
@@ -210,6 +260,51 @@ function runValidation(): EvalReport {
           ["generated report parses"],
           generatedCase.failure_mode,
           error instanceof Error ? error.message : "unknown generated report error",
+        ),
+      );
+    }
+  }
+
+  const customCase = caseById.get("custom-module-report-parses");
+  if (!customCase) {
+    throw new Error("Missing case custom-module-report-parses");
+  }
+  const customCliResult = runKrnCli(["eval", "--module", "krn-research-pack"]);
+  if (customCliResult.exitCode !== 0) {
+    results.push(
+      result(
+        customCase.id,
+        false,
+        ["custom module CLI exits zero", "custom module report parses"],
+        customCase.failure_mode,
+        customCliResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const report = parseKrnEvalReport(readJson(customCliResult.stdout.trim()));
+      results.push(
+        result(
+          customCase.id,
+          report.lane_selection.requested_lane === "custom" &&
+            report.lane_selection.module_filter.join(",") === "krn-research-pack" &&
+            report.lane_selection.included_lanes.join(",") === "lab" &&
+            report.modules.length === 1 &&
+            report.modules[0]?.module_id === "krn-research-pack" &&
+            report.modules[0]?.lane === "lab",
+          ["custom module CLI exits zero", "custom module report parses", "custom module keeps lab lane explicit"],
+          customCase.failure_mode,
+          "Custom krn eval report parsed through @krn/contracts.",
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          customCase.id,
+          false,
+          ["custom module report parses"],
+          customCase.failure_mode,
+          error instanceof Error ? error.message : "unknown custom report error",
         ),
       );
     }
@@ -239,7 +334,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_report_path: generatedReportPath,
     interpretation_caveat:
-      "This eval proves krn eval aggregate-report contract behavior only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality.",
+      "This eval proves krn eval lane-selection and aggregate-report contract behavior only; it does not prove productivity lift, lab quality, API/MCP readiness, complete dashboard readiness, or human approval quality.",
   };
 }
 

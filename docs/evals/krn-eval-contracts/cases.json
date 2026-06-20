@@ -1,27 +1,28 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 modules plus Slice 3 MCP read/transport/proposal-store/proposal-tool, Pending Review, dashboard UI, Promotion Review UI, Eval Runs UI, proposal review decision, proposal promotion, benchmark-spine, Benchmark Reports UI, benchmark live suite, live stability, arena contract, expanded arena registry/scoring/live-runner/smoke-repair contract, and repair-record validate modules.",
+    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts, declares default current lane selection, includes core/current lanes, and excludes lab.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-eval/README.md",
       "docs/evals/STANDARD.md"
     ],
     "assertions": [
       "valid fixture parses",
-      "required eval modules present"
+      "default current lane excludes lab"
     ],
     "metrics": [
       "schema_contract_score",
-      "runtime_contract_score"
+      "runtime_contract_score",
+      "eval_lane_routing_score"
     ],
-    "failure_mode": "The krn eval aggregate contract can no longer validate its own canonical example."
+    "failure_mode": "The krn eval aggregate contract can no longer validate its default current-lane example."
   },
   {
     "id": "known-bad-fixture-fails",
-    "expected_behavior": "The known-bad fixture missing the interpretation caveat fails deterministically.",
+    "expected_behavior": "The known-bad fixture missing required lane/caveat fields fails deterministically.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-eval/README.md",
       "docs/evals/STANDARD.md"
     ],
@@ -32,13 +33,29 @@
       "schema_contract_score",
       "anti_slop_score"
     ],
-    "failure_mode": "The validator accepts an aggregate eval report that can be overclaimed without a caveat."
+    "failure_mode": "The validator accepts an aggregate eval report that can be overclaimed without the lane/caveat contract."
+  },
+  {
+    "id": "known-bad-excluded-lane-fails",
+    "expected_behavior": "A report that includes a lab module while lane_selection excludes lab fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-eval/README.md"
+    ],
+    "assertions": [
+      "known-bad excluded lane rejected"
+    ],
+    "metrics": [
+      "eval_lane_routing_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The contract allows historical lab modules to appear inside the default current-lane report."
   },
   {
     "id": "generated-krn-eval-report-parses",
-    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval and the generated report parses through @krn/contracts with init, doctor, review, MCP read-model, MCP transport, proposal-store, proposal-tool, Pending Review, dashboard UI, Promotion Review UI, Eval Runs UI, proposal review decision, proposal promotion, benchmark-spine, Benchmark Reports UI, benchmark live suite, live stability, arena contract, expanded arena registry/scoring/live-runner/smoke-repair contract, and repair-record validate module summaries.",
+    "expected_behavior": "The CLI writes an aggregate eval report under .krn/eval, the generated report parses through @krn/contracts, the default current lane includes core/current modules, and lab modules are excluded by default.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-eval/README.md",
       "docs/evals/STANDARD.md"
     ],
@@ -46,12 +63,32 @@
       "CLI exits zero",
       "generated report exists",
       "generated report parses",
-      "required eval modules present"
+      "default current modules present",
+      "lab modules excluded by default"
     ],
     "metrics": [
       "runtime_contract_score",
-      "goal_alignment_score"
+      "goal_alignment_score",
+      "eval_lane_routing_score"
     ],
-    "failure_mode": "The krn eval command no longer produces a schema-backed aggregate runtime artifact."
+    "failure_mode": "The krn eval command keeps running historical lab modules by default or stops producing a schema-backed aggregate runtime artifact."
+  },
+  {
+    "id": "custom-module-report-parses",
+    "expected_behavior": "Explicit --module selection writes a custom lane report and can run a lab module only when directly requested.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-eval/README.md"
+    ],
+    "assertions": [
+      "custom module CLI exits zero",
+      "custom module report parses",
+      "custom module keeps lab lane explicit"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "eval_lane_routing_score"
+    ],
+    "failure_mode": "Focused module execution is broken, or lab modules can only be reached through the default eval path."
   }
 ]

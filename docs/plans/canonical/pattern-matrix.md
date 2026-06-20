@@ -50,6 +50,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | MCP/API | Destructive autonomous tools | S007, S022 | A | Agent writes production state | Bad fit | Unapproved state mutation | reject |
 | Evals | Trace-derived micro/macro evals | S013-S016, S053 | A | Convert failures into fixtures and metrics | Strong fit | Green demos not tied to work | adopt |
 | Evals | Fixed-budget metric loop | S088 | B | Baseline, one bounded change, fixed eval, metric delta, keep/discard | Strong fit for worker lanes | Endless autonomous loop or overfitting one metric | test |
+| Evals | Core/current/lab lane split | C023, C031, C066, LOCAL051 | local | Keep default verification focused on active product contracts while preserving explicit lab/history checks | Strong fit | Historical dashboard/benchmark modules are mistaken for current product progress | adopt |
 | Evals | GEPA-style prompt evolution | S052 | A | Reflect over trajectories, propose prompt/skill changes | Later fit | Overfits without validation split | test |
 | Evals | Reflexion/Self-Refine repair | S049, S050 | A | Feedback/refine iterations | Good fit | Model self-critique without proof | adopt |
 | Evals | Voyager skill-library loop | S051 | A | Store reusable behaviors after successful execution | Good analogy | Game setting overgeneralized | defer |

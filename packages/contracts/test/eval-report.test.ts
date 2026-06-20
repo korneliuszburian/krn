@@ -15,33 +15,21 @@ describe("KrnEvalReport contract", () => {
 
     expect(report.kind).toBe("krn_eval_report");
     expect(report.command).toBe("krn eval");
-    expect(report.modules.map((moduleResult) => moduleResult.module_id)).toEqual([
-      "krn-init-contracts",
-      "krn-doctor-contracts",
-      "krn-review-contracts",
-      "krn-mcp-read-model",
-      "krn-mcp-transport",
-      "krn-proposal-store",
-      "krn-mcp-proposal-tool",
-      "krn-pending-review-view-model",
-      "krn-dashboard-pending-review-ui",
-      "krn-dashboard-promotion-review-ui",
-      "krn-dashboard-eval-runs-ui",
-      "krn-proposal-review-decision",
-      "krn-proposal-promotion",
-      "krn-benchmark-spine",
-      "krn-dashboard-benchmark-reports-ui",
-      "krn-benchmark-live-suite",
-      "krn-benchmark-live-stability",
-      "krn-benchmark-arena-contract",
-      "krn-benchmark-expanded-arena",
-      "krn-repair-record",
-      "krn-research-pack",
-    ]);
+    expect(report.lane_selection.requested_lane).toBe("current");
+    expect(report.lane_selection.included_lanes).toEqual(["core", "current"]);
+    expect(report.lane_selection.excluded_lanes).toEqual(["lab"]);
+    expect(report.modules.map((moduleResult) => moduleResult.lane)).toEqual(["core", "core", "current"]);
+    expect(report.modules.some((moduleResult) => moduleResult.lane === "lab")).toBe(false);
   });
 
   it("rejects the known-bad fixture", () => {
     expect(() => parseKrnEvalReport(readJson("docs/specs/krn-eval/fixtures/bad-krn-eval-report.example.json"))).toThrow();
+  });
+
+  it("rejects a report that includes an excluded lane", () => {
+    expect(() =>
+      parseKrnEvalReport(readJson("docs/specs/krn-eval/fixtures/bad-krn-eval-report-lab-in-excluded.example.json")),
+    ).toThrow();
   });
 
   it("exports a JSON schema for downstream tools", () => {

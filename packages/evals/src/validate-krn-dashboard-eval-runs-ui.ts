@@ -101,21 +101,7 @@ function validEvalReport(overrides: Partial<KrnEvalReport> = {}): KrnEvalReport 
 }
 
 function failedEvalReport(targetRoot: string): KrnEvalReport {
-  const base = validEvalReport({
-    target_root: targetRoot,
-    overall_status: "failed",
-    summary: {
-      total_modules: 1,
-      passed_modules: 0,
-      failed_modules: 1,
-      total_cases: 1,
-      passed_cases: 0,
-      failed_cases: 1,
-      total_assertions: 2,
-      passed_assertions: 1,
-      failed_assertions: 1,
-    },
-  });
+  const base = validEvalReport({ target_root: targetRoot });
   const moduleResult = base.modules[0];
   if (!moduleResult) {
     throw new Error("valid eval report fixture must include at least one module");
@@ -123,6 +109,15 @@ function failedEvalReport(targetRoot: string): KrnEvalReport {
 
   return validEvalReport({
     ...base,
+    overall_status: "failed",
+    lane_selection: {
+      requested_lane: "core",
+      default_lane: "current",
+      included_lanes: ["core"],
+      excluded_lanes: ["current", "lab"],
+      module_filter: [],
+      policy: "Failed-module dashboard fixture uses a single core module to test blocked rendering.",
+    },
     modules: [
       {
         ...moduleResult,
@@ -137,6 +132,26 @@ function failedEvalReport(targetRoot: string): KrnEvalReport {
         assertion_pass_rate: 0.5,
       },
     ],
+    lane_summary: [
+      {
+        lane: "core",
+        total_modules: 1,
+        passed_modules: 0,
+        failed_modules: 1,
+        error_modules: 0,
+      },
+    ],
+    summary: {
+      total_modules: 1,
+      passed_modules: 0,
+      failed_modules: 1,
+      total_cases: 1,
+      passed_cases: 0,
+      failed_cases: 1,
+      total_assertions: 2,
+      passed_assertions: 1,
+      failed_assertions: 1,
+    },
   });
 }
 
@@ -322,16 +337,20 @@ function runValidation(): EvalReport {
     writeEvalReport(targetRoot, failedEvalReport(targetRoot));
     const viewModel = buildKrnEvalRunsViewModel(targetRoot, new Date("2026-06-20T04:02:00.000Z"));
     const html = renderEvalRuns(viewModel);
+    const failedModuleRendered =
+      viewModel.eval_state === "blocked" &&
+      viewModel.failed_modules === 1 &&
+      html.includes("Create eval repair record") &&
+      !html.includes("claim_productivity_lift");
     results.push(
       result(
         failedCase.id,
-        viewModel.eval_state === "blocked" &&
-          viewModel.failed_modules === 1 &&
-          html.includes("Create eval repair record") &&
-          !html.includes("claim_productivity_lift"),
+        failedModuleRendered,
         ["failed module parsed", "blocked state rendered", "repair action rendered", "lift claim absent"],
         failedCase.failure_mode,
-        "Dashboard static render surfaced failed eval modules as blocked repair-ready evidence.",
+        failedModuleRendered
+          ? "Dashboard static render surfaced failed eval modules as blocked repair-ready evidence."
+          : `Failed-module render check missed expected evidence: state=${viewModel.eval_state}, failed_modules=${viewModel.failed_modules}, repair_text=${html.includes("Create eval repair record")}, lift_claim=${html.includes("claim_productivity_lift")}.`,
       ),
     );
   } catch (error: unknown) {

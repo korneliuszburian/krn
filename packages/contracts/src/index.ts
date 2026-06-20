@@ -106,6 +106,8 @@ export {
   KrnEvalReportSchema,
   krnEvalReportJsonSchema,
   parseKrnEvalReport,
+  type EvalLane,
+  type EvalLaneSelection,
   type EvalModuleResult,
   type KrnEvalReport,
 } from "./eval-report.js";

@@ -1,18 +1,27 @@
 {
   "schema_version": "krn-eval-report.v1",
   "kind": "krn_eval_report",
-  "run_id": "20260619T220000Z-example",
-  "created_at": "2026-06-19T22:00:00.000Z",
+  "run_id": "20260620T220000Z-example",
+  "created_at": "2026-06-20T22:00:00.000Z",
   "target_root": "/home/krn/coding/krn/active/krn-gastown",
   "command": "krn eval",
   "mode": "validate",
   "overall_status": "passed",
+  "lane_selection": {
+    "requested_lane": "current",
+    "default_lane": "current",
+    "included_lanes": ["core", "current"],
+    "excluded_lanes": ["lab"],
+    "module_filter": [],
+    "policy": "Default current runs core plus current eval modules. Lab modules require --lane lab, --lane all, or explicit --module selection."
+  },
   "modules": [
     {
       "module_id": "krn-init-contracts",
+      "lane": "core",
       "command": ["pnpm", "run", "eval:krn-init"],
       "status": "passed",
-      "report_path": ".krn/evals/krn-init-contracts/20260619T215900Z-example/report.json",
+      "report_path": ".krn/evals/krn-init-contracts/20260620T215900Z-example/report.json",
       "total_cases": 3,
       "passed_cases": 3,
       "failed_cases": 0,
@@ -21,74 +30,15 @@
       "passed_assertions": 8,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-init-contracts/README.md",
-        "docs/specs/krn-init/README.md"
-      ],
+      "source_refs": ["docs/evals/krn-init-contracts/README.md", "docs/specs/krn-init/README.md"],
       "interpretation_caveat": "This eval proves krn-init contract behavior only; it does not prove productivity lift, dashboard readiness, MCP readiness, or write-mode safety."
     },
     {
       "module_id": "krn-doctor-contracts",
+      "lane": "core",
       "command": ["pnpm", "run", "eval:krn-doctor"],
       "status": "passed",
-      "report_path": ".krn/evals/krn-doctor-contracts/20260619T215901Z-example/report.json",
-      "total_cases": 3,
-      "passed_cases": 3,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 8,
-      "passed_assertions": 8,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-doctor-contracts/README.md",
-        "docs/specs/krn-doctor/README.md"
-      ],
-      "interpretation_caveat": "This eval proves krn doctor readiness-report contract behavior only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness."
-    },
-    {
-      "module_id": "krn-review-contracts",
-      "command": ["pnpm", "run", "eval:krn-review"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-review-contracts/20260619T215902Z-example/report.json",
-      "total_cases": 3,
-      "passed_cases": 3,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 8,
-      "passed_assertions": 8,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-review-contracts/README.md",
-        "docs/specs/krn-review/README.md"
-      ],
-      "interpretation_caveat": "This eval proves krn review proposal-report contract behavior only; it does not prove human approval, productivity lift, API/MCP readiness, or dashboard readiness."
-    },
-    {
-      "module_id": "krn-mcp-read-model",
-      "command": ["pnpm", "run", "eval:krn-mcp"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-mcp-read-model/20260619T215903Z-example/report.json",
-      "total_cases": 3,
-      "passed_cases": 3,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 8,
-      "passed_assertions": 8,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-mcp-read-model/README.md",
-        "docs/specs/krn-mcp-read-model/README.md"
-      ],
-      "interpretation_caveat": "This eval proves the KRN MCP read-model contract only; it does not prove a deployed MCP transport, dashboard readiness, write-tool safety, human approval, or productivity lift."
-    },
-    {
-      "module_id": "krn-mcp-transport",
-      "command": ["pnpm", "run", "eval:krn-mcp-transport"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-mcp-transport/20260619T215904Z-example/report.json",
+      "report_path": ".krn/evals/krn-doctor-contracts/20260620T215901Z-example/report.json",
       "total_cases": 3,
       "passed_cases": 3,
       "failed_cases": 0,
@@ -97,17 +47,15 @@
       "passed_assertions": 7,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-mcp-transport/README.md",
-        "docs/specs/krn-mcp-read-model/README.md"
-      ],
-      "interpretation_caveat": "This eval proves local KRN MCP STDIO read-resource transport and tool listing only; proposal-tool behavior is covered by krn-mcp-proposal-tool, and this does not prove ChatGPT connector behavior, dashboard readiness, human approval, or productivity lift."
+      "source_refs": ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"],
+      "interpretation_caveat": "This eval proves krn doctor readiness-report contract behavior only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness."
     },
     {
       "module_id": "krn-proposal-store",
+      "lane": "current",
       "command": ["pnpm", "run", "eval:krn-proposal-store"],
       "status": "passed",
-      "report_path": ".krn/evals/krn-proposal-store/20260619T215905Z-example/report.json",
+      "report_path": ".krn/evals/krn-proposal-store/20260620T215902Z-example/report.json",
       "total_cases": 4,
       "passed_cases": 4,
       "failed_cases": 0,
@@ -116,333 +64,38 @@
       "passed_assertions": 9,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-proposal-store/README.md",
-        "docs/specs/krn-control-plane-proposal/README.md"
-      ],
+      "source_refs": ["docs/evals/krn-proposal-store/README.md", "docs/specs/krn-control-plane-proposal/README.md"],
       "interpretation_caveat": "This eval proves local source-backed append-only proposal persistence only; it does not prove MCP/API proposal tool safety, human approval, dashboard readiness, ChatGPT connector behavior, or productivity lift."
+    }
+  ],
+  "lane_summary": [
+    {
+      "lane": "core",
+      "total_modules": 2,
+      "passed_modules": 2,
+      "failed_modules": 0,
+      "error_modules": 0
     },
     {
-      "module_id": "krn-mcp-proposal-tool",
-      "command": ["pnpm", "run", "eval:krn-mcp-proposal-tool"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-mcp-proposal-tool/20260619T215906Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 16,
-      "passed_assertions": 16,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-mcp-proposal-tool/README.md",
-        "docs/specs/krn-mcp-proposal-tool/README.md"
-      ],
-      "interpretation_caveat": "This eval proves the local STDIO MCP proposal-tool boundary only; it does not prove human approval quality, dashboard UI readiness, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond .krn/proposals, or productivity lift."
-    },
-    {
-      "module_id": "krn-pending-review-view-model",
-      "command": ["pnpm", "run", "eval:krn-pending-review-view-model"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-pending-review-view-model/20260619T215907Z-example/report.json",
-      "total_cases": 4,
-      "passed_cases": 4,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 14,
-      "passed_assertions": 14,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-pending-review-view-model/README.md",
-        "docs/specs/krn-pending-review-view-model/README.md"
-      ],
-      "interpretation_caveat": "This eval proves the local Pending Review view-model boundary over proposal-store records only; it does not prove dashboard UI readiness, human approval quality, HTTP/API readiness, ChatGPT connector behavior, or productivity lift."
-    },
-    {
-      "module_id": "krn-dashboard-pending-review-ui",
-      "command": ["pnpm", "run", "eval:krn-dashboard-pending-review-ui"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-dashboard-pending-review-ui/20260619T215908Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 19,
-      "passed_assertions": 19,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-dashboard-pending-review-ui/README.md",
-        "docs/goals/goal-012.md",
-        "apps/dashboard/package.json"
-      ],
-      "interpretation_caveat": "This eval proves the first local dashboard UI can render typed Pending Review product objects only; it does not prove approval workflow quality, HTTP/API readiness, ChatGPT connector behavior, complete dashboard coverage, human review quality, or productivity lift."
-    },
-    {
-      "module_id": "krn-dashboard-promotion-review-ui",
-      "command": ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-dashboard-promotion-review-ui/20260619T215909Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 19,
-      "passed_assertions": 19,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-dashboard-promotion-review-ui/README.md",
-        "docs/specs/krn-promotion-review-view-model/README.md",
-        "docs/goals/goal-015.md"
-      ],
-      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Promotion Review product objects only; it does not prove dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, broad promotion correctness, safe overwrite semantics, or productivity lift."
-    },
-    {
-      "module_id": "krn-dashboard-eval-runs-ui",
-      "command": ["pnpm", "run", "eval:krn-dashboard-eval-runs-ui"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-dashboard-eval-runs-ui/20260619T215909Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 20,
-      "passed_assertions": 20,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-dashboard-eval-runs-ui/README.md",
-        "docs/specs/krn-eval-runs-view-model/README.md",
-        "docs/goals/goal-016.md"
-      ],
-      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Eval Runs product objects only; it does not prove benchmark lift, productivity improvement, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-proposal-review-decision",
-      "command": ["pnpm", "run", "eval:krn-proposal-review-decision"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-proposal-review-decision/20260619T215909Z-example/report.json",
-      "total_cases": 8,
-      "passed_cases": 8,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 25,
-      "passed_assertions": 25,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-proposal-review-decision/README.md",
-        "docs/specs/krn-proposal-review-decision/README.md",
-        "docs/goals/goal-013.md"
-      ],
-      "interpretation_caveat": "This eval proves the local proposal review decision ledger and Pending Review consumption boundary only; it does not prove promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift."
-    },
-    {
-      "module_id": "krn-proposal-promotion",
-      "command": ["pnpm", "run", "eval:krn-proposal-promotion"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-proposal-promotion/20260619T215910Z-example/report.json",
-      "total_cases": 7,
-      "passed_cases": 7,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 24,
-      "passed_assertions": 24,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-proposal-promotion/README.md",
-        "docs/specs/krn-proposal-promotion/README.md",
-        "docs/goals/goal-014.md"
-      ],
-      "interpretation_caveat": "This eval proves the local approved proposal promotion boundary for exact memory_update payloads only; it does not prove general promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift."
-    },
-    {
-      "module_id": "krn-benchmark-spine",
-      "command": ["pnpm", "run", "eval:krn-benchmark-spine"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-benchmark-spine/20260619T215911Z-example/report.json",
-      "total_cases": 4,
-      "passed_cases": 4,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 14,
-      "passed_assertions": 14,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-benchmark-spine/README.md",
-        "docs/specs/krn-benchmark-report/README.md",
-        "docs/goals/goal-017.md"
-      ],
-      "interpretation_caveat": "This eval proves the benchmark report contract and no-lift gate only; it does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-dashboard-benchmark-reports-ui",
-      "command": ["pnpm", "run", "eval:krn-dashboard-benchmark-reports-ui"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-dashboard-benchmark-reports-ui/20260619T215912Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 28,
-      "passed_assertions": 28,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-dashboard-benchmark-reports-ui/README.md",
-        "docs/specs/krn-benchmark-reports-view-model/README.md",
-        "docs/goals/goal-019.md"
-      ],
-      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Benchmark Reports product objects only; it does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-benchmark-live-suite",
-      "command": ["pnpm", "run", "eval:krn-benchmark-live-suite"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-benchmark-live-suite/20260619T215913Z-example/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 22,
-      "passed_assertions": 22,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-benchmark-live-suite/README.md",
-        "docs/evals/krn-benchmark-live-suite/tasks.json",
-        "docs/goals/goal-020.md"
-      ],
-      "interpretation_caveat": "This eval proves the deterministic multi-task benchmark suite harness only; it does not prove measured productivity lift, benchmark statistical validity, live Codex suite quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-benchmark-live-stability",
-      "command": ["pnpm", "run", "eval:krn-benchmark-live-stability"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-benchmark-live-stability/20260619T215914Z-example/report.json",
-      "total_cases": 6,
-      "passed_cases": 6,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 20,
-      "passed_assertions": 20,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-benchmark-live-stability/README.md",
-        "docs/evals/krn-benchmark-live-stability/cases.json",
-        "docs/goals/goal-027.md"
-      ],
-      "interpretation_caveat": "This eval proves deterministic live-report readiness classification only; it does not prove measured productivity lift, clean repeated live execution in the current runtime, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-benchmark-arena-contract",
-      "command": ["pnpm", "run", "eval:krn-benchmark-arena-contract"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-benchmark-arena-contract/20260619T215914Z-example/report.json",
-      "total_cases": 7,
-      "passed_cases": 7,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 34,
-      "passed_assertions": 34,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-benchmark-arena-contract/README.md",
-        "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
-        "docs/goals/goal-030.md"
-      ],
-      "interpretation_caveat": "This eval proves deterministic arena-expansion contract readiness only; it does not prove measured productivity lift, suite expansion implementation, statistical validity, live Codex quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-benchmark-expanded-arena",
-      "command": ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-benchmark-expanded-arena/20260619T215915Z-example/report.json",
-      "total_cases": 12,
-      "passed_cases": 12,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 70,
-      "passed_assertions": 70,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-benchmark-expanded-arena/README.md",
-        "docs/evals/krn-benchmark-expanded-arena/tasks.json",
-        "docs/evals/krn-benchmark-expanded-arena/cases.json",
-        "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
-        "docs/goals/goal-031.md",
-        "docs/goals/goal-032.md",
-        "docs/goals/goal-033.md",
-        "docs/goals/goal-034.md"
-      ],
-      "interpretation_caveat": "This eval proves the expanded arena task registry, deterministic fixture scoring, explicit live-runner contract, and bounded smoke-repair guard only; default validate mode does not run live Codex workers and does not prove measured productivity lift, full live expanded execution, statistical validity, isolated coding-task runner quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-repair-record",
-      "command": ["pnpm", "run", "eval:krn-repair-record"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-repair-record/20260619T215914Z-example/report.json",
-      "total_cases": 3,
-      "passed_cases": 3,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 9,
-      "passed_assertions": 9,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-repair-record/README.md",
-        "docs/specs/krn-repair-record/README.md",
-        "docs/goals/goal-021.md"
-      ],
-      "interpretation_caveat": "This eval proves benchmark no-lift repair-record contract behavior only; it does not prove repair quality, productivity lift, prompt improvement, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-    },
-    {
-      "module_id": "krn-research-pack",
-      "command": ["pnpm", "run", "eval:krn-research-pack"],
-      "status": "passed",
-      "report_path": ".krn/evals/krn-research-pack/20260619T215916Z-example/report.json",
-      "total_cases": 3,
-      "passed_cases": 3,
-      "failed_cases": 0,
-      "case_pass_rate": 1,
-      "total_assertions": 9,
-      "passed_assertions": 9,
-      "failed_assertions": 0,
-      "assertion_pass_rate": 1,
-      "source_refs": [
-        "docs/evals/krn-research-pack/README.md",
-        "docs/specs/krn-research-pack/README.md",
-        "docs/goals/goal-036.md"
-      ],
-      "interpretation_caveat": "This eval proves research-pack scaffold contract behavior only; it does not prove source quality, researcher-worker quality, productivity lift, memory promotion correctness, dashboard command readiness, HTTP/API readiness, or ChatGPT connector behavior."
+      "lane": "current",
+      "total_modules": 1,
+      "passed_modules": 1,
+      "failed_modules": 0,
+      "error_modules": 0
     }
   ],
   "summary": {
-    "total_modules": 21,
-    "passed_modules": 21,
+    "total_modules": 3,
+    "passed_modules": 3,
     "failed_modules": 0,
-    "total_cases": 104,
-    "passed_cases": 104,
+    "total_cases": 10,
+    "passed_cases": 10,
     "failed_cases": 0,
-    "total_assertions": 391,
-    "passed_assertions": 391,
+    "total_assertions": 24,
+    "passed_assertions": 24,
     "failed_assertions": 0
   },
-  "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",
-  "source_refs": [
-    "docs/goals/goal-006.md",
-    "docs/specs/krn-eval/README.md",
-    "docs/evals/STANDARD.md",
-    "docs/product/final-product-plan.md"
-  ],
-  "interpretation_caveat": "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality."
+  "runtime_report_path": ".krn/eval/20260620T220000Z-example/report.json",
+  "source_refs": ["docs/goals/goal-038.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md", "docs/plans/canonical/draft.md"],
+  "interpretation_caveat": "This report proves local deterministic eval lane selection and aggregation only; it does not prove productivity lift, lab quality, API/MCP readiness, complete dashboard readiness, or human approval quality."
 }

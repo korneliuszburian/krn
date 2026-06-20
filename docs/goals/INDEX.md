@@ -29,7 +29,7 @@ mechanism-first
   -> deletion-friendly
 ```
 
-[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. MemoryStore selection/application, the pre-edit engineering gate, bounded context packet, and local source graph check are now the active execution path. The next useful product slice should split default evals into core/current/lab lanes, not add another passive note, dashboard panel, benchmark lane, or broad API/cloud sync.
+[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. MemoryStore selection/application, the pre-edit engineering gate, bounded context packet, local source graph check, and eval-lane split are now the active execution path. The next useful product slice should continue with final-shaped `krn init` repo bootstrap on top of those boundaries, not add another passive note, dashboard panel, benchmark lane, or broad API/cloud sync.
 
 ## Buckets
 

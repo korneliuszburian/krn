@@ -5,9 +5,8 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
-  - docs/product/final-product-plan.md
-  - docs/specs/technology-stack/decision.md
+  - docs/goals/goal-038.md
+  - docs/plans/canonical/draft.md
   - docs/evals/STANDARD.md
 ---
 
@@ -17,7 +16,7 @@ sources:
 
 `krn eval` runs deterministic local KRN eval modules and writes one schema-backed aggregate report.
 
-It is the third Slice 2 CLI command after `krn init --dry-run` and `krn doctor`. Its job is to prove that runtime eval reports are executable and machine-readable before broader API/MCP/dashboard work expands. It also aggregates the `krn review` contract eval and the first Slice 3 MCP read/transport evals.
+Under `goal-038`, its job is to keep normal verification focused on the active product path. Default reports include only `core` and `current` modules; historical dashboard, benchmark, repair, and research-pack modules stay in the explicit `lab` lane.
 
 ## Command
 
@@ -28,8 +27,15 @@ pnpm run krn -- eval
 Accepted shape:
 
 ```text
-krn eval [--target <path>] [--module <module-id>]
+krn eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]
 ```
+
+Default behavior:
+
+- no `--lane` means `--lane current`;
+- `current` includes `core` plus `current` modules;
+- `lab` modules are excluded from default runs;
+- explicit `--module` bypasses lane filtering and emits `requested_lane: "custom"`.
 
 Supported module IDs:
 
@@ -53,8 +59,9 @@ Supported module IDs:
 - `krn-benchmark-arena-contract`
 - `krn-benchmark-expanded-arena`
 - `krn-repair-record`
+- `krn-research-pack`
 
-If no module is supplied, the command runs all supported modules.
+If no module or lane is supplied, the command runs only the default current-lane selection. Use `--lane all` for the historical aggregate and `--lane lab` for lab-only checks.
 
 ## Runtime Output
 
@@ -92,6 +99,13 @@ Forbidden default writes:
 ## Interpretation
 
 A green `krn eval` report means the selected deterministic local eval modules ran and their reports were aggregated through the KRN eval contract.
+
+Lane policy:
+
+- `core`: stable CLI/report contract modules that protect the foundation.
+- `current`: active product-control modules; default includes `core` and `current`.
+- `lab`: dashboard, benchmark, research-pack, and repair-history modules that must be explicit so normal verification stays focused.
+- `custom`: explicit `--module` selection.
 
 It does not prove productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, complete dashboard readiness, or human review quality.
 
