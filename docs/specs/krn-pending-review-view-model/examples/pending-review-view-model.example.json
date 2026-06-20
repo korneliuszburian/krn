@@ -7,8 +7,12 @@
   "source": "proposal_store",
   "queue_state": "ready",
   "total_records": 1,
+  "total_review_decisions": 0,
   "pending_proposals": 1,
+  "reviewed_proposals": 0,
   "invalid_records_count": 0,
+  "invalid_review_decisions_count": 0,
+  "conflicting_review_decisions_count": 0,
   "stale_source_ref_proposals": 0,
   "proposals": [
     {
@@ -16,6 +20,7 @@
       "source_refs": [
         "docs/goals/goal-006.md",
         "docs/goals/goal-011.md",
+        "docs/goals/goal-013.md",
         "docs/specs/krn-pending-review-view-model/README.md"
       ],
       "next_action": "Review this proposal record before promoting any memory, source, goal, eval, repair, or dashboard change.",
@@ -38,6 +43,8 @@
     }
   ],
   "invalid_records": [],
+  "invalid_review_decisions": [],
+  "review_decision_conflicts": [],
   "next_allowed_action": {
     "action_id": "review-pending-proposals",
     "target_surface": "proposal_store",
@@ -46,12 +53,14 @@
     "source_refs": [
       "docs/goals/goal-006.md",
       "docs/goals/goal-011.md",
+      "docs/goals/goal-013.md",
       "docs/specs/krn-pending-review-view-model/README.md"
     ]
   },
   "blocked_actions": [
     "approve_proposal",
     "reject_proposal",
+    "record_review_decision_from_dashboard",
     "mutate_target",
     "write_memory",
     "write_source_ledger",
@@ -60,9 +69,11 @@
   "source_refs": [
     "docs/goals/goal-006.md",
     "docs/goals/goal-011.md",
+    "docs/goals/goal-013.md",
     "docs/specs/krn-pending-review-view-model/README.md",
-    "docs/specs/krn-control-plane-proposal/README.md"
+    "docs/specs/krn-control-plane-proposal/README.md",
+    "docs/specs/krn-proposal-review-decision/README.md"
   ],
-  "failure_mode": "Pending Review becomes harmful if proposal records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
-  "interpretation_caveat": "This view model renders local proposal-store records for human review only; it does not approve proposals, mutate targets, expose HTTP/API, or prove productivity lift."
+  "failure_mode": "Pending Review becomes harmful if proposal or review decision records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
+  "interpretation_caveat": "This view model renders local proposal-store and proposal-review decision records for human review only; it does not promote approved proposals, mutate targets, expose HTTP/API, or prove productivity lift."
 }

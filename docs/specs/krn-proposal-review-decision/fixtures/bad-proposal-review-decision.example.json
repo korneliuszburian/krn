@@ -1,0 +1,30 @@
+{
+  "schema_version": "krn-proposal-review-decision.v1",
+  "kind": "krn_proposal_review_decision",
+  "decision_id": "bad-approved-mutating-decision",
+  "proposal_id": "proposal-memory-note-krn-mcp-stdio-transport",
+  "proposal_path": ".krn/proposals/bad/proposal.json",
+  "decision": "approved",
+  "review_scope": "proposal_review_only",
+  "target_mutated": true,
+  "promotion_state": "promoted",
+  "reviewer": "krn",
+  "rationale": "Bad fixture claims approval and mutation.",
+  "write_policy": {
+    "default_effect": "mutate_target",
+    "allowed_persistence": "append_only",
+    "idempotency_key": "bad-review-decision"
+  },
+  "evidence_refs": [
+    ".krn/evals/bad/report.json"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md"
+  ],
+  "blocked_surfaces": [
+    "none"
+  ],
+  "created_at": "2026-06-20T01:00:00.000Z",
+  "created_by": "krn",
+  "interpretation_caveat": "Bad fixture."
+}

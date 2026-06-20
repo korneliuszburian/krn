@@ -48,6 +48,13 @@ export {
   type KrnControlPlaneProposal,
 } from "./control-plane-proposal.js";
 export {
+  KrnProposalReviewDecisionSchema,
+  krnProposalReviewDecisionJsonSchema,
+  parseKrnProposalReviewDecision,
+  type KrnProposalReviewDecision,
+  type ProposalReviewDecisionValue,
+} from "./proposal-review-decision.js";
+export {
   KrnDashboardViewModelSchema,
   krnDashboardViewModelJsonSchema,
   parseKrnDashboardViewModel,
@@ -61,6 +68,8 @@ export {
   KrnPendingReviewViewModelSchema,
   krnPendingReviewViewModelJsonSchema,
   parseKrnPendingReviewViewModel,
+  type PendingReviewDecisionConflict,
+  type PendingReviewInvalidReviewDecisionRecord,
   type KrnPendingReviewViewModel,
   type PendingReviewInvalidRecord,
   type PendingReviewNextAction,

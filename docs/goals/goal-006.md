@@ -61,7 +61,17 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm --filter @krn/dashboard typecheck`, `pnpm --filter @krn/dashboard test`, and `pnpm --filter @krn/dashboard build` passed.
   - `pnpm run eval:krn-dashboard-pending-review-ui` generated `.krn/evals/krn-dashboard-pending-review-ui/20260620T005027Z-2048035/report.json` with 5/5 cases and 19/19 assertions.
   - `pnpm run krn -- eval` generated `.krn/eval/20260620T005117Z-2051988/report.json` with 9/9 modules, 33/33 cases, and 95/95 assertions, including `krn-dashboard-pending-review-ui`.
-  - This still does not prove human approval quality, approval/rejection workflow, complete dashboard coverage, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, or measured lift.
+  - `packages/contracts` now exports `KrnProposalReviewDecision`, the first typed terminal review decision object for proposal-store records.
+  - `packages/mcp` now exports `storeKrnProposalReviewDecision` and `listKrnProposalReviewDecisionStoreRecords` for append-only review state under `.krn/proposal-reviews`.
+  - `buildKrnPendingReviewViewModel` now reads proposal review decision records, excludes proposals with one valid terminal decision, and blocks readiness for invalid or conflicting decision records.
+  - `apps/dashboard/src/PendingReviewDashboard.tsx` now renders reviewed and review-error metrics from the same typed Pending Review view model without adding approve/reject/mutate commands.
+  - `pnpm run eval:krn-proposal-review-decision` generated `.krn/evals/krn-proposal-review-decision/20260620T013214Z-2143548/report.json` with 8/8 cases and 25/25 assertions.
+  - `pnpm typecheck` passed.
+  - `pnpm test -- packages/mcp/test/pending-review-view-model.test.ts` passed with 20/20 test files and 63/63 tests after the manual conflict regression case was added.
+  - `pnpm test` passed with 20/20 test files and 63/63 tests.
+  - `pnpm run eval:krn-dashboard-pending-review-ui` generated `.krn/evals/krn-dashboard-pending-review-ui/20260620T013215Z-2143558/report.json` with 5/5 cases and 19/19 assertions after the Pending Review contract gained review-decision fields.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T013233Z-2144081/report.json` with 10/10 modules, 41/41 cases, and 120/120 assertions, including `krn-proposal-review-decision`.
+  - This still does not prove promotion correctness, human approval quality, dashboard command readiness, complete dashboard coverage, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals` and `.krn/proposal-reviews`, or measured lift.
 
 ## Objective
 
@@ -311,4 +321,4 @@ Continue Slice 3 by creating the next bounded child goal from the latest complet
 docs/goals/goal-012.md
 ```
 
-Next child-goal candidates are proposal approval/rejection contracts, additional dashboard views over existing typed objects, HTTP/API read model hardening, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, approval mutation, or productivity claims without benchmark evidence.
+Next child-goal candidates are a typed proposal promotion workflow after review decisions, additional dashboard views over existing typed objects, HTTP/API read model hardening, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, direct approval mutation, or productivity claims without benchmark evidence.

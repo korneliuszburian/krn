@@ -103,10 +103,7 @@ function sourceRefStatus(
   return null;
 }
 
-export function validateProposalSourceRefs(
-  proposal: KrnControlPlaneProposal,
-  targetInput = ".",
-): SourceRefValidationResult {
+export function validateSourceRefs(sourceRefs: readonly string[], targetInput = "."): SourceRefValidationResult {
   const targetRoot = resolve(targetInput);
   const sourceLedgerPath = resolve(targetRoot, "docs/plans/canonical/SOURCES.md");
   const sourceLedgerText = readOptionalText(sourceLedgerPath);
@@ -114,7 +111,7 @@ export function validateProposalSourceRefs(
   const accepted: SourceRefValidationResult["accepted"] = [];
   const rejected: string[] = [];
 
-  for (const sourceRef of proposal.source_refs) {
+  for (const sourceRef of sourceRefs) {
     const status = sourceRefStatus(targetRoot, sourceRef, sourceIds, sourceLedgerText);
     if (status) {
       accepted.push({ ref: sourceRef, status });
@@ -131,6 +128,13 @@ export function validateProposalSourceRefs(
     interpretation_caveat:
       "This validation proves proposal source_refs resolve to the target source ledger or existing target-root files only; it does not approve the proposal or verify evidence_refs.",
   };
+}
+
+export function validateProposalSourceRefs(
+  proposal: KrnControlPlaneProposal,
+  targetInput = ".",
+): SourceRefValidationResult {
+  return validateSourceRefs(proposal.source_refs, targetInput);
 }
 
 function safePathSegment(input: string): string {

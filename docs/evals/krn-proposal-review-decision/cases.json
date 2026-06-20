@@ -1,0 +1,131 @@
+[
+  {
+    "id": "decision-contract-valid-and-known-bad",
+    "expected_behavior": "The valid review decision fixture parses and the approval-like mutation fixture fails.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "valid decision fixture parses",
+      "known-bad mutation fixture rejected",
+      "decision does not mutate target"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "Review decisions can claim approval, promotion, or target mutation while still parsing."
+  },
+  {
+    "id": "append-only-review-decision-store",
+    "expected_behavior": "A valid review decision for an existing proposal stores under .krn/proposal-reviews without target mutation.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "C004",
+      "C029"
+    ],
+    "assertions": [
+      "proposal stored first",
+      "decision stored under .krn/proposal-reviews",
+      "decision source refs validated",
+      "target files outside review ledger unchanged"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "anti_slop_score"],
+    "failure_mode": "KRN records review-looking state without anchoring it to an existing proposal and append-only ledger."
+  },
+  {
+    "id": "duplicate-review-decision-idempotent",
+    "expected_behavior": "Storing the same review decision twice returns the existing decision path without creating a second file.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "first review decision stored",
+      "duplicate review decision already stored",
+      "duplicate review decision uses same path"
+    ],
+    "metrics": ["runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "Review decision persistence is not idempotent and can duplicate terminal decisions."
+  },
+  {
+    "id": "missing-proposal-review-decision-rejected",
+    "expected_behavior": "A review decision referencing a missing proposal is rejected before persistence.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-proposal-review-decision/README.md"
+    ],
+    "assertions": [
+      "missing proposal rejected"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "Review decisions can close proposals that do not exist in the proposal store."
+  },
+  {
+    "id": "conflicting-terminal-review-decision-rejected",
+    "expected_behavior": "A second terminal review decision for the same proposal is rejected.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "conflicting terminal decision rejected"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "A proposal can receive multiple terminal review decisions and become ambiguous."
+  },
+  {
+    "id": "pending-review-excludes-reviewed-proposal",
+    "expected_behavior": "Pending Review excludes a proposal after one valid terminal review decision is stored.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md"
+    ],
+    "assertions": [
+      "review decision present",
+      "pending proposal count zero",
+      "reviewed proposal count one",
+      "queue state empty",
+      "no promotion claimed"
+    ],
+    "metrics": ["dashboard_contract_score", "runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "Pending Review cannot consume review state and keeps already-reviewed proposals in the pending queue."
+  },
+  {
+    "id": "invalid-review-decision-blocks-readiness",
+    "expected_behavior": "An invalid review decision file blocks Pending Review readiness instead of being ignored.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/evals/STANDARD.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "invalid decision surfaced",
+      "queue state blocked",
+      "invalid decision not counted as reviewed",
+      "repair action targets proposal review store"
+    ],
+    "metrics": ["dashboard_contract_score", "anti_slop_score"],
+    "failure_mode": "Pending Review hides invalid review decision records and presents an unsafe ready state."
+  },
+  {
+    "id": "manual-conflicting-review-decisions-block-readiness",
+    "expected_behavior": "Manual conflicting review decision files keep the proposal pending and block Pending Review readiness.",
+    "source_patterns": [
+      "docs/goals/goal-013.md",
+      "docs/evals/STANDARD.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "conflict surfaced",
+      "queue state blocked",
+      "proposal remains pending",
+      "repair action targets proposal review store"
+    ],
+    "metrics": ["dashboard_contract_score", "anti_slop_score"],
+    "failure_mode": "Pending Review silently treats conflicting terminal decisions as reviewed state."
+  }
+]

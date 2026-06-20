@@ -30,10 +30,11 @@ describe("krn eval", () => {
       "krn-mcp-proposal-tool",
       "krn-pending-review-view-model",
       "krn-dashboard-pending-review-ui",
+      "krn-proposal-review-decision",
     ]);
-    expect(report.summary.total_modules).toBe(9);
+    expect(report.summary.total_modules).toBe(10);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(33);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(41);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
   }, 60_000);

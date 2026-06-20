@@ -23,6 +23,9 @@ describe("KrnPendingReviewViewModel contract", () => {
     expect(viewModel.source).toBe("proposal_store");
     expect(viewModel.queue_state).toBe("ready");
     expect(viewModel.pending_proposals).toBe(1);
+    expect(viewModel.reviewed_proposals).toBe(0);
+    expect(viewModel.total_review_decisions).toBe(0);
+    expect(viewModel.invalid_review_decisions_count).toBe(0);
     expect(viewModel.proposals[0]?.review_gate_state).toBe("not_reviewed");
   });
 

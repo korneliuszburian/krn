@@ -10,7 +10,9 @@ import {
 import React, { type ReactElement } from "react";
 import type {
   KrnPendingReviewViewModel,
+  PendingReviewDecisionConflict,
   PendingReviewInvalidRecord,
+  PendingReviewInvalidReviewDecisionRecord,
   PendingReviewProposal,
 } from "@krn/contracts";
 
@@ -113,6 +115,31 @@ function InvalidRecord(props: { record: PendingReviewInvalidRecord }): ReactElem
   );
 }
 
+function InvalidReviewDecision(props: { record: PendingReviewInvalidReviewDecisionRecord }): ReactElement {
+  return (
+    <article className="invalid-row">
+      <ShieldAlert size={18} aria-hidden="true" />
+      <div>
+        <h2>{props.record.decision_path}</h2>
+        <p>{props.record.error_summary}</p>
+      </div>
+    </article>
+  );
+}
+
+function ReviewDecisionConflict(props: { conflict: PendingReviewDecisionConflict }): ReactElement {
+  return (
+    <article className="invalid-row">
+      <AlertTriangle size={18} aria-hidden="true" />
+      <div>
+        <h2>{props.conflict.proposal_id}</h2>
+        <p>{props.conflict.error_summary}</p>
+        <SourceRefs sourceRefs={props.conflict.decision_paths} />
+      </div>
+    </article>
+  );
+}
+
 export function PendingReviewDashboard(props: { viewModel: KrnPendingReviewViewModel }): ReactElement {
   const { viewModel } = props;
   const queueTone = viewModel.queue_state === "ready" ? "ready" : viewModel.queue_state === "blocked" ? "blocked" : "empty";
@@ -146,6 +173,17 @@ export function PendingReviewDashboard(props: { viewModel: KrnPendingReviewViewM
           tone={viewModel.stale_source_ref_proposals > 0 ? "blocked" : "neutral"}
           icon={<AlertTriangle size={18} />}
         />
+        <MetricTile label="Reviewed" value={viewModel.reviewed_proposals} tone="empty" icon={<FileCheck2 size={18} />} />
+        <MetricTile
+          label="Review errors"
+          value={viewModel.invalid_review_decisions_count + viewModel.conflicting_review_decisions_count}
+          tone={
+            viewModel.invalid_review_decisions_count + viewModel.conflicting_review_decisions_count > 0
+              ? "blocked"
+              : "neutral"
+          }
+          icon={<ShieldAlert size={18} />}
+        />
       </section>
 
       <section className="action-panel" aria-label="Next allowed action">
@@ -174,6 +212,22 @@ export function PendingReviewDashboard(props: { viewModel: KrnPendingReviewViewM
         <section className="invalid-list" aria-label="Invalid proposal records">
           {viewModel.invalid_records.map((record) => (
             <InvalidRecord key={record.proposal_path} record={record} />
+          ))}
+        </section>
+      ) : null}
+
+      {viewModel.invalid_review_decisions.length > 0 ? (
+        <section className="invalid-list" aria-label="Invalid review decision records">
+          {viewModel.invalid_review_decisions.map((record) => (
+            <InvalidReviewDecision key={record.decision_path} record={record} />
+          ))}
+        </section>
+      ) : null}
+
+      {viewModel.review_decision_conflicts.length > 0 ? (
+        <section className="invalid-list" aria-label="Review decision conflicts">
+          {viewModel.review_decision_conflicts.map((conflict) => (
+            <ReviewDecisionConflict key={conflict.proposal_id} conflict={conflict} />
           ))}
         </section>
       ) : null}

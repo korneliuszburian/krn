@@ -119,6 +119,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "apps/dashboard/package.json",
     ],
   },
+  {
+    moduleId: "krn-proposal-review-decision",
+    command: ["pnpm", "run", "eval:krn-proposal-review-decision"],
+    sourceRefs: [
+      "docs/evals/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/goals/goal-013.md",
+    ],
+  },
 ];
 
 function usage(): string {

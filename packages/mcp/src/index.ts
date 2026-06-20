@@ -133,6 +133,7 @@ function baseResource(
 export {
   listKrnProposalStoreRecords,
   storeKrnControlPlaneProposal,
+  validateSourceRefs,
   validateProposalSourceRefs,
   type InvalidProposalStoreRecord,
   type ProposalStoreRecordList,
@@ -140,6 +141,14 @@ export {
   type SourceRefValidationResult,
   type ValidProposalStoreRecord,
 } from "./proposal-store.js";
+export {
+  listKrnProposalReviewDecisionStoreRecords,
+  storeKrnProposalReviewDecision,
+  type InvalidProposalReviewDecisionStoreRecord,
+  type ProposalReviewDecisionStoreRecordList,
+  type ProposalReviewDecisionStoreResult,
+  type ValidProposalReviewDecisionStoreRecord,
+} from "./proposal-review-decision-store.js";
 export { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 
 function descriptorFromResource(

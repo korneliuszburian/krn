@@ -14,7 +14,12 @@ const ControlPlaneProposalKindSchema = z.enum([
 
 const PendingReviewQueueStateSchema = z.enum(["ready", "empty", "blocked"]);
 const PendingReviewSourceSchema = z.enum(["proposal_store", "explicit_zero_no_proposals"]);
-const PendingReviewTargetSurfaceSchema = z.enum(["proposal_store", "source_refs", "runtime_artifacts"]);
+const PendingReviewTargetSurfaceSchema = z.enum([
+  "proposal_store",
+  "proposal_review_store",
+  "source_refs",
+  "runtime_artifacts",
+]);
 const ProposalTargetTypeSchema = z.enum(["path", "resource_uri"]);
 const SourceRefStatusSchema = z.enum(["validated", "stale"]);
 
@@ -50,6 +55,21 @@ const PendingReviewInvalidRecordSchema = z
   })
   .strict();
 
+const PendingReviewInvalidReviewDecisionRecordSchema = z
+  .object({
+    decision_path: z.string().min(1),
+    error_summary: z.string().min(1),
+  })
+  .strict();
+
+const PendingReviewDecisionConflictSchema = z
+  .object({
+    proposal_id: z.string().min(1),
+    decision_paths: z.array(z.string().min(1)).min(2),
+    error_summary: z.string().min(1),
+  })
+  .strict();
+
 const PendingReviewNextActionSchema = z
   .object({
     action_id: z.string().min(1),
@@ -70,11 +90,17 @@ export const KrnPendingReviewViewModelSchema = z
     source: PendingReviewSourceSchema,
     queue_state: PendingReviewQueueStateSchema,
     total_records: z.number().int().nonnegative(),
+    total_review_decisions: z.number().int().nonnegative(),
     pending_proposals: z.number().int().nonnegative(),
+    reviewed_proposals: z.number().int().nonnegative(),
     invalid_records_count: z.number().int().nonnegative(),
+    invalid_review_decisions_count: z.number().int().nonnegative(),
+    conflicting_review_decisions_count: z.number().int().nonnegative(),
     stale_source_ref_proposals: z.number().int().nonnegative(),
     proposals: z.array(PendingReviewProposalSchema),
     invalid_records: z.array(PendingReviewInvalidRecordSchema),
+    invalid_review_decisions: z.array(PendingReviewInvalidReviewDecisionRecordSchema),
+    review_decision_conflicts: z.array(PendingReviewDecisionConflictSchema),
     next_allowed_action: PendingReviewNextActionSchema,
     blocked_actions: z.array(z.string().min(1)).min(1),
     source_refs: z.array(SourceRefSchema).min(1),
@@ -85,6 +111,8 @@ export const KrnPendingReviewViewModelSchema = z
 
 export type PendingReviewProposal = z.infer<typeof PendingReviewProposalSchema>;
 export type PendingReviewInvalidRecord = z.infer<typeof PendingReviewInvalidRecordSchema>;
+export type PendingReviewInvalidReviewDecisionRecord = z.infer<typeof PendingReviewInvalidReviewDecisionRecordSchema>;
+export type PendingReviewDecisionConflict = z.infer<typeof PendingReviewDecisionConflictSchema>;
 export type PendingReviewNextAction = z.infer<typeof PendingReviewNextActionSchema>;
 export type KrnPendingReviewViewModel = z.infer<typeof KrnPendingReviewViewModelSchema>;
 

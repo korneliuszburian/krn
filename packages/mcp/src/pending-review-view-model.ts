@@ -1,30 +1,138 @@
 import { resolve } from "node:path";
 import { parseKrnPendingReviewViewModel, type KrnPendingReviewViewModel } from "@krn/contracts";
-import { listKrnProposalStoreRecords, validateProposalSourceRefs } from "./proposal-store.js";
+import { listKrnProposalReviewDecisionStoreRecords } from "./proposal-review-decision-store.js";
+import { listKrnProposalStoreRecords, validateProposalSourceRefs, validateSourceRefs } from "./proposal-store.js";
 
 const PENDING_REVIEW_SOURCE_REFS = [
   "docs/goals/goal-006.md",
   "docs/goals/goal-011.md",
+  "docs/goals/goal-013.md",
   "docs/specs/krn-pending-review-view-model/README.md",
   "docs/specs/krn-control-plane-proposal/README.md",
+  "docs/specs/krn-proposal-review-decision/README.md",
 ] as const;
+
+type ValidProposalRecord = ReturnType<typeof listKrnProposalStoreRecords>["valid_records"][number];
+type ValidReviewDecisionRecord = ReturnType<typeof listKrnProposalReviewDecisionStoreRecords>["valid_records"][number];
+type InvalidReviewDecisionRecord = KrnPendingReviewViewModel["invalid_review_decisions"][number];
+type ReviewDecisionConflict = KrnPendingReviewViewModel["review_decision_conflicts"][number];
 
 function targetLabel(record: ReturnType<typeof listKrnProposalStoreRecords>["valid_records"][number]): string {
   const target = record.proposal.target;
   return target.target_type === "path" ? target.path : target.uri;
 }
 
+function proposalRecordKey(record: ValidProposalRecord): string {
+  return `${record.proposal.proposal_id}\u0000${record.proposal_path}`;
+}
+
+function reviewDecisionReferenceKey(record: ValidReviewDecisionRecord): string {
+  return `${record.decision.proposal_id}\u0000${record.decision.proposal_path}`;
+}
+
+function semanticReviewDecisionRecords(
+  proposalRecords: readonly ValidProposalRecord[],
+  reviewRecords: ReturnType<typeof listKrnProposalReviewDecisionStoreRecords>,
+  targetRoot: string,
+): {
+  valid_records: ValidReviewDecisionRecord[];
+  invalid_records: InvalidReviewDecisionRecord[];
+} {
+  const proposalKeys = new Set(proposalRecords.map(proposalRecordKey));
+  const validRecords: ValidReviewDecisionRecord[] = [];
+  const invalidRecords: InvalidReviewDecisionRecord[] = reviewRecords.invalid_records.map((record) => ({
+    decision_path: record.decision_path,
+    error_summary: record.error_summary,
+  }));
+
+  for (const record of reviewRecords.valid_records) {
+    const sourceValidation = validateSourceRefs(record.decision.source_refs, targetRoot);
+    if (!proposalKeys.has(reviewDecisionReferenceKey(record))) {
+      invalidRecords.push({
+        decision_path: record.decision_path,
+        error_summary: `Review decision references missing proposal: ${record.decision.proposal_id} at ${record.decision.proposal_path}`,
+      });
+      continue;
+    }
+
+    if (!sourceValidation.valid) {
+      invalidRecords.push({
+        decision_path: record.decision_path,
+        error_summary: `Review decision source_refs are stale or unbacked: ${sourceValidation.rejected.join(", ")}`,
+      });
+      continue;
+    }
+
+    validRecords.push(record);
+  }
+
+  return { valid_records: validRecords, invalid_records: invalidRecords };
+}
+
+function reviewDecisionConflicts(validReviewRecords: readonly ValidReviewDecisionRecord[]): ReviewDecisionConflict[] {
+  const byProposalId = new Map<string, ValidReviewDecisionRecord[]>();
+
+  for (const record of validReviewRecords) {
+    const existing = byProposalId.get(record.decision.proposal_id) ?? [];
+    existing.push(record);
+    byProposalId.set(record.decision.proposal_id, existing);
+  }
+
+  return [...byProposalId.entries()]
+    .filter(([, records]) => records.length > 1)
+    .map(([proposalId, records]) => ({
+      proposal_id: proposalId,
+      decision_paths: records.map((record) => record.decision_path).sort(),
+      error_summary: "Multiple terminal review decisions exist for the same proposal.",
+    }))
+    .sort((left, right) => left.proposal_id.localeCompare(right.proposal_id));
+}
+
+function reviewedProposalKeys(
+  validReviewRecords: readonly ValidReviewDecisionRecord[],
+  conflicts: readonly ReviewDecisionConflict[],
+): Set<string> {
+  const conflictedProposalIds = new Set(conflicts.map((conflict) => conflict.proposal_id));
+  return new Set(
+    validReviewRecords
+      .filter((record) => !conflictedProposalIds.has(record.decision.proposal_id))
+      .map(reviewDecisionReferenceKey),
+  );
+}
+
 function pendingReviewNextAction(
-  invalidRecords: number,
+  invalidProposalRecords: number,
+  invalidReviewDecisionRecords: number,
+  conflictingReviewDecisions: number,
   staleSourceRefProposals: number,
   pendingProposals: number,
 ): KrnPendingReviewViewModel["next_allowed_action"] {
-  if (invalidRecords > 0) {
+  if (invalidProposalRecords > 0) {
     return {
       action_id: "repair-invalid-proposal-records",
       target_surface: "proposal_store",
       label: "Repair invalid proposal records",
       rationale: "Pending Review must not present unparseable proposal files as reviewable work.",
+      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+    };
+  }
+
+  if (invalidReviewDecisionRecords > 0) {
+    return {
+      action_id: "repair-invalid-review-decisions",
+      target_surface: "proposal_review_store",
+      label: "Repair invalid review decision records",
+      rationale: "Pending Review must not treat invalid proposal review decisions as closed review state.",
+      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+    };
+  }
+
+  if (conflictingReviewDecisions > 0) {
+    return {
+      action_id: "repair-conflicting-review-decisions",
+      target_surface: "proposal_review_store",
+      label: "Repair conflicting review decisions",
+      rationale: "A proposal cannot be safely removed from Pending Review while multiple terminal decisions exist.",
       source_refs: [...PENDING_REVIEW_SOURCE_REFS],
     };
   }
@@ -61,7 +169,12 @@ function pendingReviewNextAction(
 export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date()): KrnPendingReviewViewModel {
   const targetRoot = resolve(targetInput);
   const records = listKrnProposalStoreRecords(targetRoot);
+  const reviewRecords = listKrnProposalReviewDecisionStoreRecords(targetRoot);
+  const semanticReviewRecords = semanticReviewDecisionRecords(records.valid_records, reviewRecords, targetRoot);
+  const reviewConflicts = reviewDecisionConflicts(semanticReviewRecords.valid_records);
+  const reviewedKeys = reviewedProposalKeys(semanticReviewRecords.valid_records, reviewConflicts);
   const proposalRows = records.valid_records
+    .filter((record) => !reviewedKeys.has(proposalRecordKey(record)))
     .map((record) => {
       const sourceValidation = validateProposalSourceRefs(record.proposal, targetRoot);
       const sourceRefStatus = sourceValidation.valid ? "validated" : "stale";
@@ -95,11 +208,20 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
 
   const staleSourceRefProposals = proposalRows.filter((proposal) => proposal.source_ref_status === "stale").length;
   const queueState =
-    records.invalid_records.length > 0 || staleSourceRefProposals > 0
+    records.invalid_records.length > 0 ||
+    semanticReviewRecords.invalid_records.length > 0 ||
+    reviewConflicts.length > 0 ||
+    staleSourceRefProposals > 0
       ? "blocked"
       : proposalRows.length > 0
         ? "ready"
         : "empty";
+  const hasStoreState =
+    proposalRows.length > 0 ||
+    records.invalid_records.length > 0 ||
+    reviewRecords.total_records > 0 ||
+    semanticReviewRecords.invalid_records.length > 0 ||
+    reviewConflicts.length > 0;
 
   return parseKrnPendingReviewViewModel({
     schema_version: "krn-pending-review-view-model.v1",
@@ -107,22 +229,31 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
     target_root: targetRoot,
     generated_at: now.toISOString(),
     no_mock_state: true,
-    source: proposalRows.length > 0 || records.invalid_records.length > 0 ? "proposal_store" : "explicit_zero_no_proposals",
+    source: hasStoreState ? "proposal_store" : "explicit_zero_no_proposals",
     queue_state: queueState,
     total_records: records.total_records,
+    total_review_decisions: reviewRecords.total_records,
     pending_proposals: proposalRows.length,
+    reviewed_proposals: reviewedKeys.size,
     invalid_records_count: records.invalid_records.length,
+    invalid_review_decisions_count: semanticReviewRecords.invalid_records.length,
+    conflicting_review_decisions_count: reviewConflicts.length,
     stale_source_ref_proposals: staleSourceRefProposals,
     proposals: proposalRows,
     invalid_records: records.invalid_records,
+    invalid_review_decisions: semanticReviewRecords.invalid_records,
+    review_decision_conflicts: reviewConflicts,
     next_allowed_action: pendingReviewNextAction(
       records.invalid_records.length,
+      semanticReviewRecords.invalid_records.length,
+      reviewConflicts.length,
       staleSourceRefProposals,
       proposalRows.length,
     ),
     blocked_actions: [
       "approve_proposal",
       "reject_proposal",
+      "record_review_decision_from_dashboard",
       "mutate_target",
       "write_memory",
       "write_source_ledger",
@@ -130,8 +261,8 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
     ],
     source_refs: [...PENDING_REVIEW_SOURCE_REFS],
     failure_mode:
-      "Pending Review becomes harmful if proposal records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
+      "Pending Review becomes harmful if proposal or review decision records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
     interpretation_caveat:
-      "This view model renders local proposal-store records for human review only; it does not approve proposals, mutate targets, expose HTTP/API, or prove productivity lift.",
+      "This view model renders local proposal-store and proposal-review decision records for human review only; it does not promote approved proposals, mutate targets, expose HTTP/API, or prove productivity lift.",
   });
 }
