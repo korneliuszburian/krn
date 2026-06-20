@@ -25,7 +25,7 @@ This is not a database, API, dashboard, or runtime skill layer. It is the contra
 
 | Object | Why it exists now | First source artifact |
 |---|---|---|
-| `MemoryEntry` | Durable source-backed memory with review state and invalidation. | `docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md` |
+| `MemoryEntry` | Bootstrap pattern-bank entry with provenance, review state, and invalidation. It is not the full KRN memory system until retrieval/application/feedback layers consume it. | `docs/memory/evals/2026-06-19--operator-skill-impact-first-results.md` |
 | `SourceClaim` | Claim ledger row with evidence grade and risk. | `docs/plans/canonical/SOURCES.md` |
 | `EvalRun` | Machine-readable eval report summary and caveat. | `.krn/evals/operator-skill-impact/20260619T113614965572Z-546909/report.json` |
 | `SkillImpactReport` | Skill decisions from baseline vs skill-assisted comparison. | `operator-skill-impact` reports and memory note |
@@ -37,7 +37,7 @@ This is not a database, API, dashboard, or runtime skill layer. It is the contra
 ## Contract Rules
 
 - Every object has `schema_version`, `id`, `kind`, `status`, `created_at`, and `source_refs`.
-- Runtime reports stay in `.krn/`; durable reviewed lessons move into `docs/memory`.
+- Runtime reports stay in `.krn/`; reviewed lessons can move into the file-backed pattern bank, but product memory requires a retrieval/application path.
 - Proposal and decision objects must stay separate. A proposal is not approved truth.
 - Eval objects must include an interpretation caveat.
 - Dashboard-facing objects need owner, action, source, or failure-mode information before they become metrics.
@@ -57,7 +57,7 @@ Result reports are written under:
 .krn/specs/product-spine/{run_id}/report.json
 ```
 
-Runtime reports are local artifacts. Reviewed lessons should be promoted to `docs/memory`.
+Runtime reports are local artifacts. Reviewed lessons can be promoted to the pattern bank, then must be selected and applied by a later workflow before KRN can claim operational memory value.
 
 ## Next Product Steps
 

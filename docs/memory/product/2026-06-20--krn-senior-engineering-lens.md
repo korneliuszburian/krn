@@ -20,6 +20,55 @@ KRN needs a global decision lens, not a pile of local reminders. The same senior
 
 ## Useful Pattern
 
+KRN's compact quality kernel:
+
+```text
+mechanism-first
+  -> bottleneck-led
+  -> production-shaped
+  -> context-budgeted
+  -> diff-literate
+  -> review-minimizing
+  -> memory-operative
+  -> proof-carrying
+  -> deletion-friendly
+```
+
+Definitions:
+
+- **Mechanism-first**: name the concrete source, paper, repo, practice, or local failure mechanism being used.
+- **Bottleneck-led**: target the current limiting failure in KRN, not the artifact that is easiest to add.
+- **Production-shaped**: build the real product path in the smallest viable form; no PoC theater.
+- **Context-budgeted**: read selectors first and avoid dumping stable context into every run.
+- **Diff-literate**: every changed line should be explainable by the slice objective.
+- **Review-minimizing**: optimize for less human cleanup, clearer decisions, and fewer ambiguous states.
+- **Memory-operative**: a stored pattern becomes useful only when selected, applied, reviewed, and measured.
+- **Proof-carrying**: evidence travels with the change and states what it does not prove.
+- **Deletion-friendly**: remove or merge weak layers instead of adding more coordination overhead.
+
+What actually raises quality:
+
+- better problem selection,
+- smaller and more production-shaped slices,
+- stricter boundaries on inputs and writes,
+- public-interface tests for behavior that matters,
+- type/runtime parsers at external boundaries,
+- review surfaces that expose action, owner, source, and failure mode,
+- second-opinion review for architecture and standards,
+- fast deletion of weak skills/evals/docs,
+- retrieval and application of the right pattern at the right time,
+- measured reduction of repeated failure modes.
+
+What usually does not raise quality:
+
+- more files without a consumer,
+- more eval modules without a protected contract or known regression,
+- broader context reads,
+- passive memory notes,
+- dashboards over unreviewed state,
+- source lists without mechanism extraction,
+- positive fixture deltas presented as product lift.
+
 Before a non-trivial decision or implementation, answer this lens briefly:
 
 1. **Mechanism**: what concrete mechanism from source/repo/paper/practice is being used?
@@ -33,10 +82,10 @@ Before a non-trivial decision or implementation, answer this lens briefly:
 Short form for agents:
 
 ```text
-mechanism first -> senior lens -> vertical or stop -> narrow proof -> no overclaim
+kernel -> vertical or stop -> narrow proof -> no overclaim
 ```
 
-This phrase is intentionally compact. It means: identify the source-backed mechanism, apply the seven lens questions, cut the work into an independently verifiable slice, prove that slice narrowly, and name what the proof does not establish.
+This phrase is intentionally compact. It means: apply the quality kernel, cut the work into an independently verifiable slice, prove that slice narrowly, and name what the proof does not establish.
 
 ## KRN Implication
 

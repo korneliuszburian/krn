@@ -1,0 +1,63 @@
+{
+  "schema_version": "krn-research-pack.v1",
+  "kind": "krn_research_pack",
+  "run_id": "bad-research-pack-example-001",
+  "created_at": "2026-06-20T00:00:00.000Z",
+  "target_root": ".",
+  "command": "krn research-pack",
+  "status": "ready_for_review",
+  "research_question": "What are the best agent harness patterns?",
+  "krn_decision": "Choose the best pattern.",
+  "source_budget": {
+    "mode": "quick",
+    "min_sources": 5,
+    "max_sources": 8,
+    "stop_condition": "Stop when it sounds enough."
+  },
+  "source_universe": [
+    {
+      "kind": "practitioner_material",
+      "ref": "three blog links",
+      "inclusion_reason": "Easy to read."
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "tier": "D",
+      "title": "Random link one",
+      "source_ref": "https://example.invalid/one",
+      "access_or_pin": "unknown",
+      "why_included": "It sounded relevant.",
+      "local_cache_path": null
+    },
+    {
+      "id": "S2",
+      "tier": "D",
+      "title": "Random link two",
+      "source_ref": "https://example.invalid/two",
+      "access_or_pin": "unknown",
+      "why_included": "It sounded relevant.",
+      "local_cache_path": null
+    },
+    {
+      "id": "S3",
+      "tier": "D",
+      "title": "Random link three",
+      "source_ref": "https://example.invalid/three",
+      "access_or_pin": "unknown",
+      "why_included": "It sounded relevant.",
+      "local_cache_path": null
+    }
+  ],
+  "mechanism_matrix": [],
+  "contradictions": [],
+  "rejected_alternatives": [],
+  "decision_candidates": [],
+  "promotion_targets": [],
+  "next_action": "Promote this to memory.",
+  "runtime_report_path": ".krn/research-packs/bad-research-pack-example-001/research-pack.json",
+  "source_refs": ["docs/specs/krn-research-pack/README.md"],
+  "evidence_refs": ["docs/specs/krn-research-pack/fixtures/bad-research-pack.example.json"],
+  "interpretation_caveat": "This incorrectly claims readiness from shallow research."
+}

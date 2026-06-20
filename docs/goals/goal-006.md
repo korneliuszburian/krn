@@ -6,7 +6,9 @@ Active parent execution contract. Slice 1 is complete enough to support product 
 
 This goal supersedes `goal-005` as the product direction. `goal-005` remains useful as the Slice 2 `krn init --dry-run` contract, but it must not drive the whole repo.
 
-2026-06-20 operating reset: the expanded-arena benchmark chain is no longer the default next product-building path. It remains a heavy lab/meta-research lane. The next work should condense source-backed engineering patterns into KRN memory, source-bank, skills, and fast vertical product slices. Do not chase `live-full` as the main product loop.
+2026-06-20 operating reset: the expanded-arena benchmark chain is no longer the default next product-building path. It remains a heavy lab/meta-research lane.
+
+2026-06-20 direction correction: this goal must not force artifact/eval churn. The default product-building path is senior-engineering product work: identify the real bottleneck, select a concrete mechanism from source/practice, implement the smallest vertical behavior that makes KRN more useful, and verify that behavior with the narrowest meaningful proof. A new typed object, eval module, goal file, dashboard panel, or memory note is justified only when it is consumed by the next product behavior or blocks a known failure mode.
 
 ## Current Progress
 
@@ -19,7 +21,7 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `adr-writer`
   - `issue-slice-writer`
   - `release-verifier`
-- Latest static operator skill contract validation passed for 11/11 skills.
+- Latest static operator skill contract validation passed for 12/12 skills.
 - Operator skill impact validation now covers 10 fixtures, including the five new Slice 1 skills.
 - `docs/evals/operator-skill-impact/fixtures/bad-premature-completion-claim.md` is a known-bad fixture for release verification.
 - Impact eval validation runs, but live A/B impact and review-burden proof remain future work and must not be treated as productivity proof.
@@ -131,6 +133,13 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-repair-record` generated `.krn/evals/krn-repair-record/20260620T075903Z-2754248/report.json` with 3/3 cases and 9/9 assertions.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T080015Z-2757479/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions, including `krn-repair-record`.
   - This proves typed no-lift repair handoff only. It still does not prove repair quality, measured productivity lift, prompt improvement, benchmark statistical validity, HTTP/API readiness, ChatGPT connector behavior, human review quality, dashboard command readiness, or `krn repair` CLI readiness.
+  - `docs/goals/goal-036.md` added `KrnResearchPack`, a typed runtime scaffold for bounded deep research before any long-running researcher worker is trusted.
+  - `pnpm exec vitest run packages/contracts/test/research-pack.test.ts packages/cli/test/research-pack.test.ts packages/cli/test/eval.test.ts` passed with 3 files and 7 tests.
+  - `pnpm run eval:krn-research-pack` generated `.krn/evals/krn-research-pack/20260620T172857Z-4028296/report.json` with 3/3 cases and 9/9 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T173231Z-4032848/report.json` with 21/21 modules, 104/104 cases, and 391/391 assertions, including `krn-research-pack`.
+  - `pnpm typecheck` passed after the research-pack scaffold slice.
+  - `pnpm test` passed with 33/33 files and 112/112 tests after the research-pack scaffold slice.
+  - This proves only a typed research-pack scaffold and shallow-ready-pack rejection. It still does not prove long-running researcher quality, source quality, memory promotion correctness, productivity lift, dashboard command readiness, HTTP/API readiness, or ChatGPT connector behavior.
   - `docs/goals/goal-022.md` applied the first bounded repair attempt from the no-lift `KrnRepairRecord` by making live-suite current-parent/latest-child scoring data-driven, routing assisted fixtures through `goal-021`, and adding fallback final-output JSON for live timeout/spawn-error paths.
   - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T083211Z-2826332/report.json` with 4/4 cases and 16/16 assertions after the repair.
   - The first explicit live repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T081426Z-2776468/report.json` with 4/5 cases and 13/22 assertions, exposing a missing-final-artifact defect when `goal006-next-benchmark-action.assisted` timed out; its benchmark report showed baseline `0.9367`, assisted `0.6533`, and delta `-0.2834`.
@@ -142,7 +151,7 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-benchmark-live-suite:live` generated `.krn/evals/krn-benchmark-live-suite/20260620T090346Z-2900772/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T090346Z-2900772/report.json` with 3/3 completed tasks, baseline `0.9456`, assisted `0.94`, and delta `-0.0056`.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T092221Z-2969002/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions after the prompt-load repair.
   - This repairs the specific first-task assisted timeout and stabilizes the benchmark evidence compared with `-0.3444`, but still does not prove productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or `krn benchmark`/`krn repair` CLI readiness.
-  - `docs/goals/goal-024.md` applied a bounded memory-layer next-action repair by updating `memory-layers-vs-file-substrate` to use `goal-023`, the prompt-load repair memory note, and source-backed memory/control/eval benchmark repair guidance instead of stale prompt-load guidance.
+  - `docs/goals/goal-024.md` applied a bounded memory-layer next-action repair by updating `memory-layers-vs-file-substrate` to use `goal-023`, the prompt-load repair memory note, and pattern/control/eval benchmark repair guidance instead of stale prompt-load guidance.
   - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T093329Z-2982842/report.json` with 4/4 cases and 16/16 assertions after the memory-layer repair.
   - `pnpm typecheck` passed after the memory-layer repair.
   - The first explicit live memory-layer repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T093350Z-2983111/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T093350Z-2983111/report.json` with 2/3 completed tasks, 1 failed baseline timeout, baseline `0.5589`, assisted `0.9733`, and delta `+0.4144`.
@@ -266,6 +275,8 @@ Read OpenAI/Codex official docs before changing any Codex-specific surface such 
 - No semantic reviewer hooks.
 - No destructive writes by default.
 - No hidden product truth in chat, global memory, or unindexed docs.
+- No file-backed notes or docs folder may be treated as the target memory architecture.
+- No new eval/contract/research artifact unless a senior engineer would say it protects a real product boundary or removes a real review burden.
 
 ## Boundaries
 
@@ -279,6 +290,7 @@ In scope:
 - MCP/API read model and proposal tools,
 - dashboard over real product objects,
 - benchmark harness.
+- active multi-layer memory behavior: selection, injection/application, review state, invalidation, and feedback.
 
 Out of scope unless a later ADR changes it:
 
@@ -286,26 +298,30 @@ Out of scope unless a later ADR changes it:
 - global Codex setup,
 - SaaS auth/billing,
 - public plugin distribution before local skill/product contracts are stable,
-- vector DB or temporal graph store before file-backed product objects prove the workflow.
+- vector DB, temporal graph store, or retrieval service before one small end-to-end memory-selection/application path proves the workflow.
 
 ## Iteration Policy
 
 Work slice by slice. Within each slice, implement vertical behavior through final standards:
 
 ```text
-contract -> parser/schema -> fixture -> behavior test/eval -> runtime artifact -> memory/plan update
+real bottleneck -> source/practice mechanism -> simplest vertical behavior -> narrow proof -> review burden check -> pattern/update only if durable
 ```
 
-Before any non-trivial implementation slice, run a lightweight research/plan checkpoint using the OpenAI Cookbook patterns already indexed in `docs/plans/canonical/SOURCES.md`. This is a hard gate for child goals: a child goal may not move from planning into implementation, and may not be closed, unless it records the selected source-backed mechanisms, resulting artifacts, eval/falsification path, and overclaim boundary.
+Typed contracts, fixtures, eval modules, runtime reports, dashboards, and memory notes are tools inside this loop, not the loop itself.
+
+Before any non-trivial implementation slice, run a lightweight research/plan checkpoint using the OpenAI Cookbook patterns already indexed in `docs/plans/canonical/SOURCES.md`. This is a hard gate for child goals: a child goal may not move from planning into implementation, and may not be closed, unless it records the selected mechanism, resulting behavior, verification path, review burden, and overclaim boundary.
 
 - S010 Goals in Codex: state outcome, verification surface, constraints, boundaries, iteration policy, and blocked stop condition.
 - S011 Codex ExecPlans: keep multi-hour work self-contained, restartable, and evidence-driven.
 - S012 Code modernization: split broad changes into bounded pilot, overview/design, validation/parity, implementation, and reusable template when the slice is broad enough.
 - S087 Related resources: use as discovery only; promote a pattern only after primary-source inspection and mechanism extraction.
 
-The checkpoint must name the product layer, selected source-backed mechanism, rejected alternatives, required skills, validation or falsification path, and overclaim boundary. Cookbook links are not sufficient by themselves; they must be converted into KRN behavior, contracts, tests/evals, memory/source updates, or rejected alternatives. Tiny mechanical edits can skip the checkpoint, but architecture, memory, eval, MCP/API, dashboard, runtime-skill, benchmark, and long-running-goal work cannot.
+The checkpoint must name the product layer, selected mechanism, rejected alternatives, required skills, validation or falsification path, review burden, and overclaim boundary. Cookbook links, papers, repos, and practitioner claims are not sufficient by themselves; they must be converted into KRN behavior, code, contracts, tests/evals, retrieval/application rules, or rejected alternatives. Tiny mechanical edits can skip the checkpoint, but architecture, memory, eval, MCP/API, dashboard, runtime-skill, benchmark, and long-running-goal work cannot.
 
 Do not make broad horizontal dumps such as "all docs first", "all schemas first", or "dashboard shell first" unless the slice explicitly needs that artifact to unblock the next verified behavior.
+
+Do not create an eval module for every product step. Create one only when it protects a durable contract, catches a known regression, or measures a hypothesis that a human cannot cheaply review.
 
 When an eval or review fails:
 
@@ -454,10 +470,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Continue Slice 3 by creating the next bounded child goal from the operating reset, not by extending the expanded-arena live-full chain:
+Continue Slice 3 by correcting the operating loop before adding more artifacts:
 
 ```text
-docs/goals/goal-035.md
+docs/goals/goal-037.md
 ```
 
-Next child-goal candidates after `goal-035` should prioritize the new operating model: source-bank population, AI harness dictionary, senior-engineering skill condensation, fast-lane vertical slice design, and lightweight lab policy. Expanded-arena `live-full` may continue only as explicit lab work with a one-hypothesis keep/discard plan; it must not block product implementation or be treated as the normal way to build KRN. Do not expand dashboard command surfaces before clean lift-gate-scale live evidence exists. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, repeated clean small-suite evidence, a green arena-contract eval, a green expanded-registry eval, a green fixture-scoring eval, positive fixture deltas, or a one-task expanded-arena live-smoke run below the live lift gate.
+The next child goal should not be "add another eval artifact" by default. It should pick one real product bottleneck in KRN's operating loop and improve it through code or a directly consumed contract. Strong candidates are: memory selection/application proof, skill routing simplification, second-opinion review pack generation from live repo state, or a small CLI path that makes the next Codex run materially easier to steer. Expanded-arena `live-full` may continue only as explicit lab work with a one-hypothesis keep/discard plan; it must not block product implementation or be treated as the normal way to build KRN. Do not expand dashboard command surfaces before clean lift-gate-scale live evidence exists. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, repeated clean small-suite evidence, a green arena-contract eval, a green expanded-registry eval, a green fixture-scoring eval, positive fixture deltas, or a one-task expanded-arena live-smoke run below the live lift gate.

@@ -27,7 +27,8 @@ The fast lane is the default. The heavy lab lane is explicit, occasional, and us
 
 - `live-full` benchmark runs must not block normal product development.
 - Evals are not required at every step. They are used where a deterministic contract, regression, or measurement actually reduces risk.
-- Source-backed methodology belongs in `docs/memory/**`, `docs/source-bank/MANIFEST.md`, and the source ledger, not in chat memory.
+- Source-backed methodology may start in `docs/memory/**`, `docs/source-bank/MANIFEST.md`, and the source ledger as a reviewable pattern bank, but that is not the target memory architecture.
+- KRN memory needs selection, application, review state, invalidation, and feedback. A docs folder without those layers is only an audit/export substrate.
 - Local source clones may live under `.krn/source-bank/repos/`, but only distilled mechanisms become KRN truth.
 - KRN must grow a shared dictionary and harness vocabulary before adding more automation.
 - Future benchmark work must classify task families instead of mixing review/debug/refactor/meta tasks into one undifferentiated metric.
@@ -36,6 +37,7 @@ The fast lane is the default. The heavy lab lane is explicit, occasional, and us
 
 - Default everything through a 20-task live benchmark: too slow, too noisy, and not how strong engineers build normal product code.
 - Drop the meta-researcher idea entirely: loses a powerful way to falsify agent-harness hypotheses.
+- Treat docs/memory as the final memory system: too weak because passive notes do not guarantee retrieval, application, or measured behavior change.
 - Keep source links only in chat or canonical prose: causes rereading, drift, and hidden assumptions after compaction.
 - Build dashboard/API controls before the operating model is fixed: risks a polished UI over unreviewed state.
 
@@ -50,4 +52,3 @@ Revisit when KRN ships a fast lane that completes several real vertical product 
 - [docs/source-bank/MANIFEST.md](/home/krn/coding/krn/active/krn-gastown/docs/source-bank/MANIFEST.md)
 - [docs/memory/github-research/2026-06-19--mattpocock-skills-operator-pipeline.md](/home/krn/coding/krn/active/krn-gastown/docs/memory/github-research/2026-06-19--mattpocock-skills-operator-pipeline.md)
 - [docs/memory/github-research/2026-06-19--karpathy-autoresearch-experiment-loop.md](/home/krn/coding/krn/active/krn-gastown/docs/memory/github-research/2026-06-19--karpathy-autoresearch-experiment-loop.md)
-

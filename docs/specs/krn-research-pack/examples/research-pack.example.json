@@ -1,0 +1,143 @@
+{
+  "schema_version": "krn-research-pack.v1",
+  "kind": "krn_research_pack",
+  "run_id": "krn-research-pack-example-001",
+  "created_at": "2026-06-20T00:00:00.000Z",
+  "target_root": ".",
+  "command": "krn research-pack",
+  "status": "ready_for_review",
+  "research_question": "Which agent harness patterns should KRN use for bounded researcher work?",
+  "krn_decision": "Decide whether KRN should add a typed research-pack artifact before adding long-running researcher workers.",
+  "source_budget": {
+    "mode": "quick",
+    "min_sources": 5,
+    "max_sources": 8,
+    "stop_condition": "Stop after five primary or mechanism-bearing sources have been compared and KRN promotion targets are explicit."
+  },
+  "source_universe": [
+    {
+      "kind": "local_source_bank",
+      "ref": ".krn/source-bank/repos",
+      "inclusion_reason": "Local pinned source repositories reduce rereading and source drift."
+    },
+    {
+      "kind": "repo_memory",
+      "ref": "docs/memory/INDEX.md",
+      "inclusion_reason": "Reviewed KRN memory selects relevant prior decisions."
+    },
+    {
+      "kind": "primary_papers",
+      "ref": "SWE-agent and Agentless papers",
+      "inclusion_reason": "Primary papers provide mechanisms and failure modes for agent harness design."
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "tier": "A",
+      "title": "SWE-agent paper",
+      "source_ref": "https://proceedings.neurips.cc/paper_files/paper/2024/file/5a7c947568c1b1328ccc5230172e1e7c-Paper-Conference.pdf",
+      "access_or_pin": "accessed 2026-06-20",
+      "why_included": "Defines agent-computer interface mechanisms for coding agents.",
+      "local_cache_path": ".krn/source-bank/repos/github.com/SWE-agent/swe-agent"
+    },
+    {
+      "id": "S2",
+      "tier": "A",
+      "title": "Agentless paper",
+      "source_ref": "https://arxiv.org/html/2407.01489v1",
+      "access_or_pin": "accessed 2026-06-20",
+      "why_included": "Counterexample showing simpler localization and repair can beat complex autonomy.",
+      "local_cache_path": ".krn/source-bank/repos/github.com/OpenAutoCoder/Agentless"
+    },
+    {
+      "id": "S3",
+      "tier": "B",
+      "title": "Karpathy autoresearch repository",
+      "source_ref": "https://github.com/karpathy/autoresearch",
+      "access_or_pin": "228791f",
+      "why_included": "Provides bounded meta-research loop mechanics.",
+      "local_cache_path": ".krn/source-bank/repos/github.com/karpathy/autoresearch"
+    },
+    {
+      "id": "S4",
+      "tier": "C",
+      "title": "Matt Pocock skills workflow",
+      "source_ref": "https://github.com/mattpocock/skills",
+      "access_or_pin": "6eeb81b",
+      "why_included": "Provides practitioner mechanisms for grill, issues, TDD, and review flow.",
+      "local_cache_path": ".krn/source-bank/repos/github.com/mattpocock/skills"
+    },
+    {
+      "id": "S5",
+      "tier": "B",
+      "title": "KRN source bank manifest",
+      "source_ref": "docs/source-bank/MANIFEST.md",
+      "access_or_pin": "2026-06-20",
+      "why_included": "Defines local source-bank promotion rules for KRN.",
+      "local_cache_path": null
+    }
+  ],
+  "mechanism_matrix": [
+    {
+      "mechanism": "Agent-facing artifacts should constrain the action space before autonomy increases.",
+      "source_ids": ["S1", "S2"],
+      "evidence_strength": "strong",
+      "works_when": "The artifact has a narrow schema and a parser used by downstream tools.",
+      "fails_when": "The artifact is a prose-only note that later agents reinterpret.",
+      "krn_transfer": "Create KrnResearchPack before spawning long-running researcher workers.",
+      "proof_surface": "Parser, CLI scaffold, known-bad fixture, and deterministic eval."
+    },
+    {
+      "mechanism": "Deep research needs a fixed budget and keep/discard boundary.",
+      "source_ids": ["S3", "S4", "S5"],
+      "evidence_strength": "medium",
+      "works_when": "The question names a KRN decision and a stop condition before source work starts.",
+      "fails_when": "The agent browses until the answer sounds plausible.",
+      "krn_transfer": "Require source_budget and promotion_targets in every non-scaffolded pack.",
+      "proof_surface": "KrnResearchPack rejects ready_for_review packs below the selected source budget."
+    }
+  ],
+  "contradictions": [
+    {
+      "conflict": "Autonomous agents can explore broadly, while simpler localization-first workflows reduce noise.",
+      "source_ids": ["S1", "S2"],
+      "resolution": "Use autonomy for source collection only after the output artifact is typed and reviewable.",
+      "krn_decision": "Add typed research packs before long-running researcher worker orchestration."
+    }
+  ],
+  "rejected_alternatives": [
+    {
+      "alternative": "Let the skill write free-form Markdown only.",
+      "why_rejected": "Free-form notes cannot be parsed by CLI, eval, MCP, or dashboard consumers.",
+      "review_trigger": "Reconsider only if a markdown parser becomes the source of truth."
+    }
+  ],
+  "decision_candidates": [
+    {
+      "label": "DECISION",
+      "text": "KRN should require a typed research pack before promoting deep-research conclusions.",
+      "source_ids": ["S1", "S2", "S5"],
+      "promotion_target": "memory"
+    }
+  ],
+  "promotion_targets": [
+    {
+      "target_type": "memory",
+      "target_ref": "docs/memory/product/",
+      "change": "Promote only reviewed mechanisms, failure modes, and KRN proof surfaces.",
+      "verification": "Pack parses and release verifier confirms source budget and overclaim boundary."
+    }
+  ],
+  "next_action": "Create the next vertical slice that runs a long-researcher worker against this typed scaffold.",
+  "runtime_report_path": ".krn/research-packs/krn-research-pack-example-001/research-pack.json",
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-036.md",
+    "docs/specs/krn-research-pack/README.md"
+  ],
+  "evidence_refs": [
+    "docs/specs/krn-research-pack/examples/research-pack.example.json"
+  ],
+  "interpretation_caveat": "This example proves only research-pack contract shape. It does not prove that any future KRN worker improves research quality or productivity lift."
+}

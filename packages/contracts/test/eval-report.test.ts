@@ -36,6 +36,7 @@ describe("KrnEvalReport contract", () => {
       "krn-benchmark-arena-contract",
       "krn-benchmark-expanded-arena",
       "krn-repair-record",
+      "krn-research-pack",
     ]);
   });
 

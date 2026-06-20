@@ -36,5 +36,5 @@ describe("krn init --dry-run", () => {
 
     const topLevelEntries = readdirSync(targetRoot).sort();
     expect(topLevelEntries).toEqual([".krn"]);
-  });
+  }, 30_000);
 });

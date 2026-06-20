@@ -404,17 +404,37 @@
         "docs/goals/goal-021.md"
       ],
       "interpretation_caveat": "This eval proves benchmark no-lift repair-record contract behavior only; it does not prove repair quality, productivity lift, prompt improvement, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
+      "module_id": "krn-research-pack",
+      "command": ["pnpm", "run", "eval:krn-research-pack"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-research-pack/20260619T215916Z-example/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 9,
+      "passed_assertions": 9,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-research-pack/README.md",
+        "docs/specs/krn-research-pack/README.md",
+        "docs/goals/goal-036.md"
+      ],
+      "interpretation_caveat": "This eval proves research-pack scaffold contract behavior only; it does not prove source quality, researcher-worker quality, productivity lift, memory promotion correctness, dashboard command readiness, HTTP/API readiness, or ChatGPT connector behavior."
     }
   ],
   "summary": {
-    "total_modules": 20,
-    "passed_modules": 20,
+    "total_modules": 21,
+    "passed_modules": 21,
     "failed_modules": 0,
-    "total_cases": 101,
-    "passed_cases": 101,
+    "total_cases": 104,
+    "passed_cases": 104,
     "failed_cases": 0,
-    "total_assertions": 382,
-    "passed_assertions": 382,
+    "total_assertions": 391,
+    "passed_assertions": 391,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

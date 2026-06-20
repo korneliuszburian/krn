@@ -29,6 +29,14 @@ export {
   type RepairSurface,
 } from "./repair-record.js";
 export {
+  KrnResearchPackSchema,
+  krnResearchPackJsonSchema,
+  parseKrnResearchPack,
+  type KrnResearchPack,
+  type ResearchPackStatus,
+  type SourceBudgetMode,
+} from "./research-pack.js";
+export {
   InitManifestSchema,
   initManifestJsonSchema,
   parseInitManifest,

@@ -29,7 +29,8 @@ Use a compact dictionary for KRN work. These terms are product contracts, not vi
 | Term | KRN meaning | Use when | Do not use when |
 |---|---|---|---|
 | Source bank | Local ignored cache of external repos, papers, transcripts, and docs. | A source must be inspected repeatedly or offline. | As product truth or committed vendor code. |
-| Reviewed memory | Condensed, source-backed KRN knowledge under `docs/memory/**`. | A pattern or decision should survive compaction. | For raw logs, raw cloned repos, or unreviewed claims. |
+| Pattern bank | Condensed, source-backed KRN mechanisms and decisions currently stored under `docs/memory/**`. | A pattern or decision should survive compaction and be reviewable. | As proof that KRN has an active memory system. |
+| Operational memory | Selected knowledge applied through a skill, contract, command, MCP/API surface, or dashboard decision and measured afterward. | KRN should actually change Codex behavior. | For passive notes that no workflow retrieves or applies. |
 | Shared dictionary | Stable vocabulary that prevents agents from redefining work. | Terms affect planning, routing, or acceptance. | As a glossary dump that does not change behavior. |
 | Grill | Short alignment interview before planning ambiguous work. | Terms, success criteria, or tradeoffs are unclear. | Tiny mechanical edits with obvious acceptance. |
 | Destination artifact | The artifact that defines where a slice is going: PRD, ADR, issue, contract, or goal. | A task can drift or survive compaction. | When a command/result is the whole task. |

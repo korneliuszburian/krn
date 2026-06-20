@@ -16,9 +16,9 @@ sources:
 
 ## Status
 
-[DECISION] KRN's core is a local Codex operating loop, not file-based memory by itself.
+[DECISION] KRN's core is a local Codex operating loop with a multi-layer memory/control system, not file-based memory by itself.
 
-File-backed artifacts are only the first local substrate because they are auditable, diffable, and easy to review. They are not the breakthrough. The useful product is the control loop that moves runtime evidence into reviewed memory, decisions, repairs, skills, and benchmarked behavior.
+File-backed artifacts are only the first local bootstrap/audit/export substrate because they are auditable, diffable, and easy to review. They are not the target memory architecture and not the breakthrough. The useful product is the control loop that selects relevant knowledge, applies it through skills/contracts/tools, reviews the result, and measures whether the next Codex run improves.
 
 ## Useful Pattern
 
@@ -43,15 +43,17 @@ Memory layers:
 - active execution state: `docs/goals/*.md`, compact checkpoints;
 - runtime evidence: `.krn/**`;
 - source and claim ledger: `docs/plans/canonical/SOURCES.md`;
-- reviewed durable memory: `docs/memory/**`, ADRs;
-- typed product memory: `packages/contracts`, JSON Schemas, fixtures;
+- pattern bank / audit export: `docs/memory/**`, ADRs;
+- retrieval and selection layer: planned typed index/API over patterns, sources, active goals, runtime evidence, and invalidation state;
+- application layer: `.agents/skills`, `packages/contracts`, `packages/cli`, `packages/mcp`;
 - review/control surface: proposal store now, dashboard later;
-- measured learning: skill impact and benchmark reports.
+- feedback layer: skill impact reports, benchmark reports, repair records.
 
 ## KRN Implication
 
 - Do not describe KRN as "memory in files".
 - Do not promote `.krn` runtime artifacts into durable truth without review.
+- Do not treat `docs/memory` as product memory unless a retrieval/selection/application path uses it in real work.
 - Do not build dashboard/UI before typed objects and proposal/review surfaces exist.
 - Do not claim productivity lift before baseline-vs-assisted benchmark evidence.
 - Require a lightweight research/plan checkpoint before non-trivial implementation slices.
@@ -62,6 +64,7 @@ Memory layers:
 KRN fails if it becomes:
 
 - a folder of markdown memory notes,
+- a pattern bank without retrieval, selection, application, and feedback,
 - a snapshot/artifact generator,
 - a prompt or skill pack without measured impact,
 - a dashboard over mocked or unreviewed state,
@@ -75,4 +78,5 @@ Update this note when:
 - dashboard reads real proposal-store records,
 - compact continuity becomes typed runtime state,
 - benchmark evidence exists,
-- memory moves from file substrate toward graph/retrieval/indexed runtime.
+- memory moves from file substrate toward graph/retrieval/indexed runtime,
+- a retrieval/application eval proves or disproves that selected memory changes Codex behavior.

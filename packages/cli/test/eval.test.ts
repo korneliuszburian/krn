@@ -41,10 +41,11 @@ describe("krn eval", () => {
       "krn-benchmark-arena-contract",
       "krn-benchmark-expanded-arena",
       "krn-repair-record",
+      "krn-research-pack",
     ]);
-    expect(report.summary.total_modules).toBe(20);
+    expect(report.summary.total_modules).toBe(21);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(74);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(77);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
   }, 120_000);

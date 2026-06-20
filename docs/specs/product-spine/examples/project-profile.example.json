@@ -6,7 +6,7 @@
   "project_name": "krn-gas-town",
   "created_at": "2026-06-19T12:20:00Z",
   "identity": "A Codex-native operating memory, eval, and control-plane layer.",
-  "product_boundary": "KRN is not a prompt pack or dashboard-first app. It is useful only if source-backed memory, evals, hooks, MCP/API, and a review dashboard measurably reduce repeated Codex failure modes.",
+  "product_boundary": "KRN is not a prompt pack, docs-memory folder, or dashboard-first app. It is useful only if a multi-layer memory/control system, evals, hooks, MCP/API, and a review dashboard measurably reduce repeated Codex failure modes.",
   "current_phase": "goal-004 product-spine object contracts",
   "source_refs": [
     "AGENTS.md",

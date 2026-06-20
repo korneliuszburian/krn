@@ -14,13 +14,13 @@ Sources:
 
 ## Observation
 
-KRN needs a local source bank and a reviewed memory bank, but these are different layers.
+KRN needs a local source bank and a reviewed pattern bank, but neither is the final memory system.
 
 - `.krn/source-bank/repos/` is a local cache of raw external repositories and source material.
 - `docs/source-bank/MANIFEST.md` records which sources matter and why.
-- `docs/memory/**` stores condensed KRN-ready mechanisms, decisions, failure modes, and review triggers.
+- `docs/memory/**` currently stores condensed KRN-ready mechanisms, decisions, failure modes, and review triggers as a bootstrap/audit/export layer.
 
-Raw sources are not product truth. Memory notes are not enough unless they change Codex behavior through a workflow, contract, command, skill, review surface, or repair loop.
+Raw sources are not product truth. Pattern notes are not enough unless KRN can select them for the current task, apply them through a workflow, contract, command, skill, review surface, or repair loop, and then measure whether they changed Codex behavior.
 
 ## Useful Pattern
 
@@ -31,7 +31,8 @@ source repo / paper / practitioner material
   -> local source-bank cache with pinned commit or access date
   -> mechanism extraction
   -> KRN implication and rejected alternatives
-  -> memory note / source ledger / ADR
+  -> pattern note / source ledger / ADR
+  -> retrieval and selection rule
   -> small vertical product slice
   -> fast verification or review
   -> optional heavy benchmark only when measuring a hypothesis
@@ -82,8 +83,9 @@ This supports a direction change:
 - keep heavy benchmark/meta-research as a lab/stress lane,
 - build KRN through small vertical product slices,
 - add fast feedback gates only where they reduce risk,
-- store source-backed methodology in `docs/memory`, not in chat or hidden model memory,
+- store source-backed methodology in a reviewable pattern bank first, not in chat or hidden model memory,
 - use local source clones for fast inspection, but promote only distilled mechanisms.
+- add retrieval/application proof before calling any pattern bank a memory system.
 - use `.agents/skills/long-researcher` when a question needs a real research pack instead of a quick source lookup.
 
 ## Failure Mode

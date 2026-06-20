@@ -6,7 +6,7 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 
 1. The newest user message wins over every repo file.
 2. Read [docs/memory/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/memory/INDEX.md).
-3. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md); [docs/goals/goal-034.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-034.md) is the immediately previous expanded-arena smoke-worker gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+3. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The current reset child goal is [docs/goals/goal-037.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-037.md). The latest completed Slice 3 child goal is [docs/goals/goal-036.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-036.md); [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md) is the immediately previous operating-model reset. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
 4. For product direction changes, read [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md). Do not reload it for every routine resume.
 5. For synthesis work, use [docs/plans/canonical/SOURCES.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/SOURCES.md) with targeted `rg` lookups unless the task explicitly requires broader synthesis. Read [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md) and [docs/plans/canonical/pattern-matrix.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/pattern-matrix.md) only on demand.
 6. For product implementation terms, read [CONTEXT.md](/home/krn/coding/krn/active/krn-gastown/CONTEXT.md) only when terms are unclear or changing.
@@ -24,6 +24,20 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 - For long-running work, keep a self-contained goal/plan and use project-local `.codex` hooks for compact checkpoints when possible.
 - GitHub stars, rankings, and hype are discovery signals only. Extract the mechanism before using any project as a pattern.
 - Use the senior engineering lens for every non-trivial decision: name the mechanism, tradeoff, simplest viable design, verification surface, and overclaim boundary. Details live in [KRN senior engineering lens](docs/memory/product/2026-06-20--krn-senior-engineering-lens.md).
+
+## Engineering Kernel
+
+Non-trivial KRN work must be:
+
+- **Mechanism-first**: use a concrete source/practice mechanism, not a best-practice label.
+- **Bottleneck-led**: improve the current limiting failure, not the easiest artifact.
+- **Production-shaped**: build the real product path in the smallest viable form; scaffolds must have a next consumer.
+- **Context-budgeted**: load selectors first, then only task-relevant sources.
+- **Diff-literate**: every changed line must explain why it belongs to this slice.
+- **Review-minimizing**: reduce human cleanup and ambiguity, not just make tests green.
+- **Memory-operative**: stored patterns count only when selected, applied, reviewed, and measured.
+- **Proof-carrying**: ship the narrowest evidence that proves this behavior and names what it does not prove.
+- **Deletion-friendly**: merge or remove weak layers, skills, docs, and evals instead of preserving sediment.
 
 ## Global Coding Guidelines
 
@@ -122,4 +136,4 @@ Quality bar:
 
 ## Current Product Guardrail
 
-KRN is not a prompt pack, PoC, MVP ladder, or dashboard-first app. It is only useful if source-backed memory, evals, hooks, MCP/API, and a review dashboard measurably reduce repeated Codex failure modes.
+KRN is not a prompt pack, PoC, MVP ladder, docs-memory folder, or dashboard-first app. It is only useful if a multi-layer memory/control system, evals, hooks, MCP/API, and a review dashboard measurably reduce repeated Codex failure modes. File-backed notes are only a bootstrap/audit/export substrate until KRN can select, inject, apply, review, and measure memory in real work.

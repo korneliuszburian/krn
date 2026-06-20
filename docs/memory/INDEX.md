@@ -33,7 +33,7 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md); [docs/goals/goal-034.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-034.md) is the immediately previous expanded-arena smoke-worker gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The current reset child goal is [docs/goals/goal-037.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-037.md). The latest completed Slice 3 child goal is [docs/goals/goal-036.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-036.md); [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md) is the immediately previous operating-model reset. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
 3. Read current final product direction only when product direction is unclear or changing:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
 4. Read current canonical synthesis only for synthesis/source-ledger work:
@@ -113,6 +113,7 @@ Before major planning work:
 - [KRN source bank and engineering pattern memory](./product/2026-06-20--krn-source-bank-and-engineering-patterns.md)
 - [KRN AI harness dictionary](./product/2026-06-20--krn-ai-harness-dictionary.md)
 - [KRN senior engineering lens](./product/2026-06-20--krn-senior-engineering-lens.md)
+- [KRN research pack runtime scaffold](./product/2026-06-20--krn-research-pack-runtime-scaffold.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

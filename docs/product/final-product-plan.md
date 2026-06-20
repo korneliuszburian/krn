@@ -44,10 +44,13 @@ sources:
   - docs/goals/goal-033.md
   - docs/goals/goal-034.md
   - docs/goals/goal-035.md
+  - docs/goals/goal-036.md
   - docs/adr/0002-codex-harness-operating-model.md
   - docs/memory/product/2026-06-20--krn-ai-harness-dictionary.md
   - docs/memory/product/2026-06-20--krn-senior-engineering-lens.md
+  - docs/memory/product/2026-06-20--krn-research-pack-runtime-scaffold.md
   - docs/memory/evals/2026-06-20--lightweight-agent-lab-rule.md
+  - docs/specs/krn-research-pack/README.md
   - .agents/skills/long-researcher/SKILL.md
   - docs/memory/evals/2026-06-20--coding-quality-rubric.md
   - docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md
@@ -65,7 +68,9 @@ Naming rule: **KRN** is the product/tool name and `krn` is the CLI. **Gas Town**
 
 [DECISION] KRN is a TypeScript-first Codex operating memory, eval, and control plane. It is not a prompt pack, not a dashboard-first app, and not `krn init` as a tiny product.
 
-[DECISION] KRN does not build product through heavy live benchmark loops by default. Codex is already the strong coding agent; KRN's job is to solve Codex operating paradoxes through source-backed memory, senior-engineering skills, context selection, review/control surfaces, and lightweight harnesses. Heavy benchmark/meta-research lanes remain useful, but they are explicit lab work, not the normal product-build loop.
+[DECISION] KRN does not build product through heavy live benchmark loops by default. Codex is already the strong coding agent; KRN's job is to solve Codex operating paradoxes through a multi-layer memory/control system, senior-engineering skills, context selection, review/control surfaces, and lightweight harnesses. Heavy benchmark/meta-research lanes remain useful, but they are explicit lab work, not the normal product-build loop.
+
+[DECISION] KRN memory is not `docs/memory` and not markdown files. The current files are a bootstrap/audit/export substrate for patterns, decisions, and evidence while the product proves its control loop. The target memory system must route the right knowledge into the current task, apply it through skills/contracts/tools, and measure whether it reduced a real failure mode.
 
 The final product loop is:
 
@@ -81,14 +86,12 @@ Codex work
 The default product-build loop is:
 
 ```text
-intake
-  -> grill/alignment if ambiguous
-  -> destination artifact
-  -> vertical slice
-  -> implementation
-  -> narrow verification
-  -> review/handoff
-  -> reviewed memory promotion only when durable truth changed
+mechanism-first
+  -> bottleneck-led
+  -> production-shaped vertical slice
+  -> context-budgeted implementation
+  -> proof-carrying review
+  -> memory-operative feedback only when behavior changes
 ```
 
 The meta-research loop is separate:
@@ -153,6 +156,7 @@ The intended wiring is:
 repo + task
   -> AGENTS.md + docs/memory/INDEX.md select current truth
   -> operator skills choose workflow and required research/plan checkpoint
+  -> research-pack scaffold bounds deep source work before long-running researcher workers
   -> krn CLI creates typed local runtime reports under .krn/
   -> contracts parse every external object before use
   -> evals test behavior and failure modes
@@ -170,7 +174,7 @@ repo + task
   -> no-lift benchmark evidence becomes a typed repair record before tuning prompts, skills, memory, or suite tasks
   -> first repair attempt measures before/after delta and records worse/no-lift outcomes without claiming lift
   -> assisted prompt-load repair uses task-owned source refs and records stabilized/no-lift outcomes without claiming lift
-  -> memory-layer next-action repair preserves source-backed memory/control/eval routing while exposing baseline timeout instability
+  -> memory-layer next-action repair preserves pattern/control/eval routing while exposing baseline timeout instability
   -> benchmark lift-status gate rejects dirty positive live deltas before suite expansion
   -> live-suite registry policy gate exposes current child context and sequential timeout policy as typed validation data
   -> live stability readiness gate blocks suite expansion while live evidence is dirty or only one-off clean
@@ -206,7 +210,7 @@ Layer responsibilities:
 | Codex paradox | KRN resolution | Proof surface |
 |---|---|---|
 | More context helps, but too much context poisons the run. | Progressive disclosure: `AGENTS.md` routes to memory index, active goal, canonical plan, and only relevant notes. | Memory compliance evals and goal read-order checks. |
-| Memory improves continuity, but stale memory creates confident wrongness. | Reviewed memory with source refs, failure mode, and review trigger; runtime artifacts stay under `.krn/` until promoted. | `docs/memory/**`, `docs/plans/canonical/SOURCES.md`, memory compliance eval. |
+| Memory improves continuity, but stale memory creates confident wrongness. | Multi-layer memory with provenance, retrieval/selection, review state, invalidation, and measured application; file notes are only the current audit/export layer. | memory compliance evals, future retrieval/application evals, dashboard review state. |
 | Long-running agents need persistence, but autonomy drifts. | Goal files, compact checkpoints, runtime reports, and bounded blocked conditions. | `docs/goals/**`, `.krn/compact/**`, `krn eval`. |
 | Tools make agents powerful, but writes are dangerous. | Read-only MCP resources first; proposal-only, append-only, idempotent writes second; destructive tools out by default. | `packages/mcp`, proposal store tests/evals. |
 | Green tests are useful, but green tests are not product lift. | Deterministic evals gate contracts; benchmark harness later measures baseline vs assisted behavior. | `.krn/evals/**`, future benchmark report. |
@@ -216,18 +220,19 @@ Layer responsibilities:
 
 ## Memory Layers
 
-[DECISION] KRN memory is layered. No single memory layer is allowed to become the whole product truth.
+[DECISION] KRN memory is layered. No single layer, and especially no file folder, is allowed to become the whole product truth.
 
-| Layer | Role | Storage | Promotion rule | Failure mode |
+| Layer | Role | Current substrate | Promotion rule | Failure mode |
 |---|---|---|---|---|
 | Attention router | Tells Codex what to read first. | `AGENTS.md`, `docs/memory/INDEX.md` | Keep small; link to deeper docs. | Root prompt bloat. |
 | Active execution state | Keeps long-running work restartable. | `docs/goals/*.md`, compact checkpoints | Update when work changes phase or evidence. | Goal drift or stale completion claims. |
 | Runtime evidence | Stores generated local facts from commands/evals. | `.krn/**` | Do not treat as durable truth until reviewed. | Snapshot/artifact slop. |
 | Source and claim ledger | Connects papers, Cookbook, repos, docs, and claims. | `docs/plans/canonical/SOURCES.md` | Add source IDs and risk before using as decision evidence. | Bibliography without mechanism. |
-| Reviewed durable memory | Stores condensed patterns and decisions. | `docs/memory/**`, ADRs | Must include source, useful pattern, implication, failure mode, review trigger. | Stale hidden truth. |
-| Typed product memory | Makes memory/evals/proposals consumable by tools. | `packages/contracts`, JSON Schemas, fixtures | Every external object parses before use. | CLI/MCP/dashboard each invents state. |
+| Pattern bank | Stores reviewed mechanisms, decisions, failure modes, and review triggers while the product is local. | `docs/memory/**`, ADRs | Must affect a skill, contract, eval, review action, or routing rule before it counts as product memory. | Notes accumulate but agent behavior does not change. |
+| Retrieval/selection layer | Chooses the smallest useful memory for the current task. | planned typed index/API over pattern bank, source bank, goals, and runtime evidence | Selection must be explainable and testable against known-bad context overload. | Context dump or stale-memory injection. |
+| Application layer | Turns selected memory into behavior through skills, CLI commands, contracts, or dashboard decisions. | `.agents/skills`, `packages/contracts`, `packages/cli`, `packages/mcp` | A memory claim is valuable only when it changes an action or blocks a bad action. | Memory exists but is ignored. |
+| Feedback layer | Measures whether selected/applied memory reduced repeated failures. | skill impact reports, benchmark reports, repair records | Claim lift only from baseline-vs-assisted evidence. | Anecdotes sold as breakthrough. |
 | Review/control surface | Lets humans approve, reject, repair, or route proposals. | proposal store, future dashboard | Read real objects only; write proposals only. | Pretty UI over unreviewed state. |
-| Measured learning | Proves whether KRN actually helps. | benchmark reports, skill impact reports | Claim lift only from baseline-vs-assisted evidence. | Anecdotes sold as breakthrough. |
 
 ## Research/Plan Checkpoint
 

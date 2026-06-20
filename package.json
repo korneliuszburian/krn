@@ -33,6 +33,7 @@
     "eval:krn-benchmark-expanded-arena:live-smoke": "tsx packages/evals/src/validate-krn-benchmark-expanded-arena.ts --mode live-smoke",
     "eval:krn-benchmark-expanded-arena:live-full": "tsx packages/evals/src/validate-krn-benchmark-expanded-arena.ts --mode live-full",
     "eval:krn-repair-record": "tsx packages/evals/src/validate-krn-repair-record.ts --mode validate",
+    "eval:krn-research-pack": "tsx packages/evals/src/validate-krn-research-pack.ts",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {

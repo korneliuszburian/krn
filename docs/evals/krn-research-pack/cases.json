@@ -1,0 +1,59 @@
+[
+  {
+    "id": "valid-fixture-parses",
+    "expected_behavior": "The valid krn-research-pack fixture parses through @krn/contracts and preserves source budget plus mechanism extraction.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-035.md",
+      "docs/specs/krn-research-pack/README.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "source budget present",
+      "mechanism matrix present"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "research_depth_boundary_score"
+    ],
+    "failure_mode": "The research-pack contract can no longer validate its own canonical example."
+  },
+  {
+    "id": "known-bad-shallow-ready-pack-fails",
+    "expected_behavior": "A ready_for_review pack with only three shallow sources and no mechanisms fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-035.md",
+      "docs/specs/krn-research-pack/README.md",
+      ".agents/skills/long-researcher/SKILL.md"
+    ],
+    "assertions": [
+      "known-bad fixture rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_slop_score"
+    ],
+    "failure_mode": "The validator accepts shallow research as ready for review."
+  },
+  {
+    "id": "generated-scaffold-parses",
+    "expected_behavior": "The CLI writes a scaffolded research pack under .krn/research-packs and the generated pack parses through @krn/contracts.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-036.md",
+      "docs/specs/krn-research-pack/README.md"
+    ],
+    "assertions": [
+      "CLI exits zero",
+      "generated pack exists",
+      "generated pack parses",
+      "status is scaffolded",
+      "no completed source work is claimed"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "overclaim_boundary_score"
+    ],
+    "failure_mode": "The CLI cannot create a typed scaffold or claims research completion before source work exists."
+  }
+]

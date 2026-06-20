@@ -22,7 +22,7 @@
   "tasks": [
     {
       "task_id": "memory-source-discipline",
-      "title": "Preserve source-backed memory rules before planning",
+      "title": "Preserve multi-layer memory rules before planning",
       "status": "completed",
       "task_source_refs": ["docs/memory/INDEX.md", "docs/goals/goal-006.md"],
       "baseline": {
