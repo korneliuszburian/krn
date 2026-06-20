@@ -1,4 +1,10 @@
 export {
+  KrnContextPacketSchema,
+  krnContextPacketJsonSchema,
+  parseKrnContextPacket,
+  type KrnContextPacket,
+} from "./context-packet.js";
+export {
   KrnEngineeringGateSchema,
   krnEngineeringGateJsonSchema,
   parseKrnEngineeringGate,

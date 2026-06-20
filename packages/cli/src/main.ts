@@ -15,6 +15,7 @@ import {
   type SourceBudgetMode,
 } from "@krn/contracts";
 import { buildKrnOperatingBrief, writeKrnOperatingBrief, type BriefArgs } from "./brief.js";
+import { buildKrnContextPacket, parseContextBuildArgs, writeKrnContextPacket } from "./context.js";
 import { buildKrnEngineeringGate, parseKrnGateArgs, writeKrnEngineeringGate } from "./gate.js";
 import { buildKrnReviewReport, writeKrnReviewReport } from "./review.js";
 
@@ -243,7 +244,7 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
+  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
 }
 
 function parseInitArgs(argv: readonly string[]): InitArgs {
@@ -1175,6 +1176,13 @@ export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliR
       const brief = buildKrnOperatingBrief(args);
       const briefPath = writeKrnOperatingBrief(args.target, brief);
       return { exitCode: 0, stdout: `${briefPath}\n`, stderr: "" };
+    }
+
+    if (normalizedArgv[0] === "context") {
+      const args = parseContextBuildArgs(normalizedArgv);
+      const packet = buildKrnContextPacket(args);
+      const packetPath = writeKrnContextPacket(args.target, packet);
+      return { exitCode: 0, stdout: `${packetPath}\n`, stderr: "" };
     }
 
     if (normalizedArgv[0] === "gate") {

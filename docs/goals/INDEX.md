@@ -29,7 +29,7 @@ mechanism-first
   -> deletion-friendly
 ```
 
-[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. The next useful product slice should prove store-backed memory selection and application, not add another passive note.
+[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. MemoryStore selection/application, the pre-edit engineering gate, and the bounded context packet are now the active execution path; the next useful product slice should add source graph freshness/conflict blocking for selected decisions, not another passive note, dashboard panel, benchmark lane, or broad API/cloud sync.
 
 ## Buckets
 

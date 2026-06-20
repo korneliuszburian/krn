@@ -166,7 +166,12 @@ function createMemoryApplication(
   selection: KrnMemorySelection,
 ): KrnMemoryApplication {
   const selectedIds = selection.selected.map((record) => record.memory_id);
-  const surfaceName = surface === "krn_review" ? "krn review" : "krn brief";
+  const surfaceNameBySurface: Record<MemoryApplicationSurface, string> = {
+    krn_brief: "krn brief",
+    krn_context: "krn context build",
+    krn_review: "krn review",
+  };
+  const surfaceName = surfaceNameBySurface[surface];
   const candidate: unknown = {
     schema_version: "krn-memory-application.v1",
     kind: "krn_memory_application",
@@ -269,6 +274,17 @@ export function buildBriefMemoryBundle(targetRoot: string, runId: string, now: D
     taskIntent,
     taskKind: "planning",
     surface: "krn_brief",
+  });
+}
+
+export function buildContextMemoryBundle(targetRoot: string, runId: string, now: Date, taskIntent: string): MemoryBundle {
+  return buildMemoryBundle({
+    targetRoot,
+    runId,
+    now,
+    taskIntent,
+    taskKind: "planning",
+    surface: "krn_context",
   });
 }
 

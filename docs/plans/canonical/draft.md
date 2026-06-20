@@ -10,7 +10,7 @@
 
 [DECISION] [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md) absorbs the `goal-037` engineering-kernel reset into one final-product endgame. Non-trivial work must remain mechanism-first, bottleneck-led, production-shaped, context-budgeted, diff-literate, review-minimizing, memory-operative, proof-carrying, and deletion-friendly.
 
-[DECISION] The next useful product bottleneck is the `MemoryStore` boundary and memory selection/application proof, not another passive planning artifact. The slice must define a store interface, use a local dev adapter outside project-repo truth, return memory IDs with reasons/confidence/source lineage, change `krn review` or the nearest review workflow through selected guidance, record runtime memory IDs and feedback, and fail a known-bad context dump.
+[DECISION] The first final-product bottlenecks after reset are the `MemoryStore` boundary, pre-edit engineering gate, and bounded context packet. They must keep memory outside repo-file truth, select IDs with reasons/confidence/source lineage, apply guidance to a real CLI/review/context consumer, record runtime IDs and feedback, fail context dumps, and reject selected memory without application guidance. The next useful bottleneck after this checkpoint is source graph freshness/conflict blocking for selected decisions, not another passive planning artifact.
 
 The short version:
 
@@ -522,7 +522,8 @@ Do not rank by stars. For each repo, inspect:
 | S3a | Read/proposal control plane | MCP resources and proposal stores are allowlisted, append-only, idempotent, and source-backed | Proposal refs become decorative or unsafe |
 | S3b | Dashboard review surfaces | UI reads generated typed product objects only and every row has owner/source/action/failure mode | UI shows vanity metrics or chat-derived state |
 | S3c | Benchmark and repair loop | live evidence stays explicit, lift remains unclaimed below the gate, no-lift creates repair records | Green fixture/live reports are overclaimed as productivity proof |
-| Next | Memory store boundary and selection/application proof | `MemoryStore` interface, local dev adapter, selector IDs/reasons/confidence/source lineage, review-path application, runtime feedback, and known-bad context-dump rejection | Memory remains a repo file bank with no behavioral effect |
+| Completed foundation | MemoryStore boundary, pre-edit gate, and bounded context packet | Store-backed selection/application/feedback, `krn gate`, `krn context build`, runtime IDs, rejected context dumps, and selected-memory application guidance | The proof is overclaimed as final memory quality or productivity lift |
+| Next | Source graph freshness/conflict blocking | Source records feed selected decisions and can warn/block stale, conflicting, or unverified claims in the context/review path | KRN keeps selecting context without knowing whether the sources behind it are fresh or conflicting |
 
 ## 17. Kill Criteria
 
@@ -538,7 +539,7 @@ Kill or redesign the product if:
 
 ## 18. Open Questions
 
-- What is the smallest `MemoryStore` interface and review-path integration that changes a real action or review decision?
+- What is the smallest source graph interface that can warn or block stale/conflicting source-backed decisions in the existing context/review path?
 - Should `docs/memory` remain markdown long-term, or become generated from a structured store after selection/application is proven?
 - How aggressive should PreCompact blocking be?
 - Should Sandcastle-like sandboxing be a KRN feature or only a reference pattern?
@@ -561,6 +562,7 @@ Kill or redesign the product if:
 | 2026-06-19 | `autoresearch` is a bounded metric-loop reference only. | Borrow baseline/metric/budget/keep-discard; do not import endless autonomy. |
 | 2026-06-19 | Semantic policies stay out of hooks for now. | User rejected extra hooks, and OpenAI hook guidance fits deterministic lifecycle events better than semantic product truth. |
 | 2026-06-20 | Goal 038 becomes the active final-product execution contract. | It absorbs the engineering-kernel reset and routes the next product slice toward the `MemoryStore` boundary plus selection/application proof. |
+| 2026-06-20 | MemoryStore, pre-edit gate, and bounded context packet become the active execution path. | The next dependency is source graph freshness/conflict blocking, because selected memory/context now needs source quality controls before dashboard/API expansion. |
 
 ## 20. Source Coverage Checklist
 
@@ -574,6 +576,6 @@ Kill or redesign the product if:
 - Deferred ChatGPT reviewer bridge sources: S078-S085.
 - Controlled experiment-loop source: S088.
 - Local evidence entries: LOCAL001-LOCAL047.
-- Active reset claims: C059-C061.
+- Active reset claims: C059-C062.
 
 Final verdict: KRN is not proven breakthrough yet. The strongest path is a disciplined source-backed control plane where Codex work produces reviewable memory, eval, trace, and decision artifacts, and where every future dashboard feature reads those artifacts instead of inventing state.

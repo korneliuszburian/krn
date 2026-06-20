@@ -1,0 +1,176 @@
+{
+  "schema_version": "krn-context-packet.v1",
+  "kind": "krn_context_packet",
+  "run_id": "20260620T212000Z-example",
+  "created_at": "2026-06-20T21:20:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "command": "krn context build",
+  "task_intent": "Build bounded context packet contract and CLI consumer.",
+  "target_path": "packages/contracts/src/context-packet.ts",
+  "context_budget": {
+    "max_selected_context": 3,
+    "selected_context_count": 1,
+    "rejected_context_count": 2,
+    "policy": "Use selected memory IDs and source lineage only; reject full docs/memory scans and lab history by default."
+  },
+  "selected_context": [
+    {
+      "ref": "memory:mem-goal-038-memory-boundary",
+      "reason": "Reject repo-local memory-core claims and require selected memory IDs, rejected context, application guidance, and feedback.",
+      "confidence": "high",
+      "source_lineage": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/SOURCES.md#C061"
+      ]
+    }
+  ],
+  "rejected_context": [
+    {
+      "ref": "docs/memory/** full scan",
+      "reason": "Full memory-bank scans are context dumps; this run may use only selected memory IDs."
+    },
+    {
+      "ref": ".krn/** as memory core",
+      "reason": ".krn is runtime evidence/cache/ledger and must not be treated as authoritative memory."
+    }
+  ],
+  "context_sections": [
+    {
+      "id": "task",
+      "refs": [
+        "packages/contracts/src/context-packet.ts"
+      ],
+      "summary": "Build bounded context packet contract and CLI consumer."
+    },
+    {
+      "id": "memory",
+      "refs": [
+        "memory:mem-goal-038-memory-boundary"
+      ],
+      "summary": "Apply selected memory IDs through guidance; do not copy authoritative memory bodies into runtime evidence."
+    },
+    {
+      "id": "policy",
+      "refs": [
+        "AGENTS.md",
+        "docs/goals/goal-038.md"
+      ],
+      "summary": "Required kernel terms: memory-operative, context-budgeted, deletion-friendly."
+    },
+    {
+      "id": "verification",
+      "refs": [
+        ".krn/context/20260620T212000Z-example/context-packet.json"
+      ],
+      "summary": "Verify through context-packet contract tests, CLI behavior tests, typecheck, and git diff checks."
+    }
+  ],
+  "required_skills": [
+    {
+      "name": "goal-execplan",
+      "reason": "Context packets are restartable execution input for Codex work."
+    },
+    {
+      "name": "typescript-contract-engineer",
+      "reason": "The task touches TypeScript contracts, parsers, CLI, or package boundaries."
+    }
+  ],
+  "blocked_actions": [
+    "Do not load docs/memory/** as a context dump.",
+    "Do not treat .krn/** as authoritative memory core."
+  ],
+  "memory_selection": {
+    "schema_version": "krn-memory-selection.v1",
+    "kind": "krn_memory_selection",
+    "run_id": "20260620T212000Z-example-memory-selection",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "task_intent": "Build bounded context packet contract and CLI consumer.",
+    "task_kind": "planning",
+    "store_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "selected": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "reason": "Selected for planning because it targets repo-local-memory-core, context-dump.",
+        "confidence": "high",
+        "source_lineage": [
+          "docs/goals/goal-038.md",
+          "docs/plans/canonical/SOURCES.md#C061"
+        ],
+        "expected_use": "Reject repo-local memory-core claims and require selected memory IDs, rejected context, application guidance, and feedback."
+      }
+    ],
+    "rejected": [],
+    "rejected_context": [
+      {
+        "ref": "docs/memory/** full scan",
+        "reason": "Full memory-bank scans are context dumps; this run may use only selected memory IDs."
+      }
+    ],
+    "retrieval_budget": {
+      "max_selected": 3,
+      "selection_policy": "active planning records only; reject stale/lab/archive context and full memory-bank scans"
+    },
+    "overclaim_boundary": "This selection proves bounded local-dev memory selection only."
+  },
+  "memory_application": {
+    "schema_version": "krn-memory-application.v1",
+    "kind": "krn_memory_application",
+    "run_id": "20260620T212000Z-example-memory-application",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "surface": "krn_context",
+    "selection_run_id": "20260620T212000Z-example-memory-selection",
+    "applied_memory_ids": [
+      "mem-goal-038-memory-boundary"
+    ],
+    "blockers": [
+      "Do not treat docs/memory/** or .krn/** as final memory core."
+    ],
+    "required_checks": [
+      "krn context build output must cite selected memory IDs and rejected context."
+    ],
+    "review_questions": [
+      "Did selected memory change the next review/action decision?"
+    ],
+    "blocked_bad_actions": [
+      "context_dump_from_docs_memory",
+      "repo_local_memory_core_claim",
+      "selected_memory_without_application_guidance"
+    ],
+    "next_action": "Use this application guidance in krn context build, then record pending feedback to the MemoryStore adapter.",
+    "overclaim_boundary": "This application proves operating guidance wiring only."
+  },
+  "memory_feedback": {
+    "schema_version": "krn-memory-feedback.v1",
+    "kind": "krn_memory_feedback",
+    "run_id": "20260620T212000Z-example-memory-feedback",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "selection_run_id": "20260620T212000Z-example-memory-selection",
+    "application_run_id": "20260620T212000Z-example-memory-application",
+    "feedback_sink_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "overall_outcome": "pending_review",
+    "memory_outcomes": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "outcome": "pending_review",
+        "reason": "KRN applied this memory to operating guidance; human/metric outcome is pending."
+      }
+    ],
+    "notes": "Feedback is usage evidence, not a productivity-lift claim."
+  },
+  "next_action": "Use this application guidance in krn context build, then record pending feedback to the MemoryStore adapter.",
+  "verification": {
+    "command": "pnpm typecheck && git diff --check",
+    "artifact": ".krn/context/20260620T212000Z-example/context-packet.json"
+  },
+  "runtime_report_path": ".krn/context/20260620T212000Z-example/context-packet.json",
+  "source_refs": [
+    "AGENTS.md",
+    "docs/goals/goal-038.md",
+    "docs/plans/canonical/draft.md"
+  ],
+  "overclaim_boundary": "This context packet proves bounded context selection/application for one local Codex run.",
+  "interpretation_caveat": "This is runtime context evidence for the next action, not authoritative memory core."
+}

@@ -94,7 +94,7 @@ export const KrnMemoryApplicationSchema = z
     run_id: z.string().min(1),
     created_at: z.string().min(1),
     target_root: z.string().min(1),
-    surface: z.enum(["krn_review", "krn_brief"]),
+    surface: z.enum(["krn_review", "krn_brief", "krn_context"]),
     selection_run_id: z.string().min(1),
     applied_memory_ids: z.array(z.string().min(1)).min(1).max(5),
     blockers: z.array(z.string().min(1)).min(1),

@@ -210,6 +210,44 @@ The gate must block or force planning mode when:
 
 If a relevant skill does not trigger automatically, manually use it and record the missing-trigger as a skill-quality improvement candidate. Do not solve the same class of work from memory if a repo skill exists for it.
 
+## Senior Engineering Preflight
+
+For every non-trivial edit, the agent must do this before touching files:
+
+1. Restate the exact product mechanism being changed in one sentence.
+2. Name the current source of truth and the volatile truth that must not be hardcoded.
+3. Name the required skill route and load the matching skill instructions.
+4. Name the public interface: parser, CLI command, eval runner, MCP/API resource, dashboard view model, or doc-only contract.
+5. Name the current consumer. If there is no consumer, stop or reduce scope.
+6. Name the verification surface and at least one known-bad path for contract changes.
+7. Name the rollback/kill path.
+8. Name the simplify trigger for the touched surface.
+
+This preflight is intentionally stronger than "think before coding". It must
+force the agent to connect research, code, evals, and product direction before
+editing. It is lightweight for small edits, but it is mandatory for TypeScript
+contracts, CLI behavior, memory/source/eval surfaces, MCP/API/dashboard work,
+and goal/canonical direction changes.
+
+The expected shape is:
+
+```text
+mechanism:
+source of truth:
+volatile truth not to hardcode:
+required skill:
+public interface:
+consumer:
+verification:
+known-bad:
+rollback/kill:
+simplify trigger:
+overclaim boundary:
+```
+
+If this cannot be filled honestly, continue in planning/research mode instead
+of editing. Do not patch from momentum.
+
 ## Final Completion Definition
 
 This goal is complete only when KRN can be used end-to-end on real repositories and measurably improves Codex work.
@@ -454,6 +492,27 @@ Acceptance:
 - `pnpm typecheck` passes.
 - A simplify/condense pass is run if the slice creates more than one durable object.
 
+## Current Dependency Cursor
+
+[FACT] The MemoryStore boundary, memory-aware `krn review`, `krn brief`, and
+the pre-edit `krn gate` now exist as local typed runtime slices.
+
+[FACT] The next dependency being closed is the bounded context packet:
+
+```text
+task intent
+  -> MemoryStore selection
+  -> selected memory IDs/reasons/confidence/source lineage
+  -> application guidance
+  -> runtime context packet
+  -> feedback record
+```
+
+[NEXT] After the context packet checkpoint is committed, the next product slice
+should be source graph freshness/conflict blocking for selected decisions. Do
+not add dashboard, benchmark, broad API/cloud sync, or passive docs before that
+source graph has a real CLI/review/context consumer.
+
 ## Progress Ledger
 
 ### 2026-06-20
@@ -492,6 +551,17 @@ Acceptance:
 - [SIMPLIFY] Next candidate: extract more command-specific argument parsing from `packages/cli/src/main.ts` only when touching those commands for real behavior.
 - [OVERCLAIM] This slice proves a schema-backed pre-edit gate and CLI runtime artifact. It does not prove Codex hook-level enforcement, productivity lift, full skill trigger quality, or that every future agent will obey the gate without running it.
 - [NEXT] Commit and push this checkpoint; then continue the next dependency-ordered final-product slice with `krn gate` as the first step for non-trivial edits.
+- [FACT] Bounded context packet slice added `KrnContextPacket`, `krn context build --task <text> [--path <path>]`, `.krn/context` runtime evidence, valid/known-bad fixtures, and CLI/contract behavior tests.
+- [FACT] `KrnContextPacket` requires selected context to be backed by MemoryStore selection and requires selected memory to have application guidance through `krn_context`.
+- [FACT] `krn context build` records selected memory IDs/reasons/confidence/source lineage, rejected context, required skills, blocked actions, memory application, feedback, next action, verification, and overclaim boundary without storing authoritative memory bodies in `.krn`.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/context-packet.test.ts packages/contracts/test/memory-store.test.ts packages/contracts/test/operating-brief.test.ts packages/cli/test/context.test.ts packages/cli/test/brief.test.ts` passed 5 files / 13 tests.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [EVIDENCE] Real command: `KRN_MEMORY_STORE_PATH=<tmp>/memory-store.json pnpm run krn -- context build --task "Build bounded context packet contract and CLI consumer from goal-038 MemoryStore selection" --path packages/contracts/src/context-packet.ts` wrote `.krn/context/20260620T211740Z-406402/context-packet.json`.
+- [SIMPLIFY] Keep: context packet contract, context CLI command, MemoryStore-backed selection/application/feedback, `.krn/context` runtime boundary, and focused tests because each has a current consumer.
+- [SIMPLIFY] Delete/avoid: no dashboard, no broad API/cloud sync, no benchmark lane, no passive memory note, no full `docs/memory/**` context dump, and no authoritative memory bodies in runtime packets.
+- [SIMPLIFY] Next candidate: after this checkpoint, reconcile `krn brief` and `krn context build` only if their consumers overlap; do not merge prematurely while the context packet is proving the context supply-chain contract.
+- [OVERCLAIM] This slice proves local bounded context-packet construction from MemoryStore selection/application. It does not prove final context quality, source graph correctness, productivity lift, dashboard usefulness, or API/team-sync readiness.
+- [NEXT] Commit and push this checkpoint; then build source graph freshness/conflict blocking for selected decisions as the next dependency-ordered slice.
 
 ## Disproves Completion
 
