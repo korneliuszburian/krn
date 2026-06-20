@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { parseKrnBenchmarkReport, type KrnBenchmarkReport } from "@krn/contracts";
 import { z } from "zod";
 
 type EvalCase = {
@@ -29,11 +30,20 @@ type ArenaSummary = {
   next_allowed_action: string;
 };
 
+type ScoringSummary = {
+  scored_task_count: number;
+  baseline_score: number;
+  assisted_score: number;
+  assisted_minus_baseline: number;
+  benchmark_report_path: string;
+};
+
 type EvalReport = {
   schema_version: "krn-benchmark-expanded-arena-result.v1";
   kind: "krn_benchmark_expanded_arena_result";
   run_id: string;
   created_at: string;
+  mode: "validate";
   total_cases: number;
   passed_cases: number;
   failed_cases: number;
@@ -44,7 +54,9 @@ type EvalReport = {
   assertion_pass_rate: number;
   cases: CaseResult[];
   validated_task_registry_path: string | null;
+  generated_benchmark_report_path: string | null;
   arena_summary: ArenaSummary | null;
+  scoring_summary: ScoringSummary | null;
   interpretation_caveat: string;
 };
 
@@ -81,6 +93,8 @@ const REQUIRED_TASK_FAMILIES = [
 
 const IMPLEMENTATION_HEAVY_FAMILIES = ["implementation", "debugging", "refactor", "benchmark_repair"];
 
+const ScoreSchema = z.number().min(0).max(1);
+
 const TaskFamilySchema = z.enum([
   "implementation",
   "debugging",
@@ -101,6 +115,19 @@ const TaskSchema = z
     required_metrics: z.array(z.string().min(1)).min(5),
     acceptance_keywords: z.array(z.string().min(1)).min(1),
     overclaim_keywords: z.array(z.string().min(1)).min(1),
+  })
+  .strict();
+
+const ScoringFixtureSchema = z
+  .object({
+    schema_version: z.literal("krn-benchmark-expanded-arena-scoring-fixture.v1"),
+    kind: z.literal("krn_benchmark_expanded_arena_scoring_fixture"),
+    label: z.enum(["baseline_codex", "krn_assisted_codex"]),
+    task_ids: z.array(z.string().min(1)).min(1),
+    metric_scores: z.record(z.string().min(1), ScoreSchema),
+    evidence_refs: z.array(z.string().min(1)).min(1),
+    productivity_lift_claimed: z.literal(false),
+    interpretation_caveat: z.string().min(1),
   })
   .strict();
 
@@ -208,6 +235,8 @@ const ExpandedArenaRegistrySchema = z
   });
 
 type ExpandedArenaRegistry = z.infer<typeof ExpandedArenaRegistrySchema>;
+type ScoringFixture = z.infer<typeof ScoringFixtureSchema>;
+type ScoringFixtureLabel = ScoringFixture["label"];
 
 function addMissingIssues(context: z.RefinementCtx, path: string, actual: readonly string[], required: readonly string[]): void {
   for (const item of required) {
@@ -266,6 +295,10 @@ function parseRegistry(input: unknown): ExpandedArenaRegistry {
   return ExpandedArenaRegistrySchema.parse(input);
 }
 
+function parseScoringFixture(input: unknown): ScoringFixture {
+  return ScoringFixtureSchema.parse(input);
+}
+
 function result(id: string, passed: boolean, assertions: string[], failureMode: string, message: string): CaseResult {
   return { id, passed, assertions, failure_mode: failureMode, message };
 }
@@ -291,6 +324,10 @@ function includesAll(values: readonly string[], required: readonly string[]): bo
   return required.every((item) => values.includes(item));
 }
 
+function exactSet(values: readonly string[], expected: readonly string[]): boolean {
+  return values.length === expected.length && includesAll(values, expected);
+}
+
 function taskFamilySet(registry: ExpandedArenaRegistry): string[] {
   return uniqueValues(registry.tasks.map((task) => task.family));
 }
@@ -311,6 +348,18 @@ function liveModeExplicit(registry: ExpandedArenaRegistry): boolean {
   return !registry.measurement_modes.default_eval_includes_live && registry.measurement_modes.live_mode_requires_explicit_command;
 }
 
+function roundScore(value: number): number {
+  return Number(value.toFixed(4));
+}
+
+function averageScore(values: readonly number[]): number {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  return roundScore(values.reduce((sum, value) => sum + value, 0) / values.length);
+}
+
 function summarizeArena(registry: ExpandedArenaRegistry): ArenaSummary {
   return {
     arena_id: registry.arena_id,
@@ -320,8 +369,173 @@ function summarizeArena(registry: ExpandedArenaRegistry): ArenaSummary {
     implementation_heavy_task_count: implementationHeavyTaskCount(registry),
     quality_metric_count: taskMetricSet(registry).length,
     live_mode_explicit: liveModeExplicit(registry),
-    next_allowed_action: "add fixture scoring and explicit live smoke/full runner for this registry without claiming productivity lift",
+    next_allowed_action: "add explicit live smoke/full runner for this registry without claiming productivity lift",
   };
+}
+
+function scoringFixtureIsValid(
+  fixture: ScoringFixture,
+  registry: ExpandedArenaRegistry,
+  expectedLabel: ScoringFixtureLabel,
+): boolean {
+  const taskIds = registry.tasks.map((task) => task.task_id);
+
+  return (
+    fixture.label === expectedLabel &&
+    exactSet(fixture.task_ids, taskIds) &&
+    includesAll(Object.keys(fixture.metric_scores), registry.quality_rubric.required_metrics) &&
+    fixture.productivity_lift_claimed === false
+  );
+}
+
+function requiredMetricScore(fixture: ScoringFixture, metricId: string): number {
+  const score = fixture.metric_scores[metricId];
+  if (score === undefined) {
+    throw new Error(`scoring fixture ${fixture.label} missing metric ${metricId}`);
+  }
+  return score;
+}
+
+function taskScore(task: ExpandedArenaRegistry["tasks"][number], fixture: ScoringFixture): number {
+  return averageScore(task.required_metrics.map((metricId) => requiredMetricScore(fixture, metricId)));
+}
+
+function repairTargets(): KrnBenchmarkReport["repair_targets"] {
+  return [
+    {
+      id: "expanded-arena-live-runner",
+      owner: "krn",
+      next_action:
+        "Add isolated explicit live smoke/full runner modes over docs/evals/krn-benchmark-expanded-arena/tasks.json before any dashboard/API run controls or productivity claims.",
+      source_refs: [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-032.md",
+        "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+        "docs/memory/product/2026-06-20--krn-benchmark-expanded-arena-registry.md",
+        "docs/plans/canonical/SOURCES.md",
+      ],
+      failure_mode:
+        "Fixture scoring is overclaimed as live expanded execution or a dashboard/control surface is added before isolated live runner evidence exists.",
+    },
+  ];
+}
+
+function metricRows(
+  task: ExpandedArenaRegistry["tasks"][number],
+  baseline: ScoringFixture,
+  assisted: ScoringFixture,
+): KrnBenchmarkReport["tasks"][number]["metrics"] {
+  return task.required_metrics.map((metricId) => {
+    const baselineScore = requiredMetricScore(baseline, metricId);
+    const assistedScore = requiredMetricScore(assisted, metricId);
+    return {
+      metric_id: metricId,
+      baseline_score: baselineScore,
+      assisted_score: assistedScore,
+      assisted_minus_baseline: roundScore(assistedScore - baselineScore),
+      weight: 1,
+      source_refs: ["docs/evals/krn-benchmark-expanded-arena/tasks.json", ...task.source_refs],
+      interpretation_caveat:
+        "Metric score is deterministic fixture scoring for this arena task and does not prove live productivity lift.",
+    };
+  });
+}
+
+function buildBenchmarkTasks(
+  registry: ExpandedArenaRegistry,
+  baseline: ScoringFixture,
+  assisted: ScoringFixture,
+): KrnBenchmarkReport["tasks"] {
+  return registry.tasks.map((task) => {
+    const baselineScore = taskScore(task, baseline);
+    const assistedScore = taskScore(task, assisted);
+
+    return {
+      task_id: task.task_id,
+      title: task.title,
+      status: "completed",
+      task_source_refs: task.source_refs,
+      baseline: {
+        label: "baseline_codex",
+        score: baselineScore,
+        evidence_refs: baseline.evidence_refs,
+        interpretation_caveat:
+          "Baseline fixture scores represent deterministic benchmark-scorer inputs only, not a live Codex run.",
+      },
+      assisted: {
+        label: "krn_assisted_codex",
+        score: assistedScore,
+        evidence_refs: assisted.evidence_refs,
+        interpretation_caveat:
+          "Assisted fixture scores represent deterministic benchmark-scorer inputs only, not a live Codex run.",
+      },
+      assisted_minus_baseline: roundScore(assistedScore - baselineScore),
+      metrics: metricRows(task, baseline, assisted),
+      repair_targets: [],
+      interpretation_caveat:
+        "This task contributes deterministic fixture-scoring evidence only; it is not standalone productivity proof.",
+    };
+  });
+}
+
+function buildBenchmarkReport(
+  runId: string,
+  now: Date,
+  registry: ExpandedArenaRegistry,
+  baseline: ScoringFixture,
+  assisted: ScoringFixture,
+): KrnBenchmarkReport {
+  const tasks = buildBenchmarkTasks(registry, baseline, assisted);
+  const reportPath = `.krn/benchmarks/krn-benchmark-expanded-arena/${runId}/report.json`;
+  const report = {
+    schema_version: "krn-benchmark-report.v1",
+    kind: "krn_benchmark_report",
+    run_id: runId,
+    created_at: now.toISOString(),
+    target_root: process.cwd(),
+    benchmark_id: registry.benchmark_id,
+    suite_id: registry.arena_id,
+    measurement_mode: "fixture_contract",
+    baseline_label: "baseline_codex",
+    assisted_label: "krn_assisted_codex",
+    minimum_task_count_for_lift_claim: registry.minimum_live_task_count_for_lift_claim,
+    productivity_lift_claimed: false,
+    lift_status: "no_lift_evidence",
+    task_count: tasks.length,
+    completed_task_count: tasks.length,
+    blocked_task_count: 0,
+    failed_task_count: 0,
+    baseline_score: averageScore(tasks.map((task) => task.baseline.score)),
+    assisted_score: averageScore(tasks.map((task) => task.assisted.score)),
+    assisted_minus_baseline: roundScore(
+      averageScore(tasks.map((task) => task.assisted.score)) - averageScore(tasks.map((task) => task.baseline.score)),
+    ),
+    tasks,
+    repair_targets: repairTargets(),
+    benchmark_report_path: reportPath,
+    source_refs: [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-031.md",
+      "docs/goals/goal-032.md",
+      "docs/evals/krn-benchmark-expanded-arena/README.md",
+      "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+      "docs/evals/krn-benchmark-expanded-arena/fixtures/baseline-scoring-fixture.json",
+      "docs/evals/krn-benchmark-expanded-arena/fixtures/assisted-scoring-fixture.json",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/plans/canonical/SOURCES.md",
+    ],
+    interpretation_caveat:
+      "This fixture-contract expanded arena report proves deterministic scoring/report generation only; it does not prove live expanded execution, measured productivity lift, statistical validity, isolated coding-task runner safety, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
+  } satisfies KrnBenchmarkReport;
+
+  return parseKrnBenchmarkReport(report);
+}
+
+function writeBenchmarkReport(report: KrnBenchmarkReport): string {
+  const reportPath = resolve(report.benchmark_report_path);
+  mkdirSync(dirname(reportPath), { recursive: true });
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  return reportPath;
 }
 
 function runValidation(): EvalReport {
@@ -332,6 +546,8 @@ function runValidation(): EvalReport {
   const results: CaseResult[] = [];
   let registry: ExpandedArenaRegistry | null = null;
   let arenaSummary: ArenaSummary | null = null;
+  let generatedBenchmarkReportPath: string | null = null;
+  let scoringSummary: ScoringSummary | null = null;
 
   const parseCase = caseById(cases, "expanded-arena-registry-parses");
   try {
@@ -450,13 +666,104 @@ function runValidation(): EvalReport {
     );
   }
 
+  const scoringCase = caseById(cases, "fixture-scoring-builds-benchmark-report");
+  try {
+    const baselineFixturePath = "docs/evals/krn-benchmark-expanded-arena/fixtures/baseline-scoring-fixture.json";
+    const assistedFixturePath = "docs/evals/krn-benchmark-expanded-arena/fixtures/assisted-scoring-fixture.json";
+    const baselineFixture = parseScoringFixture(readJson(resolve(baselineFixturePath)));
+    const assistedFixture = parseScoringFixture(readJson(resolve(assistedFixturePath)));
+
+    if (registry === null) {
+      throw new Error("expanded arena registry did not parse");
+    }
+
+    const fixturesAreValid =
+      scoringFixtureIsValid(baselineFixture, registry, "baseline_codex") &&
+      scoringFixtureIsValid(assistedFixture, registry, "krn_assisted_codex");
+    const benchmarkReport = buildBenchmarkReport(runId, now, registry, baselineFixture, assistedFixture);
+    generatedBenchmarkReportPath = writeBenchmarkReport(benchmarkReport);
+    const parsedReport = parseKrnBenchmarkReport(readJson(generatedBenchmarkReportPath));
+    scoringSummary = {
+      scored_task_count: parsedReport.task_count,
+      baseline_score: parsedReport.baseline_score,
+      assisted_score: parsedReport.assisted_score,
+      assisted_minus_baseline: parsedReport.assisted_minus_baseline,
+      benchmark_report_path: parsedReport.benchmark_report_path,
+    };
+
+    results.push(
+      result(
+        scoringCase.id,
+        fixturesAreValid &&
+          parsedReport.measurement_mode === "fixture_contract" &&
+          parsedReport.task_count === 20 &&
+          parsedReport.completed_task_count === 20 &&
+          parsedReport.assisted_score > parsedReport.baseline_score &&
+          parsedReport.productivity_lift_claimed === false &&
+          parsedReport.lift_status === "no_lift_evidence" &&
+          parsedReport.repair_targets.length > 0,
+        [
+          "baseline scoring fixture parses",
+          "assisted scoring fixture parses",
+          "scoring fixtures cover all twenty tasks",
+          "generated benchmark report exists",
+          "generated benchmark report parses",
+          "measurement mode is fixture_contract",
+          "task count is twenty",
+          "completed task count is twenty",
+          "assisted fixture score is higher",
+          "productivity lift remains unclaimed",
+          "repair target present",
+        ],
+        scoringCase.failure_mode,
+        `Fixture benchmark report: tasks=${parsedReport.task_count}, baseline=${parsedReport.baseline_score}, assisted=${parsedReport.assisted_score}, delta=${parsedReport.assisted_minus_baseline}.`,
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        scoringCase.id,
+        false,
+        ["fixture scoring report builds"],
+        scoringCase.failure_mode,
+        error instanceof Error ? error.message : "unknown fixture scoring error",
+      ),
+    );
+  }
+
+  const badScoringCase = caseById(cases, "known-bad-scoring-fixture-fails");
+  try {
+    const badFixture = parseScoringFixture(
+      readJson(resolve("docs/evals/krn-benchmark-expanded-arena/fixtures/bad-scoring-fixture-overclaims-lift.json")),
+    );
+    results.push(
+      result(
+        badScoringCase.id,
+        registry !== null && !scoringFixtureIsValid(badFixture, registry, "krn_assisted_codex"),
+        ["known-bad scoring fixture rejected", "lift claim is blocked"],
+        badScoringCase.failure_mode,
+        "Known-bad scoring fixture parsed but failed registry coverage or no-lift validation.",
+      ),
+    );
+  } catch {
+    results.push(
+      result(
+        badScoringCase.id,
+        true,
+        ["known-bad scoring fixture rejected", "lift claim is blocked"],
+        badScoringCase.failure_mode,
+        "Known-bad scoring fixture failed as expected.",
+      ),
+    );
+  }
+
   const caveat =
-    "This validates the expanded arena task registry only: it proves no productivity lift and no live expanded run has executed.";
+    "This validates the expanded arena task registry and fixture scoring only: it proves no productivity lift and no live expanded run has executed.";
   const caveatCase = caseById(cases, "eval-report-preserves-registry-only-boundary");
   results.push(
     result(
       caveatCase.id,
-      caveat.includes("registry only") &&
+      caveat.includes("fixture scoring only") &&
         caveat.includes("no productivity lift") &&
         caveat.includes("no live expanded run"),
       caveatCase.assertions,
@@ -478,6 +785,7 @@ function runValidation(): EvalReport {
     kind: "krn_benchmark_expanded_arena_result",
     run_id: runId,
     created_at: now.toISOString(),
+    mode: "validate",
     total_cases: totalCases,
     passed_cases: passedCases,
     failed_cases: totalCases - passedCases,
@@ -488,7 +796,9 @@ function runValidation(): EvalReport {
     assertion_pass_rate: totalAssertions === 0 ? 0 : passedAssertions / totalAssertions,
     cases: results,
     validated_task_registry_path: registry === null ? null : registryPath,
+    generated_benchmark_report_path: generatedBenchmarkReportPath,
     arena_summary: arenaSummary,
+    scoring_summary: scoringSummary,
     interpretation_caveat: caveat,
   };
 }

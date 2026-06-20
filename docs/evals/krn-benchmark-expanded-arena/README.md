@@ -17,6 +17,8 @@ This eval implements the first concrete artifact from the arena contract:
 arena contract
   -> 20-task registry
   -> task-family and quality-rubric coverage
+  -> deterministic fixture scoring
+  -> fixture_contract KrnBenchmarkReport
   -> explicit live boundary and pipeline ergonomics
   -> deterministic registry report
 ```
@@ -32,6 +34,8 @@ It does not run live `codex exec`; it is safe for default `krn eval`.
 - Live mode remains explicit and outside default deterministic `krn eval`.
 - Pipeline ergonomics require progress logging, worker resume, smoke/full lanes, separate fixture/live evidence, and sequential concurrency.
 - A known-bad planning-only default-live registry fails deterministically.
+- Baseline and assisted scoring fixtures cover all 20 task IDs, generate a parseable `KrnBenchmarkReport`, and keep `productivity_lift_claimed: false`.
+- A known-bad scoring fixture that covers too few tasks, omits review-burden coverage, or claims lift fails deterministically.
 
 ## Command
 
@@ -51,4 +55,6 @@ Runtime outputs stay local. Durable conclusions move to `docs/memory`.
 
 A green run means KRN has implemented a deterministic 20-task expanded-arena registry that satisfies the arena contract.
 
-It does not prove live expanded execution, measured productivity lift, statistical validity, task scoring quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
+It also proves deterministic fixture scoring and benchmark-report generation for that registry.
+
+It does not prove live expanded execution, measured productivity lift, statistical validity, isolated coding-task runner safety, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.

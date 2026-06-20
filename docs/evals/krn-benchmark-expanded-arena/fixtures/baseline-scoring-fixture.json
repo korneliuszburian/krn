@@ -1,0 +1,42 @@
+{
+  "schema_version": "krn-benchmark-expanded-arena-scoring-fixture.v1",
+  "kind": "krn_benchmark_expanded_arena_scoring_fixture",
+  "label": "baseline_codex",
+  "task_ids": [
+    "contract-parser-known-bad-boundary",
+    "eval-module-aggregate-integration",
+    "dashboard-read-model-consumer",
+    "mcp-resource-allowlist-extension",
+    "proposal-ledger-append-only-path",
+    "eval-report-invalid-module-debug",
+    "benchmark-report-dirty-positive-debug",
+    "compact-resume-context-debug",
+    "dashboard-overclaim-debug",
+    "eval-runner-duplication-refactor",
+    "contracts-export-map-refactor",
+    "dashboard-component-boundary-refactor",
+    "release-verifier-finding-review",
+    "typescript-slice-review",
+    "benchmark-report-review",
+    "memory-promotion-review",
+    "postcompact-active-goal-continuity",
+    "source-ledger-targeted-lookup",
+    "no-lift-repair-record-routing",
+    "live-runner-stability-repair-routing"
+  ],
+  "metric_scores": {
+    "assumption_clarity_score": 0.52,
+    "simplicity_score": 0.5,
+    "surgical_diff_score": 0.48,
+    "verification_coverage_score": 0.5,
+    "review_burden_score": 0.42,
+    "source_grounding_score": 0.55,
+    "goal_alignment_score": 0.5,
+    "anti_slop_score": 0.46
+  },
+  "evidence_refs": [
+    "docs/evals/krn-benchmark-expanded-arena/fixtures/baseline-scoring-fixture.json"
+  ],
+  "productivity_lift_claimed": false,
+  "interpretation_caveat": "This fixture represents baseline scoring inputs only and does not prove live Codex behavior or productivity lift."
+}

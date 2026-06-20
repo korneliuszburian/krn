@@ -7,6 +7,7 @@
     "kind",
     "run_id",
     "created_at",
+    "mode",
     "total_cases",
     "passed_cases",
     "failed_cases",
@@ -17,7 +18,9 @@
     "assertion_pass_rate",
     "cases",
     "validated_task_registry_path",
+    "generated_benchmark_report_path",
     "arena_summary",
+    "scoring_summary",
     "interpretation_caveat"
   ],
   "additionalProperties": false,
@@ -26,6 +29,7 @@
     "kind": { "const": "krn_benchmark_expanded_arena_result" },
     "run_id": { "type": "string", "minLength": 1 },
     "created_at": { "type": "string", "minLength": 1 },
+    "mode": { "const": "validate" },
     "total_cases": { "type": "integer", "minimum": 0 },
     "passed_cases": { "type": "integer", "minimum": 0 },
     "failed_cases": { "type": "integer", "minimum": 0 },
@@ -55,6 +59,9 @@
     "validated_task_registry_path": {
       "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
     },
+    "generated_benchmark_report_path": {
+      "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+    },
     "arena_summary": {
       "anyOf": [
         {
@@ -79,6 +86,29 @@
             "quality_metric_count": { "type": "integer", "minimum": 0 },
             "live_mode_explicit": { "type": "boolean" },
             "next_allowed_action": { "type": "string", "minLength": 1 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "scoring_summary": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "scored_task_count",
+            "baseline_score",
+            "assisted_score",
+            "assisted_minus_baseline",
+            "benchmark_report_path"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "scored_task_count": { "type": "integer", "minimum": 0 },
+            "baseline_score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "assisted_score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "assisted_minus_baseline": { "type": "number", "minimum": -1, "maximum": 1 },
+            "benchmark_report_path": { "type": "string", "minLength": 1 }
           }
         },
         { "type": "null" }

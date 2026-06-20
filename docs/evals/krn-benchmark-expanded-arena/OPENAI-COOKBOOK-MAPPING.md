@@ -18,4 +18,6 @@
 | `quality-rubric-per-task` | S016, C053-C054, LOCAL040 | Require coding-quality metrics per task. | Human review burden and bad diffs are invisible. |
 | `pipeline-and-live-boundary-preserved` | S009, S011, S088, C048, C054 | Keep live explicit and require resumable lanes. | Larger arena becomes hidden-cost or non-resumable. |
 | `known-bad-registry-fails` | S013-S016, C052-C054 | Reject shallow default-live registry. | Bad arena registry passes. |
-| `eval-report-preserves-registry-only-boundary` | S010-S016, C052-C054 | Caveat states registry-only readiness. | Green registry eval is sold as live lift. |
+| `fixture-scoring-builds-benchmark-report` | S013-S016, S088, C053-C055 | Generate fixture_contract `KrnBenchmarkReport` scoring all 20 tasks. | Registry exists but scoring/report evidence is missing or overclaimed. |
+| `known-bad-scoring-fixture-fails` | S013-S016, C052-C055 | Reject incomplete or lift-claiming scoring fixture. | Bad scoring input hides missing review burden or lift overclaim. |
+| `eval-report-preserves-registry-only-boundary` | S010-S016, C052-C055 | Caveat states registry and fixture-scoring readiness only. | Green fixture scoring eval is sold as live lift. |

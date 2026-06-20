@@ -1,0 +1,43 @@
+{
+  "schema_version": "krn-benchmark-expanded-arena-scoring-fixture.v1",
+  "kind": "krn_benchmark_expanded_arena_scoring_fixture",
+  "label": "krn_assisted_codex",
+  "task_ids": [
+    "contract-parser-known-bad-boundary",
+    "eval-module-aggregate-integration",
+    "dashboard-read-model-consumer",
+    "mcp-resource-allowlist-extension",
+    "proposal-ledger-append-only-path",
+    "eval-report-invalid-module-debug",
+    "benchmark-report-dirty-positive-debug",
+    "compact-resume-context-debug",
+    "dashboard-overclaim-debug",
+    "eval-runner-duplication-refactor",
+    "contracts-export-map-refactor",
+    "dashboard-component-boundary-refactor",
+    "release-verifier-finding-review",
+    "typescript-slice-review",
+    "benchmark-report-review",
+    "memory-promotion-review",
+    "postcompact-active-goal-continuity",
+    "source-ledger-targeted-lookup",
+    "no-lift-repair-record-routing",
+    "live-runner-stability-repair-routing"
+  ],
+  "metric_scores": {
+    "assumption_clarity_score": 0.78,
+    "simplicity_score": 0.76,
+    "surgical_diff_score": 0.74,
+    "verification_coverage_score": 0.82,
+    "review_burden_score": 0.8,
+    "source_grounding_score": 0.84,
+    "goal_alignment_score": 0.82,
+    "anti_slop_score": 0.78
+  },
+  "evidence_refs": [
+    "docs/evals/krn-benchmark-expanded-arena/fixtures/assisted-scoring-fixture.json",
+    "docs/evals/krn-benchmark-expanded-arena/tasks.json"
+  ],
+  "productivity_lift_claimed": false,
+  "interpretation_caveat": "This fixture represents assisted scoring inputs only and does not prove live Codex behavior or productivity lift."
+}

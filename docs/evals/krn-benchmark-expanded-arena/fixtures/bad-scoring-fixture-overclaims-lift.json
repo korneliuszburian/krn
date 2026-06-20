@@ -1,0 +1,23 @@
+{
+  "schema_version": "krn-benchmark-expanded-arena-scoring-fixture.v1",
+  "kind": "krn_benchmark_expanded_arena_scoring_fixture",
+  "label": "krn_assisted_codex",
+  "task_ids": [
+    "contract-parser-known-bad-boundary",
+    "eval-module-aggregate-integration"
+  ],
+  "metric_scores": {
+    "assumption_clarity_score": 0.9,
+    "simplicity_score": 0.9,
+    "surgical_diff_score": 0.9,
+    "verification_coverage_score": 0.9,
+    "source_grounding_score": 0.9,
+    "goal_alignment_score": 0.9,
+    "anti_slop_score": 0.9
+  },
+  "evidence_refs": [
+    "docs/evals/krn-benchmark-expanded-arena/fixtures/bad-scoring-fixture-overclaims-lift.json"
+  ],
+  "productivity_lift_claimed": true,
+  "interpretation_caveat": "Bad fixture intentionally overclaims lift and omits review-burden coverage."
+}

@@ -87,11 +87,39 @@
     "failure_mode": "KRN accepts a shallow planning-only arena or default-live small suite."
   },
   {
+    "id": "fixture-scoring-builds-benchmark-report",
+    "expected_behavior": "Baseline and assisted scoring fixtures cover all 20 registry tasks, produce a parseable fixture_contract KrnBenchmarkReport, and keep productivity lift unclaimed.",
+    "source_patterns": ["S013", "S016", "S088", "C053", "C055", "docs/goals/goal-032.md"],
+    "assertions": [
+      "baseline scoring fixture parses",
+      "assisted scoring fixture parses",
+      "scoring fixtures cover all twenty tasks",
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "measurement mode is fixture_contract",
+      "task count is twenty",
+      "completed task count is twenty",
+      "assisted fixture score is higher",
+      "productivity lift remains unclaimed",
+      "repair target present"
+    ],
+    "metrics": ["benchmark_scoring_score", "coding_quality_score", "anti_slop_score"],
+    "failure_mode": "The expanded arena has a registry but cannot produce benchmark-shaped scoring evidence or blocks no-lift repair routing."
+  },
+  {
+    "id": "known-bad-scoring-fixture-fails",
+    "expected_behavior": "A scoring fixture that covers too few tasks, omits review-burden coverage, or claims productivity lift fails deterministically.",
+    "source_patterns": ["C052", "C053", "C055", "docs/evals/STANDARD.md"],
+    "assertions": ["known-bad scoring fixture rejected", "lift claim is blocked"],
+    "metrics": ["anti_slop_score", "review_burden_score", "drift_resistance_score"],
+    "failure_mode": "KRN accepts fixture scoring inputs that can be overclaimed as live lift or ignore review burden."
+  },
+  {
     "id": "eval-report-preserves-registry-only-boundary",
-    "expected_behavior": "The eval report caveat states that this validates the registry only and does not prove live expanded execution or productivity lift.",
+    "expected_behavior": "The eval report caveat states that this validates registry and fixture scoring only and does not prove live expanded execution or productivity lift.",
     "source_patterns": ["C052", "C054", "docs/goals/goal-006.md"],
     "assertions": [
-      "eval report caveat names registry only",
+      "eval report caveat names fixture scoring only",
       "eval report caveat names no productivity lift",
       "eval report caveat names no live expanded run"
     ],
