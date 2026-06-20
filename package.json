@@ -18,6 +18,7 @@
     "eval:krn-pending-review-view-model": "tsx packages/evals/src/validate-krn-pending-review-view-model.ts --mode validate",
     "eval:krn-dashboard-pending-review-ui": "tsx packages/evals/src/validate-krn-dashboard-pending-review-ui.ts --mode validate",
     "eval:krn-dashboard-promotion-review-ui": "tsx packages/evals/src/validate-krn-dashboard-promotion-review-ui.ts --mode validate",
+    "eval:krn-dashboard-eval-runs-ui": "tsx packages/evals/src/validate-krn-dashboard-eval-runs-ui.ts --mode validate",
     "eval:krn-proposal-review-decision": "tsx packages/evals/src/validate-krn-proposal-review-decision.ts --mode validate",
     "eval:krn-proposal-promotion": "tsx packages/evals/src/validate-krn-proposal-promotion.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"

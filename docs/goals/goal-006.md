@@ -89,6 +89,13 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-dashboard-promotion-review-ui` generated `.krn/evals/krn-dashboard-promotion-review-ui/20260620T043648Z-2297921/report.json` with 5/5 cases and 19/19 assertions.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T043611Z-2296702/report.json` with 12/12 modules, 53/53 cases, and 161/161 assertions, including `krn-dashboard-promotion-review-ui`.
   - This still does not prove dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, broad promotion correctness, safe overwrite semantics, or measured lift.
+  - `packages/contracts` now exports `KrnEvalRunsViewModel`, the first typed dashboard review model over latest aggregate `.krn/eval/**/report.json` state.
+  - `KrnDashboardData` now includes Pending Review, Promotion Review, and Eval Runs view models.
+  - `packages/mcp` now exports `buildKrnEvalRunsViewModel`, which reads the latest aggregate eval report, parses it through `KrnEvalReport`, and surfaces ready, missing, invalid, and failed-module states without mutation.
+  - `apps/dashboard/src/EvalRunsDashboard.tsx` renders eval module evidence, source refs, next actions, failure modes, caveats, and invalid-report state without rerun, repair, write, or lift command claims.
+  - `pnpm run eval:krn-dashboard-eval-runs-ui` generated `.krn/evals/krn-dashboard-eval-runs-ui/20260620T051305Z-2375941/report.json` with 5/5 cases and 20/20 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T051314Z-2376293/report.json` with 13/13 modules, 58/58 cases, and 181/181 assertions, including `krn-dashboard-eval-runs-ui`.
+  - This still does not prove benchmark lift, productivity improvement, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
 
 ## Objective
 
@@ -335,7 +342,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-015.md
+docs/goals/goal-016.md
 ```
 
-Next child-goal candidates after `goal-015` are a promotion-aware dashboard command proposal surface over existing typed objects, additional dashboard views over existing typed objects, HTTP/API read model hardening, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, or productivity claims without benchmark evidence.
+Next child-goal candidates after `goal-016` are a promotion-aware dashboard command proposal surface over existing typed objects, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims without benchmark evidence.

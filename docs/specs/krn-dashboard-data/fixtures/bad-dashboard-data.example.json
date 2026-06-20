@@ -10,6 +10,9 @@
   "promotion_review": {
     "target_root": "/home/krn/coding/krn/active/krn-gastown"
   },
+  "eval_runs": {
+    "target_root": "/tmp/other-target-root"
+  },
   "source_refs": ["docs/goals/goal-006.md"],
   "interpretation_caveat": "bad fixture"
 }

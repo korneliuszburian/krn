@@ -3,6 +3,7 @@ import React, { type ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { KrnDashboardData } from "@krn/contracts";
 import { fetchDashboardData } from "./dashboard-data.js";
+import { EvalRunsDashboard } from "./EvalRunsDashboard.js";
 import { PendingReviewDashboard } from "./PendingReviewDashboard.js";
 import { PromotionReviewDashboard } from "./PromotionReviewDashboard.js";
 
@@ -64,6 +65,7 @@ export function App(): ReactElement {
         <>
           <PendingReviewDashboard viewModel={dashboardState.dashboardData.pending_review} />
           <PromotionReviewDashboard viewModel={dashboardState.dashboardData.promotion_review} />
+          <EvalRunsDashboard viewModel={dashboardState.dashboardData.eval_runs} />
         </>
       ) : null}
     </div>

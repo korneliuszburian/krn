@@ -201,6 +201,26 @@
       "interpretation_caveat": "This eval proves the local dashboard UI can render typed Promotion Review product objects only; it does not prove dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, broad promotion correctness, safe overwrite semantics, or productivity lift."
     },
     {
+      "module_id": "krn-dashboard-eval-runs-ui",
+      "command": ["pnpm", "run", "eval:krn-dashboard-eval-runs-ui"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-dashboard-eval-runs-ui/20260619T215909Z-example/report.json",
+      "total_cases": 5,
+      "passed_cases": 5,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 20,
+      "passed_assertions": 20,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-dashboard-eval-runs-ui/README.md",
+        "docs/specs/krn-eval-runs-view-model/README.md",
+        "docs/goals/goal-016.md"
+      ],
+      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Eval Runs product objects only; it does not prove benchmark lift, productivity improvement, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
       "module_id": "krn-proposal-review-decision",
       "command": ["pnpm", "run", "eval:krn-proposal-review-decision"],
       "status": "passed",
@@ -242,14 +262,14 @@
     }
   ],
   "summary": {
-    "total_modules": 12,
-    "passed_modules": 12,
+    "total_modules": 13,
+    "passed_modules": 13,
     "failed_modules": 0,
-    "total_cases": 53,
-    "passed_cases": 53,
+    "total_cases": 58,
+    "passed_cases": 58,
     "failed_cases": 0,
-    "total_assertions": 161,
-    "passed_assertions": 161,
+    "total_assertions": 181,
+    "passed_assertions": 181,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

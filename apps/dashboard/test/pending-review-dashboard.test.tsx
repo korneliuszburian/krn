@@ -31,10 +31,14 @@ function fixtureViewModel(): KrnPendingReviewViewModel {
         "utf8",
       ),
     ) as unknown,
+    eval_runs: JSON.parse(
+      readFileSync(resolve(repoRoot, "docs/specs/krn-eval-runs-view-model/examples/eval-runs-view-model.example.json"), "utf8"),
+    ) as unknown,
     source_refs: [
       "docs/goals/goal-006.md",
       "docs/specs/krn-pending-review-view-model/README.md",
       "docs/specs/krn-promotion-review-view-model/README.md",
+      "docs/specs/krn-eval-runs-view-model/README.md",
     ],
     interpretation_caveat:
       "Dashboard test fixture contains parsed KRN dashboard view models only and does not mutate targets.",

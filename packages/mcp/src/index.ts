@@ -159,6 +159,7 @@ export {
 } from "./proposal-promotion-store.js";
 export { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 export { buildKrnPromotionReviewViewModel } from "./promotion-review-view-model.js";
+export { buildKrnEvalRunsViewModel } from "./eval-runs-view-model.js";
 
 function descriptorFromResource(
   resource: KrnControlPlaneResource,

@@ -79,6 +79,15 @@ export {
   type KrnDashboardData,
 } from "./dashboard-data.js";
 export {
+  KrnEvalRunsViewModelSchema,
+  krnEvalRunsViewModelJsonSchema,
+  parseKrnEvalRunsViewModel,
+  type EvalRunModule,
+  type EvalRunsInvalidReport,
+  type EvalRunsNextAction,
+  type KrnEvalRunsViewModel,
+} from "./eval-runs-view-model.js";
+export {
   KrnPendingReviewViewModelSchema,
   krnPendingReviewViewModelJsonSchema,
   parseKrnPendingReviewViewModel,

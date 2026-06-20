@@ -21,6 +21,7 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 - [krn-pending-review-view-model](./krn-pending-review-view-model/README.md) checks whether dashboard Pending Review can render real proposal-store records, explicit empty state, invalid records, and stale source refs.
 - [krn-dashboard-pending-review-ui](./krn-dashboard-pending-review-ui/README.md) checks whether the first dashboard UI renders typed Pending Review product objects without mutation commands.
 - [krn-dashboard-promotion-review-ui](./krn-dashboard-promotion-review-ui/README.md) checks whether the dashboard renders typed Promotion Review product objects from `.krn/promotions` without apply/promote/write commands.
+- [krn-dashboard-eval-runs-ui](./krn-dashboard-eval-runs-ui/README.md) checks whether the dashboard renders typed Eval Runs product objects from `.krn/eval` without lift, rerun, repair, or write command claims.
 - [krn-proposal-review-decision](./krn-proposal-review-decision/README.md) checks whether proposal review decisions store append-only, reject unsafe references/conflicts, and remove reviewed proposals from Pending Review without promotion.
 - [krn-proposal-promotion](./krn-proposal-promotion/README.md) checks whether approved proposal promotions require exact machine-applicable payloads, append-only audit, explicit apply mode, and path safety.
 - [krn-review-contracts](./krn-review-contracts/README.md) checks whether `krn review` emits a schema-backed proposal-only report over typed local runtime artifacts.

@@ -47,6 +47,7 @@ const REQUIRED_MODULES = [
   "krn-pending-review-view-model",
   "krn-dashboard-pending-review-ui",
   "krn-dashboard-promotion-review-ui",
+  "krn-dashboard-eval-runs-ui",
   "krn-proposal-review-decision",
   "krn-proposal-promotion",
 ];

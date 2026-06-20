@@ -1,0 +1,48 @@
+[
+  {
+    "id": "dashboard-data-generation-includes-eval-runs",
+    "expected_behavior": "Dashboard data generation includes a parsed Eval Runs view model from a real aggregate krn eval report without claiming productivity lift.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/goals/goal-016.md", "docs/specs/krn-eval-runs-view-model/README.md"],
+    "assertions": [
+      "dashboard data command exits",
+      "generated data file exists",
+      "generated dashboard data parses",
+      "eval runs row present",
+      "productivity lift remains unclaimed"
+    ],
+    "metrics": ["dashboard_data_grounding_score", "anti_slop_score"],
+    "failure_mode": "Dashboard boot data omits eval state, uses mocks, becomes unparseable, or claims productivity lift."
+  },
+  {
+    "id": "eval-module-row-renders-evidence",
+    "expected_behavior": "The Eval Runs UI renders module evidence with source refs, next action, failure mode, and no lift/rerun/repair command names.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/evals/STANDARD.md"],
+    "assertions": ["module id rendered", "source ref rendered", "next action rendered", "failure mode rendered", "command names absent"],
+    "metrics": ["dashboard_reviewability_score", "anti_slop_score"],
+    "failure_mode": "Dashboard shows eval metrics without review evidence or exposes command-like actions."
+  },
+  {
+    "id": "missing-eval-report-renders-explicit-empty",
+    "expected_behavior": "Missing aggregate eval reports render explicit empty state instead of invented green status.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/specs/krn-eval-runs-view-model/README.md"],
+    "assertions": ["missing source parses", "empty label rendered", "no module rows invented"],
+    "metrics": ["runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "Dashboard invents eval evidence or hides the explicit missing-report state."
+  },
+  {
+    "id": "invalid-eval-report-renders-blocked",
+    "expected_behavior": "Invalid latest aggregate eval reports render blocked state with invalid report path and parse summary.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/evals/STANDARD.md"],
+    "assertions": ["invalid report surfaced", "blocked state rendered", "invalid report path rendered"],
+    "metrics": ["runtime_contract_score", "repair_readiness_score"],
+    "failure_mode": "Dashboard hides invalid eval reports or presents them as ready evidence."
+  },
+  {
+    "id": "failed-module-renders-blocked",
+    "expected_behavior": "Failed eval modules render blocked state and route to repair-record action without claiming lift.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/evals/STANDARD.md"],
+    "assertions": ["failed module parsed", "blocked state rendered", "repair action rendered", "lift claim absent"],
+    "metrics": ["repair_readiness_score", "anti_slop_score"],
+    "failure_mode": "Dashboard hides failed modules or overclaims deterministic eval failure as productivity signal."
+  }
+]
