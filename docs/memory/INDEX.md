@@ -33,14 +33,14 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-025.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-025.md); use [docs/goals/goal-024.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-024.md) as completed memory-layer repair context, [docs/goals/goal-023.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-023.md) as completed assisted prompt-load repair context, [docs/goals/goal-022.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-022.md) as completed current-child repair-attempt context, [docs/goals/goal-021.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-021.md) as completed repair-record contract context, [docs/goals/goal-020.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-020.md) as completed expanded live benchmark suite context, [docs/goals/goal-019.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-019.md) as completed Benchmark Reports context, [docs/goals/goal-018.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-018.md) as completed live benchmark pilot context, [docs/goals/goal-017.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-017.md) as completed benchmark report spine context, [docs/goals/goal-016.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-016.md) as completed Eval Runs dashboard context, [docs/goals/goal-015.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-015.md) as completed Promotion Review dashboard context, [docs/goals/goal-014.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-014.md) as completed proposal promotion workflow context, [docs/goals/goal-013.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-013.md) as completed proposal review decision context, [docs/goals/goal-012.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-012.md) as completed Pending Review dashboard UI context, [docs/goals/goal-011.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-011.md) as completed Pending Review view-model context, [docs/goals/goal-010.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-010.md) as completed MCP proposal-tool context, and [docs/goals/goal-009.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-009.md) as completed proposal-store context. [docs/goals/goal-008.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-008.md) is completed Slice 3 transport/dashboard-contract context. [docs/goals/goal-007.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-007.md) is historical Slice 2 context. Use [docs/goals/goal-005.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-005.md) only as superseded Slice 2 `krn init --dry-run` context.
-3. Read current final product direction:
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-026.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-026.md); [docs/goals/goal-025.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-025.md) is the immediately previous lift-status gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+3. Read current final product direction only when product direction is unclear or changing:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
-4. Read current canonical synthesis:
+4. Read current canonical synthesis only for synthesis/source-ledger work:
    - [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md)
    - [docs/plans/canonical/pattern-matrix.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/pattern-matrix.md)
    - [docs/plans/canonical/SOURCES.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/SOURCES.md)
-5. For product implementation terms, read [CONTEXT.md](/home/krn/coding/krn/active/krn-gastown/CONTEXT.md).
+5. For product implementation terms, read [CONTEXT.md](/home/krn/coding/krn/active/krn-gastown/CONTEXT.md) only when terms are unclear or changing.
 6. Read relevant category notes below.
 
 ## Index
@@ -52,6 +52,7 @@ Before major planning work:
 - [OpenAI Cookbook to KRN pattern map](./openai-codex/2026-06-19--openai-cookbook-to-krn-pattern-map.md)
 - [PreCompact and PostCompact continuity hooks](./openai-codex/2026-06-19--compact-hooks-continuity.md)
 - [ChatGPT reviewer bridge](./openai-codex/2026-06-19--chatgpt-reviewer-bridge.md)
+- [Token-efficient research synthesis](./openai-codex/2026-06-20--token-efficient-research-synthesis.md)
 
 ### Evals
 
@@ -97,6 +98,7 @@ Before major planning work:
 - [KRN Benchmark Assisted Prompt Load Repair](./product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md)
 - [KRN Benchmark Memory-Layer Next Action Repair](./product/2026-06-20--krn-benchmark-memory-layer-next-action-repair.md)
 - [KRN Benchmark Lift Status Stability Gate](./product/2026-06-20--krn-benchmark-lift-status-stability-gate.md)
+- [KRN Benchmark Live-Suite Registry Policy Gate](./product/2026-06-20--krn-benchmark-live-suite-registry-policy-gate.md)
 - [KRN operating architecture and memory layers](./product/2026-06-20--krn-operating-architecture-and-memory-layers.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 

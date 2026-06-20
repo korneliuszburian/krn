@@ -11,6 +11,7 @@ import datetime as dt
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import traceback
 from pathlib import Path
@@ -28,22 +29,17 @@ EVENT_LOG = EVENT_DIR / "compact-events.jsonl"
 
 KEY_FILES = [
     "AGENTS.md",
-    "CONTEXT.md",
     "docs/memory/INDEX.md",
     "docs/product/final-product-plan.md",
     "docs/goals/goal-006.md",
-    "docs/goals/goal-005.md",
+    "docs/plans/canonical/SOURCES.md",
+]
+
+ON_DEMAND_FILES = [
+    "CONTEXT.md",
     "docs/specs/technology-stack/decision.md",
-    "docs/adr/0001-typescript-first-product-stack.md",
-    "docs/goals/goal-004.md",
-    "docs/goals/goal-003.md",
-    "docs/goals/goal-002.md",
-    "docs/goals/goal-001.md",
     "docs/plans/canonical/draft.md",
     "docs/plans/canonical/pattern-matrix.md",
-    "docs/plans/canonical/SOURCES.md",
-    "docs/plans/canonical/link-index.md",
-    "docs/plans/canonical/pattern-coverage.md",
 ]
 
 
@@ -95,6 +91,45 @@ def file_summary(relative_path: str) -> dict[str, Any]:
     }
 
 
+def run_command(args: list[str]) -> list[str]:
+    try:
+        result = subprocess.run(
+            args,
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except Exception:
+        return []
+    if result.returncode != 0:
+        return []
+    return [line for line in result.stdout.splitlines() if line.strip()]
+
+
+def git_status_lines() -> list[str]:
+    return run_command(["git", "status", "--short"])
+
+
+def recent_goal_paths(limit: int = 4) -> list[str]:
+    goal_dir = ROOT / "docs" / "goals"
+    if not goal_dir.exists():
+        return []
+    paths = sorted(goal_dir.glob("goal-[0-9][0-9][0-9].md"), reverse=True)
+    return [str(path.relative_to(ROOT)) for path in paths[:limit]]
+
+
+def changed_paths(status_lines: list[str], limit: int = 16) -> list[str]:
+    paths: list[str] = []
+    for line in status_lines:
+        candidate = line[3:] if len(line) > 3 else line
+        candidate = candidate.split(" -> ")[-1].strip()
+        if candidate and candidate not in paths:
+            paths.append(candidate)
+    return paths[:limit]
+
+
 def ensure_dirs() -> None:
     CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
     EVENT_DIR.mkdir(parents=True, exist_ok=True)
@@ -113,9 +148,17 @@ def append_event(event: dict[str, Any]) -> None:
         handle.write(json.dumps(event, ensure_ascii=True, sort_keys=True) + "\n")
 
 
-def checkpoint_markdown(event: str, trigger: str, turn_id: str, generated_at: str, state: list[dict[str, Any]]) -> str:
+def checkpoint_markdown(
+    event: str,
+    trigger: str,
+    turn_id: str,
+    generated_at: str,
+    state: list[dict[str, Any]],
+    status_lines: list[str],
+    goal_paths: list[str],
+) -> str:
     existing_files = [item for item in state if item.get("exists")]
-    missing_files = [item["path"] for item in state if not item.get("exists")]
+    changed = changed_paths(status_lines)
     lines = [
         "# KRN Compact Checkpoint",
         "",
@@ -125,29 +168,49 @@ def checkpoint_markdown(event: str, trigger: str, turn_id: str, generated_at: st
         f"- Turn ID: `{turn_id}`",
         f"- Project: `{ROOT}`",
         "",
-        "## Resume Rule",
+        "## Token-Efficient Resume Selector",
         "",
-        "After compaction, do not rely on the compacted conversation alone.",
-        "Read the latest user message, then read these repo-local files before continuing:",
+        "After compaction, do not rely on the compacted conversation alone, but do not reload the whole repo context either.",
+        "Default resume budget: load selectors first, then only the files needed for the newest user request.",
         "",
-        "1. `AGENTS.md`",
-        "2. `docs/memory/INDEX.md`",
-        "3. Active `/goal` contract if one exists; otherwise `docs/goals/goal-006.md` as the next queued goal",
-        "4. `docs/product/final-product-plan.md` for product direction",
-        "5. `docs/specs/technology-stack/decision.md` and `CONTEXT.md` for product implementation work",
-        "6. `docs/plans/canonical/draft.md`",
-        "7. `.krn/compact/latest-postcompact.md` if it exists",
+        "1. Re-read the newest user message.",
+        "2. Read `.krn/compact/latest-postcompact.md` and this selector.",
+        "3. Run `git status -sb` and inspect only changed or task-relevant files.",
+        "4. Read `AGENTS.md` for hard repo rules if the resumed context does not already include it.",
+        "5. Read the active child goal if continuing one; otherwise use `docs/goals/goal-006.md` with targeted `rg`/`sed`, not a full reread.",
+        "6. Use `docs/memory/INDEX.md` only as a selector for relevant notes.",
+        "7. Use `docs/plans/canonical/SOURCES.md` through `rg` for specific source/claim IDs; do not load it wholesale by default.",
         "",
-        "## Key File State",
+        "Load on demand only:",
+        "",
+        "- `docs/product/final-product-plan.md` when product direction is unclear or changing.",
+        "- `CONTEXT.md` when domain terms are unclear.",
+        "- `docs/specs/technology-stack/decision.md` when stack boundaries are changing.",
+        "- `docs/plans/canonical/draft.md` or `pattern-matrix.md` only for synthesis/refactor work that names them.",
+        "- Older goals only when the active goal, task registry, or changed files reference them.",
         "",
     ]
+    if goal_paths:
+        lines.extend(["## Recent Goal Candidates", ""])
+        lines.extend(f"- `{path}`" for path in goal_paths)
+        lines.append("")
+    if status_lines:
+        lines.extend(["## Git Status At Compact", ""])
+        lines.extend(f"- `{line}`" for line in status_lines[:20])
+        if len(status_lines) > 20:
+            lines.append(f"- ... {len(status_lines) - 20} more entries")
+        lines.append("")
+    if changed:
+        lines.extend(["## Changed Paths To Inspect First", ""])
+        lines.extend(f"- `{path}`" for path in changed)
+        lines.append("")
+    lines.extend(["## Key File Fingerprints", ""])
     for item in existing_files:
         lines.append(
             f"- `{item['path']}`: {item['bytes']} bytes, mtime `{item['mtime']}`, sha256 `{item['sha256'][:16]}...`"
         )
-    if missing_files:
-        lines.extend(["", "## Missing Optional Files", ""])
-        lines.extend(f"- `{path}`" for path in missing_files)
+    lines.extend(["", "## On-Demand Heavy Files", ""])
+    lines.extend(f"- `{path}`" for path in ON_DEMAND_FILES)
     lines.extend(
         [
             "",
@@ -156,6 +219,7 @@ def checkpoint_markdown(event: str, trigger: str, turn_id: str, generated_at: st
             "- This checkpoint is continuity metadata, not source truth.",
             "- Do not treat undocumented memory as fact.",
             "- Verify the filesystem state before making implementation claims.",
+            "- Do not reread full canonical/source files unless the selector or newest user request requires it.",
             "- Keep hook output free of secrets and raw transcripts.",
             "",
         ]
@@ -176,11 +240,11 @@ def postcompact_markdown(trigger: str, turn_id: str, generated_at: str, checkpoi
             "",
             "## Required Resume Steps",
             "",
-            "1. Read `.krn/compact/latest-checkpoint.md`.",
-            "2. Read `AGENTS.md`.",
-            "3. Read `docs/memory/INDEX.md`.",
-            "4. Re-read the newest user message in the active thread.",
-            "5. Inspect current repo files before claiming state or continuing edits.",
+            "1. Re-read the newest user message in the active thread.",
+            "2. Read `.krn/compact/latest-checkpoint.md` as a selector, not as a command to reload all docs.",
+            "3. Run `git status -sb`.",
+            "4. Inspect changed files and the active child goal before broader docs.",
+            "5. Use `docs/memory/INDEX.md` and `docs/plans/canonical/SOURCES.md` only for targeted lookup unless the task is research/synthesis.",
             "",
             "If the latest checkpoint is missing, stop and recreate project state from repo files before continuing.",
             "",
@@ -202,6 +266,8 @@ def main() -> int:
     ensure_dirs()
 
     state = [file_summary(path) for path in KEY_FILES]
+    status_lines = git_status_lines()
+    goal_paths = recent_goal_paths()
     record = {
         "event": event,
         "trigger": trigger,
@@ -210,12 +276,14 @@ def main() -> int:
         "project_root": str(ROOT),
         "session_cwd": session_cwd,
         "key_files": state,
+        "git_status": status_lines[:40],
+        "recent_goals": goal_paths,
     }
 
     if event == "PreCompact":
         checkpoint_name = f"{generated_at.replace(':', '').replace('-', '')}--{short_id(turn_id)}--{short_id(trigger)}.md"
         checkpoint_path = CHECKPOINT_DIR / checkpoint_name
-        markdown = checkpoint_markdown(event, trigger, turn_id, generated_at, state)
+        markdown = checkpoint_markdown(event, trigger, turn_id, generated_at, state, status_lines, goal_paths)
         write_text_atomic(checkpoint_path, markdown)
         write_text_atomic(LATEST_CHECKPOINT, markdown)
         record["checkpoint_path"] = str(checkpoint_path.relative_to(ROOT))
