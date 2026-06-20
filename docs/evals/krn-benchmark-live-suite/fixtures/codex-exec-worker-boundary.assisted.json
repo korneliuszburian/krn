@@ -1,18 +1,18 @@
 {
   "selected_phase": "P8 benchmark",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-026.md",
+  "latest_child_goal": "docs/goals/goal-028.md",
   "source_refs": [
     "AGENTS.md",
     "docs/goals/goal-006.md",
-    "docs/goals/goal-025.md",
-    "docs/goals/goal-026.md",
+    "docs/goals/goal-027.md",
+    "docs/goals/goal-028.md",
     "docs/evals/STANDARD.md",
-    "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Use an explicit benchmark runner with sequential read-only codex exec workers, max concurrency 1, typed timeout classification, captured JSONL/final artifacts, and KrnBenchmarkReport output with lift unclaimed.",
+  "next_action": "Use an explicit benchmark runner with sequential read-only codex exec workers, max concurrency 1, typed timeout classification, typed output capture buffer, bounded baseline scope, captured JSONL/final artifacts, and KrnBenchmarkReport output with lift unclaimed.",
   "should_claim_productivity_lift": false,
   "overclaim_boundary": "codex exec is not continuous goal conversation; it is an explicit worker lane, and even a green benchmark runner does not prove lift below the gate.",
-  "rationale": "Interactive goals and worker evals solve different problems. Goal 026 makes timeout and concurrency policy explicit so the live worker suite can be audited without pretending to be an autonomous conversational loop."
+  "rationale": "Interactive goals and worker evals solve different problems. Goal 028 keeps live mode explicit while repairing the observed ENOBUFS and timeout-prone baseline scope so the live worker suite can be audited without pretending to be an autonomous conversational loop."
 }

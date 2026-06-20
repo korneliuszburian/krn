@@ -11,7 +11,8 @@
       "docs/goals/goal-023.md",
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
-      "docs/goals/goal-026.md"
+      "docs/goals/goal-026.md",
+      "docs/goals/goal-028.md"
     ],
     "assertions": ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
     "metrics": ["runtime_contract_score", "drift_resistance_score"],
@@ -19,7 +20,7 @@
   },
   {
     "id": "task-registry-current-context-and-run-policy",
-    "expected_behavior": "Validate mode proves each suite task names the current child context, rejects stale latest-child guidance, and exposes the live codex exec run policy as typed registry data.",
+    "expected_behavior": "Validate mode proves each suite task names the current child context, rejects stale latest-child guidance, and exposes the live codex exec run, output-capture, and baseline-scope policy as typed registry data.",
     "source_patterns": [
       "S009",
       "S013",
@@ -29,7 +30,8 @@
       "C046",
       "C047",
       "docs/goals/goal-025.md",
-      "docs/goals/goal-026.md"
+      "docs/goals/goal-026.md",
+      "docs/goals/goal-028.md"
     ],
     "assertions": [
       "task registry names current child context",
@@ -37,6 +39,8 @@
       "live runner policy is sequential",
       "live runner concurrency is one",
       "live runner timeout is typed",
+      "live runner output buffer is typed",
+      "baseline prompt scope is bounded",
       "timeout result preserves no-lift classification"
     ],
     "metrics": ["runtime_contract_score", "drift_resistance_score", "repair_readiness_score"],
@@ -70,7 +74,8 @@
       "docs/goals/goal-023.md",
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
-      "docs/goals/goal-026.md"
+      "docs/goals/goal-026.md",
+      "docs/goals/goal-028.md"
     ],
     "assertions": [
       "generated benchmark report exists",
@@ -96,7 +101,8 @@
       "docs/goals/goal-023.md",
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
-      "docs/goals/goal-026.md"
+      "docs/goals/goal-026.md",
+      "docs/goals/goal-028.md"
     ],
     "assertions": [
       "baseline codex exec runs captured",

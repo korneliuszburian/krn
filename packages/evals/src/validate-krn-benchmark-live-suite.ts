@@ -42,6 +42,8 @@ const LiveRunPolicySchema = z
     execution_order: z.literal("sequential_task_baseline_then_assisted"),
     max_concurrent_codex_exec_runs: z.literal(1),
     per_codex_exec_timeout_ms: z.number().int().min(60_000).max(240_000),
+    max_codex_exec_output_buffer_bytes: z.number().int().min(1_048_576).max(64_000_000),
+    baseline_prompt_scope: z.literal("bounded_task_relevant_repo_reading"),
     timeout_result: z.literal("failed_task_no_lift"),
   })
   .strict();
@@ -398,16 +400,22 @@ function writeFallbackFinalOutput(
   );
 }
 
-function buildPrompt(task: BenchmarkTaskDefinition, kind: "baseline" | "assisted"): string {
+function buildPrompt(task: BenchmarkTaskDefinition, kind: "baseline" | "assisted", policy: LiveRunPolicy): string {
   const schemaInstruction =
     "Return only the JSON object requested by the provided schema. Do not edit files. Do not claim productivity lift unless benchmark evidence explicitly satisfies the lift gate.";
+  const boundedWorkerInstruction =
+    "Keep this worker run bounded. Inspect only files directly relevant to the task, prefer selector files when the repo points to them, and stop once you have enough source evidence to fill the schema.";
 
   if (kind === "baseline") {
     return `${schemaInstruction}
 
 Task: ${task.prompt}
 
-Use your usual Codex repo-reading behavior.`;
+Baseline scope: ${policy.baseline_prompt_scope}.
+
+${boundedWorkerInstruction}
+
+Use normal Codex repo-reading judgment. Do not use the task source refs or task-specific KRN assisted guidance unless you independently find those files from the task and repo entry points.`;
   }
 
   const guidance = task.assisted_guidance.map((item) => `- ${item}`).join("\n");
@@ -416,6 +424,8 @@ Use your usual Codex repo-reading behavior.`;
   return `${schemaInstruction}
 
 Task: ${task.prompt}
+
+${boundedWorkerInstruction}
 
 Use KRN's project-local operating layer, but keep this worker run bounded. Read only the task source refs below unless one of those files directly points to a required immediate dependency.
 
@@ -450,7 +460,7 @@ function runCodexExec(
     finalPath,
     "-C",
     process.cwd(),
-    buildPrompt(task, label),
+    buildPrompt(task, label, policy),
   ];
 
   const completed = spawnSync("codex", args, {
@@ -458,6 +468,7 @@ function runCodexExec(
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
     timeout: policy.per_codex_exec_timeout_ms,
+    maxBuffer: policy.max_codex_exec_output_buffer_bytes,
   });
 
   writeText(stdoutPath, completed.stdout ?? "");
@@ -516,27 +527,22 @@ function relativeRuntimePath(path: string): string {
 function repairTargets(): KrnBenchmarkReport["repair_targets"] {
   return [
     {
-      id: "repair-live-suite-memory-layer-next-action",
+      id: "repair-live-suite-runner-stability",
       owner: "krn",
       next_action:
-        "Harden live runner timeout/concurrency/stability and stale task guidance before expanding the suite or claiming lift.",
+        "Harden live runner output capture and bounded baseline scope, then require a clean explicit live-suite rerun before expanding the suite or claiming lift.",
       source_refs: [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
-        "docs/goals/goal-023.md",
-        "docs/goals/goal-024.md",
-        "docs/goals/goal-025.md",
-        "docs/goals/goal-026.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
+        "docs/goals/goal-027.md",
+        "docs/goals/goal-028.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
         "docs/specs/krn-benchmark-report/README.md",
         "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
       failure_mode:
-        "The live suite keeps measuring stale child-goal guidance or hidden runner timeout/concurrency behavior instead of current source-backed benchmark repair evidence.",
+        "The live suite keeps measuring output-buffer failures, unbounded baseline rereads, stale child-goal guidance, or hidden runner behavior instead of clean current source-backed benchmark repair evidence.",
     },
   ];
 }
@@ -643,9 +649,12 @@ function buildBenchmarkReport(
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
       "docs/goals/goal-026.md",
+      "docs/goals/goal-027.md",
+      "docs/goals/goal-028.md",
       "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
       "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
       "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
+      "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
       "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
@@ -744,6 +753,8 @@ function runValidation(mode: EvalMode): EvalReport {
         policy.execution_order === "sequential_task_baseline_then_assisted" &&
         policy.max_concurrent_codex_exec_runs === 1 &&
         policy.per_codex_exec_timeout_ms > 0 &&
+        policy.max_codex_exec_output_buffer_bytes >= 1_048_576 &&
+        policy.baseline_prompt_scope === "bounded_task_relevant_repo_reading" &&
         policy.timeout_result === "failed_task_no_lift",
       [
         "task registry names current child context",
@@ -751,10 +762,12 @@ function runValidation(mode: EvalMode): EvalReport {
         "live runner policy is sequential",
         "live runner concurrency is one",
         "live runner timeout is typed",
+        "live runner output buffer is typed",
+        "baseline prompt scope is bounded",
         "timeout result preserves no-lift classification",
       ],
       currentContextCase.failure_mode,
-      `Registry policy: order=${policy.execution_order}, max_concurrent=${policy.max_concurrent_codex_exec_runs}, timeout_ms=${policy.per_codex_exec_timeout_ms}.`,
+      `Registry policy: order=${policy.execution_order}, max_concurrent=${policy.max_concurrent_codex_exec_runs}, timeout_ms=${policy.per_codex_exec_timeout_ms}, max_buffer_bytes=${policy.max_codex_exec_output_buffer_bytes}, baseline_scope=${policy.baseline_prompt_scope}.`,
     ),
   );
 

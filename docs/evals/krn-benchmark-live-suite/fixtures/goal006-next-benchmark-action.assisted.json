@@ -1,18 +1,18 @@
 {
   "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-026.md",
+  "latest_child_goal": "docs/goals/goal-028.md",
   "source_refs": [
     "docs/goals/goal-006.md",
-    "docs/goals/goal-025.md",
-    "docs/goals/goal-026.md",
-    "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
+    "docs/goals/goal-027.md",
+    "docs/goals/goal-028.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
     "docs/evals/krn-benchmark-live-suite/README.md",
     "docs/specs/krn-benchmark-report/README.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Apply one bounded live runner timeout/concurrency/stability and task-registry freshness repair, keep the codex exec suite sequential, and rerun deterministic validation before expanding the suite or adding dashboard/API commands.",
+  "next_action": "Apply the bounded live runner output-capture buffer and baseline-scope repair, keep the codex exec suite sequential, and rerun deterministic validation plus explicit live mode before expanding the suite or adding dashboard/API commands.",
   "should_claim_productivity_lift": false,
   "overclaim_boundary": "A green live shape report does not prove repair quality or productivity lift. Dirty positive live deltas with failed tasks remain no_lift_evidence, and the three-task suite is below the lift gate.",
-  "rationale": "Goal 025 proved dirty positive live evidence must stay no_lift_evidence when only 1/3 tasks complete. Goal 006 now requires a bounded runner timeout/concurrency/stability and stale task-guidance repair before prompt tuning, suite expansion, dashboard commands, or productivity claims."
+  "rationale": "Goal 027 proved the latest dirty live evidence is not expansion-ready: 8 live reports, 2 clean, 6 dirty, latest dirty, and no productivity lift. Goal 028 narrows the repair to runner stability evidence: ENOBUFS output capture and timeout-prone baseline scope before prompt tuning, suite expansion, dashboard commands, or productivity claims."
 }

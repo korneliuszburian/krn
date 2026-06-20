@@ -165,6 +165,15 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `python3 scripts/evals/codex_memory_compliance.py --mode validate` generated `.krn/evals/codex-memory-compliance/20260620T114024550186Z-3253880/report.json` with 4/4 cases.
   - The stability gate classified current local live evidence as 8 live reports, 2 clean, 6 dirty, latest live report `.krn/benchmarks/krn-benchmark-live-suite/20260620T102133Z-3093693/report.json`, `suite_expansion_ready: false`, and `productivity_lift_ready: false`.
   - This proves deterministic live-report readiness classification only. It still does not prove measured productivity lift, clean repeated live execution in the current runtime, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
+  - `docs/goals/goal-028.md` repaired live-runner stability by adding typed output-capture and bounded baseline-scope policy to the live-suite registry and runner.
+  - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T115002Z-3281262/report.json` with 5/5 cases and 24/24 assertions after the typed runner-policy repair.
+  - `pnpm run eval:krn-benchmark-live-suite:live` generated `.krn/evals/krn-benchmark-live-suite/20260620T115037Z-3282001/report.json` with 6/6 cases and 30/30 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T115037Z-3282001/report.json` with 3/3 completed tasks, 0 failed tasks, baseline `0.8457`, assisted `0.91`, delta `+0.0643`, `lift_status: "no_lift_evidence"`, and `productivity_lift_claimed: false`.
+  - `pnpm run eval:krn-benchmark-live-stability` generated `.krn/evals/krn-benchmark-live-stability/20260620T120047Z-3298454/report.json` with 6/6 cases and 20/20 assertions; it classified current local evidence as 9 live reports, 3 clean, 6 dirty, latest live report clean, `suite_expansion_ready: false`, and `productivity_lift_ready: false`.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T121036Z-3328080/report.json` with 18/18 modules, 82/82 cases, and 278/278 assertions, including the updated live-suite and live-stability modules.
+  - `pnpm typecheck` passed after the live-runner repair.
+  - `pnpm test` passed with 31/31 test files and 106/106 tests.
+  - `python3 scripts/evals/codex_memory_compliance.py --mode validate` generated `.krn/evals/codex-memory-compliance/20260620T121148932746Z-3330438/report.json` with 4/4 cases.
+  - This proves one clean latest explicit three-task live run after typed output-capture/baseline-scope repair only. It still does not prove repeated clean live execution, measured productivity lift, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
 
 ## Objective
 
@@ -411,7 +420,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-027.md
+docs/goals/goal-028.md
 ```
 
-Next child-goal candidates after `goal-027` are a live runner stability repair that makes the latest explicit live-suite run complete every task cleanly under the typed policy, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until the stability gate reports repeated clean completed live evidence, not just positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, or positive suite deltas with failed baseline tasks.
+Next child-goal candidates after `goal-028` are a repeat clean live run under the typed policy to satisfy repeated-clean stability, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until the stability gate reports repeated clean completed live evidence, not just one clean latest report or positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, or positive suite deltas with failed baseline tasks.

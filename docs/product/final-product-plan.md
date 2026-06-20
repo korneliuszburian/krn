@@ -36,6 +36,7 @@ sources:
   - docs/goals/goal-025.md
   - docs/goals/goal-026.md
   - docs/goals/goal-027.md
+  - docs/goals/goal-028.md
 ---
 
 # KRN Final Product Plan
@@ -127,7 +128,8 @@ repo + task
   -> memory-layer next-action repair preserves source-backed memory/control/eval routing while exposing baseline timeout instability
   -> benchmark lift-status gate rejects dirty positive live deltas before suite expansion
   -> live-suite registry policy gate exposes current child context and sequential timeout policy as typed validation data
-  -> live stability readiness gate blocks suite expansion while latest live evidence is dirty
+  -> live stability readiness gate blocks suite expansion while live evidence is dirty or only one-off clean
+  -> live-runner stability repair makes the latest explicit three-task live report clean but still below repeated-clean expansion and lift gates
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -317,7 +319,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, expanded live suite, lift-status gate, live-suite registry policy gate, and live stability readiness gate prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, fixed three-task suite harness, deterministic stale-context/runner-policy protection, and deterministic classification of dirty versus repeated-clean live evidence. Measured lift remains future work until a larger suite satisfies the lift gate with positive live evidence.
+- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, expanded live suite, lift-status gate, live-suite registry policy gate, live stability readiness gate, and live-runner stability repair prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, fixed three-task suite harness, deterministic stale-context/runner-policy protection, deterministic classification of dirty versus repeated-clean live evidence, and one clean latest explicit live run after typed output-capture/baseline-scope repair. Measured lift remains future work until a larger suite satisfies the lift gate with positive live evidence.
 
 Acceptance evidence:
 
