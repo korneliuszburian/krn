@@ -1,17 +1,18 @@
 {
   "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-023.md",
+  "latest_child_goal": "docs/goals/goal-026.md",
   "source_refs": [
     "docs/goals/goal-006.md",
-    "docs/goals/goal-023.md",
+    "docs/goals/goal-025.md",
+    "docs/goals/goal-026.md",
     "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-    "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
     "docs/product/final-product-plan.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Keep file-backed source-backed memory as the auditable substrate and run a bounded memory/control/eval benchmark repair so source-backed memory behavior is judged by measured repair evidence instead of premature infrastructure.",
+  "next_action": "Reject premature vector database or graph-store work, keep file-backed source-backed memory as the auditable substrate, and run the next bounded benchmark runner timeout/stability repair before adding storage infrastructure.",
   "should_claim_productivity_lift": false,
-  "overclaim_boundary": "File-backed memory is not the breakthrough by itself, and a benchmark suite still must not claim lift until the evidence passes the gate.",
-  "rationale": "The current gap is not a missing vector store; goal 023 shows the assisted prompt-load repair removed the timeout and improved the live suite delta to near-neutral no-lift evidence. The next bounded repair should target source-backed memory/control/eval next-action behavior before adding storage infrastructure."
+  "overclaim_boundary": "File-backed memory is not the breakthrough by itself, and a benchmark suite still must not claim lift until clean live evidence passes the gate.",
+  "rationale": "The current gap is not a missing vector store. Goal 025 shows dirty positive live evidence with failed tasks is no_lift evidence, and goal 026 routes the next step to live-suite registry and runner policy before new memory storage infrastructure."
 }

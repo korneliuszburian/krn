@@ -24,6 +24,8 @@ const BenchmarkTaskDefinitionSchema = z
     prompt: z.string().min(1),
     assisted_guidance: z.array(z.string().min(1)).min(1),
     source_refs: z.array(z.string().min(1)).min(1),
+    current_child_goal_ref: z.string().min(1),
+    superseded_latest_child_goal_refs: z.array(z.string().min(1)),
     parent_goal_keywords: z.array(z.string().min(1)).min(1),
     latest_child_goal_keywords: z.array(z.string().min(1)).min(1),
     expected_phase_keywords: z.array(z.string().min(1)).min(1),
@@ -35,12 +37,22 @@ const BenchmarkTaskDefinitionSchema = z
   })
   .strict();
 
+const LiveRunPolicySchema = z
+  .object({
+    execution_order: z.literal("sequential_task_baseline_then_assisted"),
+    max_concurrent_codex_exec_runs: z.literal(1),
+    per_codex_exec_timeout_ms: z.number().int().min(60_000).max(240_000),
+    timeout_result: z.literal("failed_task_no_lift"),
+  })
+  .strict();
+
 const TaskRegistrySchema = z
   .object({
     schema_version: z.literal("krn-benchmark-live-suite-tasks.v1"),
     benchmark_id: z.literal("krn-benchmark-live-suite"),
     suite_id: z.string().min(1),
     minimum_task_count_for_lift_claim: z.number().int().min(20),
+    live_run_policy: LiveRunPolicySchema,
     tasks: z.array(BenchmarkTaskDefinitionSchema).min(3),
   })
   .strict()
@@ -55,12 +67,56 @@ const TaskRegistrySchema = z
         });
       }
       taskIds.add(task.task_id);
+
+      if (!task.source_refs.includes(task.current_child_goal_ref)) {
+        context.addIssue({
+          code: "custom",
+          path: ["tasks", index, "current_child_goal_ref"],
+          message: `current_child_goal_ref ${task.current_child_goal_ref} must be included in source_refs`,
+        });
+      }
+
+      if (!task.required_source_ref_keywords.includes(task.current_child_goal_ref)) {
+        context.addIssue({
+          code: "custom",
+          path: ["tasks", index, "required_source_ref_keywords"],
+          message: `required_source_ref_keywords must include ${task.current_child_goal_ref}`,
+        });
+      }
+
+      if (!task.latest_child_goal_keywords.includes(task.current_child_goal_ref)) {
+        context.addIssue({
+          code: "custom",
+          path: ["tasks", index, "latest_child_goal_keywords"],
+          message: `latest_child_goal_keywords must include current child ${task.current_child_goal_ref}`,
+        });
+      }
+
+      const latestText = task.latest_child_goal_keywords.join("\n");
+      const assistedGuidanceText = task.assisted_guidance.join("\n");
+      for (const supersededRef of task.superseded_latest_child_goal_refs) {
+        if (includesAny(latestText, [supersededRef])) {
+          context.addIssue({
+            code: "custom",
+            path: ["tasks", index, "latest_child_goal_keywords"],
+            message: `latest_child_goal_keywords must not include superseded child ${supersededRef}`,
+          });
+        }
+        if (includesAny(assistedGuidanceText, ["latest"]) && includesAny(assistedGuidanceText, [supersededRef])) {
+          context.addIssue({
+            code: "custom",
+            path: ["tasks", index, "assisted_guidance"],
+            message: `latest-child guidance must not point at superseded child ${supersededRef}`,
+          });
+        }
+      }
     }
   });
 
 type CodexSuiteOutput = z.infer<typeof CodexSuiteOutputSchema>;
 type BenchmarkTaskDefinition = z.infer<typeof BenchmarkTaskDefinitionSchema>;
 type TaskRegistry = z.infer<typeof TaskRegistrySchema>;
+type LiveRunPolicy = z.infer<typeof LiveRunPolicySchema>;
 type EvalMode = "validate" | "live";
 
 type EvalCase = {
@@ -376,6 +432,7 @@ function runCodexExec(
   task: BenchmarkTaskDefinition,
   label: "baseline" | "assisted",
   runDir: string,
+  policy: LiveRunPolicy,
 ): CodexRunCapture {
   const stdoutPath = resolve(runDir, `${task.task_id}.${label}.stdout.jsonl`);
   const stderrPath = resolve(runDir, `${task.task_id}.${label}.stderr.txt`);
@@ -400,7 +457,7 @@ function runCodexExec(
     cwd: process.cwd(),
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
-    timeout: 240_000,
+    timeout: policy.per_codex_exec_timeout_ms,
   });
 
   writeText(stdoutPath, completed.stdout ?? "");
@@ -462,21 +519,24 @@ function repairTargets(): KrnBenchmarkReport["repair_targets"] {
       id: "repair-live-suite-memory-layer-next-action",
       owner: "krn",
       next_action:
-        "Repair the memory-layers-vs-file-substrate assisted next-action regression, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
+        "Harden live runner timeout/concurrency/stability and stale task guidance before expanding the suite or claiming lift.",
       source_refs: [
         "docs/goals/goal-006.md",
         "docs/goals/goal-022.md",
         "docs/goals/goal-023.md",
         "docs/goals/goal-024.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
         "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
         "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
         "docs/specs/krn-benchmark-report/README.md",
         "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
       failure_mode:
-        "The memory-layer benchmark task routes next action to stale prompt-load repair or storage infrastructure instead of source-backed memory/control/eval repair evidence.",
+        "The live suite keeps measuring stale child-goal guidance or hidden runner timeout/concurrency behavior instead of current source-backed benchmark repair evidence.",
     },
   ];
 }
@@ -581,8 +641,11 @@ function buildBenchmarkReport(
       "docs/goals/goal-022.md",
       "docs/goals/goal-023.md",
       "docs/goals/goal-024.md",
+      "docs/goals/goal-025.md",
+      "docs/goals/goal-026.md",
       "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
       "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+      "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
       "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
@@ -593,8 +656,8 @@ function buildBenchmarkReport(
     ],
     interpretation_caveat:
       mode === "live"
-        ? "This live suite proves only a multi-task codex exec benchmark path and memory-layer next-action repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the memory-layer next-action repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
+        ? "This live suite proves only a multi-task codex exec benchmark path and live-suite registry/policy measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the live-suite registry/policy benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
   } satisfies KrnBenchmarkReport;
 
   return parseKrnBenchmarkReport(report);
@@ -619,8 +682,8 @@ function buildFixtureScorePairs(registry: TaskRegistry): TaskScorePair[] {
 
 function buildLiveScorePairs(registry: TaskRegistry, runDir: string): TaskScorePair[] {
   return registry.tasks.map((task) => {
-    const baseline = runCodexExec(task, "baseline", runDir);
-    const assisted = runCodexExec(task, "assisted", runDir);
+    const baseline = runCodexExec(task, "baseline", runDir, registry.live_run_policy);
+    const assisted = runCodexExec(task, "assisted", runDir, registry.live_run_policy);
     return {
       task,
       baseline: baseline.score,
@@ -655,6 +718,43 @@ function runValidation(mode: EvalMode): EvalReport {
       ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
       registryCase.failure_mode,
       `Registry ${registry.suite_id} has ${registry.tasks.length} tasks and lift gate ${registry.minimum_task_count_for_lift_claim}.`,
+    ),
+  );
+
+  const currentContextCase = caseById(cases, "task-registry-current-context-and-run-policy");
+  const registryHasCurrentContext = registry.tasks.every(
+    (task) =>
+      task.source_refs.includes(task.current_child_goal_ref) &&
+      task.required_source_ref_keywords.includes(task.current_child_goal_ref) &&
+      task.latest_child_goal_keywords.includes(task.current_child_goal_ref) &&
+      task.superseded_latest_child_goal_refs.every(
+        (supersededRef) =>
+          !includesAny(task.latest_child_goal_keywords.join("\n"), [supersededRef]) &&
+          !(
+            includesAny(task.assisted_guidance.join("\n"), ["latest"]) &&
+            includesAny(task.assisted_guidance.join("\n"), [supersededRef])
+          ),
+      ),
+  );
+  const policy = registry.live_run_policy;
+  results.push(
+    result(
+      currentContextCase.id,
+      registryHasCurrentContext &&
+        policy.execution_order === "sequential_task_baseline_then_assisted" &&
+        policy.max_concurrent_codex_exec_runs === 1 &&
+        policy.per_codex_exec_timeout_ms > 0 &&
+        policy.timeout_result === "failed_task_no_lift",
+      [
+        "task registry names current child context",
+        "task registry rejects stale latest-child guidance",
+        "live runner policy is sequential",
+        "live runner concurrency is one",
+        "live runner timeout is typed",
+        "timeout result preserves no-lift classification",
+      ],
+      currentContextCase.failure_mode,
+      `Registry policy: order=${policy.execution_order}, max_concurrent=${policy.max_concurrent_codex_exec_runs}, timeout_ms=${policy.per_codex_exec_timeout_ms}.`,
     ),
   );
 

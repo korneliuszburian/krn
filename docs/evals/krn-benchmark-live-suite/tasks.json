@@ -3,36 +3,47 @@
   "benchmark_id": "krn-benchmark-live-suite",
   "suite_id": "goal006-expanded-routing-suite",
   "minimum_task_count_for_lift_claim": 20,
+  "live_run_policy": {
+    "execution_order": "sequential_task_baseline_then_assisted",
+    "max_concurrent_codex_exec_runs": 1,
+    "per_codex_exec_timeout_ms": 240000,
+    "timeout_result": "failed_task_no_lift"
+  },
   "tasks": [
     {
       "task_id": "goal006-next-benchmark-action",
-      "title": "Route the next KRN benchmark action after failed prompt-load evidence",
-      "prompt": "Inspect this repository and identify the next concrete action for the active KRN product goal after the failed current-child benchmark repair attempt. Preserve benchmark and repair overclaim boundaries.",
+      "title": "Route the next KRN benchmark action after dirty positive live evidence",
+      "prompt": "Inspect this repository and identify the next concrete action for the active KRN product goal after the benchmark lift-status gate exposed dirty positive live evidence and stale task guidance. Preserve benchmark and repair overclaim boundaries.",
       "assisted_guidance": [
         "Treat docs/goals/goal-006.md as the active parent goal.",
-        "Use docs/goals/goal-022.md as the latest completed child goal and failure source.",
-        "Use the current-child repair memory note and SOURCES.md to choose one bounded assisted prompt-load or timeout repair before suite expansion or dashboard/API work."
+        "Use docs/goals/goal-026.md as the current child goal for this live-suite registry and runner-policy repair.",
+        "Use docs/goals/goal-025.md and the lift-status stability memory note as the latest completed evidence source.",
+        "Choose one bounded live-runner timeout/concurrency/stability or task-registry freshness repair before suite expansion or dashboard/API work."
       ],
       "source_refs": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
-        "docs/specs/krn-repair-record/README.md",
+        "docs/specs/krn-benchmark-report/README.md",
         "docs/plans/canonical/SOURCES.md"
       ],
+      "current_child_goal_ref": "docs/goals/goal-026.md",
+      "superseded_latest_child_goal_refs": ["docs/goals/goal-022.md", "docs/goals/goal-023.md"],
       "parent_goal_keywords": ["docs/goals/goal-006.md", "goal-006"],
-      "latest_child_goal_keywords": ["docs/goals/goal-022.md", "goal-022"],
+      "latest_child_goal_keywords": ["docs/goals/goal-026.md", "goal-026"],
       "expected_phase_keywords": ["p3", "p8", "repair", "benchmark"],
       "required_source_ref_keywords": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/evals/krn-benchmark-live-suite",
-        "docs/specs/krn-repair-record",
+        "docs/specs/krn-benchmark-report",
         "docs/plans/canonical/SOURCES.md"
       ],
-      "next_action_keywords": ["assisted", "prompt", "timeout", "repair"],
+      "next_action_keywords": ["runner", "timeout", "concurrency", "stability", "repair"],
       "overclaim_keywords": ["does not prove", "productivity", "lift", "green"],
       "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/goal006-next-benchmark-action.baseline.json",
       "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/goal006-next-benchmark-action.assisted.json"
@@ -43,30 +54,34 @@
       "prompt": "Inspect the KRN direction and decide whether the next product action should add a vector database/graph store now or continue through benchmark evidence. Preserve what is known about memory layers.",
       "assisted_guidance": [
         "Read the product memory note about operating architecture and memory layers.",
-        "Read the assisted prompt-load repair note before proposing new storage infrastructure.",
+        "Read the lift-status stability note before proposing new storage infrastructure.",
         "Distinguish file-backed memory as auditable substrate from the actual product breakthrough.",
-        "Route the next implementation through a bounded source-backed memory/control/eval benchmark repair instead of adding premature infrastructure."
+        "Route the next implementation through bounded live runner timeout/concurrency/stability and source-backed memory/control/eval repair evidence instead of adding premature infrastructure."
       ],
       "source_refs": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-023.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/product/final-product-plan.md",
         "docs/plans/canonical/SOURCES.md"
       ],
+      "current_child_goal_ref": "docs/goals/goal-026.md",
+      "superseded_latest_child_goal_refs": ["docs/goals/goal-022.md", "docs/goals/goal-023.md"],
       "parent_goal_keywords": ["docs/goals/goal-006.md", "goal-006"],
-      "latest_child_goal_keywords": ["docs/goals/goal-023.md", "goal-023"],
+      "latest_child_goal_keywords": ["docs/goals/goal-026.md", "goal-026"],
       "expected_phase_keywords": ["p3", "p8", "repair", "benchmark"],
       "required_source_ref_keywords": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-023.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/product/final-product-plan.md",
         "docs/plans/canonical/SOURCES.md"
       ],
-      "next_action_keywords": ["benchmark", "memory", "source-backed", "repair"],
+      "next_action_keywords": ["benchmark", "runner", "timeout", "repair"],
       "overclaim_keywords": ["file-backed", "not", "breakthrough", "lift"],
       "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/memory-layers-vs-file-substrate.baseline.json",
       "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/memory-layers-vs-file-substrate.assisted.json"
@@ -77,30 +92,34 @@
       "prompt": "Inspect KRN's Codex execution rules and decide whether the next step should be a continuous overnight codex exec goal loop or an explicit benchmark worker suite.",
       "assisted_guidance": [
         "Read AGENTS.md and docs/goals/goal-006.md.",
-        "Read docs/goals/goal-022.md and the current-child repair-attempt memory note before selecting a runner shape.",
-        "Use the source ledger entries for S009-S016, C040-C044, LOCAL031, and the explicit non-interactive worker boundary.",
+        "Read docs/goals/goal-025.md and docs/goals/goal-026.md before selecting a runner shape.",
+        "Use the source ledger entries for S009-S016, C044-C047, LOCAL034, and the explicit non-interactive worker boundary.",
         "Preserve the difference between interactive goals and explicit codex exec worker/eval reruns."
       ],
       "source_refs": [
         "AGENTS.md",
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
         "docs/evals/STANDARD.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/plans/canonical/SOURCES.md"
       ],
+      "current_child_goal_ref": "docs/goals/goal-026.md",
+      "superseded_latest_child_goal_refs": ["docs/goals/goal-022.md", "docs/goals/goal-023.md"],
       "parent_goal_keywords": ["docs/goals/goal-006.md", "goal-006"],
-      "latest_child_goal_keywords": ["docs/goals/goal-022.md", "goal-022"],
+      "latest_child_goal_keywords": ["docs/goals/goal-026.md", "goal-026"],
       "expected_phase_keywords": ["p3", "p8", "repair", "benchmark"],
       "required_source_ref_keywords": [
         "AGENTS.md",
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
+        "docs/goals/goal-025.md",
+        "docs/goals/goal-026.md",
         "docs/evals/STANDARD.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
         "docs/plans/canonical/SOURCES.md"
       ],
-      "next_action_keywords": ["explicit", "benchmark", "repair", "codex exec"],
+      "next_action_keywords": ["explicit", "benchmark", "runner", "timeout"],
       "overclaim_keywords": ["not continuous", "worker", "lift", "explicit"],
       "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/codex-exec-worker-boundary.baseline.json",
       "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/codex-exec-worker-boundary.assisted.json"

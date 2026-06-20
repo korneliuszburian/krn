@@ -34,6 +34,7 @@ sources:
   - docs/goals/goal-023.md
   - docs/goals/goal-024.md
   - docs/goals/goal-025.md
+  - docs/goals/goal-026.md
 ---
 
 # KRN Final Product Plan
@@ -124,6 +125,7 @@ repo + task
   -> assisted prompt-load repair uses task-owned source refs and records stabilized/no-lift outcomes without claiming lift
   -> memory-layer next-action repair preserves source-backed memory/control/eval routing while exposing baseline timeout instability
   -> benchmark lift-status gate rejects dirty positive live deltas before suite expansion
+  -> live-suite registry policy gate exposes current child context and sequential timeout policy as typed validation data
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -313,7 +315,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, and expanded live suite prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, and fixed three-task suite harness. Measured lift remains future work until a larger suite satisfies the lift gate with positive live evidence.
+- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, expanded live suite, lift-status gate, and live-suite registry policy gate prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, fixed three-task suite harness, and deterministic stale-context/runner-policy protection. Measured lift remains future work until a larger suite satisfies the lift gate with positive live evidence.
 
 Acceptance evidence:
 

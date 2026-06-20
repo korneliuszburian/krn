@@ -9,11 +9,38 @@
       "docs/goals/goal-020.md",
       "docs/goals/goal-022.md",
       "docs/goals/goal-023.md",
-      "docs/goals/goal-024.md"
+      "docs/goals/goal-024.md",
+      "docs/goals/goal-025.md",
+      "docs/goals/goal-026.md"
     ],
     "assertions": ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
     "metrics": ["runtime_contract_score", "drift_resistance_score"],
     "failure_mode": "The expanded benchmark suite is an ad hoc prompt list instead of a typed registry."
+  },
+  {
+    "id": "task-registry-current-context-and-run-policy",
+    "expected_behavior": "Validate mode proves each suite task names the current child context, rejects stale latest-child guidance, and exposes the live codex exec run policy as typed registry data.",
+    "source_patterns": [
+      "S009",
+      "S013",
+      "S014",
+      "S016",
+      "C044",
+      "C046",
+      "C047",
+      "docs/goals/goal-025.md",
+      "docs/goals/goal-026.md"
+    ],
+    "assertions": [
+      "task registry names current child context",
+      "task registry rejects stale latest-child guidance",
+      "live runner policy is sequential",
+      "live runner concurrency is one",
+      "live runner timeout is typed",
+      "timeout result preserves no-lift classification"
+    ],
+    "metrics": ["runtime_contract_score", "drift_resistance_score", "repair_readiness_score"],
+    "failure_mode": "The live suite keeps measuring stale child-goal guidance or hidden runner timeout/concurrency behavior."
   },
   {
     "id": "fixture-suite-scores-assisted",
@@ -41,7 +68,9 @@
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
       "docs/goals/goal-023.md",
-      "docs/goals/goal-024.md"
+      "docs/goals/goal-024.md",
+      "docs/goals/goal-025.md",
+      "docs/goals/goal-026.md"
     ],
     "assertions": [
       "generated benchmark report exists",
@@ -65,7 +94,9 @@
       "docs/goals/goal-020.md",
       "docs/goals/goal-022.md",
       "docs/goals/goal-023.md",
-      "docs/goals/goal-024.md"
+      "docs/goals/goal-024.md",
+      "docs/goals/goal-025.md",
+      "docs/goals/goal-026.md"
     ],
     "assertions": [
       "baseline codex exec runs captured",
