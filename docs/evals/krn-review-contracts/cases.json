@@ -1,9 +1,9 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-review report fixture parses through @krn/contracts and includes the required Slice 2 runtime artifact references.",
+    "expected_behavior": "The valid krn-review report fixture parses through @krn/contracts and includes required runtime artifact references plus memory selection/application evidence.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
@@ -20,9 +20,9 @@
   },
   {
     "id": "known-bad-fixture-fails",
-    "expected_behavior": "The known-bad fixture missing the interpretation caveat fails deterministically.",
+    "expected_behavior": "The known-bad fixture missing required memory/application fields and interpretation caveat fails deterministically.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
@@ -37,9 +37,10 @@
   },
   {
     "id": "generated-review-report-parses",
-    "expected_behavior": "The CLI writes a proposal-only review report under .krn/review and the generated report parses through @krn/contracts.",
+    "expected_behavior": "The CLI writes a proposal-only review report under .krn/review, selects local MemoryStore records from an external fixture store, applies memory guidance, and the generated report parses through @krn/contracts.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-memory-store/examples/local-memory-store.example.json",
       "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md"
     ],
@@ -47,6 +48,7 @@
       "CLI exits zero",
       "generated report exists",
       "generated report parses",
+      "memory selection is applied",
       "proposals are proposal-only"
     ],
     "metrics": [

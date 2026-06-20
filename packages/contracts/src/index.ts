@@ -1,4 +1,30 @@
 export {
+  KrnOperatingBriefSchema,
+  krnOperatingBriefJsonSchema,
+  parseKrnOperatingBrief,
+  type KrnOperatingBrief,
+} from "./operating-brief.js";
+export {
+  KrnMemoryApplicationSchema,
+  KrnMemoryFeedbackSchema,
+  KrnMemoryRecordSchema,
+  KrnMemorySelectionSchema,
+  krnMemoryApplicationJsonSchema,
+  krnMemoryFeedbackJsonSchema,
+  krnMemoryRecordJsonSchema,
+  krnMemorySelectionJsonSchema,
+  parseKrnMemoryApplication,
+  parseKrnMemoryFeedback,
+  parseKrnMemoryRecord,
+  parseKrnMemorySelection,
+  type KrnMemoryApplication,
+  type KrnMemoryFeedback,
+  type KrnMemoryRecord,
+  type KrnMemorySelection,
+  type MemoryConfidence,
+  type MemoryOutcome,
+} from "./memory-store.js";
+export {
   KrnBenchmarkReportSchema,
   krnBenchmarkReportJsonSchema,
   parseKrnBenchmarkReport,

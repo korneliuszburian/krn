@@ -1,0 +1,34 @@
+{
+  "schema_version": "krn-local-memory-store.v1",
+  "records": [
+    {
+      "schema_version": "krn-memory-record.v1",
+      "kind": "krn_memory_record",
+      "id": "mem-goal-038-memory-boundary",
+      "status": "active",
+      "scope": "project",
+      "owner": "krn",
+      "source_lineage": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/SOURCES.md#C061"
+      ],
+      "confidence": "high",
+      "freshness": "fresh",
+      "kernel_terms": ["memory-operative", "context-budgeted", "deletion-friendly"],
+      "ttl_days": 30,
+      "last_verified_at": "2026-06-20T20:00:00.000Z",
+      "last_used_at": null,
+      "selectors": {
+        "task_kinds": ["review", "planning"],
+        "failure_modes": ["repo-local-memory-core", "context-dump"],
+        "target_globs": ["packages/**", "docs/goals/goal-038.md"],
+        "goal_refs": ["docs/goals/goal-038.md"]
+      },
+      "summary": "KRN memory must be selected from a store boundary and applied to a concrete action; docs/memory and .krn are not authoritative memory core.",
+      "action_rule": "Reject repo-local memory-core claims and require selected memory IDs, rejected context, application guidance, and feedback.",
+      "invalidation_rule": "Invalidate if goal-038 no longer owns the active memory boundary or if a service-backed store supersedes the local adapter.",
+      "privacy_level": "local"
+    }
+  ],
+  "feedback": []
+}

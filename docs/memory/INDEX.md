@@ -1,8 +1,8 @@
 # KRN Memory Index
 
-This folder is the repo-local memory ledger for `krn-gas-town`.
+This folder is the repo-local pattern bank and audit/export ledger for `krn-gas-town`.
 
-It is not hidden model memory. It is checked-in, reviewable project knowledge that Codex must read before planning, research synthesis, architecture decisions, or long-running goal work.
+It is not hidden model memory and it is not the final KRN memory core. It is checked-in, reviewable project knowledge that Codex can use through selectors while KRN builds a service/store-backed memory lifecycle.
 
 ## Operating Rules
 
@@ -33,9 +33,9 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read [docs/goals/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/INDEX.md), then the active read set listed there: [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md) and [docs/goals/goal-037.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-037.md). Older goals are indexed evidence or lab history, not default context.
+2. If a `/goal` is active, read [docs/goals/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/INDEX.md), then the active read set listed there: [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md) and [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md). Older goals are indexed evidence or lab history, not default context.
 3. Read current final product direction only when product direction is unclear or changing:
-   - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
+   - [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md)
 4. Read current canonical synthesis only for synthesis/source-ledger work:
    - [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md)
    - [docs/plans/canonical/pattern-matrix.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/pattern-matrix.md)

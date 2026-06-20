@@ -8,14 +8,14 @@ Goal files are evidence records, not the default context window. Do not read the
 
 For normal KRN product work, read only:
 
-1. `docs/goals/goal-006.md` - active parent product contract.
-2. `docs/goals/goal-037.md` - current engineering-kernel reset and next operating slice.
+1. `docs/goals/goal-038.md` - active final-product execution contract.
+2. `docs/plans/canonical/draft.md` - canonical product blueprint when product direction or layer ownership is relevant.
 
 Then stop. Load older goals only when the current task names them, changed files reference them, or the source ledger requires exact evidence.
 
 ## Current Direction
 
-[DECISION] KRN is restarting operationally around the engineering kernel:
+[DECISION] KRN is executing one final-product goal around the engineering kernel:
 
 ```text
 mechanism-first
@@ -29,14 +29,17 @@ mechanism-first
   -> deletion-friendly
 ```
 
-[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. The next useful product slice should prove memory selection and application, not add another passive note.
+[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. The next useful product slice should prove store-backed memory selection and application, not add another passive note.
 
 ## Buckets
 
 | Bucket | Files | How to treat |
 |---|---|---|
-| Active product contract | `goal-006.md` | Parent scope. Read for active `/goal` work. Do not mark complete until the full final loop is proven. |
-| Active reset child | `goal-037.md` | Current operating direction. Read before selecting the next implementation slice. |
+| Active final-product contract | `goal-038.md` | Current execution contract. Read for active `/goal` work and resume after compaction. |
+| Current product blueprint | `docs/plans/canonical/draft.md` | Canonical product direction and state-ownership boundary. Read when selecting or changing product layers. |
+| Product plan pointer | `docs/product/final-product-plan.md` | Compatibility pointer for older docs/tools. Do not duplicate product direction here. |
+| Previous product contract | `goal-006.md` | Historical parent scope and evidence. Do not use as default execution contract. |
+| Engineering-kernel reset | `goal-037.md` | Historical reset evidence. Its kernel is now folded into `goal-038` and `AGENTS.md`. |
 | Product implementation evidence | `goal-003.md` through `goal-017.md`, plus `goal-036.md` | Historical proof for operator skills, product-spine contracts, typed runtime spine, MCP/proposal/dashboard/report surfaces, and bounded research-pack helper. Load only when touching the related code or docs. |
 | Meta-research / benchmark lab archive | `goal-018.md` through `goal-034.md` | Evidence from the heavy benchmark/autoresearch lane. Do not use as the default product-building path. Load only for benchmark, eval, repair, or lab work. |
 | Operating reset history | `goal-035.md`, `goal-036.md`, `goal-037.md` | Shows the pivot away from expanded-arena churn. `goal-037.md` supersedes `goal-035.md` as the current reset. |
@@ -48,5 +51,6 @@ mechanism-first
 - Do not move or delete old goal files unless first updating every source, memory, and eval reference that points to them.
 - Do not add a new goal file for tiny mechanical edits.
 - New child goals must name the bottleneck, mechanism, smallest production-shaped behavior, proof, review burden, and overclaim boundary.
+- Do not add new child goals for normal progress under `goal-038`; update `goal-038` progress/checkpoint state instead unless the user asks for a separate goal.
 - Benchmark goals must stay in the lab lane unless the user explicitly asks for benchmark work.
 - Product goals must end in code, a consumed contract, a review surface, or a deletion/merge decision. Passive documentation alone is not enough.

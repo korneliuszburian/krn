@@ -21,11 +21,31 @@ describe("KrnReviewReport contract", () => {
       "latest-doctor-report",
       "latest-eval-report",
     ]);
+    expect(report.memory_selection.selected.map((selected) => selected.memory_id)).toEqual([
+      "mem-goal-038-memory-boundary",
+    ]);
+    expect(report.memory_application.applied_memory_ids).toEqual(["mem-goal-038-memory-boundary"]);
+    expect(report.memory_feedback.memory_outcomes.map((outcome) => outcome.memory_id)).toEqual([
+      "mem-goal-038-memory-boundary",
+    ]);
     expect(report.proposals.every((proposal) => proposal.status === "proposal_only")).toBe(true);
   });
 
   it("rejects the known-bad fixture", () => {
     expect(() => parseKrnReviewReport(readJson("docs/specs/krn-review/fixtures/bad-krn-review-report.example.json"))).toThrow();
+  });
+
+  it("rejects a report when selected memory is not applied", () => {
+    const fixture = parseKrnReviewReport(readJson("docs/specs/krn-review/examples/krn-review-report.example.json"));
+    const candidate: unknown = {
+      ...fixture,
+      memory_application: {
+        ...fixture.memory_application,
+        applied_memory_ids: ["different-memory-id"],
+      },
+    };
+
+    expect(() => parseKrnReviewReport(candidate)).toThrow();
   });
 
   it("exports a JSON schema for downstream tools", () => {
@@ -34,6 +54,8 @@ describe("KrnReviewReport contract", () => {
       properties: expect.objectContaining({
         schema_version: expect.any(Object),
         artifacts: expect.any(Object),
+        memory_selection: expect.any(Object),
+        memory_application: expect.any(Object),
         proposals: expect.any(Object),
       }),
     });

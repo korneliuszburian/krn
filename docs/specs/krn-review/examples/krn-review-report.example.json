@@ -1,8 +1,8 @@
 {
   "schema_version": "krn-review-report.v1",
   "kind": "krn_review_report",
-  "run_id": "20260619T223000Z-example",
-  "created_at": "2026-06-19T22:30:00.000Z",
+  "run_id": "20260620T212000Z-example",
+  "created_at": "2026-06-20T21:20:00.000Z",
   "target_root": "/home/krn/coding/krn/active/krn-gastown",
   "command": "krn review",
   "mode": "proposal-only",
@@ -12,25 +12,25 @@
       "id": "latest-init-manifest",
       "kind": "init_manifest",
       "status": "present",
-      "path": ".krn/init/20260619T220000Z-example/manifest.json",
-      "summary": "Latest init manifest 20260619T220000Z-example parsed in dry-run mode.",
-      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"]
+      "path": ".krn/init/20260620T210000Z-example/manifest.json",
+      "summary": "Latest init manifest 20260620T210000Z-example parsed in dry-run mode.",
+      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"]
     },
     {
       "id": "latest-doctor-report",
       "kind": "doctor_report",
       "status": "present",
-      "path": ".krn/doctor/20260619T220100Z-example/report.json",
-      "summary": "Latest doctor report 20260619T220100Z-example parsed with overall status ready.",
-      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"]
+      "path": ".krn/doctor/20260620T210100Z-example/report.json",
+      "summary": "Latest doctor report 20260620T210100Z-example parsed with overall status ready.",
+      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"]
     },
     {
       "id": "latest-eval-report",
       "kind": "eval_report",
       "status": "present",
-      "path": ".krn/eval/20260619T220200Z-example/report.json",
-      "summary": "Latest eval aggregate 20260619T220200Z-example parsed with 3/3 modules passing.",
-      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"]
+      "path": ".krn/eval/20260620T210200Z-example/report.json",
+      "summary": "Latest eval aggregate 20260620T210200Z-example parsed with 3/3 modules passing.",
+      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
     }
   ],
   "findings": [
@@ -38,73 +38,168 @@
       "id": "latest-init-manifest-present",
       "severity": "info",
       "artifact_id": "latest-init-manifest",
-      "summary": "Latest init manifest 20260619T220000Z-example parsed in dry-run mode.",
-      "evidence_refs": [".krn/init/20260619T220000Z-example/manifest.json"],
-      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"]
+      "summary": "Latest init manifest 20260620T210000Z-example parsed in dry-run mode.",
+      "evidence_refs": [".krn/init/20260620T210000Z-example/manifest.json"],
+      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"]
     },
     {
       "id": "latest-doctor-report-present",
       "severity": "info",
       "artifact_id": "latest-doctor-report",
-      "summary": "Latest doctor report 20260619T220100Z-example parsed with overall status ready.",
-      "evidence_refs": [".krn/doctor/20260619T220100Z-example/report.json"],
-      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"]
+      "summary": "Latest doctor report 20260620T210100Z-example parsed with overall status ready.",
+      "evidence_refs": [".krn/doctor/20260620T210100Z-example/report.json"],
+      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"]
     },
     {
       "id": "latest-eval-report-present",
       "severity": "info",
       "artifact_id": "latest-eval-report",
-      "summary": "Latest eval aggregate 20260619T220200Z-example parsed with 3/3 modules passing.",
-      "evidence_refs": [".krn/eval/20260619T220200Z-example/report.json"],
-      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"]
+      "summary": "Latest eval aggregate 20260620T210200Z-example parsed with 3/3 modules passing.",
+      "evidence_refs": [".krn/eval/20260620T210200Z-example/report.json"],
+      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
+    },
+    {
+      "id": "memory-selection-applied",
+      "severity": "info",
+      "artifact_id": null,
+      "summary": "Applied 1 selected memory IDs to krn review guidance.",
+      "evidence_refs": ["20260620T212000Z-example-memory-application"],
+      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"]
     }
   ],
   "proposals": [
     {
-      "id": "promote-slice-2-runtime-evidence",
+      "id": "promote-reviewed-runtime-evidence",
       "proposal_type": "source_claim_update",
       "status": "proposal_only",
-      "title": "Review and promote Slice 2 runtime evidence into the source ledger.",
+      "title": "Review and promote parsed runtime evidence into the source ledger.",
       "rationale": "The latest init, doctor, and eval runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
       "evidence_refs": [
-        ".krn/init/20260619T220000Z-example/manifest.json",
-        ".krn/doctor/20260619T220100Z-example/report.json",
-        ".krn/eval/20260619T220200Z-example/report.json"
+        ".krn/init/20260620T210000Z-example/manifest.json",
+        ".krn/doctor/20260620T210100Z-example/report.json",
+        ".krn/eval/20260620T210200Z-example/report.json"
       ],
-      "source_refs": ["docs/goals/goal-006.md", "docs/plans/canonical/SOURCES.md"],
-      "blocked_surfaces": ["packages/mcp", "apps/dashboard", "runtime skills"]
+      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md"],
+      "blocked_surfaces": ["broad API sync", "dashboard command surfaces", "runtime skills"]
     },
     {
-      "id": "advance-after-human-review",
+      "id": "apply-memory-store-boundary",
       "proposal_type": "next_action",
       "status": "proposal_only",
-      "title": "After human review, start Slice 3 with a read-only MCP/API resource contract.",
-      "rationale": "Slice 3 must consume real typed runtime reports and stay read-only/proposal-only at first.",
+      "title": "Use selected memory IDs as review guidance before adding new product surfaces.",
+      "rationale": "The MemoryStore boundary is the active final-product slice; selected memory must produce application guidance and feedback before it counts as product memory.",
       "evidence_refs": [
-        ".krn/init/20260619T220000Z-example/manifest.json",
-        ".krn/doctor/20260619T220100Z-example/report.json",
-        ".krn/eval/20260619T220200Z-example/report.json"
+        "20260620T212000Z-example-memory-selection",
+        "20260620T212000Z-example-memory-application"
       ],
-      "source_refs": ["docs/goals/goal-006.md", "docs/product/final-product-plan.md"],
-      "blocked_surfaces": ["destructive MCP tools", "dashboard mocked state", "runtime skills"]
+      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"],
+      "blocked_surfaces": ["repo-local memory core", "context dump", "dashboard expansion", "benchmark expansion", "cloud sync"]
     }
   ],
+  "memory_selection": {
+    "schema_version": "krn-memory-selection.v1",
+    "kind": "krn_memory_selection",
+    "run_id": "20260620T212000Z-example-memory-selection",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "task_intent": "Review current KRN runtime evidence against the active final-product goal.",
+    "task_kind": "review",
+    "store_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "selected": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "reason": "Selected because the task targets repo-local memory-core and context-dump failure modes.",
+        "confidence": "high",
+        "source_lineage": [
+          "docs/goals/goal-038.md",
+          "docs/plans/canonical/SOURCES.md#C061"
+        ],
+        "expected_use": "Reject repo-local memory-core claims and require selected memory IDs, rejected context, application guidance, and feedback."
+      }
+    ],
+    "rejected": [],
+    "rejected_context": [
+      {
+        "ref": "docs/goals/goal-018.md..goal-034.md",
+        "reason": "Expanded benchmark goals are lab/archive context and are rejected for default product review."
+      },
+      {
+        "ref": "docs/memory/** full scan",
+        "reason": "Full memory-bank scans are context dumps; this review may use only selected memory IDs."
+      },
+      {
+        "ref": ".krn/** as memory core",
+        "reason": ".krn is runtime evidence/cache/ledger and must not be treated as authoritative memory."
+      }
+    ],
+    "retrieval_budget": {
+      "max_selected": 3,
+      "selection_policy": "active review records only; reject stale/lab/archive context and full memory-bank scans"
+    },
+    "overclaim_boundary": "This selection proves bounded local-dev memory selection only."
+  },
+  "memory_application": {
+    "schema_version": "krn-memory-application.v1",
+    "kind": "krn_memory_application",
+    "run_id": "20260620T212000Z-example-memory-application",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "surface": "krn_review",
+    "selection_run_id": "20260620T212000Z-example-memory-selection",
+    "applied_memory_ids": ["mem-goal-038-memory-boundary"],
+    "blockers": [
+      "Do not treat docs/memory/** or .krn/** as final memory core."
+    ],
+    "required_checks": [
+      "Review output must cite selected memory IDs and rejected context."
+    ],
+    "review_questions": [
+      "Did selected memory change the next review/action decision?"
+    ],
+    "blocked_bad_actions": [
+      "context_dump_from_docs_memory",
+      "repo_local_memory_core_claim",
+      "selected_memory_without_application_guidance"
+    ],
+    "next_action": "Use this application guidance in krn review, then record pending feedback to the MemoryStore adapter.",
+    "overclaim_boundary": "This application proves review guidance wiring only."
+  },
+  "memory_feedback": {
+    "schema_version": "krn-memory-feedback.v1",
+    "kind": "krn_memory_feedback",
+    "run_id": "20260620T212000Z-example-memory-feedback",
+    "created_at": "2026-06-20T21:20:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "selection_run_id": "20260620T212000Z-example-memory-selection",
+    "application_run_id": "20260620T212000Z-example-memory-application",
+    "feedback_sink_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "overall_outcome": "pending_review",
+    "memory_outcomes": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "outcome": "pending_review",
+        "reason": "KRN applied this memory to review guidance; human/metric outcome is pending."
+      }
+    ],
+    "notes": "Feedback is usage evidence, not a productivity-lift claim."
+  },
   "summary": {
     "total_artifacts": 3,
     "present_artifacts": 3,
     "missing_artifacts": 0,
     "invalid_artifacts": 0,
-    "findings": 3,
+    "findings": 4,
     "blocking_findings": 0,
     "proposals": 2
   },
   "no_touch_paths": ["AGENTS.md", ".codex", ".agents", "docs/memory", "docs/evals", "docs/plans"],
-  "runtime_report_path": ".krn/review/20260619T223000Z-example/report.json",
+  "runtime_report_path": ".krn/review/20260620T212000Z-example/report.json",
   "source_refs": [
-    "docs/goals/goal-006.md",
+    "docs/goals/goal-038.md",
     "docs/specs/krn-review/README.md",
     "docs/evals/STANDARD.md",
-    "docs/product/final-product-plan.md"
+    "docs/plans/canonical/draft.md",
+    "docs/plans/canonical/SOURCES.md#C061"
   ],
-  "interpretation_caveat": "This report proposes human review actions from local runtime artifacts only; it does not approve memory/source changes, prove productivity lift, or unblock destructive API/MCP/dashboard behavior by itself."
+  "interpretation_caveat": "This report applies selected memory IDs to local review guidance only; it does not approve memory/source changes, store authoritative memory in the repo, prove productivity lift, or unblock destructive API/MCP/dashboard behavior by itself."
 }

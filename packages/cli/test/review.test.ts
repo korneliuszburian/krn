@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseKrnReviewReport } from "@krn/contracts";
+import { writeMemoryStoreFixture } from "./memory-store-fixture.js";
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -12,9 +13,13 @@ function readJson(path: string): unknown {
 describe("krn review", () => {
   it("writes a proposal-only review report without mutating target setup files", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-review-target-"));
+    const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
+    const storePath = join(storeRoot, "memory-store.json");
+    writeMemoryStoreFixture(storePath);
 
     const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "review", "--target", targetRoot], {
       cwd: process.cwd(),
+      env: { ...process.env, KRN_MEMORY_STORE_PATH: storePath },
       encoding: "utf8",
     });
 
@@ -27,6 +32,14 @@ describe("krn review", () => {
     expect(report.overall_status).toBe("needs_attention");
     expect(report.artifacts.map((artifact) => artifact.status)).toEqual(["missing", "missing", "missing"]);
     expect(report.proposals.every((proposal) => proposal.status === "proposal_only")).toBe(true);
+    expect(report.memory_selection.selected.map((selected) => selected.memory_id)).toEqual([
+      "mem-goal-038-memory-boundary",
+      "mem-goal-038-simplify-cadence",
+    ]);
+    expect(report.memory_selection.rejected_context.map((context) => context.ref)).toContain("docs/memory/** full scan");
+    expect(report.memory_application.applied_memory_ids).toEqual(report.memory_selection.selected.map((selected) => selected.memory_id));
+    expect(report.memory_feedback.feedback_sink_ref).toBe(`local-dev-json:${storePath}`);
+    expect(JSON.stringify(report)).not.toContain("KRN memory must be selected from a store boundary");
     expect(existsSync(join(targetRoot, ".krn", "review", report.run_id, "report.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
     expect(existsSync(join(targetRoot, ".codex"))).toBe(false);
@@ -35,5 +48,9 @@ describe("krn review", () => {
 
     const topLevelEntries = readdirSync(targetRoot).sort();
     expect(topLevelEntries).toEqual([".krn"]);
+
+    const storeAfterReview = readJson(storePath) as { feedback?: unknown[]; records?: Array<{ last_used_at?: string | null }> };
+    expect(storeAfterReview.feedback).toHaveLength(1);
+    expect(storeAfterReview.records?.filter((record) => record.last_used_at !== null)).toHaveLength(2);
   }, 30_000);
 });

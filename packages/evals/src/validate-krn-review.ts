@@ -1,5 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { parseKrnReviewReport } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
 
@@ -94,8 +95,30 @@ function hasRequiredArtifacts(report: ReturnType<typeof parseKrnReviewReport>): 
   return REQUIRED_ARTIFACTS.every((artifactId) => artifactIds.includes(artifactId));
 }
 
+function hasMemoryApplication(report: ReturnType<typeof parseKrnReviewReport>): boolean {
+  return report.memory_selection.selected.length > 0 && report.memory_application.applied_memory_ids.length > 0;
+}
+
 function proposalsAreReviewOnly(report: ReturnType<typeof parseKrnReviewReport>): boolean {
   return report.proposals.every((proposal) => proposal.status === "proposal_only");
+}
+
+function runReviewWithFixtureStore(target: string): ReturnType<typeof runKrnCli> {
+  const storeDir = mkdtempSync(join(tmpdir(), "krn-review-eval-store-"));
+  const storePath = join(storeDir, "memory-store.json");
+  const previousStorePath = process.env["KRN_MEMORY_STORE_PATH"];
+
+  copyFileSync(resolve("docs/specs/krn-memory-store/examples/local-memory-store.example.json"), storePath);
+  process.env["KRN_MEMORY_STORE_PATH"] = storePath;
+  try {
+    return runKrnCli(["review", "--target", target]);
+  } finally {
+    if (previousStorePath === undefined) {
+      delete process.env["KRN_MEMORY_STORE_PATH"];
+    } else {
+      process.env["KRN_MEMORY_STORE_PATH"] = previousStorePath;
+    }
+  }
 }
 
 function runValidation(): EvalReport {
@@ -165,7 +188,7 @@ function runValidation(): EvalReport {
   if (!generatedCase) {
     throw new Error("Missing case generated-review-report-parses");
   }
-  const cliResult = runKrnCli(["review", "--target", "."]);
+  const cliResult = runReviewWithFixtureStore(".");
   const cliReportPath = cliResult.stdout.trim();
   generatedReportPath = cliReportPath;
   if (cliResult.exitCode !== 0) {
@@ -181,8 +204,15 @@ function runValidation(): EvalReport {
           report.command === "krn review" &&
             existsSync(cliReportPath) &&
             hasRequiredArtifacts(report) &&
+            hasMemoryApplication(report) &&
             proposalsAreReviewOnly(report),
-          ["CLI exits zero", "generated report exists", "generated report parses", "proposals are proposal-only"],
+          [
+            "CLI exits zero",
+            "generated report exists",
+            "generated report parses",
+            "memory selection is applied",
+            "proposals are proposal-only",
+          ],
           generatedCase.failure_mode,
           "Generated krn review report parsed through @krn/contracts.",
         ),
@@ -224,7 +254,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_report_path: generatedReportPath,
     interpretation_caveat:
-      "This eval proves krn review proposal-report contract behavior only; it does not prove human approval, productivity lift, API/MCP readiness, or dashboard readiness.",
+      "This eval proves krn review proposal-report contract behavior and memory-application wiring only; it does not prove human approval, productivity lift, final memory quality, API/MCP readiness, or dashboard readiness.",
   };
 }
 

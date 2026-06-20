@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KrnMemoryApplicationSchema, KrnMemoryFeedbackSchema, KrnMemorySelectionSchema } from "./memory-store.js";
 
 const SourceRefSchema = z.string().min(1);
 
@@ -73,13 +74,28 @@ export const KrnReviewReportSchema = z
     artifacts: z.array(ReviewArtifactSchema).min(1),
     findings: z.array(ReviewFindingSchema),
     proposals: z.array(ReviewProposalSchema).min(1),
+    memory_selection: KrnMemorySelectionSchema,
+    memory_application: KrnMemoryApplicationSchema,
+    memory_feedback: KrnMemoryFeedbackSchema,
     summary: ReviewSummarySchema,
     no_touch_paths: z.array(z.string().min(1)).min(1),
     runtime_report_path: z.string().min(1),
     source_refs: z.array(SourceRefSchema).min(1),
     interpretation_caveat: z.string().min(1),
   })
-  .strict();
+  .strict()
+  .superRefine((report, ctx) => {
+    const appliedMemoryIds = new Set(report.memory_application.applied_memory_ids);
+    for (const selected of report.memory_selection.selected) {
+      if (!appliedMemoryIds.has(selected.memory_id)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["memory_application", "applied_memory_ids"],
+          message: `selected memory ${selected.memory_id} is missing application guidance`,
+        });
+      }
+    }
+  });
 
 export type KrnReviewReport = z.infer<typeof KrnReviewReportSchema>;
 export type ReviewArtifact = z.infer<typeof ReviewArtifactSchema>;

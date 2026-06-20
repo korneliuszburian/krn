@@ -1,0 +1,101 @@
+{
+  "schema_version": "krn-operating-brief.v1",
+  "kind": "krn_operating_brief",
+  "run_id": "bad-operating-brief-unselected-context",
+  "created_at": "2026-06-20T21:10:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "command": "krn brief",
+  "task_intent": "Dump old memory context.",
+  "target_path": null,
+  "selected_context": [
+    {
+      "ref": "memory:unselected-memory",
+      "reason": "bad fixture references memory that was not selected",
+      "confidence": "low",
+      "source_lineage": ["docs/memory/INDEX.md"]
+    }
+  ],
+  "rejected_context": [
+    {
+      "ref": "none",
+      "reason": "bad fixture intentionally rejects nothing useful"
+    }
+  ],
+  "applied_kernel_terms": ["memory-operative"],
+  "required_skills": [],
+  "memory_selection": {
+    "schema_version": "krn-memory-selection.v1",
+    "kind": "krn_memory_selection",
+    "run_id": "bad-operating-brief-unselected-context-memory-selection",
+    "created_at": "2026-06-20T21:10:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "task_intent": "Dump old memory context.",
+    "task_kind": "planning",
+    "store_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "selected": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "reason": "selected fixture memory",
+        "confidence": "high",
+        "source_lineage": ["docs/goals/goal-038.md"],
+        "expected_use": "selected fixture memory"
+      }
+    ],
+    "rejected": [],
+    "rejected_context": [
+      {
+        "ref": "docs/memory/** full scan",
+        "reason": "Full memory-bank scans are context dumps."
+      }
+    ],
+    "retrieval_budget": {
+      "max_selected": 3,
+      "selection_policy": "active planning records only"
+    },
+    "overclaim_boundary": "bad fixture"
+  },
+  "memory_application": {
+    "schema_version": "krn-memory-application.v1",
+    "kind": "krn_memory_application",
+    "run_id": "bad-operating-brief-unselected-context-memory-application",
+    "created_at": "2026-06-20T21:10:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "surface": "krn_brief",
+    "selection_run_id": "bad-operating-brief-unselected-context-memory-selection",
+    "applied_memory_ids": ["mem-goal-038-memory-boundary"],
+    "blockers": ["block context dump"],
+    "required_checks": ["check selected IDs"],
+    "review_questions": ["did this help"],
+    "blocked_bad_actions": ["context_dump_from_docs_memory"],
+    "next_action": "bad fixture",
+    "overclaim_boundary": "bad fixture"
+  },
+  "memory_feedback": {
+    "schema_version": "krn-memory-feedback.v1",
+    "kind": "krn_memory_feedback",
+    "run_id": "bad-operating-brief-unselected-context-memory-feedback",
+    "created_at": "2026-06-20T21:10:00.000Z",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "selection_run_id": "bad-operating-brief-unselected-context-memory-selection",
+    "application_run_id": "bad-operating-brief-unselected-context-memory-application",
+    "feedback_sink_ref": "local-dev-json:/tmp/krn-memory-store.json",
+    "overall_outcome": "pending_review",
+    "memory_outcomes": [
+      {
+        "memory_id": "mem-goal-038-memory-boundary",
+        "outcome": "pending_review",
+        "reason": "pending"
+      }
+    ],
+    "notes": "bad fixture"
+  },
+  "next_action": "bad fixture",
+  "verification": {
+    "command": "pnpm typecheck",
+    "artifact": ".krn/briefs/bad/brief.json"
+  },
+  "runtime_report_path": ".krn/briefs/bad/brief.json",
+  "source_refs": ["docs/goals/goal-038.md"],
+  "overclaim_boundary": "bad fixture",
+  "interpretation_caveat": "bad fixture"
+}

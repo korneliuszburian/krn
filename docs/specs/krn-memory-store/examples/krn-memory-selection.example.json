@@ -1,0 +1,43 @@
+{
+  "schema_version": "krn-memory-selection.v1",
+  "kind": "krn_memory_selection",
+  "run_id": "20260620T210000Z-example-memory-selection",
+  "created_at": "2026-06-20T21:00:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "task_intent": "Build the MemoryStore boundary and memory selection/application proof.",
+  "task_kind": "planning",
+  "store_ref": "local-dev-json:/tmp/krn-memory-store.json",
+  "selected": [
+    {
+      "memory_id": "mem-goal-038-memory-boundary",
+      "reason": "Selected because the task targets repo-local memory-core and context-dump failure modes.",
+      "confidence": "high",
+      "source_lineage": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/SOURCES.md#C061"
+      ],
+      "expected_use": "Reject repo-local memory-core claims and require selected memory IDs, rejected context, application guidance, and feedback."
+    }
+  ],
+  "rejected": [
+    {
+      "memory_id": "mem-expanded-arena-lab",
+      "reason": "Not selected because benchmark lab records are not default product context."
+    }
+  ],
+  "rejected_context": [
+    {
+      "ref": "docs/goals/goal-018.md..goal-034.md",
+      "reason": "Expanded benchmark goals are lab/archive context and are rejected for default product work."
+    },
+    {
+      "ref": "docs/memory/** full scan",
+      "reason": "Full memory-bank scans are context dumps; this run may use only selected memory IDs."
+    }
+  ],
+  "retrieval_budget": {
+    "max_selected": 3,
+    "selection_policy": "active planning records only; reject stale/lab/archive context and full memory-bank scans"
+  },
+  "overclaim_boundary": "This selection proves bounded local-dev memory selection only."
+}

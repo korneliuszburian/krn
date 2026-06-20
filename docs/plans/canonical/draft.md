@@ -6,7 +6,11 @@
 
 [HYPOTHESIS] This can become a breakthrough wedge if it proves measurable improvement on real KRN tasks. It is not a proven breakthrough today.
 
-[DECISION] The execution source of truth is now [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md) plus [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). `goal-005` is no longer the active product direction; it is Slice 2 context for `krn init --dry-run`.
+[DECISION] The execution source of truth is now this canonical blueprint plus [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md). [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md) is a compatibility pointer, while `goal-006` and `goal-037` are historical evidence. `goal-005` is no longer the active product direction; it is Slice 2 context for `krn init --dry-run`.
+
+[DECISION] [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md) absorbs the `goal-037` engineering-kernel reset into one final-product endgame. Non-trivial work must remain mechanism-first, bottleneck-led, production-shaped, context-budgeted, diff-literate, review-minimizing, memory-operative, proof-carrying, and deletion-friendly.
+
+[DECISION] The next useful product bottleneck is the `MemoryStore` boundary and memory selection/application proof, not another passive planning artifact. The slice must define a store interface, use a local dev adapter outside project-repo truth, return memory IDs with reasons/confidence/source lineage, change `krn review` or the nearest review workflow through selected guidance, record runtime memory IDs and feedback, and fail a known-bad context dump.
 
 The short version:
 
@@ -79,9 +83,161 @@ Stars, social posts, and benchmark rankings are discovery signals, not proof.
 | MCP/API | Small allowlisted append-only bridge | Local files only | Unsafe or untraceable writes |
 | Evals | Trace-derived micro/macro evals | Manual review matrix | Green tests do not predict review |
 | Dashboard | Review/control UI over memory/source/eval objects | Markdown reports | Metrics have no owner/action |
-| Security | Least-power, dry-run, approval-first | Read-only-only MVP | Users bypass guardrails |
+| Security | Least-power, dry-run, approval-first | Read-only/proposal-only first slice | Users bypass guardrails |
 
-## 6. OpenAI / Codex Surface Decisions
+## 6. Architecture Graphs
+
+These graphs are the canonical compact architecture map required by the original research goal. They are deliberately product-shaped, not a promise that every edge is already implemented.
+
+### Graph 1 - Product End To End
+
+```mermaid
+flowchart TD
+  Intake[Repo task intake] --> Select[Selector: AGENTS, memory index, active goal]
+  Select --> Skill[Operator skill workflow]
+  Skill --> Runtime[krn CLI runtime reports]
+  Runtime --> Contracts[Typed contracts and parsers]
+  Contracts --> Eval[Eval and repair loop]
+  Runtime --> MCP[MCP read/proposal boundary]
+  Eval --> MCP
+  MCP --> Dashboard[Dashboard review surfaces]
+  Dashboard --> Decision[Human review decision]
+  Decision --> Promotion[Approved memory/source/repair promotion]
+  Promotion --> NextRun[Next Codex run]
+  NextRun --> Benchmark[Baseline vs assisted measurement]
+  Benchmark --> Repair[No-lift repair target]
+  Repair --> Skill
+```
+
+Mechanism: source-backed operating loop. Verification: every edge needs a typed object, generated artifact, eval, or review record before it can be claimed as implemented.
+
+### Graph 2 - `krn init`
+
+```mermaid
+flowchart TD
+  Init[krn init --dry-run] --> Detect[Detect repo, package manager, Codex surfaces]
+  Detect --> Manifest[Init manifest under .krn/init]
+  Manifest --> Agents[AGENTS.md guidance proposal]
+  Manifest --> Skills[Repo skills proposal]
+  Manifest --> Hooks[Hook config proposal]
+  Manifest --> EvalConfig[Eval/source scaffolding proposal]
+  Manifest --> Report[Human-readable dry-run report]
+  Report --> Review[Operator review]
+  Review --> Apply{Explicit apply?}
+  Apply -->|no| Stop[No target mutation]
+  Apply -->|yes| Write[Bounded generated writes with rollback metadata]
+  Write --> Doctor[krn doctor readiness report]
+```
+
+Mechanism: dry-run and manifest before mutation. Verification: parser tests and `krn init --dry-run` evidence prove the report shape only, not write-mode safety.
+
+### Graph 3 - Long-Running Codex Goal
+
+```mermaid
+flowchart TD
+  Goal[/goal objective or goal file] --> Contract[Outcome, evidence, constraints, blocked condition]
+  Contract --> Plan[Execution plan or active child goal]
+  Plan --> Work[Small vertical slice]
+  Work --> Evidence[Tests, evals, artifacts, diff]
+  Evidence --> Audit[Requirement-by-requirement completion audit]
+  Audit -->|complete| Close[Mark goal complete]
+  Audit -->|gap| Next[Record next concrete action]
+  Next --> Checkpoint[Compact checkpoint selector]
+  Checkpoint --> Resume[Resume from files, not chat memory]
+  Resume --> Plan
+```
+
+Mechanism: goal autonomy constrained by evidence and selectors. Verification: completion requires direct evidence for each explicit requirement, not plausible progress.
+
+### Graph 4 - Memory Lifecycle
+
+```mermaid
+flowchart TD
+  Source[Source, trace, eval, or repo evidence] --> Proposal[Memory/source proposal]
+  Proposal --> Validate[Source refs, owner, status, invalidation rule]
+  Validate --> Review[Human or dashboard review]
+  Review -->|reject| Rejected[Rejected or needs more evidence]
+  Review -->|approve| Durable[Reviewed memory or decision]
+  Durable --> Select[Task-time selection]
+  Select --> Apply[Skill, CLI, contract, or review action]
+  Apply --> Measure[Did it reduce the failure mode?]
+  Measure -->|yes| Keep[Keep confidence]
+  Measure -->|no/stale| Invalidate[Supersede, expire, or repair]
+  Invalidate --> Proposal
+```
+
+Mechanism: memory is useful only when selected, applied, reviewed, and measured. Verification: the next product slice should prove selection/application, because file-backed notes alone are only an audit substrate.
+
+### Graph 5 - Eval Loop
+
+```mermaid
+flowchart TD
+  Failure[Observed failure or review burden] --> Classify[Failure taxonomy]
+  Classify --> Fixture[Known-bad fixture or benchmark task]
+  Fixture --> Change[Small intervention]
+  Change --> Validate[Deterministic test/eval]
+  Validate --> Live{Needs live evidence?}
+  Live -->|no| Report[Eval report with caveat]
+  Live -->|yes| Worker[Explicit codex exec worker lane]
+  Worker --> Benchmark[KrnBenchmarkReport]
+  Benchmark --> Decision[Keep, repair, or discard]
+  Report --> Decision
+  Decision --> Ledger[Claim/source/repair ledger]
+```
+
+Mechanism: evals protect contracts or measured hypotheses. Verification: green evals state what they do not prove, especially around productivity lift.
+
+### Graph 6 - API Bidirectional Sync
+
+```mermaid
+flowchart LR
+  Codex[Codex CLI] -->|read| MCPResources[Allowlisted MCP resources]
+  MCPResources --> Runtime[.krn runtime reports]
+  MCPResources --> Sources[Source and claim ledger]
+  MCPResources --> Memory[Reviewed memory pointers]
+  Codex -->|propose| MCPTools[Proposal-only MCP tools]
+  MCPTools --> Store[Append-only proposal stores]
+  Store --> Dashboard[Dashboard review]
+  Dashboard --> Decision[Review decision ledger]
+  Decision --> Promotion[Explicit promotion workflow]
+  Promotion --> Files[Reviewed repo artifacts]
+```
+
+Mechanism: pull current truth, push proposals. Verification: read models and proposal stores are separate; destructive writes remain out of the default boundary.
+
+### Graph 7 - Subagent Delegation Model
+
+```mermaid
+flowchart TD
+  Parent[Main Codex thread] --> Need{Independent read-heavy work?}
+  Need -->|no| Single[Stay single-agent]
+  Need -->|yes| Delegate[Spawn bounded subagent]
+  Delegate --> Scope[Read-only scope, exact question, output contract]
+  Scope --> Work[Source/test/log exploration]
+  Work --> Handoff[Structured summary with evidence refs]
+  Handoff --> ParentReview[Parent verifies and applies selectively]
+  ParentReview --> Decision[Decision or rejected finding]
+```
+
+Mechanism: isolate noisy exploration without outsourcing product decisions. Verification: subagents should reduce context pollution or wall time; otherwise they are coordination overhead.
+
+### Graph 8 - Source To Decision Pipeline
+
+```mermaid
+flowchart TD
+  Candidate[Source candidate] --> Inspect[Read relevant section or repo mechanism]
+  Inspect --> Observation[Observation]
+  Observation --> Mechanism[Extracted mechanism]
+  Mechanism --> Claim[Claim ledger entry]
+  Claim --> Decision[Decision, rejected alternative, or hypothesis]
+  Decision --> Behavior[Skill, contract, CLI path, eval, or dashboard rule]
+  Behavior --> Falsify[Verification or falsification path]
+  Falsify --> ReviewTrigger[Review trigger and caveat]
+```
+
+Mechanism: sources are not decoration. A source supports KRN only when it changes a decision, behavior, eval, or rejection.
+
+## 7. OpenAI / Codex Surface Decisions
 
 [DECISION] Official OpenAI/Codex docs are the source of truth for Codex-specific design.
 
@@ -95,13 +251,13 @@ Codex surfaces and KRN use:
 - Memories: helpful local recall, not project truth.
 - `codex exec`: worker lane for CI, evals, repair passes, and structured reports.
 - `/goal`: interactive long-running objective lane.
-- App server/SDK: later integration surfaces for dashboard/control, not MVP dependency.
+- App server/SDK: later integration surfaces for dashboard/control, not first-slice dependency.
 
 Important constraint:
 
 `codex exec` does not replace a continuous interactive Goal loop. It can run a bounded worker pass, stream JSONL, produce structured output, and sometimes resume a session, but KRN continuity must live in checked-in artifacts and run ledgers.
 
-## 7. Long-Running Goal Mechanism
+## 8. Long-Running Goal Mechanism
 
 Use three layers:
 
@@ -139,7 +295,7 @@ PostCompact(auto/manual)
 
 [DECISION] Do not solve context rot by loading more context. Solve it by ranking context: current user instruction, compact checkpoint, memory index, then selected canonical docs.
 
-## 8. Memory Kernel Architecture
+## 9. Memory Kernel Architecture
 
 Memory entry schema should include:
 
@@ -160,7 +316,7 @@ Memory entry schema should include:
 - `eval_refs`
 - `review_notes`
 
-The first implementation can be markdown files under `docs/memory`. Later it can become a proper store/API, but the schema must stay source-backed.
+The current bootstrap substrate can be markdown files under `docs/memory`, but the product claim starts only when a selection/application path consumes those entries. Later it can become a proper store/API, but the schema must stay source-backed and reviewable.
 
 Best extracted patterns:
 
@@ -170,7 +326,7 @@ Best extracted patterns:
 - Hindsight: separate facts, experiences, entity summaries, and beliefs.
 - MemPalace critique: local verbatim storage can be powerful, but spatial metaphor is not automatically the cause of retrieval quality.
 
-## 9. Source and Claim Ledger
+## 10. Source and Claim Ledger
 
 `SOURCES.md` is not bibliography decoration. It is the input to the claim ledger.
 
@@ -185,7 +341,7 @@ Required source workflow:
 
 Unsupported claims must be marked `[HYPOTHESIS]` or removed.
 
-## 10. Skills, Subagents, Hooks, MCP Architecture
+## 11. Skills, Subagents, Hooks, MCP Architecture
 
 KRN has two skill layers. They must not be mixed.
 
@@ -246,7 +402,7 @@ ChatGPT reviewer bridge:
 - only after that, if still useful, add proposal-only writes visible in the dashboard,
 - never describe the bridge as direct ChatGPT-to-local-Codex stdio; Codex can run as an MCP server over stdio for another local tool, while ChatGPT connectors need a reachable app/gateway endpoint.
 
-## 11. Evals and Improvement Loop
+## 12. Evals and Improvement Loop
 
 KRN eval ladder:
 
@@ -270,7 +426,7 @@ Improvement loop:
 real trace -> human/model feedback -> known-bad fixture -> proposed change -> train/validation split -> review -> release -> regression monitor
 ```
 
-Promptfoo is a strong early runner candidate because it keeps eval configs near code and works in CLI/CI. OpenAI eval dashboards can inform patterns but should not become MVP dependency.
+Promptfoo is a strong early runner candidate because it keeps eval configs near code and works in CLI/CI. OpenAI eval dashboards can inform patterns but should not become a first-slice dependency.
 
 Early KRN metrics:
 
@@ -283,7 +439,7 @@ Early KRN metrics:
 
 These are setup-compliance metrics, not breakthrough proof. Breakthrough proof still needs baseline Codex vs KRN-scaffolded Codex on real tasks.
 
-## 12. Dashboard / Control Plane Architecture
+## 13. Dashboard / Control Plane Architecture
 
 The dashboard should look closer to the provided Memory Core UI than to a metrics homepage.
 
@@ -314,7 +470,7 @@ Dashboard rule:
 
 Every metric must have an owner, action, source, and failure mode.
 
-## 13. Security and Governance
+## 14. Security and Governance
 
 Default posture:
 
@@ -334,7 +490,7 @@ Early roles:
 - agent: can propose but not approve,
 - viewer: can inspect approved state.
 
-## 14. Market and Practitioner Comparison
+## 15. Market and Practitioner Comparison
 
 Best practitioner patterns to keep:
 
@@ -357,23 +513,18 @@ Do not rank by stars. For each repo, inspect:
 - what problem it actually solves,
 - what KRN should borrow or reject.
 
-## 15. Roadmap
+## 16. Roadmap
 
-| Phase | Outcome | Eval gate | Kill criterion |
+| Slice | Outcome | Proof gate | Kill criterion |
 |---|---|---|---|
-| P0 | Canonical docs, source index, memory index | Coverage checklist passes | Plan still generic |
-| P1 | Operator skill pipeline spec | One task can move from grill to handoff | Skills are disconnected prompts |
-| P2 | `krn init --dry-run` scaffold spec | Generated manifest explainable | Generated files confuse operator |
-| P3 | GitHub solution research pack | 10 repos inspected by mechanism | Star-count summary only |
-| P4 | Compact hook prototype | Real Pre/PostCompact proof | Hook cannot reliably checkpoint |
-| P5 | Local eval harness | Known-bad fixtures work | Evals do not catch real failures |
-| P6 | Memory proposal schema | Review states and invalidation work | Memory becomes stale truth |
-| P7 | Source-backed proposal store | Unbacked proposals fail before persistence | Proposal refs stay decorative |
-| P8 | Dashboard prototype | Reads real events/proposals | UI shows vanity metrics |
-| P9 | Baseline vs KRN benchmark | 20 real task comparison | No measurable workflow lift |
-| P10 | Optional ChatGPT reviewer bridge | Reviewer finds useful drift against stable local truth | Reviewer repeats stale context or distracts from local loop |
+| S1 | Operator build system | skill contract and impact evals protect workflow boundaries | Skills become disconnected prompts |
+| S2 | Typed runtime spine | `pnpm typecheck`, `pnpm test`, valid/known-bad fixtures, schema-backed `.krn` reports | CLI output becomes prose or silently mutates targets |
+| S3a | Read/proposal control plane | MCP resources and proposal stores are allowlisted, append-only, idempotent, and source-backed | Proposal refs become decorative or unsafe |
+| S3b | Dashboard review surfaces | UI reads generated typed product objects only and every row has owner/source/action/failure mode | UI shows vanity metrics or chat-derived state |
+| S3c | Benchmark and repair loop | live evidence stays explicit, lift remains unclaimed below the gate, no-lift creates repair records | Green fixture/live reports are overclaimed as productivity proof |
+| Next | Memory store boundary and selection/application proof | `MemoryStore` interface, local dev adapter, selector IDs/reasons/confidence/source lineage, review-path application, runtime feedback, and known-bad context-dump rejection | Memory remains a repo file bank with no behavioral effect |
 
-## 16. Kill Criteria
+## 17. Kill Criteria
 
 Kill or redesign the product if:
 
@@ -385,15 +536,16 @@ Kill or redesign the product if:
 - `krn init` generates more overhead than it removes,
 - users cannot explain what KRN changed.
 
-## 17. Open Questions
+## 18. Open Questions
 
-- Should `docs/memory` remain markdown long-term, or become generated from a structured store?
+- What is the smallest `MemoryStore` interface and review-path integration that changes a real action or review decision?
+- Should `docs/memory` remain markdown long-term, or become generated from a structured store after selection/application is proven?
 - How aggressive should PreCompact blocking be?
 - Should Sandcastle-like sandboxing be a KRN feature or only a reference pattern?
 - Which first 20 tasks become the baseline benchmark?
 - What is the smallest dashboard object model worth prototyping?
 
-## 18. Decision Log
+## 19. Decision Log
 
 | Date | Decision | Reason |
 |---|---|---|
@@ -408,10 +560,11 @@ Kill or redesign the product if:
 | 2026-06-19 | Cookbook links become pattern maps, not bibliography. | OpenAI examples matter when they change artifacts, evals, or stop conditions. |
 | 2026-06-19 | `autoresearch` is a bounded metric-loop reference only. | Borrow baseline/metric/budget/keep-discard; do not import endless autonomy. |
 | 2026-06-19 | Semantic policies stay out of hooks for now. | User rejected extra hooks, and OpenAI hook guidance fits deterministic lifecycle events better than semantic product truth. |
+| 2026-06-20 | Goal 038 becomes the active final-product execution contract. | It absorbs the engineering-kernel reset and routes the next product slice toward the `MemoryStore` boundary plus selection/application proof. |
 
-## 19. Source Coverage Checklist
+## 20. Source Coverage Checklist
 
-- Total sources: 88.
+- Total external sources: 95.
 - Official OpenAI/Codex/Cookbook sources: S001-S021, S086-S087.
 - Papers/benchmarks: S023, S025-S046, S047-S052.
 - Memory sources: S023-S040.
@@ -420,5 +573,7 @@ Kill or redesign the product if:
 - Competitor/open-source sources: S067-S073.
 - Deferred ChatGPT reviewer bridge sources: S078-S085.
 - Controlled experiment-loop source: S088.
+- Local evidence entries: LOCAL001-LOCAL047.
+- Active reset claims: C059-C061.
 
 Final verdict: KRN is not proven breakthrough yet. The strongest path is a disciplined source-backed control plane where Codex work produces reviewable memory, eval, trace, and decision artifacts, and where every future dashboard feature reads those artifacts instead of inventing state.
