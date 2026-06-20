@@ -17,12 +17,14 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Agent-Computer Interface | Agent-first CLI with schemas and JSONL | S009, S041, S045 | A | Agents consume machine-readable commands/results | Strong fit | CLI becomes human prose only | adopt |
 | Agent-Computer Interface | Sandboxed worktree execution | S020, S045, S059 | A/B | Isolate changes, collect logs/commits | Strong later fit | Adds runner scope too early | test |
 | Agent-Computer Interface | Public benchmark chasing | S042-S046 | A | Optimize to leaderboard tasks | Weak fit | Does not prove local workflow lift | reject |
+| Agent-Computer Interface | Event-structured TypeScript contracts | S096-S098, S089-S092, C065 | B/C/local | Make possible states, transitions, and outcomes explicit so AI can patch feature logic without touching presentation or the whole codebase | Strong fit for stateful KRN runtime/UI surfaces | Overfitting frontend EDA into every simple CLI/parser task | test |
 | Long-Running Goals | Interactive `/goal` contract | S010 | A | Persistent objective, evidence check, stop states | Strong fit | Vague goal never completes | adopt |
 | Long-Running Goals | `codex exec` as continuous conversation | S009, S010 | A | Misreads worker mode as active loop | Bad fit | Broken handoff and false autonomy | reject |
 | Long-Running Goals | ExecPlan as self-contained state | S011, S012 | A | Plan can restart work without prior context | Strong fit | Plan becomes stale if not updated | adopt |
 | Long-Running Goals | PreCompact/PostCompact checkpoint | S006, S017 | A | Lifecycle hooks capture/reload state around compaction | Promising fit | Secret leaks or stale checkpoint trust | test |
 | Memory Kernel | Source-backed memory entries | S025-S040 | A | Store claims with evidence, time, confidence, invalidation | Strong fit | Memory treated as truth | adopt |
 | Memory Kernel | Temporal knowledge graph | S026, S027, S031 | A | Time-aware entities and relationships | Later fit | Premature graph complexity | test |
+| Memory Kernel | Living memory maintenance loop | S023-S040, C064, LOCAL050 | A/local/C | Ingest, distill, project entities/edges, detect gaps/anomalies/duplicates, repair stale knowledge, compact durable structures, and route consensus through review | Strong final-state candidate after selection/application proof | Futurist brain language becomes untested graph/vector/neural infrastructure | test |
 | Memory Kernel | Zettelkasten dynamic linking | S030 | A | Notes link/evolve as new evidence arrives | Good fit for docs memory | Agent over-links noise | test |
 | Memory Kernel | Verbatim local storage | S033, S034 | A/B | Store raw text and retrieve via embeddings/metadata | Useful for local traces | Raw private data and weak abstraction | test |
 | Memory Kernel | Extraction-only memory | S025, S034 | A | Condense into salient facts | Partial fit | Loses evidence and nuance | defer |
@@ -35,6 +37,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Skills | Unstructured prompt collection | S056, S077 | B | Many disconnected skills/prompts | Bad fit | Confusion and trigger drift | reject |
 | Skills | Skill trigger evals | S004, S014, S053 | A | Test whether skill triggers correctly | Strong fit | Eval theatre if no failures | adopt |
 | Skills | Package as plugins early | S004 | A | Distribute reusable bundles | Later fit | Premature distribution | defer |
+| Skills | Skill markdown accretion warning | S096, C065, LOCAL050 | C/local | Skill misses should improve trigger tests, examples, evals, ownership, and deletion criteria instead of appending endless bullets | Strong fit | KRN recreates an unmaintainable pile of markdown | adopt |
 | Subagents | Narrow read-only research/review agents | S005, S016, S061 | A/C | Isolate context and parallelize review | Strong fit | Token chaos and shallow reports | adopt |
 | Subagents | Recursive agent swarm | S005 | A | Deep fan-out | Bad fit | Latency, cost, unpredictability | reject |
 | Hooks | Deterministic guard hooks | S006, S068 | A | Block/capture known events | Strong fit | False sense of sandbox | adopt |
@@ -67,7 +70,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 - Memory/context patterns: S023-S040.
 - Eval/self-improvement patterns: S013-S016, S049-S053.
 - Coding-agent benchmark/interface patterns: S041-S046.
-- Practitioner/senior-engineering patterns: S055-S065, S076-S077.
+- Practitioner/senior-engineering patterns: S055-S065, S076-S077, S096-S098.
 - Deferred ChatGPT reviewer bridge patterns: S078-S085.
 - Controlled experiment loop pattern: S088.
 - Dashboard/control-plane patterns: rows under Dashboard plus Product Identity.

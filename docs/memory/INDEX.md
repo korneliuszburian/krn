@@ -113,6 +113,7 @@ Before major planning work:
 - [KRN source bank and engineering pattern memory](./product/2026-06-20--krn-source-bank-and-engineering-patterns.md)
 - [KRN AI harness dictionary](./product/2026-06-20--krn-ai-harness-dictionary.md)
 - [KRN senior engineering lens](./product/2026-06-20--krn-senior-engineering-lens.md)
+- [Practitioner memory brain candidates](./product/2026-06-20--practitioner-memory-brain-candidates.md)
 - [KRN research pack runtime scaffold](./product/2026-06-20--krn-research-pack-runtime-scaffold.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
