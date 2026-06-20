@@ -13,8 +13,8 @@
     "next_action": "Use the available runtime artifacts as dashboard source rows.",
     "failure_mode": "Dashboard resource health is overclaimed if any count is invented or detached from the MCP read model.",
     "status": "ready",
-    "total_resources": 5,
-    "available_resources": 5,
+    "total_resources": 6,
+    "available_resources": 6,
     "missing_resources": 0,
     "invalid_resources": 0
   },
@@ -82,6 +82,22 @@
       "latest_report_path": ".krn/review/20260619T220300Z-test/report.json",
       "title": "Latest KRN review report",
       "summary": "Latest KRN review report is available."
+    },
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/goals/goal-006.md"
+      ],
+      "next_action": "Keep this runtime artifact read-only until a proposal tool contract exists.",
+      "failure_mode": "Dashboard artifact rows become misleading if missing or invalid reports are rendered as ready.",
+      "id": "runtime-benchmark-latest",
+      "resource_uri": "krn://runtime/benchmark/latest",
+      "resource_kind": "benchmark_report",
+      "status": "available",
+      "latest_report_path": ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-test/report.json",
+      "title": "Latest KRN benchmark report",
+      "summary": "Latest KRN benchmark report is available."
     }
   ],
   "pending_review": {

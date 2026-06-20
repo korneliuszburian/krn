@@ -46,6 +46,7 @@ const REQUIRED_URIS = [
   "krn://runtime/doctor/latest",
   "krn://runtime/eval/latest",
   "krn://runtime/review/latest",
+  "krn://runtime/benchmark/latest",
 ];
 
 function readJson(path: string): unknown {
@@ -131,6 +132,11 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-eval/report.json",
   );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-benchmark-report/examples/benchmark-report.example.json",
+    ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-eval/report.json",
+  );
   return targetRoot;
 }
 
@@ -213,6 +219,7 @@ function runValidation(): EvalReport {
     const index = listKrnControlPlaneResources(targetRoot);
     const summary = readKrnControlPlaneResource("krn://runtime/summary", targetRoot);
     const review = readKrnControlPlaneResource("krn://runtime/review/latest", targetRoot);
+    const benchmark = readKrnControlPlaneResource("krn://runtime/benchmark/latest", targetRoot);
     generatedResourceUri = summary.uri;
     results.push(
       result(
@@ -220,9 +227,17 @@ function runValidation(): EvalReport {
         hasRequiredUris(index.allowlisted_uris) &&
           summary.read_only &&
           review.status === "available" &&
+          benchmark.status === "available" &&
+          benchmark.payload?.kind === "krn_benchmark_report" &&
           !index.summary.write_tools_enabled &&
           !index.summary.proposal_tools_enabled,
-        ["resource index parses", "summary resource parses", "latest review resource parses", "write tools disabled"],
+        [
+          "resource index parses",
+          "summary resource parses",
+          "latest review resource parses",
+          "latest benchmark resource parses",
+          "write tools disabled",
+        ],
         generatedCase.failure_mode,
         "Generated read model parsed isolated .krn runtime reports through @krn/contracts.",
       ),

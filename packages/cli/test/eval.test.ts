@@ -35,11 +35,12 @@ describe("krn eval", () => {
       "krn-proposal-review-decision",
       "krn-proposal-promotion",
       "krn-benchmark-spine",
+      "krn-dashboard-benchmark-reports-ui",
     ]);
-    expect(report.summary.total_modules).toBe(14);
+    expect(report.summary.total_modules).toBe(15);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(62);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(67);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
-  }, 60_000);
+  }, 120_000);
 });

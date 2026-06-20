@@ -12,8 +12,8 @@
     "next_action": "Render the dashboard UI from guessed state.",
     "failure_mode": "Bad fixture.",
     "status": "ready",
-    "total_resources": 5,
-    "available_resources": 5,
+    "total_resources": 6,
+    "available_resources": 6,
     "missing_resources": 0,
     "invalid_resources": 0
   },

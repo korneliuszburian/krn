@@ -9,6 +9,15 @@ export {
   type KrnBenchmarkReport,
 } from "./benchmark-report.js";
 export {
+  KrnBenchmarkReportsViewModelSchema,
+  krnBenchmarkReportsViewModelJsonSchema,
+  parseKrnBenchmarkReportsViewModel,
+  type BenchmarkReportRow,
+  type BenchmarkReportsInvalidRecord,
+  type BenchmarkReportsNextAction,
+  type KrnBenchmarkReportsViewModel,
+} from "./benchmark-reports-view-model.js";
+export {
   InitManifestSchema,
   initManifestJsonSchema,
   parseInitManifest,

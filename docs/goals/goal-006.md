@@ -32,7 +32,7 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
 - Latest Slice 3 progress:
   - `packages/mcp` exists as a read-only resource model over typed `.krn` runtime reports.
   - `packages/mcp` now also has a local STDIO MCP server entrypoint over that read-only resource model.
-  - `krn://runtime/summary`, `krn://runtime/init/latest`, `krn://runtime/doctor/latest`, `krn://runtime/eval/latest`, and `krn://runtime/review/latest` are the current allowlisted resources.
+  - `krn://runtime/summary`, `krn://runtime/init/latest`, `krn://runtime/doctor/latest`, `krn://runtime/eval/latest`, `krn://runtime/review/latest`, and `krn://runtime/benchmark/latest` are the current allowlisted resources.
   - `pnpm run eval:krn-mcp` passed 3/3 cases and 7/7 assertions.
   - The initial `krn-mcp-transport` eval proved the local STDIO resource transport before proposal tools were added; the current transport evidence is listed below.
   - `pnpm run krn -- review` generated `.krn/review/20260619T230302Z-1808550/report.json` with `ready_for_human_review`, 3/3 artifacts present, and 2 proposal-only proposals.
@@ -109,6 +109,14 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-benchmark-live-pilot:live` generated `.krn/evals/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json` with 4/4 cases and 15/15 assertions.
   - The generated benchmark report `.krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json` parsed through `KrnBenchmarkReport`, used `measurement_mode: "live_codex_exec"`, kept `productivity_lift_claimed: false`, and reported baseline score 0.95, assisted score 0.85, delta -0.1.
   - This proves the live worker-to-typed-benchmark evidence path only. It still does not prove measured productivity lift, statistical benchmark validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
+  - `packages/contracts` now exports `KrnBenchmarkReportsViewModel`, the first typed dashboard/control-plane review model over `.krn/benchmarks/**/report.json`.
+  - `packages/mcp` now exports `buildKrnBenchmarkReportsViewModel`, which reads benchmark report files, parses them through `KrnBenchmarkReport`, and surfaces ready, empty, blocked, invalid, no-lift, and negative-delta state.
+  - The MCP read model now exposes `krn://runtime/benchmark/latest` as a read-only resource for the latest parsed benchmark report.
+  - `KrnDashboardData` now includes `benchmark_reports`, and `apps/dashboard/src/BenchmarkReportsDashboard.tsx` renders benchmark rows, source refs, score deltas, repair targets, next actions, and failure modes without run/repair/write commands.
+  - `pnpm run eval:krn-dashboard-benchmark-reports-ui` generated `.krn/evals/krn-dashboard-benchmark-reports-ui/20260620T063805Z-2567754/report.json` with 5/5 cases and 28/28 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T063841Z-2568949/report.json` with 15/15 modules, 67/67 cases, and 224/224 assertions, including `krn-dashboard-benchmark-reports-ui`.
+  - `pnpm test` passed with 30/30 test files and 100/100 tests, and `pnpm typecheck` passed.
+  - This proves read-only review of parsed benchmark reports through MCP/dashboard surfaces only. It still does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
 
 ## Objective
 
@@ -194,14 +202,14 @@ Work slice by slice. Within each slice, implement vertical behavior through fina
 contract -> parser/schema -> fixture -> behavior test/eval -> runtime artifact -> memory/plan update
 ```
 
-Before any non-trivial implementation slice, run a lightweight research/plan checkpoint using the OpenAI Cookbook patterns already indexed in `docs/plans/canonical/SOURCES.md`:
+Before any non-trivial implementation slice, run a lightweight research/plan checkpoint using the OpenAI Cookbook patterns already indexed in `docs/plans/canonical/SOURCES.md`. This is a hard gate for child goals: a child goal may not move from planning into implementation, and may not be closed, unless it records the selected source-backed mechanisms, resulting artifacts, eval/falsification path, and overclaim boundary.
 
 - S010 Goals in Codex: state outcome, verification surface, constraints, boundaries, iteration policy, and blocked stop condition.
 - S011 Codex ExecPlans: keep multi-hour work self-contained, restartable, and evidence-driven.
 - S012 Code modernization: split broad changes into bounded pilot, overview/design, validation/parity, implementation, and reusable template when the slice is broad enough.
 - S087 Related resources: use as discovery only; promote a pattern only after primary-source inspection and mechanism extraction.
 
-The checkpoint must name the product layer, selected source-backed mechanism, rejected alternatives, required skills, validation or falsification path, and overclaim boundary. Tiny mechanical edits can skip the checkpoint, but architecture, memory, eval, MCP/API, dashboard, runtime-skill, benchmark, and long-running-goal work cannot.
+The checkpoint must name the product layer, selected source-backed mechanism, rejected alternatives, required skills, validation or falsification path, and overclaim boundary. Cookbook links are not sufficient by themselves; they must be converted into KRN behavior, contracts, tests/evals, memory/source updates, or rejected alternatives. Tiny mechanical edits can skip the checkpoint, but architecture, memory, eval, MCP/API, dashboard, runtime-skill, benchmark, and long-running-goal work cannot.
 
 Do not make broad horizontal dumps such as "all docs first", "all schemas first", or "dashboard shell first" unless the slice explicitly needs that artifact to unblock the next verified behavior.
 
@@ -355,7 +363,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-018.md
+docs/goals/goal-019.md
 ```
 
-Next child-goal candidates after `goal-018` are expanding the live benchmark suite beyond one task, surfacing benchmark reports through read-only dashboard/MCP view models, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add the explicit live benchmark runner to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from one-task live benchmark evidence.
+Next child-goal candidates after `goal-019` are expanding the live benchmark suite beyond one task, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add the explicit live benchmark runner to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from one-task live benchmark evidence.

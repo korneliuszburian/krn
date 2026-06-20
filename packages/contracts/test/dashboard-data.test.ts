@@ -10,7 +10,7 @@ function readJson(path: string): unknown {
 }
 
 describe("KrnDashboardData contract", () => {
-  it("parses a dashboard data envelope with pending, promotion, and eval views", () => {
+  it("parses a dashboard data envelope with pending, promotion, eval, and benchmark views", () => {
     const dashboardData = parseKrnDashboardData(
       readJson("docs/specs/krn-dashboard-data/examples/dashboard-data.example.json"),
     );
@@ -20,6 +20,7 @@ describe("KrnDashboardData contract", () => {
     expect(dashboardData.pending_review.kind).toBe("krn_pending_review_view_model");
     expect(dashboardData.promotion_review.kind).toBe("krn_promotion_review_view_model");
     expect(dashboardData.eval_runs.kind).toBe("krn_eval_runs_view_model");
+    expect(dashboardData.benchmark_reports.kind).toBe("krn_benchmark_reports_view_model");
   });
 
   it("rejects the known-bad dashboard-data fixture", () => {
@@ -35,6 +36,7 @@ describe("KrnDashboardData contract", () => {
         pending_review: expect.any(Object),
         promotion_review: expect.any(Object),
         eval_runs: expect.any(Object),
+        benchmark_reports: expect.any(Object),
       }),
     });
   });

@@ -1,0 +1,83 @@
+{
+  "schema_version": "krn-benchmark-reports-view-model.v1",
+  "kind": "krn_benchmark_reports_view_model",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-20T06:30:00.000Z",
+  "no_mock_state": true,
+  "source": "benchmark_report_store",
+  "queue_state": "ready",
+  "total_records": 1,
+  "valid_reports": 1,
+  "invalid_records_count": 0,
+  "live_codex_exec_reports": 1,
+  "no_lift_reports": 1,
+  "negative_delta_reports": 1,
+  "productivity_lift_claimed_reports": 0,
+  "latest_report_path": ".krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json",
+  "reports": [
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-018.md",
+        "docs/specs/krn-benchmark-report/README.md"
+      ],
+      "next_action": "Expand the live benchmark suite or repair the assisted prompt before any productivity lift claim is allowed.",
+      "failure_mode": "Benchmark report rows become harmful if a one-task negative-delta result is hidden or sold as productivity lift.",
+      "report_path": ".krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json",
+      "run_id": "20260620T060340Z-2493285",
+      "created_at": "2026-06-20T06:03:40.522Z",
+      "benchmark_id": "krn-benchmark-live-pilot",
+      "suite_id": "one-task-routing-pilot",
+      "measurement_mode": "live_codex_exec",
+      "lift_status": "no_lift_evidence",
+      "productivity_lift_claimed": false,
+      "minimum_task_count_for_lift_claim": 20,
+      "task_count": 1,
+      "completed_task_count": 1,
+      "blocked_task_count": 0,
+      "failed_task_count": 0,
+      "baseline_score": 0.95,
+      "assisted_score": 0.85,
+      "assisted_minus_baseline": -0.1,
+      "repair_targets": [
+        {
+          "id": "expand-live-codex-benchmark-suite",
+          "owner": "krn",
+          "next_action": "Run a larger live_codex_exec benchmark suite with enough tasks before any productivity lift claim is allowed.",
+          "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-report/README.md"],
+          "failure_mode": "A one-task live pilot is overclaimed as measured productivity improvement."
+        }
+      ],
+      "evidence_refs": [
+        ".krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/baseline.final.json",
+        ".krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/assisted.final.json"
+      ],
+      "interpretation_caveat": "This live pilot proves one baseline-vs-assisted codex exec scoring path only; it does not prove measured productivity lift."
+    }
+  ],
+  "invalid_records": [],
+  "dashboard_commands_enabled": false,
+  "next_allowed_action": {
+    "action_id": "expand-live-benchmark-suite",
+    "target_surface": "benchmark_suite",
+    "label": "Expand live benchmark suite",
+    "rationale": "The latest live benchmark report is below the lift gate and has no positive assisted delta.",
+    "source_refs": ["docs/goals/goal-006.md", "docs/goals/goal-018.md", "docs/goals/goal-019.md"]
+  },
+  "blocked_actions": [
+    "claim_productivity_lift_from_one_task",
+    "dashboard_run_benchmark",
+    "dashboard_auto_repair",
+    "write_memory"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-018.md",
+    "docs/goals/goal-019.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/specs/krn-benchmark-reports-view-model/README.md"
+  ],
+  "failure_mode": "Benchmark Reports becomes harmful if it converts no-lift or negative-delta evidence into a productivity claim or dashboard command surface.",
+  "interpretation_caveat": "This view model renders local benchmark reports only; it does not run benchmarks, mutate ledgers, or prove productivity lift."
+}

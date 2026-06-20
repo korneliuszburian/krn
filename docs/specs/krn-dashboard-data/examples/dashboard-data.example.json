@@ -104,11 +104,48 @@
     "failure_mode": "Eval Runs becomes harmful if it invents eval state or treats missing reports as product lift.",
     "interpretation_caveat": "This view model renders local aggregate eval state only; it does not run benchmarks, repair failures, mutate ledgers, or prove productivity lift."
   },
+  "benchmark_reports": {
+    "schema_version": "krn-benchmark-reports-view-model.v1",
+    "kind": "krn_benchmark_reports_view_model",
+    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "generated_at": "2026-06-20T03:00:00.000Z",
+    "no_mock_state": true,
+    "source": "missing_benchmark_reports",
+    "queue_state": "empty",
+    "total_records": 0,
+    "valid_reports": 0,
+    "invalid_records_count": 0,
+    "live_codex_exec_reports": 0,
+    "no_lift_reports": 0,
+    "negative_delta_reports": 0,
+    "productivity_lift_claimed_reports": 0,
+    "latest_report_path": null,
+    "reports": [],
+    "invalid_records": [],
+    "dashboard_commands_enabled": false,
+    "next_allowed_action": {
+      "action_id": "wait-for-benchmark-report-input",
+      "target_surface": "benchmark_reports",
+      "label": "Wait for benchmark report input",
+      "rationale": "No benchmark reports exist, so Benchmark Reports must render explicit zero state.",
+      "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-reports-view-model/README.md"]
+    },
+    "blocked_actions": [
+      "claim_productivity_lift_from_one_task",
+      "dashboard_run_benchmark",
+      "dashboard_auto_repair",
+      "write_memory"
+    ],
+    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-reports-view-model/README.md"],
+    "failure_mode": "Benchmark Reports becomes harmful if it invents benchmark evidence or hides missing reports.",
+    "interpretation_caveat": "This view model renders local benchmark reports only; it does not run benchmarks, mutate ledgers, or prove productivity lift."
+  },
   "source_refs": [
     "docs/goals/goal-006.md",
     "docs/specs/krn-pending-review-view-model/README.md",
     "docs/specs/krn-promotion-review-view-model/README.md",
-    "docs/specs/krn-eval-runs-view-model/README.md"
+    "docs/specs/krn-eval-runs-view-model/README.md",
+    "docs/specs/krn-benchmark-reports-view-model/README.md"
   ],
   "interpretation_caveat": "This dashboard data object contains parsed KRN dashboard view models only; it does not mutate targets, expose API commands, or prove productivity lift."
 }

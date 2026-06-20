@@ -23,6 +23,7 @@ describe("KRN control-plane resource contracts", () => {
     expect(index.kind).toBe("krn_control_plane_resource_index");
     expect(index.summary.write_tools_enabled).toBe(false);
     expect(index.allowlisted_uris).toContain("krn://runtime/summary");
+    expect(index.allowlisted_uris).toContain("krn://runtime/benchmark/latest");
   });
 
   it("parses the valid resource example through the public parser", () => {

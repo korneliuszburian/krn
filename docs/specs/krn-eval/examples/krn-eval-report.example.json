@@ -55,8 +55,8 @@
       "passed_cases": 3,
       "failed_cases": 0,
       "case_pass_rate": 1,
-      "total_assertions": 7,
-      "passed_assertions": 7,
+      "total_assertions": 8,
+      "passed_assertions": 8,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
       "source_refs": [
@@ -279,17 +279,37 @@
         "docs/goals/goal-017.md"
       ],
       "interpretation_caveat": "This eval proves the benchmark report contract and no-lift gate only; it does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
+      "module_id": "krn-dashboard-benchmark-reports-ui",
+      "command": ["pnpm", "run", "eval:krn-dashboard-benchmark-reports-ui"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-dashboard-benchmark-reports-ui/20260619T215912Z-example/report.json",
+      "total_cases": 5,
+      "passed_cases": 5,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 28,
+      "passed_assertions": 28,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-dashboard-benchmark-reports-ui/README.md",
+        "docs/specs/krn-benchmark-reports-view-model/README.md",
+        "docs/goals/goal-019.md"
+      ],
+      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Benchmark Reports product objects only; it does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     }
   ],
   "summary": {
-    "total_modules": 14,
-    "passed_modules": 14,
+    "total_modules": 15,
+    "passed_modules": 15,
     "failed_modules": 0,
-    "total_cases": 62,
-    "passed_cases": 62,
+    "total_cases": 67,
+    "passed_cases": 67,
     "failed_cases": 0,
-    "total_assertions": 195,
-    "passed_assertions": 195,
+    "total_assertions": 224,
+    "passed_assertions": 224,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

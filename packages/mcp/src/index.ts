@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import {
+  parseKrnBenchmarkReport,
   parseDoctorReport,
   parseInitManifest,
   parseKrnControlPlaneResource,
@@ -14,6 +15,7 @@ import {
   type KrnControlPlaneResourceIndex,
   type KrnDashboardViewModel,
 } from "@krn/contracts";
+import { buildKrnBenchmarkReportsViewModel } from "./benchmark-reports-view-model.js";
 import { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 
 type ArtifactSpec = {
@@ -75,6 +77,16 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     sourceRefs: ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"],
     parse: parseKrnReviewReport,
   },
+  {
+    uri: "krn://runtime/benchmark/latest",
+    name: "Latest KRN benchmark report",
+    description: "Latest schema-backed KRN benchmark report.",
+    resourceKind: "benchmark_report",
+    runtimeDir: ".krn/benchmarks",
+    fileName: "report.json",
+    sourceRefs: ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-006.md"],
+    parse: parseKrnBenchmarkReport,
+  },
 ] as const;
 
 function readJsonFile(path: string): unknown {
@@ -95,13 +107,26 @@ function latestRuntimeFile(targetRoot: string, runtimeDir: string, fileName: str
     return null;
   }
 
-  const candidates = readdirSync(absoluteRuntimeDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => resolve(absoluteRuntimeDir, entry.name, fileName))
-    .filter((candidatePath) => existsSync(candidatePath) && statSync(candidatePath).isFile())
-    .sort();
+  const candidates = collectRuntimeFiles(absoluteRuntimeDir, fileName).sort((left, right) =>
+    runtimeFileSortKey(left).localeCompare(runtimeFileSortKey(right)),
+  );
 
   return candidates.at(-1) ?? null;
+}
+
+function collectRuntimeFiles(root: string, fileName: string): string[] {
+  return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = resolve(root, entry.name);
+    if (entry.isDirectory()) {
+      return collectRuntimeFiles(entryPath, fileName);
+    }
+    return entry.name === fileName ? [entryPath] : [];
+  });
+}
+
+function runtimeFileSortKey(path: string): string {
+  const segments = path.replaceAll("\\", "/").split("/");
+  return `${segments.at(-2) ?? ""}/${path}`;
 }
 
 function baseResource(
@@ -160,6 +185,7 @@ export {
 export { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 export { buildKrnPromotionReviewViewModel } from "./promotion-review-view-model.js";
 export { buildKrnEvalRunsViewModel } from "./eval-runs-view-model.js";
+export { buildKrnBenchmarkReportsViewModel } from "./benchmark-reports-view-model.js";
 
 function descriptorFromResource(
   resource: KrnControlPlaneResource,

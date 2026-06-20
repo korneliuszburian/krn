@@ -27,6 +27,7 @@ sources:
   - docs/goals/goal-016.md
   - docs/goals/goal-017.md
   - docs/goals/goal-018.md
+  - docs/goals/goal-019.md
 ---
 
 # KRN Final Product Plan
@@ -110,6 +111,7 @@ repo + task
   -> Eval Runs dashboard renders aggregate eval health without lift or command claims
   -> Benchmark report spine records no-lift-gated benchmark evidence
   -> live benchmark pilot records one baseline-vs-assisted codex exec task below the lift gate
+  -> Benchmark Reports dashboard renders parsed benchmark reports without run/repair/write commands
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -127,7 +129,7 @@ Layer responsibilities:
 - `apps/dashboard` comes after view models and proposal records. It renders Pending Review, Promotion Review, and Eval Runs surfaces from generated typed dashboard data and keeps generated data out of durable truth.
 - `.krn/proposal-reviews` stores append-only terminal proposal review decisions. These decisions can close the Pending Review queue but do not promote memory/source/goal files by themselves.
 - `.krn/promotions` stores append-only promotion records. The first promotion workflow supports exact `memory_update` payloads only and can write target content only in explicit apply mode after an approved review decision.
-- `KrnDashboardData` is the multi-view dashboard envelope. It currently contains Pending Review, Promotion Review, and Eval Runs view models, all parsed from real product objects rather than chat or mock state.
+- `KrnDashboardData` is the multi-view dashboard envelope. It currently contains Pending Review, Promotion Review, Eval Runs, and Benchmark Reports view models, all parsed from real product objects rather than chat or mock state.
 
 ## Codex Paradoxes KRN Must Resolve
 
@@ -293,12 +295,13 @@ Deliverables:
   - Knowledge Gaps,
   - Source/Claim Ledger,
   - Eval Runs,
+  - Benchmark Reports,
   - Skill Impact,
   - Goal/Continuity Health.
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine and live pilot prove the typed report path, no-lift gate, and one explicit live `codex exec` measurement path. Measured lift remains future work until a larger suite satisfies the lift gate.
+- The current benchmark report spine, live pilot, and Benchmark Reports dashboard surface prove the typed report path, no-lift gate, one explicit live `codex exec` measurement path, and read-only review of no-lift/negative-delta benchmark evidence. Measured lift remains future work until a larger suite satisfies the lift gate.
 
 Acceptance evidence:
 

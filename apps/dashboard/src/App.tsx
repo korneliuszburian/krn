@@ -2,6 +2,7 @@ import { RefreshCw, ShieldCheck, TriangleAlert } from "lucide-react";
 import React, { type ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { KrnDashboardData } from "@krn/contracts";
+import { BenchmarkReportsDashboard } from "./BenchmarkReportsDashboard.js";
 import { fetchDashboardData } from "./dashboard-data.js";
 import { EvalRunsDashboard } from "./EvalRunsDashboard.js";
 import { PendingReviewDashboard } from "./PendingReviewDashboard.js";
@@ -66,6 +67,7 @@ export function App(): ReactElement {
           <PendingReviewDashboard viewModel={dashboardState.dashboardData.pending_review} />
           <PromotionReviewDashboard viewModel={dashboardState.dashboardData.promotion_review} />
           <EvalRunsDashboard viewModel={dashboardState.dashboardData.eval_runs} />
+          <BenchmarkReportsDashboard viewModel={dashboardState.dashboardData.benchmark_reports} />
         </>
       ) : null}
     </div>

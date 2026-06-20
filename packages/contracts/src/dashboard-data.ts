@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KrnBenchmarkReportsViewModelSchema } from "./benchmark-reports-view-model.js";
 import { KrnEvalRunsViewModelSchema } from "./eval-runs-view-model.js";
 import { KrnPendingReviewViewModelSchema } from "./pending-review-view-model.js";
 import { KrnPromotionReviewViewModelSchema } from "./promotion-review-view-model.js";
@@ -15,6 +16,7 @@ export const KrnDashboardDataSchema = z
     pending_review: KrnPendingReviewViewModelSchema,
     promotion_review: KrnPromotionReviewViewModelSchema,
     eval_runs: KrnEvalRunsViewModelSchema,
+    benchmark_reports: KrnBenchmarkReportsViewModelSchema,
     source_refs: z.array(SourceRefSchema).min(1),
     interpretation_caveat: z.string().min(1),
   })
@@ -41,6 +43,14 @@ export const KrnDashboardDataSchema = z
         code: "custom",
         path: ["eval_runs", "target_root"],
         message: "eval_runs target_root must match dashboard target_root",
+      });
+    }
+
+    if (dashboardData.benchmark_reports.target_root !== dashboardData.target_root) {
+      context.addIssue({
+        code: "custom",
+        path: ["benchmark_reports", "target_root"],
+        message: "benchmark_reports target_root must match dashboard target_root",
       });
     }
   });

@@ -63,11 +63,22 @@
       "status": "available",
       "latest_report_path": ".krn/review/20260619T220300Z-example/report.json",
       "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"]
+    },
+    {
+      "uri": "krn://runtime/benchmark/latest",
+      "name": "Latest KRN benchmark report",
+      "description": "Latest schema-backed KRN benchmark report.",
+      "resource_kind": "benchmark_report",
+      "mime_type": "application/json",
+      "read_only": true,
+      "status": "available",
+      "latest_report_path": ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-example/report.json",
+      "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-006.md"]
     }
   ],
   "summary": {
-    "total_resources": 5,
-    "available_resources": 5,
+    "total_resources": 6,
+    "available_resources": 6,
     "missing_resources": 0,
     "invalid_resources": 0,
     "write_tools_enabled": false,
@@ -78,7 +89,8 @@
     "krn://runtime/init/latest",
     "krn://runtime/doctor/latest",
     "krn://runtime/eval/latest",
-    "krn://runtime/review/latest"
+    "krn://runtime/review/latest",
+    "krn://runtime/benchmark/latest"
   ],
   "source_refs": [
     "docs/goals/goal-006.md",

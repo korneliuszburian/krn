@@ -22,7 +22,7 @@ It does not claim ChatGPT connector behavior, dashboard readiness, human approva
 ## What This Tests
 
 - The STDIO server starts and responds through the MCP SDK client.
-- The server lists the five allowlisted KRN runtime resources.
+- The server lists the six allowlisted KRN runtime resources.
 - The server advertises exactly one separate proposal-only tool; this eval does not exercise that tool's behavior.
 - Reading summary and latest review resources returns schema-backed control-plane resources.
 - Unknown resource URIs fail deterministically.

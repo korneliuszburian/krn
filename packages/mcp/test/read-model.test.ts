@@ -34,6 +34,11 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-test/report.json",
   );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-benchmark-report/examples/benchmark-report.example.json",
+    ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-test/report.json",
+  );
   return targetRoot;
 }
 
@@ -48,9 +53,10 @@ describe("KRN MCP read model", () => {
       "krn://runtime/doctor/latest",
       "krn://runtime/eval/latest",
       "krn://runtime/review/latest",
+      "krn://runtime/benchmark/latest",
     ]);
-    expect(index.summary.total_resources).toBe(5);
-    expect(index.summary.available_resources).toBe(5);
+    expect(index.summary.total_resources).toBe(6);
+    expect(index.summary.available_resources).toBe(6);
     expect(index.summary.write_tools_enabled).toBe(false);
     expect(index.summary.proposal_tools_enabled).toBe(false);
   });
@@ -68,6 +74,11 @@ describe("KRN MCP read model", () => {
       targetRoot,
       new Date("2026-06-19T22:40:00.000Z"),
     );
+    const benchmark = readKrnControlPlaneResource(
+      "krn://runtime/benchmark/latest",
+      targetRoot,
+      new Date("2026-06-19T22:40:00.000Z"),
+    );
     const afterEntries = readdirSync(targetRoot).sort();
 
     expect(summary.resource_kind).toBe("runtime_summary");
@@ -76,6 +87,9 @@ describe("KRN MCP read model", () => {
     expect(review.resource_kind).toBe("review_report");
     expect(review.status).toBe("available");
     expect(review.payload?.kind).toBe("krn_review_report");
+    expect(benchmark.resource_kind).toBe("benchmark_report");
+    expect(benchmark.status).toBe("available");
+    expect(benchmark.payload?.kind).toBe("krn_benchmark_report");
     expect(afterEntries).toEqual(beforeEntries);
   });
 

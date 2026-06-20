@@ -1,7 +1,7 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 modules plus Slice 3 MCP read/transport/proposal-store/proposal-tool, Pending Review, dashboard UI, Promotion Review UI, Eval Runs UI, proposal review decision, proposal promotion, and benchmark-spine modules.",
+    "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts and includes the current Slice 2 modules plus Slice 3 MCP read/transport/proposal-store/proposal-tool, Pending Review, dashboard UI, Promotion Review UI, Eval Runs UI, proposal review decision, proposal promotion, benchmark-spine, and Benchmark Reports UI modules.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/specs/krn-eval/README.md",

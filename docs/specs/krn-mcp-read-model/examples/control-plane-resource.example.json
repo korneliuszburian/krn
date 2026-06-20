@@ -46,9 +46,17 @@
         "report_path": ".krn/review/20260619T220300Z-example/report.json",
         "summary": "Latest KRN review report is available.",
         "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"]
+      },
+      {
+        "uri": "krn://runtime/benchmark/latest",
+        "resource_kind": "benchmark_report",
+        "status": "available",
+        "report_path": ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-example/report.json",
+        "summary": "Latest KRN benchmark report is available.",
+        "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-006.md"]
       }
     ],
-    "available_resources": 4,
+    "available_resources": 5,
     "missing_resources": 0,
     "invalid_resources": 0,
     "write_tools_enabled": false,

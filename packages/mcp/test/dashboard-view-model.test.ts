@@ -44,6 +44,11 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-test/report.json",
   );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-benchmark-report/examples/benchmark-report.example.json",
+    ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-test/report.json",
+  );
   const proposal = parseKrnControlPlaneProposal(
     readJson("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json"),
   );
@@ -67,12 +72,13 @@ describe("KRN dashboard view model builder", () => {
 
     expect(reparsed.no_mock_state).toBe(true);
     expect(reparsed.resource_health.status).toBe("ready");
-    expect(reparsed.resource_health.available_resources).toBe(5);
+    expect(reparsed.resource_health.available_resources).toBe(6);
     expect(reparsed.latest_runtime_artifacts.map((artifact) => artifact.resource_uri)).toEqual([
       "krn://runtime/init/latest",
       "krn://runtime/doctor/latest",
       "krn://runtime/eval/latest",
       "krn://runtime/review/latest",
+      "krn://runtime/benchmark/latest",
     ]);
     expect(reparsed.pending_review.pending_proposals).toBe(1);
     expect(reparsed.pending_review.source).toBe("proposal_store");

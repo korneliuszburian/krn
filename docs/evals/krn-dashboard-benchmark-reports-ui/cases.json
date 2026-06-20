@@ -1,0 +1,70 @@
+[
+  {
+    "id": "dashboard-data-generation-includes-benchmark-reports",
+    "expected_behavior": "Dashboard data generation includes a parsed Benchmark Reports view model from a real live_codex_exec benchmark report while preserving no-lift and negative-delta state.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-019.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md"
+    ],
+    "assertions": [
+      "dashboard data command exits",
+      "generated data file exists",
+      "generated dashboard data parses",
+      "benchmark report row present",
+      "negative delta preserved",
+      "no lift preserved",
+      "lift claims absent",
+      "dashboard commands disabled"
+    ],
+    "metrics": ["dashboard_data_grounding_score", "anti_slop_score"],
+    "failure_mode": "Dashboard boot data omits benchmark report state, uses mocks, hides negative delta, or claims productivity lift."
+  },
+  {
+    "id": "benchmark-row-renders-no-lift-evidence",
+    "expected_behavior": "The Benchmark Reports UI renders no-lift benchmark evidence with source refs, delta, next action, repair target, failure mode, and no command names.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/goals/goal-018.md", "docs/goals/goal-019.md"],
+    "assertions": [
+      "benchmark id rendered",
+      "source ref rendered",
+      "negative delta rendered",
+      "no lift status rendered",
+      "next action rendered",
+      "failure mode rendered",
+      "command names absent"
+    ],
+    "metrics": ["dashboard_reviewability_score", "anti_slop_score"],
+    "failure_mode": "Dashboard shows benchmark metrics without review evidence or exposes run/repair/write commands."
+  },
+  {
+    "id": "missing-benchmark-report-renders-explicit-empty",
+    "expected_behavior": "Missing benchmark reports render explicit empty state instead of invented green status.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-reports-view-model/README.md"],
+    "assertions": ["missing source parses", "empty queue state rendered", "empty copy rendered", "no benchmark row invented"],
+    "metrics": ["runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "Dashboard invents benchmark evidence or hides the explicit missing-report state."
+  },
+  {
+    "id": "invalid-benchmark-report-renders-blocked",
+    "expected_behavior": "Invalid benchmark reports render blocked state with invalid report path and parse summary.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/evals/STANDARD.md"],
+    "assertions": ["invalid report surfaced", "blocked state rendered", "invalid report path rendered"],
+    "metrics": ["runtime_contract_score", "repair_readiness_score"],
+    "failure_mode": "Dashboard hides invalid benchmark reports or presents them as ready evidence."
+  },
+  {
+    "id": "negative-delta-preserves-no-lift-boundary",
+    "expected_behavior": "Negative-delta live benchmark evidence keeps productivity_lift_claimed false and routes to larger-suite or repair work before any product claim.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/goals/goal-018.md", "docs/plans/canonical/SOURCES.md#C040"],
+    "assertions": [
+      "live report parsed",
+      "negative delta counted",
+      "no lift report counted",
+      "productivity lift claims remain zero",
+      "next action expands benchmark suite",
+      "dashboard command names absent"
+    ],
+    "metrics": ["benchmark_claim_discipline_score", "anti_slop_score"],
+    "failure_mode": "A one-task negative-delta report is overclaimed as productivity improvement or converted into a dashboard command."
+  }
+]

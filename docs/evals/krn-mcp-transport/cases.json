@@ -1,7 +1,7 @@
 [
   {
     "id": "stdio-server-lists-allowlisted-resources",
-    "expected_behavior": "The STDIO MCP server starts through the SDK client, lists only the five allowlisted runtime resource URIs, and advertises exactly one separate proposal-only tool covered by krn-mcp-proposal-tool.",
+    "expected_behavior": "The STDIO MCP server starts through the SDK client, lists only the six allowlisted runtime resource URIs, and advertises exactly one separate proposal-only tool covered by krn-mcp-proposal-tool.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/goals/goal-008.md",

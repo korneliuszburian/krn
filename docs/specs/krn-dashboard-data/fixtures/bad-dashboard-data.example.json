@@ -13,6 +13,9 @@
   "eval_runs": {
     "target_root": "/tmp/other-target-root"
   },
+  "benchmark_reports": {
+    "target_root": "/tmp/other-target-root"
+  },
   "source_refs": ["docs/goals/goal-006.md"],
   "interpretation_caveat": "bad fixture"
 }

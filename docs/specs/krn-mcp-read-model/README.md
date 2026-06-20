@@ -37,6 +37,7 @@ Allowlisted resource URIs:
 - `krn://runtime/doctor/latest`
 - `krn://runtime/eval/latest`
 - `krn://runtime/review/latest`
+- `krn://runtime/benchmark/latest`
 
 ## Input Reports
 
@@ -46,6 +47,7 @@ The read model consumes the latest local reports from:
 - `.krn/doctor/*/report.json`
 - `.krn/eval/*/report.json`
 - `.krn/review/*/report.json`
+- `.krn/benchmarks/**/report.json`
 
 Each report is parsed through the existing `@krn/contracts` parser before it is exposed as a resource payload.
 

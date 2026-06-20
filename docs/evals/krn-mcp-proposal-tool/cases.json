@@ -1,7 +1,7 @@
 [
   {
     "id": "proposal-tool-listed-with-read-resources",
-    "expected_behavior": "The STDIO MCP server lists the five read-only runtime resources and exactly one proposal-only tool named krn_store_control_plane_proposal.",
+    "expected_behavior": "The STDIO MCP server lists the six read-only runtime resources and exactly one proposal-only tool named krn_store_control_plane_proposal.",
     "source_patterns": [
       "docs/goals/goal-006.md",
       "docs/goals/goal-010.md",

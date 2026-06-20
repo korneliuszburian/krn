@@ -18,7 +18,7 @@ describe("KRN dashboard view-model contract", () => {
     expect(viewModel.kind).toBe("krn_dashboard_view_model");
     expect(viewModel.no_mock_state).toBe(true);
     expect(viewModel.resource_health.status).toBe("ready");
-    expect(viewModel.latest_runtime_artifacts).toHaveLength(4);
+    expect(viewModel.latest_runtime_artifacts).toHaveLength(5);
     expect(viewModel.pending_review.pending_proposals).toBe(1);
     expect(viewModel.pending_review.source).toBe("proposal_store");
   });

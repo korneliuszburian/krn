@@ -51,6 +51,11 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-test/report.json",
   );
+  copyJsonFixture(
+    targetRoot,
+    "docs/specs/krn-benchmark-report/examples/benchmark-report.example.json",
+    ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-test/report.json",
+  );
   writeText(join(targetRoot, "docs/goals/goal-006.md"), "# Goal 006\n");
   writeText(join(targetRoot, "docs/goals/goal-008.md"), "# Goal 008\n");
   writeText(join(targetRoot, "docs/specs/krn-mcp-read-model/README.md"), "# MCP read model\n");
@@ -135,12 +140,17 @@ describe("KRN MCP stdio server", () => {
         "krn://runtime/doctor/latest",
         "krn://runtime/eval/latest",
         "krn://runtime/review/latest",
+        "krn://runtime/benchmark/latest",
       ]);
 
       const summary = await client.readResource({ uri: "krn://runtime/summary" });
       const latestReview = await client.readResource({ uri: "krn://runtime/review/latest" });
+      const latestBenchmark = await client.readResource({ uri: "krn://runtime/benchmark/latest" });
       const parsedSummary = parseKrnControlPlaneResource(JSON.parse(summary.contents[0]?.text ?? "null") as unknown);
       const parsedReview = parseKrnControlPlaneResource(JSON.parse(latestReview.contents[0]?.text ?? "null") as unknown);
+      const parsedBenchmark = parseKrnControlPlaneResource(
+        JSON.parse(latestBenchmark.contents[0]?.text ?? "null") as unknown,
+      );
 
       expect(parsedSummary.read_only).toBe(true);
       expect(parsedSummary.payload?.kind).toBe("runtime_summary");
@@ -148,6 +158,8 @@ describe("KRN MCP stdio server", () => {
       expect(parsedSummary.payload?.proposal_tools_enabled).toBe(false);
       expect(parsedReview.read_only).toBe(true);
       expect(parsedReview.resource_kind).toBe("review_report");
+      expect(parsedBenchmark.read_only).toBe(true);
+      expect(parsedBenchmark.resource_kind).toBe("benchmark_report");
     });
   }, 15_000);
 

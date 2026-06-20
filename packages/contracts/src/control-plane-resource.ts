@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KrnBenchmarkReportSchema } from "./benchmark-report.js";
 import { DoctorReportSchema } from "./doctor-report.js";
 import { KrnEvalReportSchema } from "./eval-report.js";
 import { InitManifestSchema } from "./init-manifest.js";
@@ -12,6 +13,7 @@ const ControlPlaneResourceKindSchema = z.enum([
   "doctor_report",
   "eval_report",
   "review_report",
+  "benchmark_report",
 ]);
 const ControlPlaneResourceStatusSchema = z.enum(["available", "missing", "invalid"]);
 
@@ -49,6 +51,7 @@ const ControlPlaneResourcePayloadSchema = z.union([
   DoctorReportSchema,
   KrnEvalReportSchema,
   KrnReviewReportSchema,
+  KrnBenchmarkReportSchema,
 ]);
 
 const ControlPlaneResourceDescriptorSchema = z

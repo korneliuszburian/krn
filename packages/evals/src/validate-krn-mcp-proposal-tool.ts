@@ -51,6 +51,7 @@ const REQUIRED_URIS = [
   "krn://runtime/doctor/latest",
   "krn://runtime/eval/latest",
   "krn://runtime/review/latest",
+  "krn://runtime/benchmark/latest",
 ] as const;
 
 function readJson(path: string): unknown {

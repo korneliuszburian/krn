@@ -10,6 +10,8 @@ sources:
   - docs/goals/goal-015.md
   - docs/specs/krn-pending-review-view-model/README.md
   - docs/specs/krn-promotion-review-view-model/README.md
+  - docs/specs/krn-eval-runs-view-model/README.md
+  - docs/specs/krn-benchmark-reports-view-model/README.md
 ---
 
 # KRN Dashboard Data Contract
@@ -30,6 +32,8 @@ pnpm --filter @krn/dashboard data
 
 - `pending_review`: `KrnPendingReviewViewModel`
 - `promotion_review`: `KrnPromotionReviewViewModel`
+- `eval_runs`: `KrnEvalRunsViewModel`
+- `benchmark_reports`: `KrnBenchmarkReportsViewModel`
 
 ## Boundary
 
@@ -45,6 +49,7 @@ Forbidden behavior:
 - no dashboard write command,
 - no proposal approval,
 - no promotion apply command,
+- no benchmark run/repair command,
 - no productivity or human-review-quality claim.
 
 ## Interpretation

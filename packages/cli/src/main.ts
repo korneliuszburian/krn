@@ -164,6 +164,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/goals/goal-017.md",
     ],
   },
+  {
+    moduleId: "krn-dashboard-benchmark-reports-ui",
+    command: ["pnpm", "run", "eval:krn-dashboard-benchmark-reports-ui"],
+    sourceRefs: [
+      "docs/evals/krn-dashboard-benchmark-reports-ui/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md",
+      "docs/goals/goal-019.md",
+    ],
+  },
 ];
 
 function usage(): string {

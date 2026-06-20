@@ -35,6 +35,7 @@ The first view model contains:
 
 - resource health,
 - latest runtime artifacts,
+- benchmark report runtime artifact,
 - pending review count from `.krn/proposals` or explicit zero when no proposal records exist,
 - next allowed action,
 - source refs,
