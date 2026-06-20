@@ -115,6 +115,10 @@ button {
   padding: 28px 0 56px;
 }
 
+.dashboard-section {
+  padding-top: 0;
+}
+
 .dashboard-status {
   display: flex;
   align-items: center;
@@ -202,7 +206,8 @@ button {
   background: #dcefeb;
 }
 
-.queue-state--empty {
+.queue-state--empty,
+.status-chip--empty {
   border-color: #8b8174;
   color: #4d463f;
   background: #ebe4d8;

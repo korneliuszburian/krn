@@ -120,6 +120,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     ],
   },
   {
+    moduleId: "krn-dashboard-promotion-review-ui",
+    command: ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
+    sourceRefs: [
+      "docs/evals/krn-dashboard-promotion-review-ui/README.md",
+      "docs/specs/krn-promotion-review-view-model/README.md",
+      "docs/goals/goal-015.md",
+    ],
+  },
+  {
     moduleId: "krn-proposal-review-decision",
     command: ["pnpm", "run", "eval:krn-proposal-review-decision"],
     sourceRefs: [

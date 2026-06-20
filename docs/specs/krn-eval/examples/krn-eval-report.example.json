@@ -181,6 +181,26 @@
       "interpretation_caveat": "This eval proves the first local dashboard UI can render typed Pending Review product objects only; it does not prove approval workflow quality, HTTP/API readiness, ChatGPT connector behavior, complete dashboard coverage, human review quality, or productivity lift."
     },
     {
+      "module_id": "krn-dashboard-promotion-review-ui",
+      "command": ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-dashboard-promotion-review-ui/20260619T215909Z-example/report.json",
+      "total_cases": 5,
+      "passed_cases": 5,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 19,
+      "passed_assertions": 19,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-dashboard-promotion-review-ui/README.md",
+        "docs/specs/krn-promotion-review-view-model/README.md",
+        "docs/goals/goal-015.md"
+      ],
+      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Promotion Review product objects only; it does not prove dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, broad promotion correctness, safe overwrite semantics, or productivity lift."
+    },
+    {
       "module_id": "krn-proposal-review-decision",
       "command": ["pnpm", "run", "eval:krn-proposal-review-decision"],
       "status": "passed",
@@ -222,14 +242,14 @@
     }
   ],
   "summary": {
-    "total_modules": 11,
-    "passed_modules": 11,
+    "total_modules": 12,
+    "passed_modules": 12,
     "failed_modules": 0,
-    "total_cases": 48,
-    "passed_cases": 48,
+    "total_cases": 53,
+    "passed_cases": 53,
     "failed_cases": 0,
-    "total_assertions": 142,
-    "passed_assertions": 142,
+    "total_assertions": 161,
+    "passed_assertions": 161,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

@@ -73,6 +73,12 @@ export {
   type KrnDashboardViewModel,
 } from "./dashboard-view-model.js";
 export {
+  KrnDashboardDataSchema,
+  krnDashboardDataJsonSchema,
+  parseKrnDashboardData,
+  type KrnDashboardData,
+} from "./dashboard-data.js";
+export {
   KrnPendingReviewViewModelSchema,
   krnPendingReviewViewModelJsonSchema,
   parseKrnPendingReviewViewModel,
@@ -83,6 +89,15 @@ export {
   type PendingReviewNextAction,
   type PendingReviewProposal,
 } from "./pending-review-view-model.js";
+export {
+  KrnPromotionReviewViewModelSchema,
+  krnPromotionReviewViewModelJsonSchema,
+  parseKrnPromotionReviewViewModel,
+  type KrnPromotionReviewViewModel,
+  type PromotionReviewInvalidRecord,
+  type PromotionReviewNextAction,
+  type PromotionReviewPromotion,
+} from "./promotion-review-view-model.js";
 export {
   KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
   KrnMcpProposalToolResultSchema,

@@ -121,7 +121,7 @@ function caseById(cases: EvalCase[], id: string): EvalCase {
 }
 
 function renderPendingReview(input: unknown): string {
-  return renderToStaticMarkup(createElement(PendingReviewDashboard, { viewModel: parseDashboardData(input) }));
+  return renderToStaticMarkup(createElement(PendingReviewDashboard, { viewModel: parseKrnPendingReviewViewModel(input) }));
 }
 
 function containsMutationCommand(html: string): boolean {
@@ -166,7 +166,7 @@ function runValidation(): EvalReport {
     const outputPath = join(mkdtempSync(join(tmpdir(), "krn-dashboard-data-out-")), "krn-dashboard-data.json");
     runDashboardDataCommand(targetRoot, outputPath);
     generatedDataPath = outputPath;
-    readyViewModel = parseDashboardData(readJson(outputPath));
+    readyViewModel = parseDashboardData(readJson(outputPath)).pending_review;
     const targetMutated =
       proposal.target.target_type === "path" ? existsSync(join(targetRoot, proposal.target.path)) : false;
 

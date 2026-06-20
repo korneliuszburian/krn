@@ -7,7 +7,8 @@ import { describe, expect, it } from "vitest";
 import { parseDashboardData } from "../src/dashboard-data.js";
 import { PendingReviewDashboard } from "../src/PendingReviewDashboard.js";
 
-const repoRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
+const urlRepoRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
+const repoRoot = process.cwd().endsWith("apps/dashboard") ? resolve(process.cwd(), "../..") : urlRepoRoot;
 
 function fixtureViewModel(): KrnPendingReviewViewModel {
   const input: unknown = JSON.parse(
@@ -17,7 +18,27 @@ function fixtureViewModel(): KrnPendingReviewViewModel {
     ),
   );
 
-  return parseDashboardData(input);
+  return parseDashboardData({
+    schema_version: "krn-dashboard-data.v1",
+    kind: "krn_dashboard_data",
+    target_root: parseKrnPendingReviewViewModel(input).target_root,
+    generated_at: "2026-06-20T03:00:00.000Z",
+    no_mock_state: true,
+    pending_review: input,
+    promotion_review: JSON.parse(
+      readFileSync(
+        resolve(repoRoot, "docs/specs/krn-promotion-review-view-model/examples/promotion-review-view-model.example.json"),
+        "utf8",
+      ),
+    ) as unknown,
+    source_refs: [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-promotion-review-view-model/README.md",
+    ],
+    interpretation_caveat:
+      "Dashboard test fixture contains parsed KRN dashboard view models only and does not mutate targets.",
+  }).pending_review;
 }
 
 function render(viewModel: KrnPendingReviewViewModel): string {

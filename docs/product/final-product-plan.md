@@ -23,6 +23,7 @@ sources:
   - docs/goals/goal-012.md
   - docs/goals/goal-013.md
   - docs/goals/goal-014.md
+  - docs/goals/goal-015.md
 ---
 
 # KRN Final Product Plan
@@ -102,6 +103,7 @@ repo + task
   -> apps/dashboard renders the Pending Review queue from generated typed dashboard data
   -> proposal review decision ledger records terminal review state
   -> proposal promotion workflow records and can explicitly apply exact approved memory payloads
+  -> Promotion Review dashboard renders promotion-store audit state without command writes
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -119,6 +121,7 @@ Layer responsibilities:
 - `apps/dashboard` comes after view models and proposal records. The first dashboard surface renders `KrnPendingReviewViewModel` from generated typed dashboard data and keeps generated data out of durable truth.
 - `.krn/proposal-reviews` stores append-only terminal proposal review decisions. These decisions can close the Pending Review queue but do not promote memory/source/goal files by themselves.
 - `.krn/promotions` stores append-only promotion records. The first promotion workflow supports exact `memory_update` payloads only and can write target content only in explicit apply mode after an approved review decision.
+- `KrnDashboardData` is the multi-view dashboard envelope. It currently contains Pending Review and Promotion Review view models, both parsed from real product objects rather than chat or mock state.
 
 ## Codex Paradoxes KRN Must Resolve
 

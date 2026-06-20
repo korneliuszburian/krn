@@ -1,0 +1,84 @@
+[
+  {
+    "id": "dashboard-data-generation-includes-promotion-review",
+    "expected_behavior": "The dashboard data generator writes a parsed dashboard data envelope that includes Promotion Review state from real promotion-store records.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-015.md",
+      "docs/specs/krn-promotion-review-view-model/README.md"
+    ],
+    "assertions": [
+      "dashboard data command exits",
+      "generated data file exists",
+      "generated dashboard data parses",
+      "promotion review row present",
+      "record-only target path not mutated"
+    ],
+    "metrics": ["dashboard_ui_score", "source_grounding_score", "anti_slop_score"],
+    "failure_mode": "Dashboard boot data omits promotion state, uses mocks, becomes unparseable, or mutates a promotion target."
+  },
+  {
+    "id": "promotion-row-renders-audit-evidence",
+    "expected_behavior": "A Promotion Review row renders promotion id, source refs, next action, and failure mode without dashboard apply/write commands.",
+    "source_patterns": [
+      "docs/goals/goal-015.md",
+      "docs/specs/krn-promotion-review-view-model/README.md",
+      "docs/product/final-product-plan.md"
+    ],
+    "assertions": [
+      "promotion id rendered",
+      "source ref rendered",
+      "next action rendered",
+      "failure mode rendered",
+      "promotion commands absent"
+    ],
+    "metrics": ["dashboard_ui_score", "anti_slop_score"],
+    "failure_mode": "Dashboard shows promotion rows without audit evidence or exposes apply/promote/write commands."
+  },
+  {
+    "id": "empty-promotion-store-renders-explicit-zero",
+    "expected_behavior": "An empty promotion store renders an explicit empty state from a parsed Promotion Review object.",
+    "source_patterns": [
+      "docs/goals/goal-015.md",
+      "docs/specs/krn-promotion-review-view-model/README.md"
+    ],
+    "assertions": [
+      "empty source parses",
+      "empty label rendered",
+      "no promotion rows invented"
+    ],
+    "metrics": ["dashboard_ui_score", "drift_resistance_score"],
+    "failure_mode": "Dashboard invents promotion rows or hides the explicit zero state."
+  },
+  {
+    "id": "invalid-promotion-record-renders-blocked",
+    "expected_behavior": "An invalid promotion record renders blocked Promotion Review state and the invalid promotion path.",
+    "source_patterns": [
+      "docs/goals/goal-015.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "invalid promotion surfaced",
+      "blocked state rendered",
+      "invalid promotion path rendered"
+    ],
+    "metrics": ["dashboard_ui_score", "anti_slop_score"],
+    "failure_mode": "Dashboard hides invalid promotion files or presents them as audited promotion state."
+  },
+  {
+    "id": "target-drift-renders-blocked",
+    "expected_behavior": "A promotion whose target file differs from the exact payload renders blocked state and target drift evidence.",
+    "source_patterns": [
+      "docs/goals/goal-015.md",
+      "docs/specs/krn-promotion-review-view-model/README.md",
+      "docs/plans/canonical/SOURCES.md"
+    ],
+    "assertions": [
+      "target drift parsed",
+      "blocked state rendered",
+      "target drift status rendered"
+    ],
+    "metrics": ["dashboard_ui_score", "source_grounding_score"],
+    "failure_mode": "Dashboard presents target-drifted promotions as ready for command application."
+  }
+]

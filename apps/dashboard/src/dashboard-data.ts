@@ -1,10 +1,10 @@
-import { parseKrnPendingReviewViewModel, type KrnPendingReviewViewModel } from "@krn/contracts";
+import { parseKrnDashboardData, type KrnDashboardData } from "@krn/contracts";
 
-export function parseDashboardData(input: unknown): KrnPendingReviewViewModel {
-  return parseKrnPendingReviewViewModel(input);
+export function parseDashboardData(input: unknown): KrnDashboardData {
+  return parseKrnDashboardData(input);
 }
 
-export async function fetchDashboardData(fetcher: typeof fetch = globalThis.fetch): Promise<KrnPendingReviewViewModel> {
+export async function fetchDashboardData(fetcher: typeof fetch = globalThis.fetch): Promise<KrnDashboardData> {
   const response = await fetcher("/krn-dashboard-data.json", {
     headers: {
       accept: "application/json",

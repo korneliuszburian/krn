@@ -1,13 +1,14 @@
 import { RefreshCw, ShieldCheck, TriangleAlert } from "lucide-react";
 import React, { type ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
-import type { KrnPendingReviewViewModel } from "@krn/contracts";
+import type { KrnDashboardData } from "@krn/contracts";
 import { fetchDashboardData } from "./dashboard-data.js";
 import { PendingReviewDashboard } from "./PendingReviewDashboard.js";
+import { PromotionReviewDashboard } from "./PromotionReviewDashboard.js";
 
 type DashboardState =
   | { state: "loading" }
-  | { state: "ready"; viewModel: KrnPendingReviewViewModel }
+  | { state: "ready"; dashboardData: KrnDashboardData }
   | { state: "error"; message: string };
 
 function errorMessage(error: unknown): string {
@@ -20,7 +21,7 @@ export function App(): ReactElement {
   const load = useCallback(async () => {
     setDashboardState({ state: "loading" });
     try {
-      setDashboardState({ state: "ready", viewModel: await fetchDashboardData() });
+      setDashboardState({ state: "ready", dashboardData: await fetchDashboardData() });
     } catch (error: unknown) {
       setDashboardState({ state: "error", message: errorMessage(error) });
     }
@@ -38,7 +39,7 @@ export function App(): ReactElement {
         </div>
         <div className="topbar-title">
           <p>KRN</p>
-          <h1>Pending Review</h1>
+          <h1>Control Plane</h1>
         </div>
         <button className="icon-button" type="button" onClick={() => void load()} aria-label="Reload dashboard data">
           <RefreshCw size={18} strokeWidth={2} />
@@ -48,7 +49,7 @@ export function App(): ReactElement {
       {dashboardState.state === "loading" ? (
         <main className="dashboard-status" aria-live="polite">
           <div className="status-pulse" aria-hidden="true" />
-          <p>Loading review queue</p>
+          <p>Loading control-plane data</p>
         </main>
       ) : null}
 
@@ -59,7 +60,12 @@ export function App(): ReactElement {
         </main>
       ) : null}
 
-      {dashboardState.state === "ready" ? <PendingReviewDashboard viewModel={dashboardState.viewModel} /> : null}
+      {dashboardState.state === "ready" ? (
+        <>
+          <PendingReviewDashboard viewModel={dashboardState.dashboardData.pending_review} />
+          <PromotionReviewDashboard viewModel={dashboardState.dashboardData.promotion_review} />
+        </>
+      ) : null}
     </div>
   );
 }
