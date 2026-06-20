@@ -1,0 +1,74 @@
+[
+  {
+    "id": "known-bad-positive-status-rejected",
+    "expected_behavior": "A known-bad live benchmark report with failed tasks and positive_lift status is rejected before readiness classification.",
+    "source_patterns": ["C047", "docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-025.md"],
+    "assertions": ["known-bad positive status fixture rejected"],
+    "metrics": ["anti_slop_score", "runtime_contract_score"],
+    "failure_mode": "Dirty failed-task evidence can still enter stability classification as positive lift."
+  },
+  {
+    "id": "dirty-live-report-blocks-expansion",
+    "expected_behavior": "A valid dirty live report with failed tasks is classified as not ready for suite expansion or productivity lift.",
+    "source_patterns": ["C046", "C047", "C048", "docs/goals/goal-026.md"],
+    "assertions": [
+      "dirty live report parses",
+      "failed task count blocks clean evidence",
+      "suite expansion remains blocked",
+      "productivity lift remains blocked"
+    ],
+    "metrics": ["repair_readiness_score", "anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "Positive deltas with failed tasks are mistaken for stability or expansion readiness."
+  },
+  {
+    "id": "single-clean-live-report-stays-below-repeat-gate",
+    "expected_behavior": "A single clean completed three-task live report is recognized as clean evidence but remains below repeated-stability and lift gates.",
+    "source_patterns": ["S010", "S013", "S014", "C048"],
+    "assertions": [
+      "clean live report parses",
+      "latest live report is clean",
+      "suite expansion remains blocked without repeat clean evidence",
+      "productivity lift remains blocked below twenty tasks"
+    ],
+    "metrics": ["repair_readiness_score", "goal_alignment_score", "anti_slop_score"],
+    "failure_mode": "One clean small live report is overclaimed as repeated stability or product lift."
+  },
+  {
+    "id": "repeated-clean-live-reports-enable-expansion-review-only",
+    "expected_behavior": "Two clean completed three-task live reports can make suite expansion review-ready, but still cannot claim productivity lift below the 20-task gate.",
+    "source_patterns": ["S010", "S011", "S088", "C048"],
+    "assertions": [
+      "repeated clean live reports parse",
+      "suite expansion becomes review-ready",
+      "productivity lift remains blocked below twenty tasks",
+      "next action remains suite expansion review, not lift claim"
+    ],
+    "metrics": ["repair_readiness_score", "goal_alignment_score", "anti_slop_score"],
+    "failure_mode": "Repeated clean three-task stability is confused with a statistically valid productivity lift claim."
+  },
+  {
+    "id": "current-live-store-readiness",
+    "expected_behavior": "The current local live report store is classified by the same stability policy without overclaiming missing or dirty evidence.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/goals/goal-027.md", "C046", "C048"],
+    "assertions": [
+      "current live store parsed or reported empty",
+      "suite expansion readiness follows repeated clean policy",
+      "productivity lift readiness follows benchmark lift gate",
+      "current next action is explicit"
+    ],
+    "metrics": ["runtime_contract_score", "repair_readiness_score", "anti_slop_score"],
+    "failure_mode": "Local live reports are ignored or overclaimed instead of becoming explicit readiness evidence."
+  },
+  {
+    "id": "eval-report-preserves-overclaim-boundary",
+    "expected_behavior": "The eval report caveat states that stability classification does not prove productivity lift or clean repeated live execution.",
+    "source_patterns": ["S010", "S011", "C047", "C048"],
+    "assertions": [
+      "eval report caveat names no productivity lift",
+      "eval report caveat names clean repeated live execution gap",
+      "eval report caveat names command-surface gap"
+    ],
+    "metrics": ["anti_slop_score", "goal_alignment_score"],
+    "failure_mode": "A green stability eval is overclaimed as live benchmark success or command readiness."
+  }
+]

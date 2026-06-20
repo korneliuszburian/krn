@@ -74,8 +74,8 @@
       "passed_cases": 3,
       "failed_cases": 0,
       "case_pass_rate": 1,
-      "total_assertions": 7,
-      "passed_assertions": 7,
+      "total_assertions": 8,
+      "passed_assertions": 8,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
       "source_refs": [
@@ -305,12 +305,12 @@
       "command": ["pnpm", "run", "eval:krn-benchmark-live-suite"],
       "status": "passed",
       "report_path": ".krn/evals/krn-benchmark-live-suite/20260619T215913Z-example/report.json",
-      "total_cases": 4,
-      "passed_cases": 4,
+      "total_cases": 5,
+      "passed_cases": 5,
       "failed_cases": 0,
       "case_pass_rate": 1,
-      "total_assertions": 16,
-      "passed_assertions": 16,
+      "total_assertions": 22,
+      "passed_assertions": 22,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
       "source_refs": [
@@ -319,6 +319,26 @@
         "docs/goals/goal-020.md"
       ],
       "interpretation_caveat": "This eval proves the deterministic multi-task benchmark suite harness only; it does not prove measured productivity lift, benchmark statistical validity, live Codex suite quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
+      "module_id": "krn-benchmark-live-stability",
+      "command": ["pnpm", "run", "eval:krn-benchmark-live-stability"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-benchmark-live-stability/20260619T215914Z-example/report.json",
+      "total_cases": 6,
+      "passed_cases": 6,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 20,
+      "passed_assertions": 20,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-benchmark-live-stability/README.md",
+        "docs/evals/krn-benchmark-live-stability/cases.json",
+        "docs/goals/goal-027.md"
+      ],
+      "interpretation_caveat": "This eval proves deterministic live-report readiness classification only; it does not prove measured productivity lift, clean repeated live execution in the current runtime, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     },
     {
       "module_id": "krn-repair-record",
@@ -342,14 +362,14 @@
     }
   ],
   "summary": {
-    "total_modules": 17,
-    "passed_modules": 17,
+    "total_modules": 18,
+    "passed_modules": 18,
     "failed_modules": 0,
-    "total_cases": 74,
-    "passed_cases": 74,
+    "total_cases": 82,
+    "passed_cases": 82,
     "failed_cases": 0,
-    "total_assertions": 249,
-    "passed_assertions": 249,
+    "total_assertions": 276,
+    "passed_assertions": 276,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

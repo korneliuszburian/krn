@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "krn-benchmark-live-stability-result.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "run_id",
+    "created_at",
+    "total_cases",
+    "passed_cases",
+    "failed_cases",
+    "case_pass_rate",
+    "total_assertions",
+    "passed_assertions",
+    "failed_assertions",
+    "assertion_pass_rate",
+    "cases",
+    "stability_summary",
+    "interpretation_caveat"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "krn-benchmark-live-stability-result.v1" },
+    "kind": { "const": "krn_benchmark_live_stability_result" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "minLength": 1 },
+    "total_cases": { "type": "integer", "minimum": 0 },
+    "passed_cases": { "type": "integer", "minimum": 0 },
+    "failed_cases": { "type": "integer", "minimum": 0 },
+    "case_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "total_assertions": { "type": "integer", "minimum": 0 },
+    "passed_assertions": { "type": "integer", "minimum": 0 },
+    "failed_assertions": { "type": "integer", "minimum": 0 },
+    "assertion_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "passed", "assertions", "failure_mode", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" },
+          "assertions": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "failure_mode": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "stability_summary": {
+      "type": "object",
+      "required": [
+        "evaluated_live_report_count",
+        "clean_completed_live_report_count",
+        "dirty_live_report_count",
+        "latest_live_report_path",
+        "latest_live_report_is_clean",
+        "suite_expansion_ready",
+        "productivity_lift_ready",
+        "next_allowed_action"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "evaluated_live_report_count": { "type": "integer", "minimum": 0 },
+        "clean_completed_live_report_count": { "type": "integer", "minimum": 0 },
+        "dirty_live_report_count": { "type": "integer", "minimum": 0 },
+        "latest_live_report_path": {
+          "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "latest_live_report_is_clean": { "type": "boolean" },
+        "suite_expansion_ready": { "type": "boolean" },
+        "productivity_lift_ready": { "type": "boolean" },
+        "next_allowed_action": { "type": "string", "minLength": 1 }
+      }
+    },
+    "interpretation_caveat": { "type": "string", "minLength": 1 }
+  }
+}

@@ -183,6 +183,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     ],
   },
   {
+    moduleId: "krn-benchmark-live-stability",
+    command: ["pnpm", "run", "eval:krn-benchmark-live-stability"],
+    sourceRefs: [
+      "docs/evals/krn-benchmark-live-stability/README.md",
+      "docs/evals/krn-benchmark-live-stability/cases.json",
+      "docs/goals/goal-027.md",
+    ],
+  },
+  {
     moduleId: "krn-repair-record",
     command: ["pnpm", "run", "eval:krn-repair-record"],
     sourceRefs: [

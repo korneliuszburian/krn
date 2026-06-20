@@ -27,6 +27,7 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 - [krn-proposal-promotion](./krn-proposal-promotion/README.md) checks whether approved proposal promotions require exact machine-applicable payloads, append-only audit, explicit apply mode, and path safety.
 - [krn-benchmark-spine](./krn-benchmark-spine/README.md) checks whether KRN can write and parse typed benchmark report evidence while rejecting unsupported productivity-lift claims.
 - [krn-benchmark-live-pilot](./krn-benchmark-live-pilot/README.md) checks the explicit live `codex exec` benchmark pilot path and keeps one-task evidence below the productivity-lift gate.
+- [krn-benchmark-live-stability](./krn-benchmark-live-stability/README.md) checks whether live-suite benchmark reports are clean enough for suite-expansion review while blocking productivity-lift claims below the lift gate.
 - [krn-review-contracts](./krn-review-contracts/README.md) checks whether `krn review` emits a schema-backed proposal-only report over typed local runtime artifacts.
 - [operator-skill-contracts](./operator-skill-contracts/README.md) checks whether P1 repo-local operator skills exist under `.agents/skills` and expose the required static contract.
 - [operator-skill-impact](./operator-skill-impact/README.md) compares neutral Codex runs against explicit repo-local operator-skill runs and reports metric deltas.

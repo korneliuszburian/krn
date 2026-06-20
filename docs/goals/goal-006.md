@@ -157,6 +157,14 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `docs/goals/goal-026.md` hardened the live-suite task registry and runner policy by adding typed `live_run_policy`, per-task `current_child_goal_ref`, and `superseded_latest_child_goal_refs`.
   - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T111349Z-3200927/report.json` with 5/5 cases and 22/22 assertions after the registry/policy gate.
   - This proves deterministic stale-context and hidden-runner-policy protection only. It still does not prove productivity lift, clean repeated live-run stability, statistical validity, suite expansion readiness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or `krn benchmark`/`krn repair` CLI readiness.
+  - `docs/goals/goal-027.md` added `krn-benchmark-live-stability`, a default deterministic eval module over existing live-suite benchmark reports.
+  - `pnpm run eval:krn-benchmark-live-stability` generated `.krn/evals/krn-benchmark-live-stability/20260620T113858Z-3249851/report.json` with 6/6 cases and 20/20 assertions.
+  - `pnpm run krn -- eval --module krn-benchmark-live-stability` generated `.krn/eval/20260620T113907Z-3250087/report.json`.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T113916Z-3250294/report.json` with 18/18 modules, 82/82 cases, and 276/276 assertions, including `krn-benchmark-live-stability`.
+  - `pnpm typecheck` and `pnpm test` passed after adding the stability module to runtime and aggregate eval test expectations.
+  - `python3 scripts/evals/codex_memory_compliance.py --mode validate` generated `.krn/evals/codex-memory-compliance/20260620T114024550186Z-3253880/report.json` with 4/4 cases.
+  - The stability gate classified current local live evidence as 8 live reports, 2 clean, 6 dirty, latest live report `.krn/benchmarks/krn-benchmark-live-suite/20260620T102133Z-3093693/report.json`, `suite_expansion_ready: false`, and `productivity_lift_ready: false`.
+  - This proves deterministic live-report readiness classification only. It still does not prove measured productivity lift, clean repeated live execution in the current runtime, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
 
 ## Objective
 
@@ -403,7 +411,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-026.md
+docs/goals/goal-027.md
 ```
 
-Next child-goal candidates after `goal-026` are a repeat/stability live-run check under the typed policy that requires clean completed tasks before suite expansion, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until repair attempts produce stable completed-task evidence, not just positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, or positive suite deltas with failed baseline tasks.
+Next child-goal candidates after `goal-027` are a live runner stability repair that makes the latest explicit live-suite run complete every task cleanly under the typed policy, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until the stability gate reports repeated clean completed live evidence, not just positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, or positive suite deltas with failed baseline tasks.
