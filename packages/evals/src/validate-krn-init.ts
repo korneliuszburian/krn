@@ -1,8 +1,14 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { parseInitManifest, parseKrnControlPlaneProposal } from "@krn/contracts";
+import { join, relative, resolve } from "node:path";
+import {
+  parseInitManifest,
+  parseKrnControlPlaneProposal,
+  parseKrnProposalPromotion,
+  parseKrnProposalReviewDecision,
+} from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
+import { storeKrnProposalReviewDecision } from "@krn/mcp";
 
 type EvalCase = {
   id: string;
@@ -243,6 +249,104 @@ function runValidation(): EvalReport {
   if (!proposalCase) {
     throw new Error("Missing case generated-agent-instructions-proposal-stores");
   }
+
+  const applyCase = caseById.get("generated-agent-instructions-apply-writes-reviewed-target");
+  if (!applyCase) {
+    throw new Error("Missing case generated-agent-instructions-apply-writes-reviewed-target");
+  }
+  const applyTarget = mkdtempSync(join(tmpdir(), "krn-init-apply-eval-"));
+  const applyProposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", applyTarget]);
+  const applyProposalPath = applyProposalResult.stdout.trim();
+  if (applyProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        applyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        applyCase.failure_mode,
+        applyProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(applyProposalPath));
+      const proposalRelativePath = relative(applyTarget, applyProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated AGENTS.md is thin, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: applyTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "agent_instructions",
+        "--proposal-path",
+        applyProposalPath,
+        "--decision-path",
+        join(applyTarget, storedDecision.decision_path),
+        "--target",
+        applyTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetAgentsPath = join(applyTarget, "AGENTS.md");
+
+      results.push(
+        result(
+          applyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetAgentsPath) &&
+            readFileSync(targetAgentsPath, "utf8") === promotion.target.file_content,
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target AGENTS.md matches exact payload",
+          ],
+          applyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed AGENTS.md payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          applyCase.id,
+          false,
+          ["generated init apply"],
+          applyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated init apply error",
+        ),
+      );
+    }
+  }
   const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
   const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
   const proposalPath = proposalResult.stdout.trim();
@@ -318,7 +422,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run bootstrap contract behavior only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, or write-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and one reviewed exact agent-instructions apply path only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

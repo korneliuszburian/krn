@@ -59,6 +59,14 @@ describe("KRN control-plane proposal contract", () => {
       title: "Review KRN init agent-instructions bootstrap",
       rationale: "The first init write target must be reviewed before target mutation.",
       proposed_change: "Review the AGENTS.md bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_agent_instructions",
+        bootstrap_capability: "agent_instructions",
+        target_path: "AGENTS.md",
+        write_mode: "exact_file_content",
+        file_content: "# Agent Instructions\n\nThis repository is KRN-enabled.\n",
+        content_sha256: "8a29e1918af766a50f89c4f7c01f3d09e7608882ff0ce900a1ed5721b43d9055",
+      },
       target: {
         target_type: "path",
         path: "AGENTS.md",
@@ -83,8 +91,56 @@ describe("KRN control-plane proposal contract", () => {
     });
 
     expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_agent_instructions",
+      bootstrap_capability: "agent_instructions",
+      target_path: "AGENTS.md",
+    });
     expect(proposal.status).toBe("proposal_only");
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
+  it("rejects an init payload attached to a non-init proposal", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-memory-proposal-with-init-payload",
+        proposal_kind: "memory_update",
+        status: "proposal_only",
+        title: "Bad proposal",
+        rationale: "Init payloads must not be accepted for memory proposals.",
+        proposed_change: "Write AGENTS.md through the wrong proposal kind.",
+        promotion_payload: {
+          payload_type: "init_agent_instructions",
+          bootstrap_capability: "agent_instructions",
+          target_path: "AGENTS.md",
+          write_mode: "exact_file_content",
+          file_content: "# Agent Instructions\n",
+          content_sha256: "1b12d919816a1caab0d5c54eddea2db3d33e1723071e43fdf4cfa02a0a986228",
+        },
+        target: {
+          target_type: "path",
+          path: "AGENTS.md",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-payload:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
   });
 
   it("exports a JSON schema for downstream tools", () => {

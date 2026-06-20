@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -28,6 +29,14 @@ function writeText(path: string, content: string): void {
   writeFileSync(path, content, "utf8");
 }
 
+function sha256(content: string): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+function initAgentInstructionsContent(): string {
+  return "# Agent Instructions\n\nThis repository is KRN-enabled.\n";
+}
+
 function validProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
   const proposal = parseKrnControlPlaneProposal(
     readJson("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json"),
@@ -35,6 +44,50 @@ function validProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnCon
 
   return parseKrnControlPlaneProposal({
     ...proposal,
+    ...overrides,
+  });
+}
+
+function validInitProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initAgentInstructionsContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-agent-instructions-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init agent-instructions bootstrap",
+    rationale: "The first init write target must be reviewed before target mutation.",
+    proposed_change: "Write a thin AGENTS.md only after approved review.",
+    promotion_payload: {
+      payload_type: "init_agent_instructions",
+      bootstrap_capability: "agent_instructions",
+      target_path: "AGENTS.md",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: "AGENTS.md",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:agent_instructions:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate AGENTS.md until explicit apply mode.",
     ...overrides,
   });
 }
@@ -171,6 +224,36 @@ describe("KRN proposal promotion store", () => {
     if (proposal.target.target_type === "path") {
       expect(readFileSync(join(targetRoot, proposal.target.path), "utf8")).toBe(promotion.target.file_content);
     }
+  });
+
+  it("applies exact init agent instructions only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-store-"));
+    const proposal = validInitProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-agent-instructions",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-agent-instructions-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(readFileSync(join(targetRoot, "AGENTS.md"), "utf8")).toBe(initAgentInstructionsContent());
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 
   it("treats duplicate promotion records as already stored", () => {

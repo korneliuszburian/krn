@@ -17,17 +17,20 @@ sources:
 
 ## Purpose
 
-`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions` is the first reviewed bootstrap target path.
+`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions` is the first reviewed bootstrap target path. `krn init --apply agent_instructions` is the first exact reviewed write boundary for that target.
 
 It inspects a target project and writes a schema-backed dry-run manifest under `.krn/init/{run_id}/manifest.json`. It must not mutate target project setup files by default. The manifest must expose the final-shaped bootstrap plan without claiming write-mode safety or memory-core readiness.
 
 The proposal mode writes an append-only `KrnControlPlaneProposal` under `.krn/proposals/**/proposal.json`. It uses the generated init manifest as source/evidence lineage and does not write `AGENTS.md`.
+
+The apply mode requires an existing `init_bootstrap` proposal, an existing `approved_for_promotion` review decision, and an exact `init_agent_instructions` payload before writing `AGENTS.md`. It records the write under `.krn/promotions/**/promotion.json` and refuses overwrite of an existing target.
 
 ## Command
 
 ```bash
 pnpm run krn -- init --dry-run --target .
 pnpm run krn -- init --proposal agent_instructions --target .
+pnpm run krn -- init --apply agent_instructions --proposal-path <path> --decision-path <path> --target .
 ```
 
 Accepted shape:
@@ -35,9 +38,10 @@ Accepted shape:
 ```text
 krn init --dry-run [--target <path>]
 krn init --proposal agent_instructions [--target <path>]
+krn init --apply agent_instructions --proposal-path <path> --decision-path <path> [--target <path>]
 ```
 
-The command must reject missing `init`, missing mode, unsupported proposal capability, unknown flags, and empty target values.
+The command must reject missing `init`, missing mode, unsupported proposal/apply capability, missing apply paths, unknown flags, and empty target values.
 
 ## Runtime Output
 
@@ -56,6 +60,15 @@ Proposal mode also writes:
 ```
 
 The exact proposal directory is a filesystem-safe idempotency-key segment. The proposal uses `schema_version: "krn-control-plane-proposal.v1"`, `proposal_kind: "init_bootstrap"`, `status: "proposal_only"`, `target.path: "AGENTS.md"`, and `write_policy.default_effect: "no_mutation"`.
+
+Apply mode also writes:
+
+```text
+{target_root}/.krn/promotions/{idempotency_key}/promotion.json
+{target_root}/AGENTS.md
+```
+
+`AGENTS.md` is written only from the exact payload already stored on the reviewed proposal. The promotion uses `schema_version: "krn-proposal-promotion.v1"`, `proposal_kind: "init_bootstrap"`, `promotion_scope: "approved_init_bootstrap_only"`, `apply_mode: "apply_exact_target_write"`, and `target_mutated: true`.
 
 ## Bootstrap Plan
 
@@ -97,14 +110,36 @@ Allowed behavior:
 - generate the dry-run manifest first;
 - use that manifest path as source/evidence lineage;
 - create a `proposal_only` record for `AGENTS.md`;
+- include an exact `init_agent_instructions` payload only when the target is absent and eligible for future apply;
 - block target mutation, memory-core writes, source-ledger mutation, dashboard event publish, and broad API/cloud sync.
 
 Forbidden behavior:
 
 - no `AGENTS.md` write;
-- no apply mode;
 - no inferred merge into existing instructions;
 - no dashboard publish;
+- no memory-core creation.
+
+## Reviewed Apply Boundary
+
+`krn init --apply agent_instructions` proves only that one absent `AGENTS.md` target can be written through the existing proposal-review-promotion spine.
+
+Allowed behavior:
+
+- read an existing proposal and review decision from target-local paths;
+- require `decision: "approved_for_promotion"`;
+- require `proposal_kind: "init_bootstrap"` and `promotion_payload.payload_type: "init_agent_instructions"`;
+- write the exact reviewed payload content to `AGENTS.md` only in explicit apply mode;
+- persist the promotion under `.krn/promotions/**/promotion.json`;
+- refuse unsafe paths and existing targets.
+
+Forbidden behavior:
+
+- no write without an approved decision;
+- no inferred content from proposal prose;
+- no overwrite or merge of existing `AGENTS.md`;
+- no broad scaffold writes;
+- no dashboard/API/cloud sync;
 - no memory-core creation.
 
 ## Minimum Detection
@@ -119,7 +154,7 @@ The command must inspect whether these target artifacts exist:
 
 ## Manifest Interpretation
 
-A valid manifest proves only that KRN can inspect a target project and express a final-shaped dry-run bootstrap plan through a typed contract. It does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, or write-mode safety.
+A valid manifest proves only that KRN can inspect a target project and express a final-shaped dry-run bootstrap plan through a typed contract. A successful apply proves only one exact reviewed `AGENTS.md` write for an absent target. Neither proves productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.
 
 ## Validation
 
@@ -128,9 +163,12 @@ Run:
 ```bash
 pnpm test -- packages/contracts/test/init-manifest.test.ts
 pnpm test -- packages/contracts/test/control-plane-proposal.test.ts
+pnpm test -- packages/contracts/test/proposal-promotion.test.ts
+pnpm test -- packages/mcp/test/proposal-promotion-store.test.ts
 pnpm run krn -- init --dry-run --target .
 pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run eval:krn-init
+pnpm run eval:krn-proposal-promotion
 ```
 
 Runtime reports stay under `.krn/`. Durable lessons move to `docs/memory/` only after review.

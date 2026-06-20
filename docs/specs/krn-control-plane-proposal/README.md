@@ -3,7 +3,7 @@ id: krn-control-plane-proposal-contract
 kind: command-contract
 status: active
 owner: krn
-updated: 2026-06-20
+updated: 2026-06-21
 sources:
   - docs/goals/goal-006.md
   - docs/goals/goal-008.md
@@ -42,7 +42,7 @@ Every proposal includes:
 - proposal kind,
 - `status: "proposal_only"`,
 - target path or resource URI,
-- optional machine-applicable `promotion_payload` for exact memory-entry promotion,
+- optional machine-applicable `promotion_payload` for exact memory-entry or init agent-instructions promotion,
 - idempotency key,
 - source refs,
 - evidence refs,
@@ -58,7 +58,8 @@ Allowed behavior:
 - parse proposal objects through `@krn/contracts`,
 - export JSON Schema for MCP/API/dashboard consumers,
 - represent future append-only reviewed write requests.
-- carry exact reviewed memory-entry content for later promotion when `promotion_payload` is present,
+- carry exact reviewed memory-entry content for later promotion when `promotion_payload.payload_type: "memory_entry"` is present,
+- carry exact init `AGENTS.md` content for later promotion when `promotion_payload.payload_type: "init_agent_instructions"` is present,
 - carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions` through `proposal_kind: "init_bootstrap"`,
 - validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
 - persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
@@ -81,9 +82,9 @@ A green proposal-store result means KRN can persist that action as append-only r
 
 A proposal with `promotion_payload` can later be consumed by `KrnProposalPromotion`; the proposal still does not approve or execute the change by itself.
 
-An `init_bootstrap` proposal can be consumed by proposal review surfaces as review input for a future repo bootstrap apply path; it still does not approve or execute the target mutation by itself.
+An `init_bootstrap` proposal can be consumed by proposal review and promotion surfaces as review input for the first repo bootstrap apply path; it still does not approve or execute the target mutation by itself.
 
-It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, promotion correctness by itself, `krn init` apply-mode readiness, or productivity lift.
+It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, promotion correctness by itself, broad `krn init` readiness, or productivity lift.
 
 ## Validation
 

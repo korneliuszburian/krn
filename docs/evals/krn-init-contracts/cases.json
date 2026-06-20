@@ -96,5 +96,30 @@
       "unsafe_write_prevention_score"
     ],
     "failure_mode": "The first reviewed init proposal target mutates AGENTS.md directly, does not land in the proposal store, or lacks source-backed manifest evidence."
+  },
+  {
+    "id": "generated-agent-instructions-apply-writes-reviewed-target",
+    "expected_behavior": "The CLI applies a generated agent_instructions proposal only after an approved review decision and writes AGENTS.md from the exact promotion payload.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "proposal CLI exits zero",
+      "approved review decision stored",
+      "apply CLI exits zero",
+      "promotion parses",
+      "target AGENTS.md matches exact payload"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "unsafe_write_prevention_score",
+      "bootstrap_safety_score"
+    ],
+    "failure_mode": "The first init apply path can write AGENTS.md without an approved decision or without exact payload provenance."
   }
 ]

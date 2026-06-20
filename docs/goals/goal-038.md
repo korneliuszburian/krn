@@ -540,6 +540,11 @@ context pointers, eval baseline, skill wiring, and policy boundaries.
 first and stores a source-backed append-only `init_bootstrap` proposal for
 `AGENTS.md` without mutating the target file.
 
+[FACT] `krn init --apply agent_instructions` now requires an existing
+`init_bootstrap` proposal, an approved proposal review decision, and an exact
+`init_agent_instructions` payload before writing an absent `AGENTS.md` through
+the proposal promotion spine.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -549,11 +554,12 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with either the reviewed apply boundary
-for the `agent_instructions` proposal or a surgical `init` command extraction
-before adding more init behavior. Do not add dashboard, benchmark, broad
-API/cloud sync, research runtime, or passive docs before repo bootstrap can
-create/update a useful local operating layer safely.
+[NEXT] After this checkpoint, continue with the next narrow `krn init`
+bootstrap capability or repo-bootstrap readiness check before adding dashboard,
+benchmark, broad API/cloud sync, research runtime, or passive docs. Do not turn
+init into a broad scaffold writer and do not add another target mutation without
+review/promotion, no-overwrite behavior, source/evidence lineage, and focused
+eval coverage.
 
 ## Progress Ledger
 
@@ -656,6 +662,22 @@ create/update a useful local operating layer safely.
 - [SIMPLIFY] Next candidate: extract `krn init` command parsing/build/write helpers from `packages/cli/src/main.ts` before adding apply/write behavior if the touched surface continues growing.
 - [OVERCLAIM] This slice proves a proposal-only reviewed bootstrap input path. It does not prove human approval quality, apply-mode correctness, target mutation safety beyond `.krn/proposals`, fresh-repo usefulness, or productivity lift.
 - [NEXT] Commit and push this checkpoint; then continue with either the reviewed apply boundary for this exact `agent_instructions` proposal or the surgical init-command extraction required before more init behavior.
+- [FACT] First reviewed `krn init` apply-target slice added `krn init --apply agent_instructions --proposal-path <path> --decision-path <path>`.
+- [FACT] `krn init --apply agent_instructions` reads an existing `init_bootstrap` proposal and approved review decision, builds a `KrnProposalPromotion` with `promotion_scope: "approved_init_bootstrap_only"`, and writes `AGENTS.md` only from the exact `init_agent_instructions` payload when the target is absent.
+- [FACT] `KrnControlPlaneProposal` now supports exact `init_agent_instructions` payloads only for `init_bootstrap` proposals, while `KrnProposalPromotion` supports only `memory_update` and `init_bootstrap` promotion scopes.
+- [FACT] `packages/mcp/src/proposal-promotion-store.ts` reuses the existing approved-decision, source-ref, exact-payload, idempotency, safe-path, and no-overwrite promotion boundary for init bootstrap writes.
+- [FACT] The CLI apply implementation was extracted into `packages/cli/src/init-agent-instructions.ts` so `packages/cli/src/init.ts` remains the init manifest/proposal dispatcher instead of absorbing the first write boundary.
+- [FACT] `krn init` no longer emits `goal-038` or the canonical draft as runtime product truth inside generated manifests; the bootstrap phase label is now generic `KRN Init Bootstrap Planning`.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-promotion-store.test.ts packages/cli/test/init-dry-run.test.ts` passed 4 files / 22 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T231654Z-699484` with 6/6 cases and 21/21 assertions.
+- [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `20260620T231654Z-699473` with 8/8 cases and 26/26 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260620T231724Z-700759` with 5/5 modules, 18/18 cases, and 52/52 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: exact `init_agent_instructions` proposal payload, `approved_init_bootstrap_only` promotion scope, `krn init --apply agent_instructions`, safe target-local apply path validation, focused init/promotion eval cases, and `init-agent-instructions.ts` extraction because each protects one reviewed bootstrap write boundary.
+- [SIMPLIFY] Delete/avoid: no broad scaffold writer, no merge/overwrite mode for existing `AGENTS.md`, no dashboard, no benchmark expansion, no broad API/cloud sync, no memory-core write, no second promotion store, and no inferred target content from proposal prose.
+- [SIMPLIFY] Next candidate: choose the next narrow `krn init` capability from local config, source pointers, context pointers, eval baseline, skill wiring, or policy boundaries; run the pre-edit gate before adding any new target mutation.
+- [OVERCLAIM] This slice proves one reviewed exact absent-`AGENTS.md` apply boundary. It does not prove broad repo bootstrap usefulness, merge-mode safety, human review quality, dashboard/API readiness, final memory quality, or productivity lift.
+- [NEXT] Commit and push this checkpoint; then continue with the next narrow `krn init` bootstrap capability or repo-bootstrap readiness check.
 
 ## Disproves Completion
 

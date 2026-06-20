@@ -42,9 +42,10 @@ A green result proves only the local proposal promotion boundary:
 - control-plane proposals can carry exact machine-applicable memory payloads,
 - record-only promotion persists under `.krn/promotions` without target mutation,
 - explicit apply mode writes exact target content only after approved review,
+- exact `init_bootstrap` agent-instructions payloads can be applied only through the approved promotion boundary,
 - rejected decisions cannot promote proposals,
 - proposals without machine-applicable payload cannot promote,
 - duplicate promotion writes are idempotent,
 - unsafe target paths are rejected.
 
-It does not prove general promotion correctness for all proposal kinds, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.
+It does not prove general promotion correctness for all proposal kinds, broad `krn init` scaffolding, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.

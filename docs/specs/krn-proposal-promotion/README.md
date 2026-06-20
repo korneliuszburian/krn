@@ -3,7 +3,7 @@ id: krn-proposal-promotion
 kind: command-contract
 status: active
 owner: krn
-updated: 2026-06-20
+updated: 2026-06-21
 sources:
   - docs/goals/goal-006.md
   - docs/goals/goal-014.md
@@ -17,9 +17,11 @@ sources:
 
 ## Purpose
 
-`KrnProposalPromotion` records the first typed promotion workflow after a proposal has a terminal `approved_for_promotion` review decision.
+`KrnProposalPromotion` records the typed promotion workflow after a proposal has a terminal `approved_for_promotion` review decision.
 
 It prevents KRN from treating approval as vague permission to rewrite files. Promotion can only use a machine-applicable payload from the proposal, validates the approved decision, and records the promotion under `.krn/promotions`.
+
+Current promotion kinds are intentionally narrow: `memory_update` and the first `init_bootstrap` target for `agent_instructions`.
 
 ## Public Interface
 
@@ -37,8 +39,8 @@ Every promotion includes:
 - stable schema version,
 - proposal id and proposal path,
 - review decision id and decision path,
-- `proposal_kind: "memory_update"`,
-- `promotion_scope: "approved_memory_update_only"`,
+- `proposal_kind: "memory_update"` or `"init_bootstrap"`,
+- `promotion_scope: "approved_memory_update_only"` or `"approved_init_bootstrap_only"`,
 - `apply_mode: "record_only"` or `"apply_exact_target_write"`,
 - `target_mutated` truthfully tied to apply mode,
 - exact target file content and SHA-256 hash,
@@ -56,6 +58,8 @@ Allowed behavior:
 - validate proposal and review decision records before storing promotion,
 - persist promotion records under `.krn/promotions`,
 - in explicit apply mode only, write exact target content to the proposal target path when the path is safe and absent.
+- promote exact `memory_entry` payloads only for `memory_update` proposals,
+- promote exact `init_agent_instructions` payloads only for `init_bootstrap` proposals.
 
 Forbidden behavior:
 
@@ -65,14 +69,15 @@ Forbidden behavior:
 - no inferred target content from prose,
 - no overwrite of an existing different target file,
 - no source/goal/eval/dashboard mutation in this slice,
+- no broad init scaffolding beyond the exact reviewed `AGENTS.md` payload,
 - no HTTP/API or dashboard command readiness claim,
 - no productivity or human-review-quality claim.
 
 ## Interpretation
 
-A green proposal promotion result means KRN can record and optionally apply one exact memory-update payload after a review decision.
+A green proposal promotion result means KRN can record and optionally apply one exact payload after a review decision for the currently allowed proposal kinds: `memory_update` and `init_bootstrap`.
 
-It does not prove general promotion correctness for all proposal kinds, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.
+It does not prove general promotion correctness for all proposal kinds, broad `krn init` scaffolding, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.
 
 ## Validation
 

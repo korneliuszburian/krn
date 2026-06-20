@@ -3,7 +3,9 @@ import { z } from "zod";
 const SourceRefSchema = z.string().min(1);
 const EvidenceRefSchema = z.string().min(1);
 
+const PromotionProposalKindSchema = z.enum(["memory_update", "init_bootstrap"]);
 const PromotionApplyModeSchema = z.enum(["record_only", "apply_exact_target_write"]);
+const PromotionScopeSchema = z.enum(["approved_memory_update_only", "approved_init_bootstrap_only"]);
 
 const PromotionTargetSchema = z
   .object({
@@ -32,8 +34,8 @@ export const KrnProposalPromotionSchema = z
     proposal_path: z.string().min(1),
     decision_id: z.string().min(1),
     decision_path: z.string().min(1),
-    proposal_kind: z.literal("memory_update"),
-    promotion_scope: z.literal("approved_memory_update_only"),
+    proposal_kind: PromotionProposalKindSchema,
+    promotion_scope: PromotionScopeSchema,
     apply_mode: PromotionApplyModeSchema,
     promotion_state: z.enum(["planned", "applied"]),
     target_mutated: z.boolean(),
@@ -48,6 +50,22 @@ export const KrnProposalPromotionSchema = z
   })
   .strict()
   .superRefine((promotion, context) => {
+    if (promotion.proposal_kind === "memory_update" && promotion.promotion_scope !== "approved_memory_update_only") {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_scope"],
+        message: "memory_update promotions must use approved_memory_update_only scope",
+      });
+    }
+
+    if (promotion.proposal_kind === "init_bootstrap" && promotion.promotion_scope !== "approved_init_bootstrap_only") {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_scope"],
+        message: "init_bootstrap promotions must use approved_init_bootstrap_only scope",
+      });
+    }
+
     if (promotion.apply_mode === "record_only") {
       if (promotion.promotion_state !== "planned") {
         context.addIssue({

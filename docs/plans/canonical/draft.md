@@ -10,7 +10,7 @@
 
 [DECISION] [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md) absorbs the `goal-037` engineering-kernel reset into one final-product endgame. Non-trivial work must remain mechanism-first, bottleneck-led, production-shaped, context-budgeted, diff-literate, review-minimizing, memory-operative, proof-carrying, and deletion-friendly.
 
-[DECISION] The first final-product bottlenecks after reset are the `MemoryStore` boundary, pre-edit engineering gate, bounded context packet, local source graph check, eval-lane split, and final-shaped `krn init --dry-run` bootstrap. They keep memory outside repo-file truth, select IDs with reasons/confidence/source lineage, apply guidance to a real CLI/review/context consumer, record runtime IDs and feedback, fail context dumps, reject selected memory without application guidance, block stale/conflicting selected source refs, keep lab/dashboard/benchmark history out of default verification, and expose bootstrap capabilities without direct dry-run mutation. The next useful bottleneck is a reviewed first `krn init` proposal/write target or init-command boundary extraction, not another passive planning artifact.
+[DECISION] The first final-product bottlenecks after reset are the `MemoryStore` boundary, pre-edit engineering gate, bounded context packet, local source graph check, eval-lane split, final-shaped `krn init --dry-run` bootstrap, and the reviewed `agent_instructions` proposal/apply path. They keep memory outside repo-file truth, select IDs with reasons/confidence/source lineage, apply guidance to a real CLI/review/context consumer, record runtime IDs and feedback, fail context dumps, reject selected memory without application guidance, block stale/conflicting selected source refs, keep lab/dashboard/benchmark history out of default verification, expose bootstrap capabilities without direct dry-run mutation, and write the first absent `AGENTS.md` only through approved review plus exact payload promotion. The next useful bottleneck is the next narrow `krn init` bootstrap capability or repo-bootstrap readiness check, not another passive planning artifact, dashboard, benchmark, broad API/cloud sync, or research runtime.
 
 The short version:
 
@@ -129,7 +129,7 @@ flowchart TD
   Write --> Doctor[krn doctor readiness report]
 ```
 
-Mechanism: dry-run and manifest before mutation. Verification: parser tests and `krn init --dry-run` evidence prove the report shape only, not write-mode safety.
+Mechanism: dry-run and manifest before mutation; exact target writes require approved review plus promotion. Verification: parser tests, `krn init --dry-run`, `krn init --proposal agent_instructions`, and `krn init --apply agent_instructions` evidence prove only one reviewed absent-`AGENTS.md` write boundary, not broad bootstrap or merge-mode safety.
 
 ### Graph 3 - Long-Running Codex Goal
 
@@ -522,8 +522,8 @@ Do not rank by stars. For each repo, inspect:
 | S3a | Read/proposal control plane | MCP resources and proposal stores are allowlisted, append-only, idempotent, and source-backed | Proposal refs become decorative or unsafe |
 | S3b | Dashboard review surfaces | UI reads generated typed product objects only and every row has owner/source/action/failure mode | UI shows vanity metrics or chat-derived state |
 | S3c | Benchmark and repair loop | live evidence stays explicit, lift remains unclaimed below the gate, no-lift creates repair records | Green fixture/live reports are overclaimed as productivity proof |
-| Completed foundation | MemoryStore boundary, pre-edit gate, bounded context packet, source graph check, eval-lane split, and final-shaped `krn init --dry-run` bootstrap | Store-backed selection/application/feedback, `krn gate`, `krn context build`, `krn sources check`, lane-aware `krn eval`, required init bootstrap capabilities, runtime IDs, rejected context dumps, selected-memory application guidance, source pass/warn/block decisions, lab exclusion by default, and dry-run mutation rejection | The proof is overclaimed as final memory/source/eval quality, write-mode safety, research automation, or productivity lift |
-| Next | Reviewed `krn init` proposal/write target | One bootstrap capability can be proposed or written through a narrow reviewed path with rollback/caveat evidence, without broad scaffolding or repo-local memory-core fiction | Bootstrap writes broad scaffolding, hardcodes product truth, or creates more overhead than it removes |
+| Completed foundation | MemoryStore boundary, pre-edit gate, bounded context packet, source graph check, eval-lane split, final-shaped `krn init --dry-run` bootstrap, and reviewed `agent_instructions` proposal/apply path | Store-backed selection/application/feedback, `krn gate`, `krn context build`, `krn sources check`, lane-aware `krn eval`, required init bootstrap capabilities, runtime IDs, rejected context dumps, selected-memory application guidance, source pass/warn/block decisions, lab exclusion by default, dry-run mutation rejection, and exact absent-`AGENTS.md` write through approved promotion | The proof is overclaimed as final memory/source/eval quality, broad repo bootstrap, merge-mode safety, research automation, or productivity lift |
+| Next | Next narrow `krn init` bootstrap capability or repo-bootstrap readiness check | KRN can move from one reviewed `AGENTS.md` target toward local config/source/context/eval/policy setup without broad scaffolding, hardcoded truth, or repo-local memory-core fiction | Bootstrap writes broad scaffolding, hardcodes product truth, skips review/promotion, overwrites existing instructions, or creates more overhead than it removes |
 
 ## 17. Kill Criteria
 
@@ -544,8 +544,8 @@ Kill or redesign the product if:
 - How aggressive should PreCompact blocking be?
 - Should Sandcastle-like sandboxing be a KRN feature or only a reference pattern?
 - What is the smallest dashboard object model worth prototyping?
-- What is the first reviewed `krn init` apply target after the `agent_instructions` proposal path?
-- Does `packages/cli/src/main.ts` need a surgical `init` extraction before the next init apply/write behavior change?
+- What is the next narrow `krn init` capability after exact `agent_instructions` apply: local config, source pointers, context pointers, eval baseline, skill wiring, or policy boundaries?
+- Does `packages/cli/src/init.ts` need further extraction before the next init capability, or is `init-agent-instructions.ts` enough for the first write boundary?
 
 ## 19. Decision Log
 
@@ -568,6 +568,7 @@ Kill or redesign the product if:
 | 2026-06-20 | Eval-lane split joins the active execution path. | Default `krn eval` now selects `core,current` and excludes `lab`; it is now the verification baseline for final-shaped init work instead of historical lab churn. |
 | 2026-06-20 | Final-shaped `krn init --dry-run` bootstrap joins the active execution path. | Init manifests now expose seven required bootstrap capabilities and reject direct dry-run mutation; the next dependency is a reviewed first proposal/write target or surgical init-command extraction. |
 | 2026-06-20 | First `krn init` bootstrap proposal target joins the active execution path. | `krn init --proposal agent_instructions` stores an append-only `init_bootstrap` proposal backed by the generated dry-run manifest and still leaves `AGENTS.md` untouched. |
+| 2026-06-21 | First reviewed `krn init` apply target joins the active execution path. | `krn init --apply agent_instructions` writes an absent `AGENTS.md` only after an approved review decision and exact `init_agent_instructions` payload promotion, while keeping broad bootstrap, merge mode, dashboard, API/cloud sync, and memory-core writes out of scope. |
 
 ## 20. Source Coverage Checklist
 
@@ -580,7 +581,7 @@ Kill or redesign the product if:
 - Competitor/open-source sources: S067-S073.
 - Deferred ChatGPT reviewer bridge sources: S078-S085.
 - Controlled experiment-loop source: S088.
-- Local evidence entries: LOCAL001-LOCAL053.
-- Active reset claims: C059-C068.
+- Local evidence entries: LOCAL001-LOCAL054.
+- Active reset claims: C059-C069.
 
 Final verdict: KRN is not proven breakthrough yet. The strongest path is a disciplined source-backed control plane where Codex work produces reviewable memory, eval, trace, and decision artifacts, and where every future dashboard feature reads those artifacts instead of inventing state.

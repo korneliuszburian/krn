@@ -8,6 +8,7 @@ import {
   type KrnControlPlaneProposal,
 } from "@krn/contracts";
 import { storeKrnControlPlaneProposal } from "@krn/mcp";
+import { applyInitProposal, buildInitAgentInstructionsPayload } from "./init-agent-instructions.js";
 import { createRunId, pathKind } from "./runtime-utils.js";
 
 type InitProposalCapability = "agent_instructions";
@@ -21,6 +22,12 @@ type InitArgs = {
   | {
       mode: "proposal";
       capability: InitProposalCapability;
+    }
+  | {
+      mode: "apply";
+      capability: InitProposalCapability;
+      proposalPath: string;
+      decisionPath: string;
     }
 );
 
@@ -46,6 +53,9 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
   let target = ".";
   let sawDryRun = false;
   let proposalCapability: InitProposalCapability | null = null;
+  let applyCapability: InitProposalCapability | null = null;
+  let proposalPath: string | null = null;
+  let decisionPath: string | null = null;
 
   for (let index = 1; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -68,6 +78,39 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
       continue;
     }
 
+    if (arg === "--apply") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --apply");
+      }
+      if (value !== "agent_instructions") {
+        throw new Error("krn init apply currently supports only: agent_instructions");
+      }
+      applyCapability = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--proposal-path") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --proposal-path");
+      }
+      proposalPath = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--decision-path") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --decision-path");
+      }
+      decisionPath = value;
+      index += 1;
+      continue;
+    }
+
     if (arg === "--target") {
       const value = argv[index + 1];
       if (!value || value.startsWith("--")) {
@@ -83,6 +126,21 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
 
   if (sawDryRun && proposalCapability) {
     throw new Error("krn init accepts either --dry-run or --proposal, not both");
+  }
+
+  if ((sawDryRun || proposalCapability) && applyCapability) {
+    throw new Error("krn init accepts only one of --dry-run, --proposal, or --apply");
+  }
+
+  if ((proposalPath || decisionPath) && !applyCapability) {
+    throw new Error("--proposal-path and --decision-path are only valid with --apply");
+  }
+
+  if (applyCapability) {
+    if (!proposalPath || !decisionPath) {
+      throw new Error("krn init --apply requires --proposal-path and --decision-path");
+    }
+    return { target, mode: "apply", capability: applyCapability, proposalPath, decisionPath };
   }
 
   if (proposalCapability) {
@@ -161,12 +219,8 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       project_name: basename(targetRoot) || "target-project",
       identity: "Target project inspected by KRN init dry-run.",
       product_boundary: "KRN init reports planned setup only; it does not mutate target project files.",
-      current_phase: "Goal 038 Final Product Bootstrap",
-      source_refs: [
-        "docs/goals/goal-038.md",
-        "docs/plans/canonical/draft.md",
-        "docs/specs/krn-init/README.md",
-      ],
+      current_phase: "KRN Init Bootstrap Planning",
+      source_refs: ["docs/specs/krn-init/README.md"],
       guardrails: [
         "dry-run only",
         "schema-backed manifest",
@@ -185,7 +239,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         reason: agentsExists
           ? "Existing root instructions are preserved; KRN init must not overwrite them."
           : "KRN would propose a minimal AGENTS.md selector in a future reviewed write flow.",
-        source_refs: ["AGENTS.md", "docs/memory/INDEX.md", "docs/goals/goal-038.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
         path: "docs/memory/INDEX.md",
@@ -193,13 +247,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         reason: memoryIndexExists
           ? "Pattern-bank changes require review and are not authoritative memory-core writes."
           : "KRN would propose a reviewed pattern-bank index in a future write flow.",
-        source_refs: ["docs/memory/INDEX.md", "docs/goals/goal-038.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
         path: runtimeManifestPath,
         action: "create",
         reason: "Dry-run runtime manifest is the only default write surface.",
-        source_refs: ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
     ],
     planned_runtime_dirs: [
@@ -231,7 +285,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         action: agentsExists ? "skip" : "proposal_only",
         purpose: "Create or preserve a thin Codex selector that points to active goal, memory index, and verification rules.",
         boundary: "AGENTS.md must stay a compact router, not a generated encyclopedia or memory database.",
-        source_refs: ["AGENTS.md", "docs/goals/goal-038.md", "docs/memory/INDEX.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
         capability: "local_config",
@@ -239,7 +293,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         action: "proposal_only",
         purpose: "Describe local-first KRN project settings without requiring cloud/API sync.",
         boundary: "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
-        source_refs: ["docs/goals/goal-038.md", "docs/plans/canonical/draft.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
         capability: "source_pointers",
@@ -255,7 +309,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         action: "proposal_only",
         purpose: "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
         boundary: "Context packets may record selected IDs and guidance; they must not store authoritative memory bodies.",
-        source_refs: ["docs/specs/krn-context-packet/README.md", "docs/goals/goal-038.md"],
+        source_refs: ["docs/specs/krn-context-packet/README.md", "docs/specs/krn-init/README.md"],
       },
       {
         capability: "eval_baseline",
@@ -271,7 +325,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         action: "proposal_only",
         purpose: "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
         boundary: "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
-        source_refs: ["docs/goals/goal-038.md", "docs/plans/canonical/pattern-matrix.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
         capability: "policy_boundaries",
@@ -279,15 +333,11 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         action: "proposal_only",
         purpose: "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
         boundary: "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
-        source_refs: ["docs/goals/goal-038.md", "docs/specs/krn-engineering-gate/README.md"],
+        source_refs: ["docs/specs/krn-engineering-gate/README.md", "docs/specs/krn-init/README.md"],
       },
     ],
     no_touch_paths: [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
-    source_refs: [
-      "docs/goals/goal-038.md",
-      "docs/specs/krn-init/README.md",
-      "docs/plans/canonical/draft.md",
-    ],
+    source_refs: ["docs/specs/krn-init/README.md"],
     product_spine_refs: ["project_profile", "memory_entry", "source_claim", "eval_run", "proposal", "decision"],
     validation: {
       status: "valid",
@@ -338,6 +388,8 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     bootstrapItem.action === "skip"
       ? "review the existing target file and preserve it unless a later explicit merge proposal is approved"
       : "review a future exact-file proposal before any target mutation";
+  const promotionPayload =
+    bootstrapItem.action === "skip" ? undefined : buildInitAgentInstructionsPayload(bootstrapItem.path);
 
   return parseKrnControlPlaneProposal({
     schema_version: "krn-control-plane-proposal.v1",
@@ -349,6 +401,7 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     rationale:
       "KRN needs a reviewed first bootstrap target before write mode. Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database.",
     proposed_change: `For ${bootstrapItem.path}, ${actionSummary}. Capability purpose: ${bootstrapItem.purpose} Boundary: ${bootstrapItem.boundary}`,
+    promotion_payload: promotionPayload,
     target: {
       target_type: "path",
       path: bootstrapItem.path,
@@ -391,6 +444,11 @@ export function writeInitProposal(
 
 export function runKrnInit(argv: readonly string[]): InitCliResult {
   const args = parseInitArgs(argv);
+  if (args.mode === "apply") {
+    const promotionPath = applyInitProposal(args.target, args.proposalPath, args.decisionPath);
+    return { exitCode: 0, stdout: `${promotionPath}\n`, stderr: "" };
+  }
+
   const manifest = buildInitManifest(args.target);
   const manifestPath = writeManifest(args.target, manifest);
   if (args.mode === "proposal") {

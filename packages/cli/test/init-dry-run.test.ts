@@ -1,9 +1,15 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseInitManifest, parseKrnControlPlaneProposal } from "@krn/contracts";
+import {
+  parseInitManifest,
+  parseKrnControlPlaneProposal,
+  parseKrnProposalPromotion,
+  parseKrnProposalReviewDecision,
+} from "@krn/contracts";
+import { storeKrnProposalReviewDecision } from "@krn/mcp";
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -29,7 +35,7 @@ describe("krn init --dry-run", () => {
     expect(manifest.mode).toBe("dry-run");
     expect(manifest.target_root).toBe(targetRoot);
     expect(manifest.interpretation_caveat).toContain("does not prove productivity lift");
-    expect(manifest.project_profile.current_phase).toBe("Goal 038 Final Product Bootstrap");
+    expect(manifest.project_profile.current_phase).toBe("KRN Init Bootstrap Planning");
     expect(manifest.bootstrap_plan.map((item) => item.capability)).toEqual([
       "agent_instructions",
       "local_config",
@@ -79,5 +85,109 @@ describe("krn init --dry-run", () => {
 
     const topLevelEntries = readdirSync(targetRoot).sort();
     expect(topLevelEntries).toEqual([".krn"]);
+  }, 30_000);
+
+  it("applies reviewed agent-instructions proposal through an approved decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-apply-target-"));
+    const proposalStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "agent_instructions", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const proposalPath = proposalStdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    const decision = parseKrnProposalReviewDecision({
+      schema_version: "krn-proposal-review-decision.v1",
+      kind: "krn_proposal_review_decision",
+      decision_id: `decision-${proposal.proposal_id}`,
+      proposal_id: proposal.proposal_id,
+      proposal_path: proposalRelativePath,
+      decision: "approved_for_promotion",
+      review_scope: "proposal_review_only",
+      target_mutated: false,
+      promotion_state: "not_promoted",
+      reviewer: "krn-init-test",
+      rationale: "The generated AGENTS.md is thin, target is absent, and the exact payload is safe to apply.",
+      write_policy: {
+        default_effect: "no_target_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+      },
+      evidence_refs: proposal.evidence_refs,
+      source_refs: proposal.source_refs,
+      blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+      created_at: "2026-06-20T22:50:00.000Z",
+      created_by: "krn init test",
+      interpretation_caveat:
+        "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+    });
+    const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
+
+    const promotionStdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "init",
+        "--apply",
+        "agent_instructions",
+        "--proposal-path",
+        proposalPath,
+        "--decision-path",
+        join(targetRoot, storedDecision.decision_path),
+        "--target",
+        targetRoot,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const promotionPath = promotionStdout.trim();
+    const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.apply_mode).toBe("apply_exact_target_write");
+    expect(promotion.target_mutated).toBe(true);
+    expect(readFileSync(join(targetRoot, "AGENTS.md"), "utf8")).toBe(promotion.target.file_content);
+    expect(existsSync(join(targetRoot, ".krn", "promotions"))).toBe(true);
+  }, 30_000);
+
+  it("rejects apply paths outside the target root before reading them", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-apply-outside-target-"));
+
+    expect(() =>
+      execFileSync(
+        "pnpm",
+        [
+          "exec",
+          "tsx",
+          "packages/cli/src/main.ts",
+          "--",
+          "init",
+          "--apply",
+          "agent_instructions",
+          "--proposal-path",
+          join(tmpdir(), "outside-proposal.json"),
+          "--decision-path",
+          join(tmpdir(), "outside-decision.json"),
+          "--target",
+          targetRoot,
+        ],
+        {
+          cwd: process.cwd(),
+          encoding: "utf8",
+        },
+      ),
+    ).toThrow();
+    expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
   }, 30_000);
 });

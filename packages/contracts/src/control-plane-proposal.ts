@@ -54,7 +54,21 @@ const MemoryPromotionPayloadSchema = z
   })
   .strict();
 
-const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [MemoryPromotionPayloadSchema]);
+const InitAgentInstructionsPromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("init_agent_instructions"),
+    bootstrap_capability: z.literal("agent_instructions"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
+const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [
+  MemoryPromotionPayloadSchema,
+  InitAgentInstructionsPromotionPayloadSchema,
+]);
 
 export const KrnControlPlaneProposalSchema = z
   .object({
@@ -79,23 +93,45 @@ export const KrnControlPlaneProposalSchema = z
   })
   .strict()
   .superRefine((proposal, context) => {
-    if (proposal.promotion_payload && proposal.proposal_kind !== "memory_update") {
+    if (proposal.promotion_payload?.payload_type === "memory_entry" && proposal.proposal_kind !== "memory_update") {
       context.addIssue({
         code: "custom",
         path: ["promotion_payload"],
-        message: "promotion_payload is currently supported only for memory_update proposals",
+        message: "memory_entry promotion payload is supported only for memory_update proposals",
       });
     }
 
     if (
-      proposal.promotion_payload?.payload_type === "memory_entry" &&
+      proposal.promotion_payload?.payload_type === "init_agent_instructions" &&
+      proposal.proposal_kind !== "init_bootstrap"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload"],
+        message: "init_agent_instructions promotion payload is supported only for init_bootstrap proposals",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "init_agent_instructions" &&
+      proposal.promotion_payload.target_path !== "AGENTS.md"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "init agent instructions payload must target AGENTS.md",
+      });
+    }
+
+    if (
+      proposal.promotion_payload &&
       proposal.target.target_type === "path" &&
       proposal.promotion_payload.target_path !== proposal.target.path
     ) {
       context.addIssue({
         code: "custom",
         path: ["promotion_payload", "target_path"],
-        message: "memory promotion payload target_path must match proposal target.path",
+        message: "promotion payload target_path must match proposal target.path",
       });
     }
   });

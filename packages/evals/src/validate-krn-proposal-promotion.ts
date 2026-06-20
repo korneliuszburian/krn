@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -106,6 +107,14 @@ function writeText(path: string, content: string): void {
   writeFileSync(path, content, "utf8");
 }
 
+function sha256(content: string): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+function initAgentInstructionsContent(): string {
+  return "# Agent Instructions\n\nThis repository is KRN-enabled.\n";
+}
+
 function validProposal(): KrnControlPlaneProposal {
   return parseKrnControlPlaneProposal(
     readJson(resolve("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json")),
@@ -116,6 +125,49 @@ function proposalWithoutPromotionPayload(): KrnControlPlaneProposal {
   const proposal = validProposal();
   const { promotion_payload: _promotionPayload, ...rest } = proposal;
   return parseKrnControlPlaneProposal(rest);
+}
+
+function validInitProposal(): KrnControlPlaneProposal {
+  const fileContent = initAgentInstructionsContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-agent-instructions-eval",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init agent-instructions bootstrap",
+    rationale: "The first init write target must be reviewed before target mutation.",
+    proposed_change: "Write a thin AGENTS.md only after approved review.",
+    promotion_payload: {
+      payload_type: "init_agent_instructions",
+      bootstrap_capability: "agent_instructions",
+      target_path: "AGENTS.md",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: "AGENTS.md",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:agent_instructions:eval",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/eval/manifest.json"],
+    source_refs: [".krn/init/eval/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+    created_at: "2026-06-20T22:55:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate AGENTS.md until explicit apply mode.",
+  });
 }
 
 function validDecisionFor(
@@ -360,6 +412,61 @@ function runValidation(): EvalReport {
     );
   }
 
+  const initApplyCase = caseById(cases, "apply-exact-init-bootstrap-promotion");
+  try {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-eval-"));
+    const proposal = validInitProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-agent-instructions-eval",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-agent-instructions-eval:decision",
+      },
+    });
+    const stored = storeKrnProposalPromotion(promotion, { targetInput: targetRoot, now });
+    const targetPath = join(targetRoot, "AGENTS.md");
+    appliedTargetPath = "AGENTS.md";
+
+    results.push(
+      result(
+        initApplyCase.id,
+        stored.status === "stored" &&
+          stored.target_written === true &&
+          readFileSync(targetPath, "utf8") === initAgentInstructionsContent() &&
+          existsSync(join(targetRoot, stored.promotion_path)),
+        [
+          "approved init proposal stored",
+          "init apply promotion stored",
+          "AGENTS.md written in explicit apply mode",
+          "promotion record persisted",
+        ],
+        initApplyCase.failure_mode,
+        "Explicit apply mode wrote exact reviewed init agent-instructions payload after approved review.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        initApplyCase.id,
+        false,
+        ["apply exact init bootstrap promotion"],
+        initApplyCase.failure_mode,
+        error instanceof Error ? error.message : "unknown init apply promotion error",
+      ),
+    );
+  }
+
   const rejectedDecisionCase = caseById(cases, "rejected-decision-promotion-rejected");
   try {
     const targetRoot = createPromotionTarget();
@@ -538,7 +645,7 @@ function runValidation(): EvalReport {
     stored_promotion_path: storedPromotionPath,
     applied_target_path: appliedTargetPath,
     interpretation_caveat:
-      "This eval proves the local approved proposal promotion boundary for exact memory_update payloads only; it does not prove general promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.",
+      "This eval proves the local approved proposal promotion boundary for exact memory_update and init_bootstrap payloads only; it does not prove general promotion correctness for every proposal kind, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.",
   };
 }
 

@@ -1,7 +1,12 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
-import { parseKrnProposalPromotion, type KrnProposalPromotion } from "@krn/contracts";
+import {
+  parseKrnProposalPromotion,
+  type ControlPlanePromotionPayload,
+  type KrnControlPlaneProposal,
+  type KrnProposalPromotion,
+} from "@krn/contracts";
 import { listKrnProposalReviewDecisionStoreRecords } from "./proposal-review-decision-store.js";
 import { listKrnProposalStoreRecords, validateSourceRefs } from "./proposal-store.js";
 
@@ -101,6 +106,29 @@ function assertSafePromotionTarget(promotion: KrnProposalPromotion, targetRoot: 
   return targetPath;
 }
 
+function promotionPayloadForProposal(proposal: KrnControlPlaneProposal): ControlPlanePromotionPayload {
+  if (!proposal.promotion_payload) {
+    throw new Error(`Promotion requires a machine-applicable proposal payload: ${proposal.proposal_id}`);
+  }
+
+  if (proposal.proposal_kind === "memory_update" && proposal.promotion_payload.payload_type !== "memory_entry") {
+    throw new Error(`Memory update promotion requires a memory_entry payload: ${proposal.proposal_id}`);
+  }
+
+  if (
+    proposal.proposal_kind === "init_bootstrap" &&
+    proposal.promotion_payload.payload_type !== "init_agent_instructions"
+  ) {
+    throw new Error(`Init bootstrap promotion requires an init_agent_instructions payload: ${proposal.proposal_id}`);
+  }
+
+  if (proposal.proposal_kind !== "memory_update" && proposal.proposal_kind !== "init_bootstrap") {
+    throw new Error(`Promotion currently supports memory_update and init_bootstrap proposals only: ${proposal.proposal_kind}`);
+  }
+
+  return proposal.promotion_payload;
+}
+
 function assertPromotionReferencesApprovedProposal(promotion: KrnProposalPromotion, targetRoot: string): void {
   const proposalRecords = listKrnProposalStoreRecords(targetRoot);
   const proposalRecord = proposalRecords.valid_records.find(
@@ -130,13 +158,7 @@ function assertPromotionReferencesApprovedProposal(promotion: KrnProposalPromoti
   }
 
   const proposal = proposalRecord.proposal;
-  if (proposal.proposal_kind !== "memory_update") {
-    throw new Error(`Promotion currently supports memory_update proposals only: ${proposal.proposal_kind}`);
-  }
-
-  if (!proposal.promotion_payload) {
-    throw new Error(`Promotion requires a machine-applicable proposal payload: ${proposal.proposal_id}`);
-  }
+  const promotionPayload = promotionPayloadForProposal(proposal);
 
   if (proposal.target.target_type !== "path") {
     throw new Error("Promotion requires a path proposal target");
@@ -145,9 +167,9 @@ function assertPromotionReferencesApprovedProposal(promotion: KrnProposalPromoti
   if (
     promotion.proposal_kind !== proposal.proposal_kind ||
     promotion.target.path !== proposal.target.path ||
-    promotion.target.path !== proposal.promotion_payload.target_path ||
-    promotion.target.file_content !== proposal.promotion_payload.file_content ||
-    promotion.target.content_sha256 !== proposal.promotion_payload.content_sha256 ||
+    promotion.target.path !== promotionPayload.target_path ||
+    promotion.target.file_content !== promotionPayload.file_content ||
+    promotion.target.content_sha256 !== promotionPayload.content_sha256 ||
     sha256(promotion.target.file_content) !== promotion.target.content_sha256
   ) {
     throw new Error("Promotion target content must exactly match the proposal promotion payload");
