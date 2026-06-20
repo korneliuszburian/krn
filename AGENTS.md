@@ -6,7 +6,7 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 
 1. The newest user message wins over every repo file.
 2. Read [docs/memory/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/memory/INDEX.md).
-3. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The current reset child goal is [docs/goals/goal-037.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-037.md). The latest completed Slice 3 child goal is [docs/goals/goal-036.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-036.md); [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md) is the immediately previous operating-model reset. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+3. If a `/goal` is active, read [docs/goals/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/INDEX.md) first. The active read set is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md) plus [docs/goals/goal-037.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-037.md). Treat older goals as indexed evidence or lab history, not default context.
 4. For product direction changes, read [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md). Do not reload it for every routine resume.
 5. For synthesis work, use [docs/plans/canonical/SOURCES.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/SOURCES.md) with targeted `rg` lookups unless the task explicitly requires broader synthesis. Read [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md) and [docs/plans/canonical/pattern-matrix.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/pattern-matrix.md) only on demand.
 6. For product implementation terms, read [CONTEXT.md](/home/krn/coding/krn/active/krn-gastown/CONTEXT.md) only when terms are unclear or changing.
@@ -15,6 +15,7 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 ## Operating Rules
 
 - Keep this file small. If a rule needs examples, sources, or nuance, put it in `docs/memory/{category}/YYYY-MM-DD--short-topic.md` and link it from `docs/memory/INDEX.md`.
+- Use `docs/goals/INDEX.md` as the selector for old goals. Do not scan `docs/goals/*.md` on routine resume.
 - Do not add unsourced product claims. Use `[FACT]`, `[INFERENCE]`, `[HYPOTHESIS]`, `[DECISION]`, or `[BLOCKED]` for important claims.
 - When a durable conclusion changes, update the relevant canonical doc, source/claim ledger, and memory index in the same pass.
 - Avoid context rot: use `docs/memory/INDEX.md` as the selector, load only relevant notes, and mark conflicts instead of blending old and new claims.

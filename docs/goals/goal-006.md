@@ -254,13 +254,14 @@ Before executing this goal, read:
 
 1. `AGENTS.md`
 2. `docs/memory/INDEX.md`
-3. `docs/product/final-product-plan.md`
-4. `docs/specs/technology-stack/decision.md`
-5. `docs/skills/operator-pipeline.md`
-6. `docs/evals/STANDARD.md`
-7. `docs/plans/canonical/pattern-matrix.md`
-8. `docs/plans/canonical/SOURCES.md`
-9. `CONTEXT.md`
+3. `docs/goals/INDEX.md`
+4. `docs/goals/goal-037.md`
+5. `docs/product/final-product-plan.md` only when product direction is unclear or changing.
+6. `docs/specs/technology-stack/decision.md` only when stack boundaries are changing.
+7. `docs/skills/operator-pipeline.md` only when operator skills are changing.
+8. `docs/evals/STANDARD.md` only when eval standards are changing.
+9. `docs/plans/canonical/pattern-matrix.md` and `docs/plans/canonical/SOURCES.md` only for targeted source or synthesis work.
+10. `CONTEXT.md` only when product terms are unclear or changing.
 
 Read OpenAI/Codex official docs before changing any Codex-specific surface such as skills, hooks, MCP, subagents, `AGENTS.md`, or `codex exec` workflow.
 
