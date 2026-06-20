@@ -1,0 +1,50 @@
+{
+  "schema_version": "krn-proposal-promotion.v1",
+  "kind": "krn_proposal_promotion",
+  "promotion_id": "promotion-memory-note-krn-mcp-stdio-transport",
+  "proposal_id": "proposal-memory-note-krn-mcp-stdio-transport",
+  "proposal_path": ".krn/proposals/memory-update-krn-mcp-stdio-transport-2026-06-20/proposal.json",
+  "decision_id": "decision-approve-proposal-memory-note-krn-mcp-stdio-transport",
+  "decision_path": ".krn/proposal-reviews/review-decision-proposal-memory-note-krn-mcp-stdio-transport-2026-06-20/decision.json",
+  "proposal_kind": "memory_update",
+  "promotion_scope": "approved_memory_update_only",
+  "apply_mode": "record_only",
+  "promotion_state": "planned",
+  "target_mutated": false,
+  "target": {
+    "target_type": "path",
+    "path": "docs/memory/product/2026-06-20--krn-mcp-stdio-transport.md",
+    "write_mode": "exact_file_content",
+    "file_content": "---\nid: krn-mcp-stdio-transport\nstatus: fact\nupdated: 2026-06-20\nsources:\n  - docs/goals/goal-006.md\n  - docs/goals/goal-008.md\n  - docs/specs/krn-mcp-read-model/README.md\n  - docs/plans/canonical/SOURCES.md\n---\n\n# KRN MCP STDIO Transport\n\n## Status\n\n[FACT] KRN has a local STDIO MCP transport over allowlisted runtime resources.\n\n## Useful Pattern\n\nThe transport exposes read-only runtime resources and keeps proposal tools separate from target mutation.\n\n## KRN Implication\n\nFuture MCP/API surfaces should preserve allowlists, schemas, idempotency, and explicit review gates before any write-capable workflow.\n\n## Failure Mode\n\nThis becomes harmful if a local STDIO proof is overclaimed as deployed ChatGPT connector behavior, production API readiness, or safe destructive automation.\n\n## Review Trigger\n\nRevisit this note when KRN registers MCP in Codex config, exposes HTTP/API routes, or adds additional write-capable tools.\n",
+    "content_sha256": "fba6239887a01179fbec3cbb5c43e55f48fd628e7ac04a4e2ef8cb95db109e35"
+  },
+  "write_policy": {
+    "default_effect": "record_only",
+    "allowed_effects": [
+      "append_promotion_record",
+      "write_exact_target_content"
+    ],
+    "idempotency_key": "proposal-promotion:memory-note-krn-mcp-stdio-transport:2026-06-20"
+  },
+  "evidence_refs": [
+    ".krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json",
+    ".krn/evals/krn-proposal-review-decision/20260620T013214Z-2143548/report.json"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-014.md",
+    "docs/specs/krn-proposal-promotion/README.md",
+    "docs/specs/krn-proposal-review-decision/README.md",
+    "docs/specs/krn-control-plane-proposal/README.md"
+  ],
+  "blocked_surfaces": [
+    "dashboard_promote_button",
+    "http_api_write_route",
+    "destructive_mcp_tool",
+    "source_ledger_mutation",
+    "goal_mutation"
+  ],
+  "created_at": "2026-06-20T02:00:00.000Z",
+  "created_by": "krn",
+  "interpretation_caveat": "This promotion records an approved memory update workflow only; record_only mode does not mutate the target, and apply mode is not dashboard/API readiness or productivity proof."
+}

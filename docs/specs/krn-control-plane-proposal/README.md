@@ -7,7 +7,9 @@ updated: 2026-06-20
 sources:
   - docs/goals/goal-006.md
   - docs/goals/goal-008.md
+  - docs/goals/goal-014.md
   - docs/product/final-product-plan.md
+  - docs/specs/krn-proposal-promotion/README.md
   - docs/specs/technology-stack/decision.md
   - docs/evals/STANDARD.md
   - docs/plans/canonical/SOURCES.md
@@ -38,6 +40,7 @@ Every proposal includes:
 - proposal kind,
 - `status: "proposal_only"`,
 - target path or resource URI,
+- optional machine-applicable `promotion_payload` for exact memory-entry promotion,
 - idempotency key,
 - source refs,
 - evidence refs,
@@ -53,6 +56,7 @@ Allowed behavior:
 - parse proposal objects through `@krn/contracts`,
 - export JSON Schema for MCP/API/dashboard consumers,
 - represent future append-only reviewed write requests.
+- carry exact reviewed memory-entry content for later promotion when `promotion_payload` is present,
 - validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
 - persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
 
@@ -60,6 +64,7 @@ Forbidden behavior:
 
 - no approved or rejected truth state,
 - no destructive writes,
+- no inferred target content from `proposed_change` prose,
 - no immediate memory/source/goal mutation,
 - no MCP tool registration in this slice,
 - no dashboard event publishing in this slice.
@@ -71,7 +76,9 @@ A green proposal-contract result means KRN can represent a future reviewed contr
 
 A green proposal-store result means KRN can persist that action as append-only review input only after its `source_refs` resolve to existing target-root files, source IDs, claim IDs, local evidence IDs, or URLs present in `docs/plans/canonical/SOURCES.md`.
 
-It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, or productivity lift.
+A proposal with `promotion_payload` can later be consumed by `KrnProposalPromotion`; the proposal still does not approve or execute the change by itself.
+
+It does not prove MCP/API proposal tool safety, dashboard readiness, human approval quality, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, promotion correctness by itself, or productivity lift.
 
 ## Validation
 

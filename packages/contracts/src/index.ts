@@ -44,6 +44,7 @@ export {
   krnControlPlaneProposalJsonSchema,
   parseKrnControlPlaneProposal,
   type ControlPlaneProposalKind,
+  type ControlPlanePromotionPayload,
   type ControlPlaneProposalTarget,
   type KrnControlPlaneProposal,
 } from "./control-plane-proposal.js";
@@ -54,6 +55,13 @@ export {
   type KrnProposalReviewDecision,
   type ProposalReviewDecisionValue,
 } from "./proposal-review-decision.js";
+export {
+  KrnProposalPromotionSchema,
+  krnProposalPromotionJsonSchema,
+  parseKrnProposalPromotion,
+  type KrnProposalPromotion,
+  type ProposalPromotionApplyMode,
+} from "./proposal-promotion.js";
 export {
   KrnDashboardViewModelSchema,
   krnDashboardViewModelJsonSchema,

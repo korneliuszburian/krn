@@ -128,6 +128,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/goals/goal-013.md",
     ],
   },
+  {
+    moduleId: "krn-proposal-promotion",
+    command: ["pnpm", "run", "eval:krn-proposal-promotion"],
+    sourceRefs: [
+      "docs/evals/krn-proposal-promotion/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/goals/goal-014.md",
+    ],
+  },
 ];
 
 function usage(): string {

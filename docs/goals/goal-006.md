@@ -72,6 +72,16 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-dashboard-pending-review-ui` generated `.krn/evals/krn-dashboard-pending-review-ui/20260620T013215Z-2143558/report.json` with 5/5 cases and 19/19 assertions after the Pending Review contract gained review-decision fields.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T013233Z-2144081/report.json` with 10/10 modules, 41/41 cases, and 120/120 assertions, including `krn-proposal-review-decision`.
   - This still does not prove promotion correctness, human approval quality, dashboard command readiness, complete dashboard coverage, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals` and `.krn/proposal-reviews`, or measured lift.
+  - `KrnControlPlaneProposal` can now carry an optional exact `memory_update` `promotion_payload` with target content and hash.
+  - `packages/contracts` now exports `KrnProposalPromotion`, the first typed promotion record after an approved review decision.
+  - `packages/mcp` now exports `storeKrnProposalPromotion` and `listKrnProposalPromotionStoreRecords` for append-only promotion state under `.krn/promotions`.
+  - `storeKrnProposalPromotion` validates existing proposal records, `approved_for_promotion` review decisions, exact payload content/hash, source refs, idempotency, and target path safety.
+  - Explicit `apply_exact_target_write` mode writes exact target content for absent `memory_update` target paths only; record-only mode remains the default.
+  - `pnpm test -- packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-store.test.ts packages/mcp/test/proposal-promotion-store.test.ts` passed with 22/22 test files and 73/73 tests.
+  - `pnpm typecheck` passed.
+  - `pnpm run eval:krn-proposal-promotion` generated `.krn/evals/krn-proposal-promotion/20260620T015701Z-2203468/report.json` with 7/7 cases and 22/22 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T015701Z-2203458/report.json` with 11/11 modules, 48/48 cases, and 142/142 assertions, including `krn-proposal-promotion`.
+  - This still does not prove general promotion correctness, human approval quality, dashboard command readiness, complete dashboard coverage, HTTP/API readiness, ChatGPT connector behavior, safe overwrite/update semantics for existing target files, or measured lift.
 
 ## Objective
 
@@ -318,7 +328,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-012.md
+docs/goals/goal-014.md
 ```
 
-Next child-goal candidates are a typed proposal promotion workflow after review decisions, additional dashboard views over existing typed objects, HTTP/API read model hardening, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, direct approval mutation, or productivity claims without benchmark evidence.
+Next child-goal candidates are a promotion-aware dashboard command proposal surface over existing typed objects, additional dashboard views over existing typed objects, HTTP/API read model hardening, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, or productivity claims without benchmark evidence.

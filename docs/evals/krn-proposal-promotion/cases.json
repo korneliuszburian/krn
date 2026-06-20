@@ -1,0 +1,118 @@
+[
+  {
+    "id": "promotion-contract-valid-and-known-bad",
+    "expected_behavior": "The valid promotion fixture parses, the bad record-only mutation fixture fails, the proposal payload parses, and a mismatched promotion payload fails.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "valid promotion fixture parses",
+      "known-bad promotion mutation fixture rejected",
+      "valid proposal payload parses",
+      "mismatched proposal payload rejected"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "Promotion records can claim target mutation or machine-applicable content without contract enforcement."
+  },
+  {
+    "id": "record-only-promotion-store",
+    "expected_behavior": "A promotion for an approved proposal stores under .krn/promotions without mutating the proposal target in record-only mode.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "C004",
+      "C035"
+    ],
+    "assertions": [
+      "proposal stored first",
+      "approved decision stored first",
+      "promotion stored under .krn/promotions",
+      "target not mutated"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "anti_slop_score"],
+    "failure_mode": "KRN records promotion-looking state without approval, append-only persistence, or target-mutation boundary."
+  },
+  {
+    "id": "apply-exact-memory-promotion",
+    "expected_behavior": "Explicit apply mode writes exact memory payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "C004",
+      "C035"
+    ],
+    "assertions": [
+      "apply promotion stored",
+      "target written in apply mode",
+      "target content matches payload",
+      "promotion record persisted"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "drift_resistance_score"],
+    "failure_mode": "Promotion writes inferred or unapproved content instead of exact reviewed payload content."
+  },
+  {
+    "id": "rejected-decision-promotion-rejected",
+    "expected_behavior": "A rejected proposal review decision cannot be promoted.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md"
+    ],
+    "assertions": [
+      "rejected decision stored",
+      "promotion rejected"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "Rejected proposals can still write promotion records or target files."
+  },
+  {
+    "id": "missing-payload-promotion-rejected",
+    "expected_behavior": "An approved proposal without machine-applicable payload cannot be promoted.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/specs/krn-proposal-promotion/README.md"
+    ],
+    "assertions": [
+      "approved decision stored",
+      "missing payload rejected"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "KRN infers target file content from prose instead of requiring a typed payload."
+  },
+  {
+    "id": "duplicate-promotion-idempotent",
+    "expected_behavior": "Storing the same promotion twice returns the existing promotion path without duplicate records.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "first promotion stored",
+      "duplicate promotion already stored",
+      "duplicate promotion uses same path"
+    ],
+    "metrics": ["runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "Promotion persistence duplicates promotion records and loses idempotency."
+  },
+  {
+    "id": "unsafe-target-path-rejected",
+    "expected_behavior": "A promotion with a target path outside the target root is rejected before persistence or target writes.",
+    "source_patterns": [
+      "docs/goals/goal-014.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "C004"
+    ],
+    "assertions": [
+      "unsafe target path rejected",
+      "no promotion record created",
+      "outside target not written"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score"],
+    "failure_mode": "Promotion weakens the target-path safety model after review approval."
+  }
+]

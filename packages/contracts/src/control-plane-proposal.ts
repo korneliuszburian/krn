@@ -43,6 +43,18 @@ const ProposalWritePolicySchema = z
   })
   .strict();
 
+const MemoryPromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("memory_entry"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
+const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [MemoryPromotionPayloadSchema]);
+
 export const KrnControlPlaneProposalSchema = z
   .object({
     schema_version: z.literal("krn-control-plane-proposal.v1"),
@@ -53,6 +65,7 @@ export const KrnControlPlaneProposalSchema = z
     title: z.string().min(1),
     rationale: z.string().min(1),
     proposed_change: z.string().min(1),
+    promotion_payload: PromotionPayloadSchema.optional(),
     target: ProposalTargetSchema,
     write_policy: ProposalWritePolicySchema,
     review_gate: ProposalReviewGateSchema,
@@ -63,10 +76,32 @@ export const KrnControlPlaneProposalSchema = z
     created_by: z.string().min(1),
     interpretation_caveat: z.string().min(1),
   })
-  .strict();
+  .strict()
+  .superRefine((proposal, context) => {
+    if (proposal.promotion_payload && proposal.proposal_kind !== "memory_update") {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload"],
+        message: "promotion_payload is currently supported only for memory_update proposals",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "memory_entry" &&
+      proposal.target.target_type === "path" &&
+      proposal.promotion_payload.target_path !== proposal.target.path
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "memory promotion payload target_path must match proposal target.path",
+      });
+    }
+  });
 
 export type ControlPlaneProposalKind = z.infer<typeof ControlPlaneProposalKindSchema>;
 export type ControlPlaneProposalTarget = z.infer<typeof ProposalTargetSchema>;
+export type ControlPlanePromotionPayload = z.infer<typeof PromotionPayloadSchema>;
 export type KrnControlPlaneProposal = z.infer<typeof KrnControlPlaneProposalSchema>;
 
 export function parseKrnControlPlaneProposal(input: unknown): KrnControlPlaneProposal {

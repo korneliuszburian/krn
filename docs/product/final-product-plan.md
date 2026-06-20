@@ -22,6 +22,7 @@ sources:
   - docs/goals/goal-011.md
   - docs/goals/goal-012.md
   - docs/goals/goal-013.md
+  - docs/goals/goal-014.md
 ---
 
 # KRN Final Product Plan
@@ -100,7 +101,8 @@ repo + task
   -> Pending Review view model renders proposal-store records for human review
   -> apps/dashboard renders the Pending Review queue from generated typed dashboard data
   -> proposal review decision ledger records terminal review state
-  -> later promotion workflow writes approved memory/source/decision/repair records
+  -> proposal promotion workflow records and can explicitly apply exact approved memory payloads
+  -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
 ```
@@ -116,6 +118,7 @@ Layer responsibilities:
 - `.krn/` stores runtime artifacts. Reviewed knowledge moves into `docs/memory`, `docs/plans/canonical/SOURCES.md`, ADRs, or goal files.
 - `apps/dashboard` comes after view models and proposal records. The first dashboard surface renders `KrnPendingReviewViewModel` from generated typed dashboard data and keeps generated data out of durable truth.
 - `.krn/proposal-reviews` stores append-only terminal proposal review decisions. These decisions can close the Pending Review queue but do not promote memory/source/goal files by themselves.
+- `.krn/promotions` stores append-only promotion records. The first promotion workflow supports exact `memory_update` payloads only and can write target content only in explicit apply mode after an approved review decision.
 
 ## Codex Paradoxes KRN Must Resolve
 

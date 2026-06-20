@@ -137,6 +137,12 @@ describe("KRN proposal store", () => {
       storeKrnControlPlaneProposal(
         {
           ...proposal,
+          promotion_payload: proposal.promotion_payload
+            ? {
+                ...proposal.promotion_payload,
+                target_path: "../outside.md",
+              }
+            : undefined,
           target: {
             target_type: "path",
             path: "../outside.md",

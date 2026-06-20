@@ -199,17 +199,37 @@
         "docs/goals/goal-013.md"
       ],
       "interpretation_caveat": "This eval proves the local proposal review decision ledger and Pending Review consumption boundary only; it does not prove promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift."
+    },
+    {
+      "module_id": "krn-proposal-promotion",
+      "command": ["pnpm", "run", "eval:krn-proposal-promotion"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-proposal-promotion/20260619T215910Z-example/report.json",
+      "total_cases": 7,
+      "passed_cases": 7,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 22,
+      "passed_assertions": 22,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-proposal-promotion/README.md",
+        "docs/specs/krn-proposal-promotion/README.md",
+        "docs/goals/goal-014.md"
+      ],
+      "interpretation_caveat": "This eval proves the local approved proposal promotion boundary for exact memory_update payloads only; it does not prove general promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift."
     }
   ],
   "summary": {
-    "total_modules": 10,
-    "passed_modules": 10,
+    "total_modules": 11,
+    "passed_modules": 11,
     "failed_modules": 0,
-    "total_cases": 41,
-    "passed_cases": 41,
+    "total_cases": 48,
+    "passed_cases": 48,
     "failed_cases": 0,
-    "total_assertions": 120,
-    "passed_assertions": 120,
+    "total_assertions": 142,
+    "passed_assertions": 142,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

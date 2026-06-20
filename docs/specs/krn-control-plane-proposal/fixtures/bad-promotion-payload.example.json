@@ -1,0 +1,43 @@
+{
+  "schema_version": "krn-control-plane-proposal.v1",
+  "kind": "krn_control_plane_proposal",
+  "proposal_id": "proposal-bad-promotion-payload",
+  "proposal_kind": "memory_update",
+  "status": "proposal_only",
+  "title": "Bad promotion payload",
+  "rationale": "Fixture should fail because the machine-applicable target path does not match the proposal target.",
+  "proposed_change": "This fixture must not parse.",
+  "promotion_payload": {
+    "payload_type": "memory_entry",
+    "target_path": "docs/memory/product/different.md",
+    "write_mode": "exact_file_content",
+    "file_content": "# Bad\n",
+    "content_sha256": "0f650d00c3700b143a36bbe89e1b4f8f301ab2f5060e1535599739c2a36e7365"
+  },
+  "target": {
+    "target_type": "path",
+    "path": "docs/memory/product/bad-promotion-payload.md"
+  },
+  "write_policy": {
+    "default_effect": "no_mutation",
+    "allowed_persistence": "append_only",
+    "idempotency_key": "memory-update:bad-promotion-payload:2026-06-20"
+  },
+  "review_gate": {
+    "required": true,
+    "state": "not_reviewed",
+    "reviewer": null
+  },
+  "evidence_refs": [
+    ".krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md"
+  ],
+  "blocked_surfaces": [
+    "memory_mutation"
+  ],
+  "created_at": "2026-06-20T00:00:00.000Z",
+  "created_by": "krn",
+  "interpretation_caveat": "This bad fixture should not parse."
+}

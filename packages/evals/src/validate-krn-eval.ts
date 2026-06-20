@@ -47,6 +47,7 @@ const REQUIRED_MODULES = [
   "krn-pending-review-view-model",
   "krn-dashboard-pending-review-ui",
   "krn-proposal-review-decision",
+  "krn-proposal-promotion",
 ];
 
 function readJson(path: string): unknown {

@@ -149,6 +149,14 @@ export {
   type ProposalReviewDecisionStoreResult,
   type ValidProposalReviewDecisionStoreRecord,
 } from "./proposal-review-decision-store.js";
+export {
+  listKrnProposalPromotionStoreRecords,
+  storeKrnProposalPromotion,
+  type InvalidProposalPromotionStoreRecord,
+  type ProposalPromotionStoreRecordList,
+  type ProposalPromotionStoreResult,
+  type ValidProposalPromotionStoreRecord,
+} from "./proposal-promotion-store.js";
 export { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 
 function descriptorFromResource(
