@@ -31,6 +31,7 @@ sources:
   - docs/goals/goal-020.md
   - docs/goals/goal-021.md
   - docs/goals/goal-022.md
+  - docs/goals/goal-023.md
 ---
 
 # KRN Final Product Plan
@@ -118,6 +119,7 @@ repo + task
   -> expanded benchmark suite validates fixed multi-task baseline-vs-assisted tasks and keeps live mode explicit
   -> no-lift benchmark evidence becomes a typed repair record before tuning prompts, skills, memory, or suite tasks
   -> first repair attempt measures before/after delta and records worse/no-lift outcomes without claiming lift
+  -> assisted prompt-load repair uses task-owned source refs and records stabilized/no-lift outcomes without claiming lift
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior

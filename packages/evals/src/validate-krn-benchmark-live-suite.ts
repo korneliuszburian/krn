@@ -355,24 +355,21 @@ Use your usual Codex repo-reading behavior.`;
   }
 
   const guidance = task.assisted_guidance.map((item) => `- ${item}`).join("\n");
+  const sourceRefs = task.source_refs.map((sourceRef) => `- ${sourceRef}`).join("\n");
 
   return `${schemaInstruction}
 
 Task: ${task.prompt}
 
-Use KRN's project-local operating layer explicitly:
-- read AGENTS.md,
-- read docs/memory/INDEX.md,
-- read docs/goals/goal-006.md,
-- read docs/goals/goal-019.md if it exists,
-- read docs/goals/goal-020.md if it exists,
-- read docs/goals/goal-021.md if it exists,
-- read docs/specs/krn-repair-record/README.md if it exists,
-- read docs/evals/krn-benchmark-live-suite/tasks.json,
-- read docs/plans/canonical/SOURCES.md.
+Use KRN's project-local operating layer, but keep this worker run bounded. Read only the task source refs below unless one of those files directly points to a required immediate dependency.
+
+Task source refs:
+${sourceRefs}
 
 Task-specific guidance:
-${guidance}`;
+${guidance}
+
+In the final JSON source_refs field, include only files you actually used from the task source refs or their immediate required dependency.`;
 }
 
 function runCodexExec(
@@ -462,21 +459,21 @@ function relativeRuntimePath(path: string): string {
 function repairTargets(): KrnBenchmarkReport["repair_targets"] {
   return [
     {
-      id: "repair-live-suite-current-child-routing",
+      id: "repair-live-suite-assisted-prompt-load",
       owner: "krn",
       next_action:
-        "Apply bounded repair attempts from the no-lift KrnRepairRecord, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
+        "Reduce assisted prompt load and first-task timeout risk, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
       source_refs: [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-020.md",
-        "docs/goals/goal-021.md",
         "docs/goals/goal-022.md",
+        "docs/goals/goal-023.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
         "docs/specs/krn-benchmark-report/README.md",
         "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
       failure_mode:
-        "A no-lift benchmark result is routed to broad tuning or suite expansion without a measured repair attempt.",
+        "A timed-out assisted run is routed to broad tuning or suite expansion without a measured prompt-load repair attempt.",
     },
   ];
 }
@@ -527,7 +524,7 @@ function buildBenchmarkTasks(scorePairs: readonly TaskScorePair[]): KrnBenchmark
         score: pair.assisted.score,
         evidence_refs: pair.assisted_evidence_refs,
         interpretation_caveat:
-          "Assisted condition adds explicit KRN read-order and source-boundary guidance for the fixed task.",
+          "Assisted condition uses task-owned source refs and source-boundary guidance for the fixed task.",
       },
       assisted_minus_baseline: roundScore(pair.assisted.score - pair.baseline.score),
       metrics: metricRows(pair.task, pair.baseline.metrics, pair.assisted.metrics),
@@ -579,6 +576,8 @@ function buildBenchmarkReport(
       "docs/goals/goal-020.md",
       "docs/goals/goal-021.md",
       "docs/goals/goal-022.md",
+      "docs/goals/goal-023.md",
+      "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
       "docs/evals/krn-benchmark-live-suite/README.md",
@@ -588,8 +587,8 @@ function buildBenchmarkReport(
     ],
     interpretation_caveat:
       mode === "live"
-        ? "This live suite proves only a multi-task codex exec benchmark path and repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
+        ? "This live suite proves only a multi-task codex exec benchmark path and assisted prompt-load repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the assisted prompt-load repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
   } satisfies KrnBenchmarkReport;
 
   return parseKrnBenchmarkReport(report);

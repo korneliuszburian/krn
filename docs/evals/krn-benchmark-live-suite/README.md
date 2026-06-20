@@ -11,7 +11,7 @@ runner: packages/evals/src/validate-krn-benchmark-live-suite.ts
 
 ## Purpose
 
-This eval expands the first one-task live pilot into a typed benchmark suite harness and carries the first bounded no-lift repair attempt:
+This eval expands the first one-task live pilot into a typed benchmark suite harness and carries bounded no-lift repair attempts:
 
 ```text
 task registry
@@ -32,7 +32,9 @@ It does not claim measured productivity lift. Validate mode uses fixtures and ma
 - Validate mode writes a parseable fixture-contract `KrnBenchmarkReport`.
 - Live mode, when explicitly run, calls `codex exec --json --sandbox read-only` with schema-constrained final output and captured evidence refs.
 - Three-task reports keep `productivity_lift_claimed: false` because the lift gate requires at least 20 tasks.
-- The current repair attempt makes current-parent/latest-child routing data-driven and routes assisted guidance through `goal-021`/`KrnRepairRecord` before suite expansion.
+- The first repair attempt made current-parent/latest-child routing data-driven and routed assisted guidance through `goal-021`/`KrnRepairRecord` before suite expansion.
+- The current repair attempt reduces assisted prompt load by using task-owned `source_refs` and task-specific guidance instead of a universal read list.
+- The latest live repair run completed 3/3 tasks and improved the suite delta from `-0.3444` to `-0.0056`; this is stabilized no-lift evidence, not productivity lift.
 
 ## Commands
 
@@ -62,6 +64,6 @@ Validate mode writes fixture-backed benchmark reports without calling Codex. Run
 
 A green validate run means the suite registry, fixture scorer, known-bad guard, and `KrnBenchmarkReport` path work deterministically.
 
-A green live run means KRN can execute and score multiple baseline-vs-assisted Codex worker tasks through the same report contract and compare one repair attempt against prior no-lift evidence. It still does not prove measured productivity lift, statistical benchmark validity, complete repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
+A green live run means KRN can execute and score multiple baseline-vs-assisted Codex worker tasks through the same report contract and compare a repair attempt against prior no-lift evidence. It still does not prove measured productivity lift, statistical benchmark validity, complete repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
 
 A green live shape report is not the same as a successful repair. The repair succeeds only if the after-run metric improves enough to justify keeping the change; otherwise the result becomes the next repair input.

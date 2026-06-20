@@ -1,20 +1,17 @@
 {
-  "selected_phase": "P8 benchmark",
+  "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-021.md",
+  "latest_child_goal": "docs/goals/goal-022.md",
   "source_refs": [
-    "AGENTS.md",
-    "docs/memory/INDEX.md",
     "docs/goals/goal-006.md",
-    "docs/goals/goal-020.md",
-    "docs/goals/goal-021.md",
-    "docs/specs/krn-benchmark-report/README.md",
+    "docs/goals/goal-022.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+    "docs/evals/krn-benchmark-live-suite/README.md",
     "docs/specs/krn-repair-record/README.md",
-    "docs/evals/krn-repair-record/README.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Apply one bounded repair attempt from the KrnRepairRecord, rerun the live codex exec benchmark suite explicitly, and compare the before/after delta before expanding the suite or adding dashboard/API commands.",
+  "next_action": "Apply one bounded assisted prompt-load and timeout repair, rerun the live codex exec benchmark suite explicitly, and compare the before/after delta before expanding the suite or adding dashboard/API commands.",
   "should_claim_productivity_lift": false,
-  "overclaim_boundary": "A proposed repair record does not prove repair quality or productivity lift. The three-task suite remains below the lift gate, so the repair attempt can only compare live delta before/after.",
-  "rationale": "Goal 021 converted the no-lift benchmark evidence into a typed repair record. Goal 006 requires failures to move through repair record, smallest fix, rerun, and keep/refine/remove decision before prompt tuning, suite expansion, dashboard commands, or productivity claims."
+  "overclaim_boundary": "A green live shape report does not prove repair quality or productivity lift. The three-task suite remains below the lift gate, so the repair attempt can only compare live delta before/after.",
+  "rationale": "Goal 022 measured a bounded repair attempt but worsened the live delta because the first assisted task timed out. Goal 006 requires the next step to repair the assisted prompt-load and timeout path before prompt tuning, suite expansion, dashboard commands, or productivity claims."
 }
