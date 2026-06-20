@@ -1,8 +1,8 @@
 [
   {
     "id": "expanded-arena-registry-parses",
-    "expected_behavior": "The expanded arena registry parses, aligns with the arena contract, and stays anchored to goal-006, goal-030, and goal-031.",
-    "source_patterns": ["C031", "C054", "docs/goals/goal-006.md", "docs/goals/goal-030.md"],
+    "expected_behavior": "The expanded arena registry parses, aligns with the arena contract, and stays anchored to goal-006, the latest completed child goal, and the current child goal.",
+    "source_patterns": ["C031", "C054", "C058", "docs/goals/goal-006.md", "docs/goals/goal-034.md"],
     "assertions": [
       "registry parses",
       "contract ref preserved",
@@ -13,6 +13,21 @@
     ],
     "metrics": ["schema_contract_score", "source_grounding_score", "goal_alignment_score"],
     "failure_mode": "The expanded arena is an unanchored prompt list instead of a goal-bound registry."
+  },
+  {
+    "id": "bounded-live-smoke-review-input-preserved",
+    "expected_behavior": "The live-smoke lane has a bounded review claim fixture, and the selected smoke task points workers at that fixture instead of an open-ended repo-wide done-claim search.",
+    "source_patterns": ["S009", "C045", "C057", "C058", "docs/goals/goal-034.md"],
+    "assertions": [
+      "smoke task id is typed in policy",
+      "bounded smoke input ref is typed in policy",
+      "bounded smoke input fixture exists",
+      "smoke task prompt names bounded input",
+      "smoke task source refs include bounded input",
+      "smoke task source refs include current repair goal"
+    ],
+    "metrics": ["live_runner_score", "repair_readiness_score", "drift_resistance_score"],
+    "failure_mode": "The smoke worker gets an open-ended review prompt and times out while searching broad repo context instead of reviewing a bounded claim."
   },
   {
     "id": "twenty-task-lift-gate",
@@ -26,6 +41,20 @@
     ],
     "metrics": ["benchmark_validity_score", "anti_slop_score"],
     "failure_mode": "KRN implements a smaller suite while preserving language that implies a 20-task lift gate."
+  },
+  {
+    "id": "live-smoke-completes-bounded-review-task",
+    "expected_behavior": "Explicit live-smoke completes the selected bounded review task in baseline and assisted worker conditions while keeping productivity lift unclaimed.",
+    "source_patterns": ["S009", "S013", "C044", "C057", "C058", "docs/goals/goal-034.md"],
+    "assertions": [
+      "live-smoke selected one task",
+      "selected smoke task completed",
+      "selected smoke task has no failed workers",
+      "live report remains no-lift",
+      "worker completion is not a fallback timeout"
+    ],
+    "metrics": ["live_runner_score", "benchmark_validity_score", "repair_readiness_score"],
+    "failure_mode": "A green live-smoke report still hides that the selected task failed or timed out."
   },
   {
     "id": "task-mix-covers-coding-work",
@@ -95,13 +124,14 @@
   {
     "id": "isolated-live-runner-policy-preserved",
     "expected_behavior": "The registry requires isolated temporary Git worktrees, workspace-write sandboxing, bounded timeout/output capture, progress logging, and resume-safe sequential execution.",
-    "source_patterns": ["S009", "C048", "C054", "C056", "docs/goals/goal-033.md"],
+    "source_patterns": ["S009", "C048", "C054", "C056", "C058", "docs/goals/goal-033.md", "docs/goals/goal-034.md"],
     "assertions": [
       "live isolation uses temporary git worktree per worker",
       "live sandbox is workspace-write",
       "live timeout is typed",
       "live output buffer is typed",
       "progress log path pattern is typed",
+      "foreground changes sync into worker worktree",
       "resume completed workers remains required",
       "concurrency remains sequential"
     ],
@@ -147,7 +177,7 @@
   {
     "id": "live-runner-builds-smoke-report",
     "expected_behavior": "Explicit live-smoke/live-full mode runs selected expanded-arena tasks through isolated codex exec workers, captures worker evidence files, writes a live_codex_exec KrnBenchmarkReport, and keeps productivity lift unclaimed.",
-    "source_patterns": ["S009", "S013", "S016", "S088", "C053", "C056", "docs/goals/goal-033.md"],
+    "source_patterns": ["S009", "S013", "S016", "S088", "C053", "C056", "C058", "docs/goals/goal-033.md"],
     "assertions": [
       "baseline worker evidence captured",
       "assisted worker evidence captured",

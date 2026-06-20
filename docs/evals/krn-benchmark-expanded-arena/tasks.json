@@ -5,14 +5,15 @@
   "arena_id": "krn-expanded-autoresearch-arena",
   "contract_ref": "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
   "parent_goal_ref": "docs/goals/goal-006.md",
-  "current_child_goal_ref": "docs/goals/goal-031.md",
-  "latest_completed_child_goal_ref": "docs/goals/goal-030.md",
+  "current_child_goal_ref": "docs/goals/goal-034.md",
+  "latest_completed_child_goal_ref": "docs/goals/goal-033.md",
   "minimum_live_task_count_for_lift_claim": 20,
   "initial_task_count": 20,
   "source_refs": [
     "docs/goals/goal-006.md",
+    "docs/goals/goal-034.md",
+    "docs/goals/goal-033.md",
     "docs/goals/goal-031.md",
-    "docs/goals/goal-030.md",
     "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
     "docs/memory/evals/2026-06-20--coding-quality-rubric.md",
     "docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md",
@@ -21,7 +22,10 @@
   ],
   "measurement_modes": {
     "default_eval_includes_live": false,
-    "supported_modes": ["fixture_contract", "live_codex_exec"],
+    "supported_modes": [
+      "fixture_contract",
+      "live_codex_exec"
+    ],
     "live_mode_requires_explicit_command": true,
     "separate_fixture_and_live_stores_required": true
   },
@@ -34,7 +38,10 @@
     "codex_sandbox": "workspace-write",
     "per_codex_exec_timeout_ms": 240000,
     "max_codex_exec_output_buffer_bytes": 32000000,
-    "progress_log_path_pattern": ".krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl"
+    "progress_log_path_pattern": ".krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl",
+    "sync_foreground_changes_to_worker_worktree": true,
+    "smoke_task_id": "release-verifier-finding-review",
+    "bounded_smoke_input_ref": "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md"
   },
   "pipeline_ergonomics": {
     "progress_log_required": true,
@@ -67,7 +74,12 @@
       "benchmark_repair"
     ],
     "minimum_implementation_heavy_tasks": 8,
-    "implementation_heavy_families": ["implementation", "debugging", "refactor", "benchmark_repair"]
+    "implementation_heavy_families": [
+      "implementation",
+      "debugging",
+      "refactor",
+      "benchmark_repair"
+    ]
   },
   "tasks": [
     {
@@ -95,8 +107,18 @@
         "review_burden_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["parser", "known-bad", "unknown", "test", "minimal"],
-      "overclaim_keywords": ["does not prove", "productivity", "lift"]
+      "acceptance_keywords": [
+        "parser",
+        "known-bad",
+        "unknown",
+        "test",
+        "minimal"
+      ],
+      "overclaim_keywords": [
+        "does not prove",
+        "productivity",
+        "lift"
+      ]
     },
     {
       "task_id": "eval-module-aggregate-integration",
@@ -124,8 +146,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["deterministic", "aggregate", "caveat", "no live", "test"],
-      "overclaim_keywords": ["live", "default", "productivity"]
+      "acceptance_keywords": [
+        "deterministic",
+        "aggregate",
+        "caveat",
+        "no live",
+        "test"
+      ],
+      "overclaim_keywords": [
+        "live",
+        "default",
+        "productivity"
+      ]
     },
     {
       "task_id": "dashboard-read-model-consumer",
@@ -152,8 +184,18 @@
         "review_burden_score",
         "source_grounding_score"
       ],
-      "acceptance_keywords": ["read-only", "typed", "no mock", "failure mode", "source"],
-      "overclaim_keywords": ["command", "write", "lift"]
+      "acceptance_keywords": [
+        "read-only",
+        "typed",
+        "no mock",
+        "failure mode",
+        "source"
+      ],
+      "overclaim_keywords": [
+        "command",
+        "write",
+        "lift"
+      ]
     },
     {
       "task_id": "mcp-resource-allowlist-extension",
@@ -181,8 +223,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["read-only", "allowlist", "parse", "resource", "no destructive"],
-      "overclaim_keywords": ["deployed", "ChatGPT", "mutation"]
+      "acceptance_keywords": [
+        "read-only",
+        "allowlist",
+        "parse",
+        "resource",
+        "no destructive"
+      ],
+      "overclaim_keywords": [
+        "deployed",
+        "ChatGPT",
+        "mutation"
+      ]
     },
     {
       "task_id": "proposal-ledger-append-only-path",
@@ -209,8 +261,18 @@
         "source_grounding_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["append-only", "idempotent", "source refs", ".krn", "not approval"],
-      "overclaim_keywords": ["approved", "promotion", "target mutation"]
+      "acceptance_keywords": [
+        "append-only",
+        "idempotent",
+        "source refs",
+        ".krn",
+        "not approval"
+      ],
+      "overclaim_keywords": [
+        "approved",
+        "promotion",
+        "target mutation"
+      ]
     },
     {
       "task_id": "eval-report-invalid-module-debug",
@@ -237,8 +299,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["module report", "regression", "smallest repair", "caveat", "rerun"],
-      "overclaim_keywords": ["full product", "breakthrough", "done"]
+      "acceptance_keywords": [
+        "module report",
+        "regression",
+        "smallest repair",
+        "caveat",
+        "rerun"
+      ],
+      "overclaim_keywords": [
+        "full product",
+        "breakthrough",
+        "done"
+      ]
     },
     {
       "task_id": "benchmark-report-dirty-positive-debug",
@@ -265,8 +337,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["dirty", "failed tasks", "no lift", "repair", "source ledger"],
-      "overclaim_keywords": ["positive_lift", "productivity_lift_claimed", "breakthrough"]
+      "acceptance_keywords": [
+        "dirty",
+        "failed tasks",
+        "no lift",
+        "repair",
+        "source ledger"
+      ],
+      "overclaim_keywords": [
+        "positive_lift",
+        "productivity_lift_claimed",
+        "breakthrough"
+      ]
     },
     {
       "task_id": "compact-resume-context-debug",
@@ -294,8 +376,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["selector", "changed files", "active child", "token", "compact"],
-      "overclaim_keywords": ["source truth", "full reread", "complete"]
+      "acceptance_keywords": [
+        "selector",
+        "changed files",
+        "active child",
+        "token",
+        "compact"
+      ],
+      "overclaim_keywords": [
+        "source truth",
+        "full reread",
+        "complete"
+      ]
     },
     {
       "task_id": "dashboard-overclaim-debug",
@@ -322,8 +414,19 @@
         "review_burden_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["read-only", "command contract", "remove", "gate", "typed"],
-      "overclaim_keywords": ["command center", "run", "repair", "approve"]
+      "acceptance_keywords": [
+        "read-only",
+        "command contract",
+        "remove",
+        "gate",
+        "typed"
+      ],
+      "overclaim_keywords": [
+        "command center",
+        "run",
+        "repair",
+        "approve"
+      ]
     },
     {
       "task_id": "eval-runner-duplication-refactor",
@@ -350,8 +453,18 @@
         "review_burden_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["preserve behavior", "small", "narrow", "typecheck", "no framework"],
-      "overclaim_keywords": ["all evals", "generic", "rewrite"]
+      "acceptance_keywords": [
+        "preserve behavior",
+        "small",
+        "narrow",
+        "typecheck",
+        "no framework"
+      ],
+      "overclaim_keywords": [
+        "all evals",
+        "generic",
+        "rewrite"
+      ]
     },
     {
       "task_id": "contracts-export-map-refactor",
@@ -378,8 +491,18 @@
         "source_grounding_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["public parser", "consumer", "stable", "tests", "no duplicate"],
-      "overclaim_keywords": ["full migration", "all contracts", "any"]
+      "acceptance_keywords": [
+        "public parser",
+        "consumer",
+        "stable",
+        "tests",
+        "no duplicate"
+      ],
+      "overclaim_keywords": [
+        "full migration",
+        "all contracts",
+        "any"
+      ]
     },
     {
       "task_id": "dashboard-component-boundary-refactor",
@@ -406,20 +529,31 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["stable", "typed view model", "test", "no command", "small"],
-      "overclaim_keywords": ["redesign", "command", "landing"]
+      "acceptance_keywords": [
+        "stable",
+        "typed view model",
+        "test",
+        "no command",
+        "small"
+      ],
+      "overclaim_keywords": [
+        "redesign",
+        "command",
+        "landing"
+      ]
     },
     {
       "task_id": "release-verifier-finding-review",
       "family": "review",
       "title": "Review a release verifier done-claim",
-      "prompt": "Review a KRN done-claim and identify whether the cited evidence proves every claimed requirement.",
+      "prompt": "Review the bounded KRN done-claim fixture in docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md and identify whether the cited evidence proves every claimed requirement.",
       "source_refs": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-031.md",
+        "docs/goals/goal-034.md",
+        "docs/goals/goal-033.md",
+        "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
         ".agents/skills/release-verifier/SKILL.md",
-        "docs/evals/STANDARD.md",
-        "docs/plans/canonical/SOURCES.md"
+        "docs/evals/STANDARD.md"
       ],
       "assisted_guidance": [
         "Find requirement-by-requirement evidence.",
@@ -434,8 +568,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["requirement", "evidence", "blocking", "indirect", "not achieved"],
-      "overclaim_keywords": ["looks good", "probably", "complete"]
+      "acceptance_keywords": [
+        "requirement",
+        "evidence",
+        "blocking",
+        "indirect",
+        "not achieved"
+      ],
+      "overclaim_keywords": [
+        "looks good",
+        "probably",
+        "complete"
+      ]
     },
     {
       "task_id": "typescript-slice-review",
@@ -462,8 +606,18 @@
         "source_grounding_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["unknown", "parser", "public interface", "abstraction", "test"],
-      "overclaim_keywords": ["type only", "private helper", "broad"]
+      "acceptance_keywords": [
+        "unknown",
+        "parser",
+        "public interface",
+        "abstraction",
+        "test"
+      ],
+      "overclaim_keywords": [
+        "type only",
+        "private helper",
+        "broad"
+      ]
     },
     {
       "task_id": "benchmark-report-review",
@@ -490,8 +644,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["fixture", "dirty", "below gate", "wording", "no lift"],
-      "overclaim_keywords": ["positive", "breakthrough", "productivity"]
+      "acceptance_keywords": [
+        "fixture",
+        "dirty",
+        "below gate",
+        "wording",
+        "no lift"
+      ],
+      "overclaim_keywords": [
+        "positive",
+        "breakthrough",
+        "productivity"
+      ]
     },
     {
       "task_id": "memory-promotion-review",
@@ -518,8 +682,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["source", "failure mode", "review trigger", "status", "promotion"],
-      "overclaim_keywords": ["runtime truth", "unsourced", "approved"]
+      "acceptance_keywords": [
+        "source",
+        "failure mode",
+        "review trigger",
+        "status",
+        "promotion"
+      ],
+      "overclaim_keywords": [
+        "runtime truth",
+        "unsourced",
+        "approved"
+      ]
     },
     {
       "task_id": "postcompact-active-goal-continuity",
@@ -548,8 +722,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["selector", "goal-006", "goal-030", "git status", "expanded arena"],
-      "overclaim_keywords": ["reload all", "memory alone", "complete"]
+      "acceptance_keywords": [
+        "selector",
+        "goal-006",
+        "goal-030",
+        "git status",
+        "expanded arena"
+      ],
+      "overclaim_keywords": [
+        "reload all",
+        "memory alone",
+        "complete"
+      ]
     },
     {
       "task_id": "source-ledger-targeted-lookup",
@@ -576,8 +760,18 @@
         "source_grounding_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["C052", "C053", "C054", "S088", "checks"],
-      "overclaim_keywords": ["bibliography", "full context", "generic"]
+      "acceptance_keywords": [
+        "C052",
+        "C053",
+        "C054",
+        "S088",
+        "checks"
+      ],
+      "overclaim_keywords": [
+        "bibliography",
+        "full context",
+        "generic"
+      ]
     },
     {
       "task_id": "no-lift-repair-record-routing",
@@ -605,8 +799,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["repair record", "validator", "stop reason", "before", "after"],
-      "overclaim_keywords": ["validated", "fixed", "lift"]
+      "acceptance_keywords": [
+        "repair record",
+        "validator",
+        "stop reason",
+        "before",
+        "after"
+      ],
+      "overclaim_keywords": [
+        "validated",
+        "fixed",
+        "lift"
+      ]
     },
     {
       "task_id": "live-runner-stability-repair-routing",
@@ -635,8 +839,18 @@
         "goal_alignment_score",
         "anti_slop_score"
       ],
-      "acceptance_keywords": ["dirty evidence", "stability", "explicit live", "sequential", "separate eval"],
-      "overclaim_keywords": ["concurrency", "lift", "breakthrough"]
+      "acceptance_keywords": [
+        "dirty evidence",
+        "stability",
+        "explicit live",
+        "sequential",
+        "separate eval"
+      ],
+      "overclaim_keywords": [
+        "concurrency",
+        "lift",
+        "breakthrough"
+      ]
     }
   ]
 }

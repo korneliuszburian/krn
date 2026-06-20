@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseKrnBenchmarkReport, type KrnBenchmarkReport } from "@krn/contracts";
@@ -17,7 +17,6 @@ const BASELINE_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/baseline-scoring-f
 const ASSISTED_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/assisted-scoring-fixture.json`;
 const BAD_REGISTRY_FIXTURE_PATH = `${MODULE_DIR}/fixtures/bad-expanded-arena-tasks.json`;
 const BAD_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/bad-scoring-fixture-overclaims-lift.json`;
-const SMOKE_TASK_ID = "release-verifier-finding-review";
 
 type EvalCase = {
   id: string;
@@ -88,8 +87,9 @@ type EvalReport = {
 
 const REQUIRED_SOURCE_REFS = [
   "docs/goals/goal-006.md",
+  "docs/goals/goal-034.md",
+  "docs/goals/goal-033.md",
   "docs/goals/goal-031.md",
-  "docs/goals/goal-030.md",
   "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
   "docs/memory/evals/2026-06-20--coding-quality-rubric.md",
   "docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md",
@@ -179,8 +179,8 @@ const ExpandedArenaRegistrySchema = z
     arena_id: z.literal("krn-expanded-autoresearch-arena"),
     contract_ref: z.literal("docs/evals/krn-benchmark-arena-contract/arena-contract.example.json"),
     parent_goal_ref: z.literal("docs/goals/goal-006.md"),
-    current_child_goal_ref: z.literal("docs/goals/goal-031.md"),
-    latest_completed_child_goal_ref: z.literal("docs/goals/goal-030.md"),
+    current_child_goal_ref: z.literal("docs/goals/goal-034.md"),
+    latest_completed_child_goal_ref: z.literal("docs/goals/goal-033.md"),
     minimum_live_task_count_for_lift_claim: z.literal(20),
     initial_task_count: z.literal(20),
     source_refs: z.array(z.string().min(1)).min(REQUIRED_SOURCE_REFS.length),
@@ -203,6 +203,11 @@ const ExpandedArenaRegistrySchema = z
         per_codex_exec_timeout_ms: z.number().int().min(60_000).max(240_000),
         max_codex_exec_output_buffer_bytes: z.number().int().min(1_048_576).max(64_000_000),
         progress_log_path_pattern: z.literal(".krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl"),
+        sync_foreground_changes_to_worker_worktree: z.literal(true),
+        smoke_task_id: z.literal("release-verifier-finding-review"),
+        bounded_smoke_input_ref: z.literal(
+          "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
+        ),
       })
       .strict(),
     pipeline_ergonomics: z
@@ -253,10 +258,7 @@ const ExpandedArenaRegistrySchema = z
       }
       taskIds.add(task.task_id);
 
-      addMissingIssues(context, `tasks.${index}.source_refs`, task.source_refs, [
-        registry.parent_goal_ref,
-        registry.current_child_goal_ref,
-      ]);
+      addMissingIssues(context, `tasks.${index}.source_refs`, task.source_refs, [registry.parent_goal_ref]);
       addMissingIssues(context, `tasks.${index}.required_metrics`, task.required_metrics, []);
 
       if (task.required_metrics.length < registry.quality_rubric.minimum_metrics_per_task) {
@@ -700,17 +702,19 @@ function repairTargets(): KrnBenchmarkReport["repair_targets"] {
       id: "expanded-arena-live-runner",
       owner: "krn",
       next_action:
-        "Run or review isolated explicit live-smoke/live-full evidence over docs/evals/krn-benchmark-expanded-arena/tasks.json before any dashboard/API run controls or productivity claims.",
+        "Keep expanded-arena live-smoke/live-full evidence below productivity claims until selected smoke tasks and full runner evidence complete cleanly.",
       source_refs: [
         "docs/goals/goal-006.md",
+        "docs/goals/goal-034.md",
         "docs/goals/goal-032.md",
         "docs/goals/goal-033.md",
         "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+        "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
         "docs/memory/product/2026-06-20--krn-benchmark-expanded-arena-registry.md",
         "docs/plans/canonical/SOURCES.md",
       ],
       failure_mode:
-        "Fixture scoring is overclaimed as live expanded execution or a dashboard/control surface is added before isolated live runner evidence exists.",
+        "A green smoke shape report, fixture delta, or partial live run is overclaimed as live expanded execution or used to justify dashboard/API controls before clean live runner evidence exists.",
     },
   ];
 }
@@ -811,6 +815,8 @@ function buildBenchmarkReport(
     benchmark_report_path: reportPath,
     source_refs: [
       "docs/goals/goal-006.md",
+      "docs/goals/goal-034.md",
+      "docs/goals/goal-033.md",
       "docs/goals/goal-031.md",
       "docs/goals/goal-032.md",
       "docs/evals/krn-benchmark-expanded-arena/README.md",
@@ -839,9 +845,9 @@ function selectedLiveTasks(registry: ExpandedArenaRegistry, mode: Exclude<EvalMo
     return registry.tasks;
   }
 
-  const smokeTask = registry.tasks.find((task) => task.task_id === SMOKE_TASK_ID);
+  const smokeTask = registry.tasks.find((task) => task.task_id === registry.live_execution_policy.smoke_task_id);
   if (!smokeTask) {
-    throw new Error(`missing smoke task ${SMOKE_TASK_ID}`);
+    throw new Error(`missing smoke task ${registry.live_execution_policy.smoke_task_id}`);
   }
   return [smokeTask];
 }
@@ -850,7 +856,8 @@ function buildLivePrompt(task: ExpandedArenaTask, label: "baseline" | "assisted"
   const schemaInstruction =
     "Return only the JSON object requested by the provided schema. Do not commit changes. Do not claim productivity lift.";
   const workerBoundary =
-    "You are running inside an isolated temporary Git worktree for benchmark evidence. Keep edits minimal and limited to this worktree.";
+    "You are running inside an isolated temporary Git worktree for benchmark evidence. Use relative paths in this worktree. Keep edits minimal and limited to this worktree. For review-only tasks, do not edit files unless the task explicitly asks for an edit.";
+  const sourceRefs = task.source_refs.map((sourceRef) => `- ${sourceRef}`).join("\n");
 
   if (label === "baseline") {
     return `${schemaInstruction}
@@ -860,9 +867,12 @@ ${workerBoundary}
 Task: ${task.prompt}
 
 Baseline condition:
-- Use normal Codex repo-reading judgment.
+- Start with the task source refs below; expand only when a listed source directly requires another file.
 - Do not use the task-specific assisted guidance below unless you independently discover the same need from repo files.
 - If you edit files, keep the diff surgical and run the narrowest useful verification command.
+
+Task source refs:
+${sourceRefs}
 
 Final JSON requirements:
 - task_id must be "${task.task_id}".
@@ -871,7 +881,6 @@ Final JSON requirements:
 - productivity_lift_claimed must be false.`;
   }
 
-  const sourceRefs = task.source_refs.map((sourceRef) => `- ${sourceRef}`).join("\n");
   const guidance = task.assisted_guidance.map((item) => `- ${item}`).join("\n");
 
   return `${schemaInstruction}
@@ -913,7 +922,93 @@ function createWorkerWorktree(runId: string, task: ExpandedArenaTask, label: "ba
     throw new Error(completed.stderr || completed.stdout || `git worktree add failed with status ${completed.status}`);
   }
 
+  materializeForegroundState(worktreePath);
+
   return worktreePath;
+}
+
+function foregroundStatusPaths(): Array<{ path: string; deleted: boolean }> {
+  const completed = spawnSync("git", ["status", "--porcelain=v1", "--untracked-files=all"], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (completed.status !== 0) {
+    throw new Error(completed.stderr || completed.stdout || `git status failed with status ${completed.status}`);
+  }
+
+  return completed.stdout
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const status = line.slice(0, 2);
+      const rawPath = line.slice(3);
+      const renameParts = rawPath.split(" -> ");
+      return {
+        path: renameParts[renameParts.length - 1] ?? rawPath,
+        deleted: status.includes("D"),
+      };
+    });
+}
+
+function materializeForegroundState(worktreePath: string): void {
+  for (const entry of foregroundStatusPaths()) {
+    const sourcePath = resolve(entry.path);
+    const targetPath = resolve(worktreePath, entry.path);
+    if (entry.deleted) {
+      rmSync(targetPath, { recursive: true, force: true });
+      continue;
+    }
+    if (!existsSync(sourcePath)) {
+      continue;
+    }
+    mkdirSync(dirname(targetPath), { recursive: true });
+    cpSync(sourcePath, targetPath, { recursive: true });
+  }
+
+  const add = spawnSync("git", ["add", "-A"], {
+    cwd: worktreePath,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (add.status !== 0) {
+    throw new Error(add.stderr || add.stdout || `git add failed with status ${add.status}`);
+  }
+
+  const hasChanges = spawnSync("git", ["diff", "--cached", "--quiet"], {
+    cwd: worktreePath,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (hasChanges.status === 0) {
+    return;
+  }
+  if (hasChanges.status !== 1) {
+    throw new Error(hasChanges.stderr || hasChanges.stdout || `git diff --cached failed with status ${hasChanges.status}`);
+  }
+
+  const commit = spawnSync(
+    "git",
+    [
+      "-c",
+      "user.name=krn-benchmark",
+      "-c",
+      "user.email=krn-benchmark@example.invalid",
+      "commit",
+      "-m",
+      "benchmark: materialize foreground state",
+    ],
+    {
+      cwd: worktreePath,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+  if (commit.status !== 0) {
+    throw new Error(commit.stderr || commit.stdout || `git commit failed with status ${commit.status}`);
+  }
 }
 
 function removeWorkerWorktree(worktreePath: string): void {
@@ -952,6 +1047,9 @@ function loadExistingWorkerCapture(
   const changedFiles = parseChangedFiles(readFileSync(paths.statusPath, "utf8"));
   const finalOutput = readJson(paths.finalPath);
   const score = scoreLiveOutput(task, finalOutput, changedFiles);
+  if (score.parsed?.status !== "completed") {
+    return null;
+  }
 
   return {
     task,
@@ -1225,6 +1323,7 @@ function buildLiveBenchmarkReport(
     benchmark_report_path: reportPath,
     source_refs: [
       "docs/goals/goal-006.md",
+      "docs/goals/goal-034.md",
       "docs/goals/goal-032.md",
       "docs/goals/goal-033.md",
       "docs/evals/krn-benchmark-expanded-arena/README.md",
@@ -1263,8 +1362,8 @@ function runValidation(mode: EvalMode, runIdOverride: string | null = null): Eva
         parseCase.id,
         registry.contract_ref === "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json" &&
           registry.parent_goal_ref === "docs/goals/goal-006.md" &&
-          registry.current_child_goal_ref === "docs/goals/goal-031.md" &&
-          registry.latest_completed_child_goal_ref === "docs/goals/goal-030.md" &&
+          registry.current_child_goal_ref === "docs/goals/goal-034.md" &&
+          registry.latest_completed_child_goal_ref === "docs/goals/goal-033.md" &&
           registry.source_refs.includes(registry.contract_ref),
         parseCase.assertions,
         parseCase.failure_mode,
@@ -1386,6 +1485,7 @@ function runValidation(mode: EvalMode, runIdOverride: string | null = null): Eva
         registry.live_execution_policy.per_codex_exec_timeout_ms > 0 &&
         registry.live_execution_policy.max_codex_exec_output_buffer_bytes >= 1_048_576 &&
         registry.live_execution_policy.progress_log_path_pattern.includes("{run_id}") &&
+        registry.live_execution_policy.sync_foreground_changes_to_worker_worktree &&
         registry.live_execution_policy.resume_completed_workers_required &&
         registry.live_execution_policy.max_concurrent_codex_exec_runs === 1,
       isolationCase.assertions,
@@ -1393,6 +1493,31 @@ function runValidation(mode: EvalMode, runIdOverride: string | null = null): Eva
       registry === null
         ? "Expanded arena registry did not parse."
         : `Live policy: isolation=${registry.live_execution_policy.isolation}, sandbox=${registry.live_execution_policy.codex_sandbox}, timeout_ms=${registry.live_execution_policy.per_codex_exec_timeout_ms}.`,
+    ),
+  );
+
+  const boundedSmokeCase = caseById(cases, "bounded-live-smoke-review-input-preserved");
+  const smokeTask =
+    registry === null
+      ? null
+      : registry.tasks.find((task) => task.task_id === registry.live_execution_policy.smoke_task_id) ?? null;
+  results.push(
+    result(
+      boundedSmokeCase.id,
+      registry !== null &&
+        smokeTask !== null &&
+        registry.live_execution_policy.smoke_task_id === "release-verifier-finding-review" &&
+        registry.live_execution_policy.bounded_smoke_input_ref ===
+          "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md" &&
+        existsSync(resolve(registry.live_execution_policy.bounded_smoke_input_ref)) &&
+        smokeTask.prompt.includes(registry.live_execution_policy.bounded_smoke_input_ref) &&
+        smokeTask.source_refs.includes(registry.live_execution_policy.bounded_smoke_input_ref) &&
+        smokeTask.source_refs.includes(registry.current_child_goal_ref),
+      boundedSmokeCase.assertions,
+      boundedSmokeCase.failure_mode,
+      registry === null || smokeTask === null
+        ? "Expanded arena registry or smoke task did not parse."
+        : `Smoke task ${smokeTask.task_id} uses bounded input ${registry.live_execution_policy.bounded_smoke_input_ref}.`,
     ),
   );
 
@@ -1573,6 +1698,23 @@ function runValidation(mode: EvalMode, runIdOverride: string | null = null): Eva
           `Live ${mode} report: tasks=${parsedReport.task_count}, completed=${parsedReport.completed_task_count}, failed=${parsedReport.failed_task_count}, baseline=${parsedReport.baseline_score}, assisted=${parsedReport.assisted_score}, delta=${parsedReport.assisted_minus_baseline}.`,
         ),
       );
+      if (mode === "live-smoke") {
+        const completionCase = caseById(cases, "live-smoke-completes-bounded-review-task");
+        results.push(
+          result(
+            completionCase.id,
+            parsedReport.task_count === 1 &&
+              parsedReport.completed_task_count === 1 &&
+              parsedReport.failed_task_count === 0 &&
+              parsedReport.tasks.every((task) => task.status === "completed") &&
+              parsedReport.productivity_lift_claimed === false &&
+              parsedReport.lift_status === "no_lift_evidence",
+            completionCase.assertions,
+            completionCase.failure_mode,
+            `Live smoke completion: tasks=${parsedReport.task_count}, completed=${parsedReport.completed_task_count}, failed=${parsedReport.failed_task_count}, lift=${parsedReport.lift_status}.`,
+          ),
+        );
+      }
     } catch (error: unknown) {
       results.push(
         result(
@@ -1583,6 +1725,18 @@ function runValidation(mode: EvalMode, runIdOverride: string | null = null): Eva
           error instanceof Error ? error.message : "unknown live runner error",
         ),
       );
+      if (mode === "live-smoke") {
+        const completionCase = caseById(cases, "live-smoke-completes-bounded-review-task");
+        results.push(
+          result(
+            completionCase.id,
+            false,
+            ["live smoke completes selected bounded review task"],
+            completionCase.failure_mode,
+            error instanceof Error ? error.message : "unknown live smoke completion error",
+          ),
+        );
+      }
     }
   }
 

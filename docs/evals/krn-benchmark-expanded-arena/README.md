@@ -20,6 +20,7 @@ arena contract
   -> deterministic fixture scoring
   -> fixture_contract KrnBenchmarkReport
   -> explicit isolated live smoke/full runner modes
+  -> bounded live-smoke review input
   -> explicit live boundary and pipeline ergonomics
   -> deterministic registry report
 ```
@@ -33,7 +34,7 @@ Live modes are explicit because they call `codex exec` workers:
 
 ## What This Tests
 
-- The expanded arena task registry parses and is anchored to `goal-006`, `goal-030`, and `goal-031`.
+- The expanded arena task registry parses and is anchored to `goal-006`, the current child goal, and the latest completed child goal.
 - The registry contains 20 unique tasks, matching the contract lift gate.
 - The task mix covers implementation, debugging, refactor, review, continuity-after-compaction, and benchmark-repair tasks.
 - Every task carries at least five quality metrics, and the full arena covers assumptions, simplicity, surgical diffs, verification, review burden, source grounding, goal alignment, and anti-slop behavior.
@@ -44,6 +45,7 @@ Live modes are explicit because they call `codex exec` workers:
 - A known-bad scoring fixture that covers too few tasks, omits review-burden coverage, or claims lift fails deterministically.
 - Explicit live runner modes are callable but not part of default aggregate `krn eval`.
 - Live workers use temporary detached Git worktrees with `--sandbox workspace-write`, schema-constrained final output, patch/status capture, and a progress log.
+- The selected `live-smoke` review task uses a bounded done-claim fixture so workers do not search broad repo context for an implicit claim.
 - Live reports remain `productivity_lift_claimed: false` unless a future full clean 20-task run satisfies the benchmark lift gate.
 
 ## Command
@@ -75,3 +77,5 @@ It also proves deterministic fixture scoring and benchmark-report generation for
 It does not prove live expanded execution, measured productivity lift, statistical validity, isolated coding-task runner safety, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
 
 A green `live-smoke` run proves only that the isolated live runner path can execute and capture evidence for one selected task. It does not prove all 20 tasks ran or that KRN improves productivity.
+
+A `live-smoke` run that captures evidence but completes 0 selected tasks is no-lift repair evidence, not a useful live completion.

@@ -365,22 +365,25 @@
       "command": ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
       "status": "passed",
       "report_path": ".krn/evals/krn-benchmark-expanded-arena/20260619T215915Z-example/report.json",
-      "total_cases": 11,
-      "passed_cases": 11,
+      "total_cases": 12,
+      "passed_cases": 12,
       "failed_cases": 0,
       "case_pass_rate": 1,
-      "total_assertions": 63,
-      "passed_assertions": 63,
+      "total_assertions": 70,
+      "passed_assertions": 70,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
       "source_refs": [
         "docs/evals/krn-benchmark-expanded-arena/README.md",
         "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+        "docs/evals/krn-benchmark-expanded-arena/cases.json",
+        "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
         "docs/goals/goal-031.md",
         "docs/goals/goal-032.md",
-        "docs/goals/goal-033.md"
+        "docs/goals/goal-033.md",
+        "docs/goals/goal-034.md"
       ],
-      "interpretation_caveat": "This eval proves the expanded arena task registry, deterministic fixture scoring, and explicit live-runner contract only; default validate mode does not run live Codex workers and does not prove measured productivity lift, full live expanded execution, statistical validity, isolated coding-task runner quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+      "interpretation_caveat": "This eval proves the expanded arena task registry, deterministic fixture scoring, explicit live-runner contract, and bounded smoke-repair guard only; default validate mode does not run live Codex workers and does not prove measured productivity lift, full live expanded execution, statistical validity, isolated coding-task runner quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     },
     {
       "module_id": "krn-repair-record",
@@ -407,11 +410,11 @@
     "total_modules": 20,
     "passed_modules": 20,
     "failed_modules": 0,
-    "total_cases": 100,
-    "passed_cases": 100,
+    "total_cases": 101,
+    "passed_cases": 101,
     "failed_cases": 0,
-    "total_assertions": 375,
-    "passed_assertions": 375,
+    "total_assertions": 382,
+    "passed_assertions": 382,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

@@ -206,6 +206,11 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     sourceRefs: [
       "docs/evals/krn-benchmark-expanded-arena/README.md",
       "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+      "docs/evals/krn-benchmark-expanded-arena/cases.json",
+      "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
+      "docs/goals/goal-034.md",
+      "docs/goals/goal-033.md",
+      "docs/goals/goal-032.md",
       "docs/goals/goal-031.md",
     ],
   },
