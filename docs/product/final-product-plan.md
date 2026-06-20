@@ -43,6 +43,12 @@ sources:
   - docs/goals/goal-032.md
   - docs/goals/goal-033.md
   - docs/goals/goal-034.md
+  - docs/goals/goal-035.md
+  - docs/adr/0002-codex-harness-operating-model.md
+  - docs/memory/product/2026-06-20--krn-ai-harness-dictionary.md
+  - docs/memory/product/2026-06-20--krn-senior-engineering-lens.md
+  - docs/memory/evals/2026-06-20--lightweight-agent-lab-rule.md
+  - .agents/skills/long-researcher/SKILL.md
   - docs/memory/evals/2026-06-20--coding-quality-rubric.md
   - docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md
   - docs/memory/product/2026-06-20--krn-benchmark-expanded-arena-registry.md
@@ -59,6 +65,8 @@ Naming rule: **KRN** is the product/tool name and `krn` is the CLI. **Gas Town**
 
 [DECISION] KRN is a TypeScript-first Codex operating memory, eval, and control plane. It is not a prompt pack, not a dashboard-first app, and not `krn init` as a tiny product.
 
+[DECISION] KRN does not build product through heavy live benchmark loops by default. Codex is already the strong coding agent; KRN's job is to solve Codex operating paradoxes through source-backed memory, senior-engineering skills, context selection, review/control surfaces, and lightweight harnesses. Heavy benchmark/meta-research lanes remain useful, but they are explicit lab work, not the normal product-build loop.
+
 The final product loop is:
 
 ```text
@@ -68,6 +76,29 @@ Codex work
   -> approved memory, skills, decisions, repair records
   -> better next Codex run
   -> measured baseline-vs-assisted improvement
+```
+
+The default product-build loop is:
+
+```text
+intake
+  -> grill/alignment if ambiguous
+  -> destination artifact
+  -> vertical slice
+  -> implementation
+  -> narrow verification
+  -> review/handoff
+  -> reviewed memory promotion only when durable truth changed
+```
+
+The meta-research loop is separate:
+
+```text
+baseline
+  -> one bounded intervention
+  -> one fixed metric
+  -> one log
+  -> keep/discard decision
 ```
 
 The product is defensible only when it proves measurable reduction in repeated Codex failure modes:
@@ -113,6 +144,8 @@ The product is defensible only when it proves measurable reduction in repeated C
 ## Target Operating Architecture
 
 [DECISION] KRN's core architecture is a local Codex operating loop. ChatGPT or external reviewer bridges are optional later review channels, not the current product core.
+
+[DECISION] The benchmark chain below is historical evidence and a lab lane. It must not be interpreted as the default way to implement KRN. New product slices should use the fast lane unless they are explicitly measuring a bounded agent-behavior hypothesis.
 
 The intended wiring is:
 

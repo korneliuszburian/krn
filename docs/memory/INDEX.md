@@ -33,7 +33,7 @@ It is not hidden model memory. It is checked-in, reviewable project knowledge th
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-034.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-034.md); [docs/goals/goal-033.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-033.md) is the immediately previous expanded-arena live-runner gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
+2. If a `/goal` is active, read that execution contract first. The active parent goal is [docs/goals/goal-006.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-006.md). The latest completed Slice 3 child goal is [docs/goals/goal-035.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-035.md); [docs/goals/goal-034.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-034.md) is the immediately previous expanded-arena smoke-worker gate. Load older child goals only when the active goal, changed files, compact selector, or source ledger points to them.
 3. Read current final product direction only when product direction is unclear or changing:
    - [docs/product/final-product-plan.md](/home/krn/coding/krn/active/krn-gastown/docs/product/final-product-plan.md)
 4. Read current canonical synthesis only for synthesis/source-ledger work:
@@ -61,6 +61,7 @@ Before major planning work:
 - [Operator skill impact first results](./evals/2026-06-19--operator-skill-impact-first-results.md)
 - [Operator skill impact loop](./evals/2026-06-19--operator-skill-impact-loop.md)
 - [Repair loops, Promptfoo, and quality gates](./evals/2026-06-19--repair-loops-promptfoo-quality-gates.md)
+- [Lightweight agent lab rule](./evals/2026-06-20--lightweight-agent-lab-rule.md)
 
 ### GitHub Research
 
@@ -109,6 +110,9 @@ Before major planning work:
 - [KRN Benchmark Expanded Arena Live Runner](./product/2026-06-20--krn-benchmark-expanded-arena-live-runner.md)
 - [KRN Benchmark Expanded Arena Smoke Worker Ergonomics](./product/2026-06-20--krn-benchmark-expanded-arena-smoke-worker-ergonomics.md)
 - [KRN operating architecture and memory layers](./product/2026-06-20--krn-operating-architecture-and-memory-layers.md)
+- [KRN source bank and engineering pattern memory](./product/2026-06-20--krn-source-bank-and-engineering-patterns.md)
+- [KRN AI harness dictionary](./product/2026-06-20--krn-ai-harness-dictionary.md)
+- [KRN senior engineering lens](./product/2026-06-20--krn-senior-engineering-lens.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 
 ### Reviewer Prompts

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Long Researcher"
+  short_description: "Build source-backed KRN research packs"
+  default_prompt: "Use $long-researcher to research this KRN decision with a bounded source budget, mechanism matrix, contradictions, and promotion targets."

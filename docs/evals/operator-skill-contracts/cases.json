@@ -32,6 +32,13 @@
       "failure_mode": "Source work becomes a link list instead of usable engineering knowledge."
     },
     {
+      "id": "long-researcher",
+      "path": ".agents/skills/long-researcher/SKILL.md",
+      "metadata_path": ".agents/skills/long-researcher/agents/openai.yaml",
+      "required_phrases": ["source universe", "source budget", "mechanism", "contradictions", "KRN transfer", "stop condition"],
+      "failure_mode": "Deep research collapses into a shallow link list or unbounded browsing without KRN decisions."
+    },
+    {
       "id": "goal-execplan",
       "path": ".agents/skills/goal-execplan/SKILL.md",
       "metadata_path": ".agents/skills/goal-execplan/agents/openai.yaml",

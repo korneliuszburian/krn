@@ -6,6 +6,8 @@ Active parent execution contract. Slice 1 is complete enough to support product 
 
 This goal supersedes `goal-005` as the product direction. `goal-005` remains useful as the Slice 2 `krn init --dry-run` contract, but it must not drive the whole repo.
 
+2026-06-20 operating reset: the expanded-arena benchmark chain is no longer the default next product-building path. It remains a heavy lab/meta-research lane. The next work should condense source-backed engineering patterns into KRN memory, source-bank, skills, and fast vertical product slices. Do not chase `live-full` as the main product loop.
+
 ## Current Progress
 
 - `docs/product/final-product-plan.md` exists as the canonical final-product plan.
@@ -452,10 +454,10 @@ Do not mark complete for:
 
 ## Next Concrete Action
 
-Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
+Continue Slice 3 by creating the next bounded child goal from the operating reset, not by extending the expanded-arena live-full chain:
 
-```bash
-docs/goals/goal-034.md
+```text
+docs/goals/goal-035.md
 ```
 
-Next child-goal candidates after `goal-034` are running or hardening expanded-arena `live-full`, analyzing assisted guidance quality on the bounded smoke task, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. The next benchmark slice should keep the expanded registry, fixture scorer, explicit live runner contract, and bounded smoke-completion evidence as the source of truth, and should not treat one-task smoke evidence as productivity evidence. Do not expand dashboard command surfaces before clean lift-gate-scale live evidence exists. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, repeated clean small-suite evidence, a green arena-contract eval, a green expanded-registry eval, a green fixture-scoring eval, positive fixture deltas, or a one-task expanded-arena live-smoke run below the live lift gate.
+Next child-goal candidates after `goal-035` should prioritize the new operating model: source-bank population, AI harness dictionary, senior-engineering skill condensation, fast-lane vertical slice design, and lightweight lab policy. Expanded-arena `live-full` may continue only as explicit lab work with a one-hypothesis keep/discard plan; it must not block product implementation or be treated as the normal way to build KRN. Do not expand dashboard command surfaces before clean lift-gate-scale live evidence exists. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, repeated clean small-suite evidence, a green arena-contract eval, a green expanded-registry eval, a green fixture-scoring eval, positive fixture deltas, or a one-task expanded-arena live-smoke run below the live lift gate.

@@ -28,6 +28,9 @@ __pycache__/
 .krn/benchmarks/*
 !.krn/benchmarks/.gitignore
 !.krn/benchmarks/README.md
+.krn/source-bank/*
+!.krn/source-bank/.gitignore
+!.krn/source-bank/README.md
 .krn/init/*
 !.krn/init/.gitignore
 !.krn/init/README.md
