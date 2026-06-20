@@ -1,18 +1,19 @@
 {
   "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-028.md",
+  "latest_child_goal": "docs/goals/goal-029.md",
   "source_refs": [
     "docs/goals/goal-006.md",
-    "docs/goals/goal-027.md",
     "docs/goals/goal-028.md",
+    "docs/goals/goal-029.md",
     "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-live-runner-stability-repair.md",
     "docs/evals/krn-benchmark-live-suite/README.md",
     "docs/specs/krn-benchmark-report/README.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Apply the bounded live runner output-capture buffer and baseline-scope repair, keep the codex exec suite sequential, and rerun deterministic validation plus explicit live mode before expanding the suite or adding dashboard/API commands.",
+  "next_action": "Repeat the clean explicit live-suite run under the typed policy, then use the stability gate to decide whether suite-expansion review is allowed before adding dashboard/API commands.",
   "should_claim_productivity_lift": false,
-  "overclaim_boundary": "A green live shape report does not prove repair quality or productivity lift. Dirty positive live deltas with failed tasks remain no_lift_evidence, and the three-task suite is below the lift gate.",
-  "rationale": "Goal 027 proved the latest dirty live evidence is not expansion-ready: 8 live reports, 2 clean, 6 dirty, latest dirty, and no productivity lift. Goal 028 narrows the repair to runner stability evidence: ENOBUFS output capture and timeout-prone baseline scope before prompt tuning, suite expansion, dashboard commands, or productivity claims."
+  "overclaim_boundary": "Repeated clean three-task live evidence can permit suite-expansion review only; it does not prove productivity lift or command-surface readiness below the 20-task gate.",
+  "rationale": "Goal 028 produced one clean latest explicit live run after typed output-capture and baseline-scope repair. Goal 029 narrows the next step to repeat-clean live stability evidence before suite expansion, prompt tuning, dashboard commands, or productivity claims."
 }

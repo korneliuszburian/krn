@@ -174,6 +174,13 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm test` passed with 31/31 test files and 106/106 tests.
   - `python3 scripts/evals/codex_memory_compliance.py --mode validate` generated `.krn/evals/codex-memory-compliance/20260620T121148932746Z-3330438/report.json` with 4/4 cases.
   - This proves one clean latest explicit three-task live run after typed output-capture/baseline-scope repair only. It still does not prove repeated clean live execution, measured productivity lift, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
+  - `docs/goals/goal-029.md` repeated the explicit live-suite run under the typed policy and moved the task registry current child context to `goal-029`.
+  - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T121920Z-3339493/report.json` with 5/5 cases and 24/24 assertions.
+  - `pnpm run eval:krn-benchmark-live-suite:live` generated `.krn/evals/krn-benchmark-live-suite/20260620T121951Z-3340034/report.json` with 6/6 cases and 30/30 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T121951Z-3340034/report.json` with 3/3 completed tasks, 0 failed tasks, baseline `0.8717`, assisted `0.8967`, delta `+0.025`, `lift_status: "no_lift_evidence"`, and `productivity_lift_claimed: false`.
+  - `pnpm run eval:krn-benchmark-live-stability` generated `.krn/evals/krn-benchmark-live-stability/20260620T123540Z-3385093/report.json` with 6/6 cases and 20/20 assertions; it classified current local evidence as 10 live reports, 4 clean, 6 dirty, latest live report clean, `suite_expansion_ready: true`, and `productivity_lift_ready: false`.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T123940Z-3393698/report.json` with 18/18 modules, 82/82 cases, and 278/278 assertions after the repeat-clean slice.
+  - `pnpm typecheck`, `pnpm test`, `python3 scripts/evals/codex_memory_compliance.py --mode validate`, and `git diff --check` passed after the repeat-clean slice.
+  - This proves repeated clean explicit three-task live evidence for suite-expansion review only. It still does not prove measured productivity lift, statistical validity, suite expansion completion, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
 
 ## Objective
 
@@ -420,7 +427,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-028.md
+docs/goals/goal-029.md
 ```
 
-Next child-goal candidates after `goal-028` are a repeat clean live run under the typed policy to satisfy repeated-clean stability, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until the stability gate reports repeated clean completed live evidence, not just one clean latest report or positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, or positive suite deltas with failed baseline tasks.
+Next child-goal candidates after `goal-029` are suite expansion review toward the 20-task lift gate with benchmark pipeline ergonomics and coding-quality rubric dimensions, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite is now review-ready because the stability gate reports repeated clean completed live evidence, but productivity lift remains blocked until a larger suite satisfies the lift gate with positive clean live evidence. The expanded suite should measure not only task-answer quality, but also assumptions, simplicity, surgical diffs, verification quality, and human review burden. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, a stability classifier pass, repeated clean small-suite evidence, or positive suite deltas below the lift gate.

@@ -12,7 +12,8 @@
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
       "docs/goals/goal-026.md",
-      "docs/goals/goal-028.md"
+      "docs/goals/goal-028.md",
+      "docs/goals/goal-029.md"
     ],
     "assertions": ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
     "metrics": ["runtime_contract_score", "drift_resistance_score"],
@@ -31,7 +32,8 @@
       "C047",
       "docs/goals/goal-025.md",
       "docs/goals/goal-026.md",
-      "docs/goals/goal-028.md"
+      "docs/goals/goal-028.md",
+      "docs/goals/goal-029.md"
     ],
     "assertions": [
       "task registry names current child context",
@@ -75,7 +77,8 @@
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
       "docs/goals/goal-026.md",
-      "docs/goals/goal-028.md"
+      "docs/goals/goal-028.md",
+      "docs/goals/goal-029.md"
     ],
     "assertions": [
       "generated benchmark report exists",
@@ -102,7 +105,8 @@
       "docs/goals/goal-024.md",
       "docs/goals/goal-025.md",
       "docs/goals/goal-026.md",
-      "docs/goals/goal-028.md"
+      "docs/goals/goal-028.md",
+      "docs/goals/goal-029.md"
     ],
     "assertions": [
       "baseline codex exec runs captured",

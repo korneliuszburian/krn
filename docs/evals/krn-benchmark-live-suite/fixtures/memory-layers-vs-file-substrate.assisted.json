@@ -1,18 +1,19 @@
 {
   "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-028.md",
+  "latest_child_goal": "docs/goals/goal-029.md",
   "source_refs": [
     "docs/goals/goal-006.md",
-    "docs/goals/goal-027.md",
     "docs/goals/goal-028.md",
+    "docs/goals/goal-029.md",
     "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
     "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-live-runner-stability-repair.md",
     "docs/product/final-product-plan.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Reject premature vector database or graph-store work, keep file-backed source-backed memory as the auditable substrate, and run the bounded benchmark runner output-capture/baseline-scope repair before adding storage infrastructure.",
+  "next_action": "Reject premature vector database or graph-store work, keep file-backed source-backed memory as the auditable substrate, and repeat the clean benchmark live run for stability evidence before adding storage infrastructure.",
   "should_claim_productivity_lift": false,
   "overclaim_boundary": "File-backed memory is not the breakthrough by itself, and a benchmark suite still must not claim lift until clean live evidence passes the gate.",
-  "rationale": "The current gap is not a missing vector store. Goal 027 shows the latest live-suite evidence is dirty and not expansion-ready, and goal 028 routes the next step to output-capture and baseline-scope repair before new memory storage infrastructure."
+  "rationale": "The current gap is not a missing vector store. Goal 028 produced one clean latest live-suite report after runner repair, and goal 029 routes the next step to repeat-clean stability evidence before new memory storage infrastructure."
 }

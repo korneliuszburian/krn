@@ -527,22 +527,23 @@ function relativeRuntimePath(path: string): string {
 function repairTargets(): KrnBenchmarkReport["repair_targets"] {
   return [
     {
-      id: "repair-live-suite-runner-stability",
+      id: "repeat-clean-live-suite-stability",
       owner: "krn",
       next_action:
-        "Harden live runner output capture and bounded baseline scope, then require a clean explicit live-suite rerun before expanding the suite or claiming lift.",
+        "Repeat the explicit live-suite run under typed policy, then use the live-stability gate to decide suite-expansion review readiness without claiming productivity lift.",
       source_refs: [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-027.md",
         "docs/goals/goal-028.md",
+        "docs/goals/goal-029.md",
         "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-live-runner-stability-repair.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
         "docs/specs/krn-benchmark-report/README.md",
         "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
       failure_mode:
-        "The live suite keeps measuring output-buffer failures, unbounded baseline rereads, stale child-goal guidance, or hidden runner behavior instead of clean current source-backed benchmark repair evidence.",
+        "The live suite overclaims one clean or repeated clean three-task evidence as productivity lift, or expands before the live-stability gate classifies the current store.",
     },
   ];
 }
@@ -651,10 +652,12 @@ function buildBenchmarkReport(
       "docs/goals/goal-026.md",
       "docs/goals/goal-027.md",
       "docs/goals/goal-028.md",
+      "docs/goals/goal-029.md",
       "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
       "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
       "docs/memory/product/2026-06-20--krn-benchmark-lift-status-stability-gate.md",
       "docs/memory/product/2026-06-20--krn-benchmark-live-stability-readiness-gate.md",
+      "docs/memory/product/2026-06-20--krn-benchmark-live-runner-stability-repair.md",
       "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",

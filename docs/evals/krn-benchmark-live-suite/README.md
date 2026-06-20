@@ -42,6 +42,7 @@ It does not claim measured productivity lift. Validate mode uses fixtures and ma
 - The task registry carries the current child goal and superseded latest-child refs so validate mode rejects stale latest-child guidance before live runs are trusted.
 - The task registry carries typed live-run policy: sequential `codex exec` worker order, `max_concurrent_codex_exec_runs: 1`, a per-run timeout, and timeout classification as failed no-lift evidence.
 - The live-runner stability repair adds typed output-capture buffer policy and bounded baseline prompt scope so JSONL capture failures such as `ENOBUFS` and unbounded baseline rereads are repairable as runner policy, not hidden code behavior.
+- The repeat-clean stability slice keeps the typed runner policy unchanged and reruns explicit live mode so the separate stability gate can decide suite-expansion review readiness.
 
 ## Commands
 

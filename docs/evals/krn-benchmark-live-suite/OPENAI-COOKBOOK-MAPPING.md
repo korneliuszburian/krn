@@ -5,7 +5,7 @@ This eval uses Cookbook and Codex documentation as mechanisms, not citations.
 | Source ID | Source | Mechanism extracted | KRN artifact |
 |---|---|---|---|
 | S009 | Codex non-interactive mode | Run worker tasks through `codex exec --json`, read-only sandboxing, schema-constrained final output, and captured traces. | `runCodexExec` live mode and runtime evidence refs. |
-| S010 | Using Goals in Codex | A long-running slice names outcome, constraints, verification, boundaries, iteration policy, and blocked state. | [docs/goals/goal-020.md](../../goals/goal-020.md), [docs/goals/goal-022.md](../../goals/goal-022.md), [docs/goals/goal-023.md](../../goals/goal-023.md), [docs/goals/goal-026.md](../../goals/goal-026.md), [docs/goals/goal-028.md](../../goals/goal-028.md). |
+| S010 | Using Goals in Codex | A long-running slice names outcome, constraints, verification, boundaries, iteration policy, and blocked state. | [docs/goals/goal-020.md](../../goals/goal-020.md), [docs/goals/goal-022.md](../../goals/goal-022.md), [docs/goals/goal-023.md](../../goals/goal-023.md), [docs/goals/goal-026.md](../../goals/goal-026.md), [docs/goals/goal-028.md](../../goals/goal-028.md), [docs/goals/goal-029.md](../../goals/goal-029.md). |
 | S011 | Codex ExecPlans | Multi-hour work is restartable from a living state file. | Goal file progress/evidence sections and exact commands. |
 | S012 | Code modernization with Codex | Expand from a bounded pilot into a reusable template after validation/parity is explicit. | One-task pilot becomes `tasks.json` plus reusable scorer. |
 | S014-S016 | Eval and improvement loops | Convert traces/failures into portable cases, metrics, assertions, and repair targets. | `cases.json`, fixture pairs, known-bad case, and `KrnBenchmarkReport.repair_targets`. |
@@ -18,6 +18,7 @@ Repair-attempt extension:
 - `goal-023` repeats the mapping for the assisted prompt-load timeout: one scoped runner prompt repair, deterministic validate first, explicit live rerun second, before/after delta comparison, no productivity-lift claim.
 - `goal-026` turns the next repair into a deterministic registry/policy gate: task-owned current child context, superseded latest-child refs, sequential worker policy, max concurrency 1, typed timeout, and no lift claim.
 - `goal-028` applies the same repair-loop mapping to observed live-runner defects: `ENOBUFS` output capture and timeout-prone baseline scope become typed policy plus explicit validate/live rerun evidence.
+- `goal-029` applies the same mapping to evidence readiness: repeat the explicit live run under unchanged typed policy, then let the stability gate decide suite-expansion review readiness without claiming productivity lift.
 
 ## Failure Modes
 

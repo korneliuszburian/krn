@@ -11,6 +11,7 @@ Sources:
 - `packages/evals/src/validate-krn-benchmark-live-stability.ts`
 - `.krn/evals/krn-benchmark-live-stability/20260620T113858Z-3249851/report.json`
 - `.krn/evals/krn-benchmark-live-stability/20260620T120047Z-3298454/report.json`
+- `.krn/evals/krn-benchmark-live-stability/20260620T123540Z-3385093/report.json`
 - `.krn/eval/20260620T113916Z-3250294/report.json`
 
 Useful pattern:
@@ -21,11 +22,11 @@ KRN implication:
 
 `krn-benchmark-live-stability` now reads `.krn/benchmarks/krn-benchmark-live-suite/**/report.json`, parses reports through `KrnBenchmarkReport`, and classifies clean completed reports, dirty reports, suite expansion readiness, and productivity lift readiness. Default `krn eval` includes this module but does not call live `codex exec`.
 
-The current local evidence is still not expansion-ready after the live-runner repair: the stability eval saw 9 live reports, 3 clean completed reports, 6 dirty reports, latest live report `.krn/benchmarks/krn-benchmark-live-suite/20260620T115037Z-3282001/report.json`, `latest_live_report_is_clean: true`, `suite_expansion_ready: false`, `productivity_lift_ready: false`, and next allowed action `repeat the clean live run under the typed policy before suite expansion`.
+The current local evidence is expansion-review-ready after the repeat-clean live run: the stability eval saw 10 live reports, 4 clean completed reports, 6 dirty reports, latest live report `.krn/benchmarks/krn-benchmark-live-suite/20260620T121951Z-3340034/report.json`, `latest_live_report_is_clean: true`, `suite_expansion_ready: true`, `productivity_lift_ready: false`, and next allowed action `review suite expansion toward the 20-task lift gate without claiming productivity lift`.
 
 Failure mode:
 
-Do not treat one latest clean three-task report as repeated live runner stability. This is a classifier and gate over existing reports. It does not prove the next explicit live run will complete cleanly, that the suite can expand to 20 tasks, or that KRN has productivity lift.
+Do not treat repeat-clean three-task evidence as productivity lift. This is a classifier and gate over existing reports. It permits suite-expansion review only; it does not prove the suite has expanded, that future larger-suite runs will complete cleanly, or that KRN has productivity lift.
 
 Review trigger:
 
