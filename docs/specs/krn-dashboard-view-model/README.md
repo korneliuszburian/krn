@@ -35,7 +35,7 @@ The first view model contains:
 
 - resource health,
 - latest runtime artifacts,
-- pending review count from the latest review report or explicit zero when no review report exists,
+- pending review count from `.krn/proposals` or explicit zero when no proposal records exist,
 - next allowed action,
 - source refs,
 - owner/action/failure mode for each displayed metric,
@@ -48,7 +48,7 @@ Allowed behavior:
 
 - parse dashboard view-model objects through `@krn/contracts`,
 - build the view model from `packages/mcp` read-only resources,
-- expose real runtime artifact health and pending review count.
+- expose real runtime artifact health and proposal-store pending review count.
 
 Forbidden behavior:
 
@@ -61,7 +61,7 @@ Forbidden behavior:
 
 ## Interpretation
 
-A green dashboard view-model result means KRN can produce the first typed dashboard input from real runtime/control-plane objects.
+A green dashboard view-model result means KRN can produce typed dashboard input from real runtime/control-plane objects and proposal-store pending-review state.
 
 It does not prove dashboard UI readiness, user experience quality, proposal-tool safety, human approval quality, ChatGPT connector behavior, or productivity lift.
 

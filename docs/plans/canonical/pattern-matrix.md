@@ -50,7 +50,7 @@ This matrix chooses patterns by mechanism, not by marketing. `Decision` values a
 | Evals | GEPA-style prompt evolution | S052 | A | Reflect over trajectories, propose prompt/skill changes | Later fit | Overfits without validation split | test |
 | Evals | Reflexion/Self-Refine repair | S049, S050 | A | Feedback/refine iterations | Good fit | Model self-critique without proof | adopt |
 | Evals | Voyager skill-library loop | S051 | A | Store reusable behaviors after successful execution | Good analogy | Game setting overgeneralized | defer |
-| Dashboard | Memory Core review queue | user image, S015-S017, S025-S040 | A + user input | Human reviews proposed memory/source/eval changes | Strong fit | Pretty list without action | adopt |
+| Dashboard | Memory Core and Pending Review queues | user image, S015-S017, S025-S040, LOCAL020 | A/local + user input | Human reviews proposed memory/source/eval changes from typed proposal records | Strong fit | Pretty list without action or approval confusion | adopt |
 | Dashboard | Knowledge gaps | S015, S016, S028-S029 | A | Show missing evidence, stale claims, failed recalls | Strong fit | Gap spam | adopt |
 | Dashboard | Graph view | S026, S027, S030, S031 | A | Entity/source/decision relations | Later fit | Graph novelty without workflow | defer |
 | Dashboard | Metric owner/action rule | S016 | A | Each metric maps to owner and fix path | Strong fit | Vanity dashboard | adopt |

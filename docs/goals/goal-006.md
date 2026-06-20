@@ -50,6 +50,11 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-mcp-transport` generated `.krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json` with 3/3 cases and 7/7 assertions after the transport began advertising the proposal-only tool.
   - `pnpm run eval:krn-mcp-proposal-tool` generated `.krn/evals/krn-mcp-proposal-tool/20260620T000445Z-1940364/report.json` with 5/5 cases and 16/16 assertions.
   - `pnpm run krn -- eval` generated `.krn/eval/20260620T000445Z-1940365/report.json` with 7/7 modules, 24/24 cases, and 62/62 assertions, including `krn-mcp-proposal-tool`.
+  - `packages/contracts` now exports `KrnPendingReviewViewModel` for dashboard Pending Review over proposal-store records.
+  - `packages/mcp` now exports `buildKrnPendingReviewViewModel`, which reads `.krn/proposals`, parses records as `KrnControlPlaneProposal`, revalidates source refs, and surfaces invalid/stale records.
+  - `buildKrnDashboardViewModel` now uses proposal-store state for its Pending Review count instead of the latest `krn review` report.
+  - `pnpm run eval:krn-pending-review-view-model` generated `.krn/evals/krn-pending-review-view-model/20260620T002555Z-1998197/report.json` with 4/4 cases and 14/14 assertions.
+  - `pnpm run krn -- eval` generated `.krn/eval/20260620T002555Z-1998210/report.json` with 8/8 modules, 28/28 cases, and 76/76 assertions, including `krn-pending-review-view-model`.
   - This still does not prove human approval quality, dashboard UI readiness, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond `.krn/proposals`, or measured lift.
 
 ## Objective
@@ -297,7 +302,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-009.md
+docs/goals/goal-011.md
 ```
 
-Next child-goal candidates are MCP/API proposal tools over `storeKrnControlPlaneProposal` or dashboard Pending Review over real proposal-store records. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, or productivity claims without benchmark evidence.
+Next child-goal candidates are `apps/dashboard` rendering over the typed Pending Review view model, proposal approval/rejection contracts, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, approval mutation, or productivity claims without benchmark evidence.

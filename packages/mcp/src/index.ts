@@ -14,6 +14,7 @@ import {
   type KrnControlPlaneResourceIndex,
   type KrnDashboardViewModel,
 } from "@krn/contracts";
+import { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 
 type ArtifactSpec = {
   uri: string;
@@ -130,11 +131,16 @@ function baseResource(
 }
 
 export {
+  listKrnProposalStoreRecords,
   storeKrnControlPlaneProposal,
   validateProposalSourceRefs,
+  type InvalidProposalStoreRecord,
+  type ProposalStoreRecordList,
   type ProposalStoreResult,
   type SourceRefValidationResult,
+  type ValidProposalStoreRecord,
 } from "./proposal-store.js";
+export { buildKrnPendingReviewViewModel } from "./pending-review-view-model.js";
 
 function descriptorFromResource(
   resource: KrnControlPlaneResource,
@@ -320,23 +326,16 @@ function runtimeArtifactSummary(descriptor: ControlPlaneResourceDescriptor): str
   return `${descriptor.name} is invalid.`;
 }
 
-function pendingReviewFromResource(reviewResource: KrnControlPlaneResource): {
+function pendingReviewFromStore(targetRoot: string, now: Date): {
   pendingProposals: number;
-  source: "latest_review_report" | "explicit_zero_no_review_report";
+  source: "proposal_store" | "explicit_zero_no_proposals";
   sourceRefs: string[];
 } {
-  if (reviewResource.status === "available" && reviewResource.payload?.kind === "krn_review_report") {
-    return {
-      pendingProposals: reviewResource.payload.proposals.length,
-      source: "latest_review_report",
-      sourceRefs: reviewResource.source_refs,
-    };
-  }
-
+  const pendingReview = buildKrnPendingReviewViewModel(targetRoot, now);
   return {
-    pendingProposals: 0,
-    source: "explicit_zero_no_review_report",
-    sourceRefs: reviewResource.source_refs,
+    pendingProposals: pendingReview.pending_proposals,
+    source: pendingReview.source,
+    sourceRefs: pendingReview.source_refs,
   };
 }
 
@@ -357,10 +356,10 @@ function dashboardNextAllowedAction(
 
   if (pendingProposals > 0) {
     return {
-      action_id: "review-runtime-proposals",
+      action_id: "review-pending-proposals",
       target_surface: "pending_review",
-      label: "Review latest proposal-only runtime report",
-      rationale: "The latest review report contains proposal-only items that require human review before promotion.",
+      label: "Review pending proposal records",
+      rationale: "The proposal store contains proposal-only items that require human review before promotion.",
       source_refs: [...sourceRefs],
     };
   }
@@ -369,7 +368,7 @@ function dashboardNextAllowedAction(
     action_id: "continue-dashboard-view-model-contract",
     target_surface: "dashboard_view_model",
     label: "Continue dashboard view-model contract work",
-    rationale: "Runtime artifacts are ready and no pending review proposals are available from the latest review report.",
+    rationale: "Runtime artifacts are ready and no pending review proposals are available from the proposal store.",
     source_refs: [...sourceRefs],
   };
 }
@@ -377,8 +376,7 @@ function dashboardNextAllowedAction(
 export function buildKrnDashboardViewModel(targetInput = ".", now = new Date()): KrnDashboardViewModel {
   const targetRoot = resolve(targetInput);
   const index = listKrnControlPlaneResources(targetRoot, now);
-  const reviewResource = readKrnControlPlaneResource("krn://runtime/review/latest", targetRoot, now);
-  const pendingReview = pendingReviewFromResource(reviewResource);
+  const pendingReview = pendingReviewFromStore(targetRoot, now);
   const artifactDescriptors = index.resources.filter((resource) => resource.resource_kind !== "runtime_summary");
 
   return parseKrnDashboardViewModel({
@@ -424,10 +422,10 @@ export function buildKrnDashboardViewModel(targetInput = ".", now = new Date()):
       source_refs: pendingReview.sourceRefs,
       next_action:
         pendingReview.pendingProposals > 0
-          ? "Review the latest proposal-only runtime report before promoting any memory or source changes."
-          : "Keep pending review count explicit until a review report or proposal store exists.",
+          ? "Review proposal-store records before promoting any memory or source changes."
+          : "Keep pending review count explicit until proposal-store records exist.",
       failure_mode:
-        "Pending review count is unsafe if it is inferred from chat or hidden state instead of the latest review report.",
+        "Pending review count is unsafe if it is inferred from chat or hidden state instead of the proposal store.",
       pending_proposals: pendingReview.pendingProposals,
       source: pendingReview.source,
     },

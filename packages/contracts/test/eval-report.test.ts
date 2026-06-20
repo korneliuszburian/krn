@@ -23,6 +23,7 @@ describe("KrnEvalReport contract", () => {
       "krn-mcp-transport",
       "krn-proposal-store",
       "krn-mcp-proposal-tool",
+      "krn-pending-review-view-model",
     ]);
   });
 

@@ -58,6 +58,15 @@ export {
   type KrnDashboardViewModel,
 } from "./dashboard-view-model.js";
 export {
+  KrnPendingReviewViewModelSchema,
+  krnPendingReviewViewModelJsonSchema,
+  parseKrnPendingReviewViewModel,
+  type KrnPendingReviewViewModel,
+  type PendingReviewInvalidRecord,
+  type PendingReviewNextAction,
+  type PendingReviewProposal,
+} from "./pending-review-view-model.js";
+export {
   KRN_STORE_CONTROL_PLANE_PROPOSAL_TOOL,
   KrnMcpProposalToolResultSchema,
   krnMcpProposalToolResultJsonSchema,

@@ -5,7 +5,7 @@ const SourceRefSchema = z.string().min(1);
 const DashboardResourceStatusSchema = z.enum(["ready", "degraded", "blocked"]);
 const RuntimeArtifactStatusSchema = z.enum(["available", "missing", "invalid"]);
 const RuntimeArtifactKindSchema = z.enum(["init_manifest", "doctor_report", "eval_report", "review_report"]);
-const PendingReviewSourceSchema = z.enum(["latest_review_report", "explicit_zero_no_review_report"]);
+const PendingReviewSourceSchema = z.enum(["proposal_store", "explicit_zero_no_proposals"]);
 const NextAllowedSurfaceSchema = z.enum([
   "runtime_artifacts",
   "pending_review",

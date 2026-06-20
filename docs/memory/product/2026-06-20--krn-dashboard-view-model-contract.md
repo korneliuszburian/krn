@@ -10,6 +10,7 @@ Sources:
 - [packages/contracts/src/dashboard-view-model.ts](/home/krn/coding/krn/active/krn-gastown/packages/contracts/src/dashboard-view-model.ts)
 - [packages/mcp/src/index.ts](/home/krn/coding/krn/active/krn-gastown/packages/mcp/src/index.ts)
 - [packages/mcp/test/dashboard-view-model.test.ts](/home/krn/coding/krn/active/krn-gastown/packages/mcp/test/dashboard-view-model.test.ts)
+- [docs/memory/product/2026-06-20--krn-pending-review-view-model.md](/home/krn/coding/krn/active/krn-gastown/docs/memory/product/2026-06-20--krn-pending-review-view-model.md)
 - Local contract and builder evidence: `pnpm test -- packages/contracts/test/dashboard-view-model.test.ts packages/mcp/test/dashboard-view-model.test.ts packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts`
 - Local type evidence: `pnpm typecheck`
 
@@ -17,14 +18,14 @@ Sources:
 
 `packages/contracts` now exports `KrnDashboardViewModelSchema`, `parseKrnDashboardViewModel`, and `krnDashboardViewModelJsonSchema`.
 
-`packages/mcp` now exports `buildKrnDashboardViewModel(targetRoot, now)`. The builder uses the existing read-only MCP resource model and the latest `krn review` report. It does not read chat state, create UI, mutate files, or invent dashboard metrics.
+`packages/mcp` now exports `buildKrnDashboardViewModel(targetRoot, now)`. The builder uses the existing read-only MCP resource model plus proposal-store Pending Review state from `buildKrnPendingReviewViewModel`. It does not read chat state, create UI, mutate files, or invent dashboard metrics.
 
 The first view model includes:
 
 - resource health,
 - latest runtime artifacts,
-- pending review count from the latest review report,
-- explicit zero fallback when no review report exists,
+- pending review count from `.krn/proposals`,
+- explicit zero fallback when no proposal records exist,
 - next allowed action,
 - source refs,
 - owner/action/failure mode for each displayed metric,
@@ -35,7 +36,7 @@ The first view model includes:
 Build dashboard input as a typed contract before dashboard UI:
 
 ```text
-.krn runtime reports -> packages/mcp read model -> dashboard view model parser -> future UI
+.krn runtime reports + .krn/proposals -> packages/mcp read model -> dashboard view model parser -> future UI
 ```
 
 This prevents the dashboard from becoming a transcript browser or mock-state demo.
@@ -52,4 +53,4 @@ This becomes harmful if `KrnDashboardViewModel` is treated as the dashboard itse
 
 ## Review Trigger
 
-Update this note when `apps/dashboard` starts, when new dashboard views are added, when pending review reads a real proposal store, or when dashboard metrics change.
+Update this note when `apps/dashboard` starts, when new dashboard views are added, when proposal approval/rejection contracts exist, or when dashboard metrics change.

@@ -15,6 +15,7 @@
     "eval:krn-mcp-transport": "tsx packages/evals/src/validate-krn-mcp-transport.ts --mode validate",
     "eval:krn-proposal-store": "tsx packages/evals/src/validate-krn-proposal-store.ts --mode validate",
     "eval:krn-mcp-proposal-tool": "tsx packages/evals/src/validate-krn-mcp-proposal-tool.ts --mode validate",
+    "eval:krn-pending-review-view-model": "tsx packages/evals/src/validate-krn-pending-review-view-model.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {

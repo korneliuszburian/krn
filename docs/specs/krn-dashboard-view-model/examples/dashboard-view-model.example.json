@@ -90,16 +90,16 @@
       "docs/specs/krn-review/README.md",
       "docs/goals/goal-006.md"
     ],
-    "next_action": "Review the latest proposal-only runtime report before promoting any memory or source changes.",
-    "failure_mode": "Pending review count is unsafe if it is inferred from chat or hidden state instead of the latest review report.",
-    "pending_proposals": 2,
-    "source": "latest_review_report"
+    "next_action": "Review proposal-store records before promoting any memory or source changes.",
+    "failure_mode": "Pending review count is unsafe if it is inferred from chat or hidden state instead of the proposal store.",
+    "pending_proposals": 1,
+    "source": "proposal_store"
   },
   "next_allowed_action": {
-    "action_id": "review-runtime-proposals",
+    "action_id": "review-pending-proposals",
     "target_surface": "pending_review",
-    "label": "Review latest proposal-only runtime report",
-    "rationale": "The latest review report contains proposal-only items that require human review before promotion.",
+    "label": "Review pending proposal records",
+    "rationale": "The proposal store contains proposal-only items that require human review before promotion.",
     "source_refs": [
       "docs/specs/krn-review/README.md",
       "docs/goals/goal-006.md"

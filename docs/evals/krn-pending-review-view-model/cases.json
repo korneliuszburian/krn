@@ -1,0 +1,70 @@
+[
+  {
+    "id": "proposal-store-records-render-pending-review",
+    "expected_behavior": "A valid source-backed proposal-store record renders as one Pending Review row without mutating the proposal target.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-011.md",
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "proposal store read",
+      "typed view model parses",
+      "pending proposal rendered",
+      "target path not mutated",
+      "proposal remains not reviewed"
+    ],
+    "metrics": ["dashboard_contract_score", "source_grounding_score", "anti_slop_score"],
+    "failure_mode": "Pending Review cannot consume real proposal-store records without implying approval or mutating target state."
+  },
+  {
+    "id": "empty-proposal-store-explicit-zero",
+    "expected_behavior": "An empty proposal store renders explicit zero state instead of inventing pending review rows.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-011.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "empty store explicit zero",
+      "queue state empty",
+      "no mock state"
+    ],
+    "metrics": ["dashboard_contract_score", "drift_resistance_score"],
+    "failure_mode": "Dashboard Pending Review invents state when there are no proposal-store records."
+  },
+  {
+    "id": "invalid-proposal-record-blocks-readiness",
+    "expected_behavior": "An invalid proposal file under .krn/proposals is surfaced as an invalid record and not counted as pending review.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-011.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "invalid record surfaced",
+      "queue state blocked",
+      "invalid proposal not counted as pending"
+    ],
+    "metrics": ["dashboard_contract_score", "anti_slop_score"],
+    "failure_mode": "Pending Review hides invalid records or counts unparseable files as reviewable proposals."
+  },
+  {
+    "id": "stale-source-ref-blocks-readiness",
+    "expected_behavior": "A stored proposal whose source refs no longer resolve is rendered with stale source status and blocked queue state.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-011.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/plans/canonical/SOURCES.md"
+    ],
+    "assertions": [
+      "stored proposal rendered",
+      "source ref status stale",
+      "queue state blocked"
+    ],
+    "metrics": ["source_grounding_score", "dashboard_contract_score"],
+    "failure_mode": "Pending Review presents stale source-backed proposals as ready for human review."
+  }
+]

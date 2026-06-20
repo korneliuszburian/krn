@@ -19,8 +19,8 @@ describe("KRN dashboard view-model contract", () => {
     expect(viewModel.no_mock_state).toBe(true);
     expect(viewModel.resource_health.status).toBe("ready");
     expect(viewModel.latest_runtime_artifacts).toHaveLength(4);
-    expect(viewModel.pending_review.pending_proposals).toBe(2);
-    expect(viewModel.pending_review.source).toBe("latest_review_report");
+    expect(viewModel.pending_review.pending_proposals).toBe(1);
+    expect(viewModel.pending_review.source).toBe("proposal_store");
   });
 
   it("rejects the known-bad mock-state fixture", () => {

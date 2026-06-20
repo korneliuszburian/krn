@@ -1,0 +1,68 @@
+{
+  "schema_version": "krn-pending-review-view-model.v1",
+  "kind": "krn_pending_review_view_model",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "generated_at": "2026-06-20T00:00:00.000Z",
+  "no_mock_state": true,
+  "source": "proposal_store",
+  "queue_state": "ready",
+  "total_records": 1,
+  "pending_proposals": 1,
+  "invalid_records_count": 0,
+  "stale_source_ref_proposals": 0,
+  "proposals": [
+    {
+      "owner": "krn",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-011.md",
+        "docs/specs/krn-pending-review-view-model/README.md"
+      ],
+      "next_action": "Review this proposal record before promoting any memory, source, goal, eval, repair, or dashboard change.",
+      "failure_mode": "Pending Review rows are unsafe if they imply approval, hide stale source refs, or detach from the proposal-store record.",
+      "proposal_id": "proposal-memory-note-krn-mcp-stdio-transport",
+      "proposal_kind": "memory_update",
+      "status": "proposal_only",
+      "title": "Record KRN MCP STDIO transport boundary",
+      "proposal_path": ".krn/proposals/memory-update-krn-mcp-stdio-transport-2026-06-20/proposal.json",
+      "target_type": "path",
+      "target_label": "docs/memory/product/2026-06-20--krn-mcp-stdio-transport.md",
+      "idempotency_key": "memory-update:krn-mcp-stdio-transport:2026-06-20",
+      "review_gate_state": "not_reviewed",
+      "source_ref_status": "validated",
+      "evidence_refs": [
+        ".krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json"
+      ],
+      "created_at": "2026-06-20T00:00:00.000Z",
+      "interpretation_caveat": "This row is review input only; it does not approve the proposal, mutate its target, or promote memory/source changes."
+    }
+  ],
+  "invalid_records": [],
+  "next_allowed_action": {
+    "action_id": "review-pending-proposals",
+    "target_surface": "proposal_store",
+    "label": "Review pending proposal records",
+    "rationale": "Proposal-store records are available and require human review before promotion.",
+    "source_refs": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-011.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ]
+  },
+  "blocked_actions": [
+    "approve_proposal",
+    "reject_proposal",
+    "mutate_target",
+    "write_memory",
+    "write_source_ledger",
+    "publish_dashboard_event"
+  ],
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-011.md",
+    "docs/specs/krn-pending-review-view-model/README.md",
+    "docs/specs/krn-control-plane-proposal/README.md"
+  ],
+  "failure_mode": "Pending Review becomes harmful if proposal records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
+  "interpretation_caveat": "This view model renders local proposal-store records for human review only; it does not approve proposals, mutate targets, expose HTTP/API, or prove productivity lift."
+}

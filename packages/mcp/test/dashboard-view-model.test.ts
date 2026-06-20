@@ -1,9 +1,9 @@
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { parseKrnDashboardViewModel } from "@krn/contracts";
+import { parseKrnControlPlaneProposal, parseKrnDashboardViewModel } from "@krn/contracts";
 import { describe, expect, it } from "vitest";
-import { buildKrnDashboardViewModel } from "../src/index.js";
+import { buildKrnDashboardViewModel, storeKrnControlPlaneProposal } from "../src/index.js";
 
 const root = process.cwd();
 
@@ -11,6 +11,15 @@ function copyJsonFixture(targetRoot: string, fixturePath: string, runtimePath: s
   const absoluteRuntimePath = join(targetRoot, runtimePath);
   mkdirSync(dirname(absoluteRuntimePath), { recursive: true });
   writeFileSync(absoluteRuntimePath, readFileSync(join(root, fixturePath), "utf8"), "utf8");
+}
+
+function readJson(path: string): unknown {
+  return JSON.parse(readFileSync(join(root, path), "utf8")) as unknown;
+}
+
+function writeText(path: string, content: string): void {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content, "utf8");
 }
 
 function createRuntimeTarget(): string {
@@ -35,6 +44,16 @@ function createRuntimeTarget(): string {
     "docs/specs/krn-review/examples/krn-review-report.example.json",
     ".krn/review/20260619T220300Z-test/report.json",
   );
+  const proposal = parseKrnControlPlaneProposal(
+    readJson("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json"),
+  );
+  for (const sourceRef of proposal.source_refs) {
+    writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+  }
+  storeKrnControlPlaneProposal(proposal, {
+    targetInput: targetRoot,
+    now: new Date("2026-06-20T00:00:00.000Z"),
+  });
   return targetRoot;
 }
 
@@ -55,20 +74,20 @@ describe("KRN dashboard view model builder", () => {
       "krn://runtime/eval/latest",
       "krn://runtime/review/latest",
     ]);
-    expect(reparsed.pending_review.pending_proposals).toBe(2);
-    expect(reparsed.pending_review.source).toBe("latest_review_report");
+    expect(reparsed.pending_review.pending_proposals).toBe(1);
+    expect(reparsed.pending_review.source).toBe("proposal_store");
     expect(reparsed.next_allowed_action.target_surface).toBe("pending_review");
     expect(afterEntries).toEqual(beforeEntries);
   });
 
-  it("uses explicit zero pending review when no review report exists", () => {
+  it("uses explicit zero pending review when no proposal records exist", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-dashboard-view-model-empty-"));
     const viewModel = buildKrnDashboardViewModel(targetRoot, new Date("2026-06-20T00:00:00.000Z"));
 
     expect(viewModel.no_mock_state).toBe(true);
     expect(viewModel.resource_health.status).toBe("degraded");
     expect(viewModel.pending_review.pending_proposals).toBe(0);
-    expect(viewModel.pending_review.source).toBe("explicit_zero_no_review_report");
+    expect(viewModel.pending_review.source).toBe("explicit_zero_no_proposals");
     expect(viewModel.next_allowed_action.target_surface).toBe("runtime_artifacts");
   });
 });

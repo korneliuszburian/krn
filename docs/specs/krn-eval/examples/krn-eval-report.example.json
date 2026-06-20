@@ -101,7 +101,7 @@
         "docs/evals/krn-mcp-transport/README.md",
         "docs/specs/krn-mcp-read-model/README.md"
       ],
-      "interpretation_caveat": "This eval proves the local KRN MCP STDIO transport for read-only resources only; it does not prove ChatGPT connector behavior, dashboard readiness, write-tool safety, human approval, or productivity lift."
+      "interpretation_caveat": "This eval proves local KRN MCP STDIO read-resource transport and tool listing only; proposal-tool behavior is covered by krn-mcp-proposal-tool, and this does not prove ChatGPT connector behavior, dashboard readiness, human approval, or productivity lift."
     },
     {
       "module_id": "krn-proposal-store",
@@ -140,17 +140,36 @@
         "docs/specs/krn-mcp-proposal-tool/README.md"
       ],
       "interpretation_caveat": "This eval proves the local STDIO MCP proposal-tool boundary only; it does not prove human approval quality, dashboard UI readiness, HTTP/API readiness, ChatGPT connector behavior, target mutation safety beyond .krn/proposals, or productivity lift."
+    },
+    {
+      "module_id": "krn-pending-review-view-model",
+      "command": ["pnpm", "run", "eval:krn-pending-review-view-model"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-pending-review-view-model/20260619T215907Z-example/report.json",
+      "total_cases": 4,
+      "passed_cases": 4,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 14,
+      "passed_assertions": 14,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-pending-review-view-model/README.md",
+        "docs/specs/krn-pending-review-view-model/README.md"
+      ],
+      "interpretation_caveat": "This eval proves the local Pending Review view-model boundary over proposal-store records only; it does not prove dashboard UI readiness, human approval quality, HTTP/API readiness, ChatGPT connector behavior, or productivity lift."
     }
   ],
   "summary": {
-    "total_modules": 7,
-    "passed_modules": 7,
+    "total_modules": 8,
+    "passed_modules": 8,
     "failed_modules": 0,
-    "total_cases": 24,
-    "passed_cases": 24,
+    "total_cases": 28,
+    "passed_cases": 28,
     "failed_cases": 0,
-    "total_assertions": 62,
-    "passed_assertions": 62,
+    "total_assertions": 76,
+    "passed_assertions": 76,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

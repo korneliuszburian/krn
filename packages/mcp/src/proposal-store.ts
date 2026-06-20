@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 import { parseKrnControlPlaneProposal, type KrnControlPlaneProposal } from "@krn/contracts";
 
@@ -23,6 +23,26 @@ export type ProposalStoreResult = {
   status: "stored" | "already_stored";
   source_refs_validated: string[];
   created_at: string;
+  interpretation_caveat: string;
+};
+
+export type ValidProposalStoreRecord = {
+  proposal_path: string;
+  idempotency_key: string;
+  proposal: KrnControlPlaneProposal;
+};
+
+export type InvalidProposalStoreRecord = {
+  proposal_path: string;
+  error_summary: string;
+};
+
+export type ProposalStoreRecordList = {
+  target_root: string;
+  proposal_root: string;
+  total_records: number;
+  valid_records: ValidProposalStoreRecord[];
+  invalid_records: InvalidProposalStoreRecord[];
   interpretation_caveat: string;
 };
 
@@ -127,6 +147,21 @@ function normalizedProposalJson(proposal: KrnControlPlaneProposal): string {
   return `${JSON.stringify(proposal, null, 2)}\n`;
 }
 
+function collectProposalFiles(proposalRoot: string): string[] {
+  if (!existsSync(proposalRoot) || !statSync(proposalRoot).isDirectory()) {
+    return [];
+  }
+
+  return readdirSync(proposalRoot, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = resolve(proposalRoot, entry.name);
+    if (entry.isDirectory()) {
+      const proposalPath = resolve(entryPath, "proposal.json");
+      return existsSync(proposalPath) && statSync(proposalPath).isFile() ? [proposalPath] : [];
+    }
+    return [];
+  }).sort();
+}
+
 function assertSafeTarget(proposal: KrnControlPlaneProposal, targetRoot: string): void {
   if (proposal.target.target_type === "resource_uri") {
     if (!proposal.target.uri.startsWith("krn://")) {
@@ -196,4 +231,38 @@ export function storeKrnControlPlaneProposal(input: unknown, options: StoreOptio
   writeFileSync(proposalPath, proposalJson, { encoding: "utf8", flag: "wx" });
 
   return buildStoreResult(proposal, targetRoot, proposalPath, "stored", now);
+}
+
+export function listKrnProposalStoreRecords(targetInput = "."): ProposalStoreRecordList {
+  const targetRoot = resolve(targetInput);
+  const proposalRoot = resolve(targetRoot, ".krn", "proposals");
+  const validRecords: ValidProposalStoreRecord[] = [];
+  const invalidRecords: InvalidProposalStoreRecord[] = [];
+
+  for (const proposalPath of collectProposalFiles(proposalRoot)) {
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJsonFile(proposalPath));
+      validRecords.push({
+        proposal_path: proposalRelativePath,
+        idempotency_key: proposal.write_policy.idempotency_key,
+        proposal,
+      });
+    } catch (error: unknown) {
+      invalidRecords.push({
+        proposal_path: proposalRelativePath,
+        error_summary: error instanceof Error ? error.message : "unknown proposal parse error",
+      });
+    }
+  }
+
+  return {
+    target_root: targetRoot,
+    proposal_root: relative(targetRoot, proposalRoot).replaceAll("\\", "/"),
+    total_records: validRecords.length + invalidRecords.length,
+    valid_records: validRecords,
+    invalid_records: invalidRecords,
+    interpretation_caveat:
+      "This list reports local proposal-store records only; it does not approve proposals, mutate targets, or promote memory/source changes.",
+  };
 }
