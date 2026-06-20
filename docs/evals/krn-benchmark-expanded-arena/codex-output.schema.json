@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "krn-benchmark-expanded-arena-codex-output.schema.json",
+  "type": "object",
+  "required": [
+    "task_id",
+    "status",
+    "source_refs",
+    "changed_files",
+    "verification_commands",
+    "assumptions",
+    "implementation_summary",
+    "overclaim_boundary",
+    "productivity_lift_claimed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["completed", "blocked", "failed"] },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "verification_commands": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "implementation_summary": { "type": "string", "minLength": 1 },
+    "overclaim_boundary": { "type": "string", "minLength": 1 },
+    "productivity_lift_claimed": { "type": "boolean" }
+  }
+}

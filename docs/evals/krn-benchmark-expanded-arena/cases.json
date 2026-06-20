@@ -79,6 +79,36 @@
     "failure_mode": "The expanded arena becomes hidden-cost, non-resumable, default-live, or concurrency-unsafe."
   },
   {
+    "id": "explicit-live-runner-modes-available",
+    "expected_behavior": "The module exposes explicit live-smoke and live-full runner modes while keeping validate mode fixture-only and safe for default krn eval.",
+    "source_patterns": ["S009", "S010", "S011", "C052", "C056", "docs/goals/goal-033.md"],
+    "assertions": [
+      "validate mode remains default",
+      "live-smoke script exists",
+      "live-full script exists",
+      "default eval script uses validate mode",
+      "live modes are not part of aggregate krn eval"
+    ],
+    "metrics": ["runtime_contract_score", "drift_resistance_score", "anti_slop_score"],
+    "failure_mode": "Live expanded execution is hidden inside default deterministic evals or only documented without a callable runner mode."
+  },
+  {
+    "id": "isolated-live-runner-policy-preserved",
+    "expected_behavior": "The registry requires isolated temporary Git worktrees, workspace-write sandboxing, bounded timeout/output capture, progress logging, and resume-safe sequential execution.",
+    "source_patterns": ["S009", "C048", "C054", "C056", "docs/goals/goal-033.md"],
+    "assertions": [
+      "live isolation uses temporary git worktree per worker",
+      "live sandbox is workspace-write",
+      "live timeout is typed",
+      "live output buffer is typed",
+      "progress log path pattern is typed",
+      "resume completed workers remains required",
+      "concurrency remains sequential"
+    ],
+    "metrics": ["runtime_contract_score", "repair_readiness_score", "benchmark_validity_score"],
+    "failure_mode": "The expanded arena can run live coding tasks in the foreground checkout, without bounded capture, or without resumable progress evidence."
+  },
+  {
     "id": "known-bad-registry-fails",
     "expected_behavior": "The known-bad registry with a small planning-only default-live arena fails deterministically.",
     "source_patterns": ["C052", "C053", "C054", "docs/evals/STANDARD.md"],
@@ -115,13 +145,32 @@
     "failure_mode": "KRN accepts fixture scoring inputs that can be overclaimed as live lift or ignore review burden."
   },
   {
+    "id": "live-runner-builds-smoke-report",
+    "expected_behavior": "Explicit live-smoke/live-full mode runs selected expanded-arena tasks through isolated codex exec workers, captures worker evidence files, writes a live_codex_exec KrnBenchmarkReport, and keeps productivity lift unclaimed.",
+    "source_patterns": ["S009", "S013", "S016", "S088", "C053", "C056", "docs/goals/goal-033.md"],
+    "assertions": [
+      "baseline worker evidence captured",
+      "assisted worker evidence captured",
+      "worker status files captured",
+      "worker patch files captured",
+      "progress log captured",
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "measurement mode is live_codex_exec",
+      "productivity lift remains unclaimed",
+      "repair target present"
+    ],
+    "metrics": ["live_runner_score", "benchmark_validity_score", "coding_quality_score", "anti_slop_score"],
+    "failure_mode": "The expanded arena live runner lacks isolated worker evidence or can overclaim live smoke evidence as productivity lift."
+  },
+  {
     "id": "eval-report-preserves-registry-only-boundary",
-    "expected_behavior": "The eval report caveat states that this validates registry and fixture scoring only and does not prove live expanded execution or productivity lift.",
+    "expected_behavior": "The eval report caveat states the current evidence boundary and does not prove productivity lift or a full clean 20-task live run.",
     "source_patterns": ["C052", "C054", "docs/goals/goal-006.md"],
     "assertions": [
-      "eval report caveat names fixture scoring only",
+      "eval report caveat names current evidence boundary",
       "eval report caveat names no productivity lift",
-      "eval report caveat names no live expanded run"
+      "eval report caveat names no full live proof"
     ],
     "metrics": ["goal_alignment_score", "anti_slop_score"],
     "failure_mode": "A green registry eval is overclaimed as completed arena execution or product lift."

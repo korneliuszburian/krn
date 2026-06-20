@@ -17,7 +17,10 @@
 | `task-mix-covers-coding-work` | S016, C053-C054 | Require implementation, debugging, refactor, review, continuity, and repair tasks. | Arena measures only planning answers. |
 | `quality-rubric-per-task` | S016, C053-C054, LOCAL040 | Require coding-quality metrics per task. | Human review burden and bad diffs are invisible. |
 | `pipeline-and-live-boundary-preserved` | S009, S011, S088, C048, C054 | Keep live explicit and require resumable lanes. | Larger arena becomes hidden-cost or non-resumable. |
+| `explicit-live-runner-modes-available` | S009-S011, C052, C056 | Expose `live-smoke` and `live-full` as explicit commands while default eval remains fixture-only. | Live execution hides inside aggregate deterministic evals or exists only in docs. |
+| `isolated-live-runner-policy-preserved` | S009, C048, C054-C056 | Require temporary Git worktrees, workspace-write sandboxing, bounded capture, progress logging, and resume-safe sequential workers. | Live coding tasks mutate the foreground checkout or lack audit evidence. |
 | `known-bad-registry-fails` | S013-S016, C052-C054 | Reject shallow default-live registry. | Bad arena registry passes. |
 | `fixture-scoring-builds-benchmark-report` | S013-S016, S088, C053-C055 | Generate fixture_contract `KrnBenchmarkReport` scoring all 20 tasks. | Registry exists but scoring/report evidence is missing or overclaimed. |
 | `known-bad-scoring-fixture-fails` | S013-S016, C052-C055 | Reject incomplete or lift-claiming scoring fixture. | Bad scoring input hides missing review burden or lift overclaim. |
+| `live-runner-builds-smoke-report` | S009, S013-S016, S088, C053, C056 | Capture isolated worker evidence and produce a live_codex_exec `KrnBenchmarkReport` without claiming lift. | Smoke evidence is missing, unparseable, or overclaimed as product lift. |
 | `eval-report-preserves-registry-only-boundary` | S010-S016, C052-C055 | Caveat states registry and fixture-scoring readiness only. | Green fixture scoring eval is sold as live lift. |

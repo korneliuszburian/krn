@@ -1,7 +1,23 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseKrnBenchmarkReport, type KrnBenchmarkReport } from "@krn/contracts";
 import { z } from "zod";
+
+type EvalMode = "validate" | "live-smoke" | "live-full";
+
+const MODULE_ID = "krn-benchmark-expanded-arena";
+const MODULE_DIR = `docs/evals/${MODULE_ID}`;
+const BENCHMARK_DIR = `.krn/benchmarks/${MODULE_ID}`;
+const TASK_REGISTRY_PATH = `${MODULE_DIR}/tasks.json`;
+const CASES_PATH = `${MODULE_DIR}/cases.json`;
+const CODEX_OUTPUT_SCHEMA_PATH = `${MODULE_DIR}/codex-output.schema.json`;
+const BASELINE_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/baseline-scoring-fixture.json`;
+const ASSISTED_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/assisted-scoring-fixture.json`;
+const BAD_REGISTRY_FIXTURE_PATH = `${MODULE_DIR}/fixtures/bad-expanded-arena-tasks.json`;
+const BAD_SCORING_FIXTURE_PATH = `${MODULE_DIR}/fixtures/bad-scoring-fixture-overclaims-lift.json`;
+const SMOKE_TASK_ID = "release-verifier-finding-review";
 
 type EvalCase = {
   id: string;
@@ -38,12 +54,21 @@ type ScoringSummary = {
   benchmark_report_path: string;
 };
 
+type LiveRunSummary = {
+  mode: Exclude<EvalMode, "validate">;
+  selected_task_count: number;
+  completed_task_count: number;
+  failed_task_count: number;
+  benchmark_report_path: string;
+  progress_log_path: string;
+};
+
 type EvalReport = {
   schema_version: "krn-benchmark-expanded-arena-result.v1";
   kind: "krn_benchmark_expanded_arena_result";
   run_id: string;
   created_at: string;
-  mode: "validate";
+  mode: EvalMode;
   total_cases: number;
   passed_cases: number;
   failed_cases: number;
@@ -57,6 +82,7 @@ type EvalReport = {
   generated_benchmark_report_path: string | null;
   arena_summary: ArenaSummary | null;
   scoring_summary: ScoringSummary | null;
+  live_run_summary: LiveRunSummary | null;
   interpretation_caveat: string;
 };
 
@@ -131,6 +157,20 @@ const ScoringFixtureSchema = z
   })
   .strict();
 
+const CodexArenaOutputSchema = z
+  .object({
+    task_id: z.string().min(1),
+    status: z.enum(["completed", "blocked", "failed"]),
+    source_refs: z.array(z.string().min(1)).min(1),
+    changed_files: z.array(z.string().min(1)),
+    verification_commands: z.array(z.string().min(1)),
+    assumptions: z.array(z.string().min(1)),
+    implementation_summary: z.string().min(1),
+    overclaim_boundary: z.string().min(1),
+    productivity_lift_claimed: z.boolean(),
+  })
+  .strict();
+
 const ExpandedArenaRegistrySchema = z
   .object({
     schema_version: z.literal("krn-benchmark-expanded-arena-tasks.v1"),
@@ -158,6 +198,11 @@ const ExpandedArenaRegistrySchema = z
         concurrency_expansion_requires_separate_eval: z.literal(true),
         resume_completed_workers_required: z.literal(true),
         progress_log_required: z.literal(true),
+        isolation: z.literal("temporary_git_worktree_per_worker"),
+        codex_sandbox: z.literal("workspace-write"),
+        per_codex_exec_timeout_ms: z.number().int().min(60_000).max(240_000),
+        max_codex_exec_output_buffer_bytes: z.number().int().min(1_048_576).max(64_000_000),
+        progress_log_path_pattern: z.literal(".krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl"),
       })
       .strict(),
     pipeline_ergonomics: z
@@ -237,6 +282,42 @@ const ExpandedArenaRegistrySchema = z
 type ExpandedArenaRegistry = z.infer<typeof ExpandedArenaRegistrySchema>;
 type ScoringFixture = z.infer<typeof ScoringFixtureSchema>;
 type ScoringFixtureLabel = ScoringFixture["label"];
+type CodexArenaOutput = z.infer<typeof CodexArenaOutputSchema>;
+type ExpandedArenaTask = ExpandedArenaRegistry["tasks"][number];
+
+type MetricScores = Record<string, number>;
+
+type ScoredOutput = {
+  parsed: CodexArenaOutput | null;
+  score: number;
+  metrics: MetricScores;
+  parse_error: string | null;
+};
+
+type WorkerCapture = {
+  task: ExpandedArenaTask;
+  label: "baseline" | "assisted";
+  exit_code: number | null;
+  timed_out: boolean;
+  worktree_path: string;
+  stdout_path: string;
+  stderr_path: string;
+  final_path: string;
+  status_path: string;
+  patch_path: string;
+  changed_files: string[];
+  parsed: CodexArenaOutput | null;
+  score: ScoredOutput;
+  error_message: string | null;
+};
+
+type LiveScorePair = {
+  task: ExpandedArenaTask;
+  baseline: ScoredOutput;
+  assisted: ScoredOutput;
+  baseline_evidence_refs: string[];
+  assisted_evidence_refs: string[];
+};
 
 function addMissingIssues(context: z.RefinementCtx, path: string, actual: readonly string[], required: readonly string[]): void {
   for (const item of required) {
@@ -297,6 +378,33 @@ function parseRegistry(input: unknown): ExpandedArenaRegistry {
 
 function parseScoringFixture(input: unknown): ScoringFixture {
   return ScoringFixtureSchema.parse(input);
+}
+
+function parseMode(argv: readonly string[]): EvalMode {
+  const modeIndex = argv.indexOf("--mode");
+  if (modeIndex === -1) {
+    return "validate";
+  }
+
+  const mode = argv[modeIndex + 1];
+  if (mode !== "validate" && mode !== "live-smoke" && mode !== "live-full") {
+    throw new Error(`Unsupported mode: ${mode ?? "<missing>"}`);
+  }
+
+  return mode;
+}
+
+function parseRunId(argv: readonly string[]): string | null {
+  const runIdIndex = argv.indexOf("--run-id");
+  if (runIdIndex === -1) {
+    return null;
+  }
+
+  const runId = argv[runIdIndex + 1];
+  if (!runId) {
+    throw new Error("--run-id requires a value");
+  }
+  return runId;
 }
 
 function result(id: string, passed: boolean, assertions: string[], failureMode: string, message: string): CaseResult {
@@ -360,6 +468,192 @@ function averageScore(values: readonly number[]): number {
   return roundScore(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
+function zeroMetricScores(task: ExpandedArenaTask): MetricScores {
+  return Object.fromEntries(task.required_metrics.map((metricId) => [metricId, 0]));
+}
+
+function normalize(value: string): string {
+  return value.toLowerCase();
+}
+
+function includesAny(value: string, needles: readonly string[]): boolean {
+  const lower = normalize(value);
+  return needles.some((needle) => lower.includes(normalize(needle)));
+}
+
+function keywordHitRate(value: string, keywords: readonly string[]): number {
+  if (keywords.length === 0) {
+    return 0;
+  }
+
+  const lower = normalize(value);
+  const hits = keywords.filter((keyword) => lower.includes(normalize(keyword))).length;
+  return roundScore(hits / keywords.length);
+}
+
+function sourceHitRate(output: CodexArenaOutput, task: ExpandedArenaTask): number {
+  return roundScore(
+    task.source_refs.filter((sourceRef) =>
+      output.source_refs.some((usedSourceRef) => normalize(usedSourceRef).includes(normalize(sourceRef))),
+    ).length / task.source_refs.length,
+  );
+}
+
+function verificationScore(output: CodexArenaOutput): number {
+  if (output.verification_commands.length === 0) {
+    return 0;
+  }
+
+  const verificationText = output.verification_commands.join("\n");
+  return includesAny(verificationText, ["pnpm", "test", "typecheck", "eval", "tsc", "vitest"]) ? 1 : 0.5;
+}
+
+function simplicityScore(changedFiles: readonly string[]): number {
+  if (changedFiles.length === 0) {
+    return 0.4;
+  }
+  if (changedFiles.length <= 2) {
+    return 1;
+  }
+  if (changedFiles.length <= 5) {
+    return 0.7;
+  }
+  return 0.2;
+}
+
+function surgicalDiffScore(changedFiles: readonly string[]): number {
+  if (changedFiles.length === 0) {
+    return 0.3;
+  }
+  if (changedFiles.length <= 3) {
+    return 1;
+  }
+  if (changedFiles.length <= 6) {
+    return 0.6;
+  }
+  return 0.2;
+}
+
+function antiSlopScore(output: CodexArenaOutput, task: ExpandedArenaTask, changedFiles: readonly string[]): number {
+  const boundaryText = `${output.overclaim_boundary}\n${output.implementation_summary}`;
+  const overclaimHits = task.overclaim_keywords.filter((keyword) => includesAny(boundaryText, [keyword])).length;
+  return roundScore(
+    [
+      output.productivity_lift_claimed === false,
+      output.status !== "completed" || changedFiles.length <= 6,
+      overclaimHits > 0,
+    ].filter(Boolean).length / 3,
+  );
+}
+
+function scoreLiveOutput(task: ExpandedArenaTask, input: unknown, changedFiles: readonly string[]): ScoredOutput {
+  const parsed = CodexArenaOutputSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      parsed: null,
+      score: 0,
+      metrics: zeroMetricScores(task),
+      parse_error: parsed.error.message,
+    };
+  }
+
+  const output = parsed.data;
+  const summaryText = `${output.implementation_summary}\n${output.overclaim_boundary}\n${output.verification_commands.join("\n")}`;
+  const allMetrics: Record<string, number> = {
+    assumption_clarity_score: output.assumptions.length > 0 ? 1 : 0,
+    simplicity_score: simplicityScore(changedFiles),
+    surgical_diff_score: surgicalDiffScore(changedFiles),
+    verification_coverage_score: verificationScore(output),
+    review_burden_score: output.status === "completed" && changedFiles.length <= 5 ? 1 : 0.3,
+    source_grounding_score: sourceHitRate(output, task),
+    goal_alignment_score: roundScore(
+      [
+        output.task_id === task.task_id,
+        output.status === "completed",
+        keywordHitRate(summaryText, task.acceptance_keywords) > 0,
+        output.productivity_lift_claimed === false,
+      ].filter(Boolean).length / 4,
+    ),
+    anti_slop_score: antiSlopScore(output, task, changedFiles),
+  };
+  const metrics = Object.fromEntries(task.required_metrics.map((metricId) => [metricId, allMetrics[metricId] ?? 0]));
+  const score = averageScore(Object.values(metrics));
+
+  return { parsed: output, score, metrics, parse_error: null };
+}
+
+function writeText(path: string, content: string): void {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content, "utf8");
+}
+
+function appendProgress(progressLogPath: string, event: Record<string, unknown>): void {
+  const line = JSON.stringify({ created_at: new Date().toISOString(), ...event });
+  mkdirSync(dirname(progressLogPath), { recursive: true });
+  writeFileSync(progressLogPath, `${line}\n`, { encoding: "utf8", flag: "a" });
+}
+
+function relativeRuntimePath(path: string): string {
+  const root = `${process.cwd()}/`;
+  return path.startsWith(root) ? path.slice(root.length) : path;
+}
+
+function parseChangedFiles(statusText: string): string[] {
+  return statusText
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const pathText = line.length > 3 ? line.slice(3).trim() : line.trim();
+      const renameParts = pathText.split(" -> ");
+      return renameParts[renameParts.length - 1] ?? pathText;
+    });
+}
+
+function packageScripts(): Record<string, string> {
+  const packageJson = readJson(resolve("package.json"));
+  if (!packageJson || typeof packageJson !== "object") {
+    throw new Error("package.json must be an object");
+  }
+
+  const scripts = (packageJson as Record<string, unknown>).scripts;
+  if (!scripts || typeof scripts !== "object") {
+    throw new Error("package.json scripts must be an object");
+  }
+
+  return Object.fromEntries(
+    Object.entries(scripts as Record<string, unknown>).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+  );
+}
+
+function writeFallbackFinalOutput(
+  path: string,
+  task: ExpandedArenaTask,
+  error: {
+    reason: string;
+    changedFiles: readonly string[];
+  },
+): void {
+  writeText(
+    path,
+    `${JSON.stringify(
+      {
+        task_id: task.task_id,
+        status: "failed",
+        source_refs: ["docs/evals/krn-benchmark-expanded-arena/tasks.json"],
+        changed_files: error.changedFiles,
+        verification_commands: [],
+        assumptions: ["The worker did not produce schema-constrained final output."],
+        implementation_summary: error.reason,
+        overclaim_boundary: "This failed worker output proves no productivity lift.",
+        productivity_lift_claimed: false,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+}
+
 function summarizeArena(registry: ExpandedArenaRegistry): ArenaSummary {
   return {
     arena_id: registry.arena_id,
@@ -369,7 +663,7 @@ function summarizeArena(registry: ExpandedArenaRegistry): ArenaSummary {
     implementation_heavy_task_count: implementationHeavyTaskCount(registry),
     quality_metric_count: taskMetricSet(registry).length,
     live_mode_explicit: liveModeExplicit(registry),
-    next_allowed_action: "add explicit live smoke/full runner for this registry without claiming productivity lift",
+    next_allowed_action: "run or review explicit live smoke/full runner evidence for this registry without claiming productivity lift",
   };
 }
 
@@ -406,10 +700,11 @@ function repairTargets(): KrnBenchmarkReport["repair_targets"] {
       id: "expanded-arena-live-runner",
       owner: "krn",
       next_action:
-        "Add isolated explicit live smoke/full runner modes over docs/evals/krn-benchmark-expanded-arena/tasks.json before any dashboard/API run controls or productivity claims.",
+        "Run or review isolated explicit live-smoke/live-full evidence over docs/evals/krn-benchmark-expanded-arena/tasks.json before any dashboard/API run controls or productivity claims.",
       source_refs: [
         "docs/goals/goal-006.md",
         "docs/goals/goal-032.md",
+        "docs/goals/goal-033.md",
         "docs/evals/krn-benchmark-expanded-arena/tasks.json",
         "docs/memory/product/2026-06-20--krn-benchmark-expanded-arena-registry.md",
         "docs/plans/canonical/SOURCES.md",
@@ -484,9 +779,10 @@ function buildBenchmarkReport(
   registry: ExpandedArenaRegistry,
   baseline: ScoringFixture,
   assisted: ScoringFixture,
+  reportFileName = "report.json",
 ): KrnBenchmarkReport {
   const tasks = buildBenchmarkTasks(registry, baseline, assisted);
-  const reportPath = `.krn/benchmarks/krn-benchmark-expanded-arena/${runId}/report.json`;
+  const reportPath = `${BENCHMARK_DIR}/${runId}/${reportFileName}`;
   const report = {
     schema_version: "krn-benchmark-report.v1",
     kind: "krn_benchmark_report",
@@ -538,16 +834,425 @@ function writeBenchmarkReport(report: KrnBenchmarkReport): string {
   return reportPath;
 }
 
-function runValidation(): EvalReport {
+function selectedLiveTasks(registry: ExpandedArenaRegistry, mode: Exclude<EvalMode, "validate">): ExpandedArenaTask[] {
+  if (mode === "live-full") {
+    return registry.tasks;
+  }
+
+  const smokeTask = registry.tasks.find((task) => task.task_id === SMOKE_TASK_ID);
+  if (!smokeTask) {
+    throw new Error(`missing smoke task ${SMOKE_TASK_ID}`);
+  }
+  return [smokeTask];
+}
+
+function buildLivePrompt(task: ExpandedArenaTask, label: "baseline" | "assisted"): string {
+  const schemaInstruction =
+    "Return only the JSON object requested by the provided schema. Do not commit changes. Do not claim productivity lift.";
+  const workerBoundary =
+    "You are running inside an isolated temporary Git worktree for benchmark evidence. Keep edits minimal and limited to this worktree.";
+
+  if (label === "baseline") {
+    return `${schemaInstruction}
+
+${workerBoundary}
+
+Task: ${task.prompt}
+
+Baseline condition:
+- Use normal Codex repo-reading judgment.
+- Do not use the task-specific assisted guidance below unless you independently discover the same need from repo files.
+- If you edit files, keep the diff surgical and run the narrowest useful verification command.
+
+Final JSON requirements:
+- task_id must be "${task.task_id}".
+- source_refs should include only files you actually used.
+- changed_files should list files you actually changed.
+- productivity_lift_claimed must be false.`;
+  }
+
+  const sourceRefs = task.source_refs.map((sourceRef) => `- ${sourceRef}`).join("\n");
+  const guidance = task.assisted_guidance.map((item) => `- ${item}`).join("\n");
+
+  return `${schemaInstruction}
+
+${workerBoundary}
+
+Task: ${task.prompt}
+
+Assisted condition:
+- Read only the task source refs below unless one directly points to an immediate dependency required to finish the task.
+- Follow the task-specific guidance, but keep the diff minimal.
+- If you edit files, run the narrowest useful verification command.
+
+Task source refs:
+${sourceRefs}
+
+Task-specific guidance:
+${guidance}
+
+Final JSON requirements:
+- task_id must be "${task.task_id}".
+- source_refs should include only files you actually used.
+- changed_files should list files you actually changed.
+- productivity_lift_claimed must be false.`;
+}
+
+function createWorkerWorktree(runId: string, task: ExpandedArenaTask, label: "baseline" | "assisted"): string {
+  const worktreePath = resolve(tmpdir(), "krn-expanded-arena-worktrees", runId, `${task.task_id}.${label}`);
+  rmSync(worktreePath, { recursive: true, force: true });
+  mkdirSync(dirname(worktreePath), { recursive: true });
+
+  const completed = spawnSync("git", ["worktree", "add", "--detach", worktreePath, "HEAD"], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (completed.status !== 0) {
+    throw new Error(completed.stderr || completed.stdout || `git worktree add failed with status ${completed.status}`);
+  }
+
+  return worktreePath;
+}
+
+function removeWorkerWorktree(worktreePath: string): void {
+  const completed = spawnSync("git", ["worktree", "remove", "--force", worktreePath], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (completed.status !== 0) {
+    rmSync(worktreePath, { recursive: true, force: true });
+  }
+}
+
+function loadExistingWorkerCapture(
+  task: ExpandedArenaTask,
+  label: "baseline" | "assisted",
+  paths: {
+    stdoutPath: string;
+    stderrPath: string;
+    finalPath: string;
+    statusPath: string;
+    patchPath: string;
+  },
+): WorkerCapture | null {
+  if (
+    !existsSync(paths.stdoutPath) ||
+    !existsSync(paths.stderrPath) ||
+    !existsSync(paths.finalPath) ||
+    !existsSync(paths.statusPath) ||
+    !existsSync(paths.patchPath)
+  ) {
+    return null;
+  }
+
+  const changedFiles = parseChangedFiles(readFileSync(paths.statusPath, "utf8"));
+  const finalOutput = readJson(paths.finalPath);
+  const score = scoreLiveOutput(task, finalOutput, changedFiles);
+
+  return {
+    task,
+    label,
+    exit_code: 0,
+    timed_out: false,
+    worktree_path: "resumed-from-existing-evidence",
+    stdout_path: paths.stdoutPath,
+    stderr_path: paths.stderrPath,
+    final_path: paths.finalPath,
+    status_path: paths.statusPath,
+    patch_path: paths.patchPath,
+    changed_files: changedFiles,
+    parsed: score.parsed,
+    score,
+    error_message: score.parse_error,
+  };
+}
+
+function runCodexWorker(
+  runId: string,
+  registry: ExpandedArenaRegistry,
+  task: ExpandedArenaTask,
+  label: "baseline" | "assisted",
+  runDir: string,
+  progressLogPath: string,
+): WorkerCapture {
+  const stdoutPath = resolve(runDir, `${task.task_id}.${label}.stdout.jsonl`);
+  const stderrPath = resolve(runDir, `${task.task_id}.${label}.stderr.txt`);
+  const finalPath = resolve(runDir, `${task.task_id}.${label}.final.json`);
+  const statusPath = resolve(runDir, `${task.task_id}.${label}.status.txt`);
+  const patchPath = resolve(runDir, `${task.task_id}.${label}.patch`);
+  const existing = loadExistingWorkerCapture(task, label, { stdoutPath, stderrPath, finalPath, statusPath, patchPath });
+  if (existing !== null) {
+    appendProgress(progressLogPath, { event: "worker_resumed", task_id: task.task_id, label });
+    return existing;
+  }
+
+  let worktreePath = "";
+  let exitCode: number | null = null;
+  let timedOut = false;
+  let errorMessage: string | null = null;
+
+  try {
+    worktreePath = createWorkerWorktree(runId, task, label);
+    appendProgress(progressLogPath, { event: "worker_started", task_id: task.task_id, label, worktree_path: worktreePath });
+
+    const schemaPath = resolve(CODEX_OUTPUT_SCHEMA_PATH);
+    const args = [
+      "exec",
+      "--json",
+      "--ephemeral",
+      "--sandbox",
+      registry.live_execution_policy.codex_sandbox,
+      "--config",
+      'approval_policy="never"',
+      "--output-schema",
+      schemaPath,
+      "--output-last-message",
+      finalPath,
+      "--add-dir",
+      runDir,
+      "-C",
+      worktreePath,
+      buildLivePrompt(task, label),
+    ];
+    const completed = spawnSync("codex", args, {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: registry.live_execution_policy.per_codex_exec_timeout_ms,
+      maxBuffer: registry.live_execution_policy.max_codex_exec_output_buffer_bytes,
+    });
+
+    exitCode = completed.status;
+    timedOut = completed.error?.message.includes("ETIMEDOUT") ?? false;
+    errorMessage = completed.error?.message ?? null;
+    writeText(stdoutPath, completed.stdout ?? "");
+    writeText(stderrPath, completed.stderr ?? "");
+  } catch (error: unknown) {
+    errorMessage = error instanceof Error ? error.message : "unknown worker setup error";
+    writeText(stdoutPath, "");
+    writeText(stderrPath, errorMessage);
+  }
+
+  const status = worktreePath
+    ? spawnSync("git", ["status", "--short"], {
+        cwd: worktreePath,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      })
+    : null;
+  const diff = worktreePath
+    ? spawnSync("git", ["diff", "--binary", "HEAD"], {
+        cwd: worktreePath,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        maxBuffer: 32_000_000,
+      })
+    : null;
+  const statusText = status?.stdout ?? "";
+  const patchText = diff?.stdout ?? "";
+  writeText(statusPath, statusText);
+  writeText(patchPath, patchText);
+
+  const changedFiles = parseChangedFiles(statusText);
+  if (!existsSync(finalPath)) {
+    writeFallbackFinalOutput(finalPath, task, {
+      reason: errorMessage ?? "codex exec did not write final JSON output",
+      changedFiles,
+    });
+  }
+
+  let score = scoreLiveOutput(task, {}, changedFiles);
+  let parsed: CodexArenaOutput | null = null;
+  try {
+    score = scoreLiveOutput(task, readJson(finalPath), changedFiles);
+    parsed = score.parsed;
+    errorMessage = errorMessage ?? score.parse_error;
+  } catch (error: unknown) {
+    errorMessage = error instanceof Error ? error.message : "unknown final JSON parse error";
+  }
+
+  if (worktreePath) {
+    removeWorkerWorktree(worktreePath);
+  }
+
+  appendProgress(progressLogPath, {
+    event: "worker_completed",
+    task_id: task.task_id,
+    label,
+    exit_code: exitCode,
+    timed_out: timedOut,
+    changed_file_count: changedFiles.length,
+    parsed: parsed !== null,
+  });
+
+  return {
+    task,
+    label,
+    exit_code: exitCode,
+    timed_out: timedOut,
+    worktree_path: worktreePath,
+    stdout_path: stdoutPath,
+    stderr_path: stderrPath,
+    final_path: finalPath,
+    status_path: statusPath,
+    patch_path: patchPath,
+    changed_files: changedFiles,
+    parsed,
+    score,
+    error_message: errorMessage,
+  };
+}
+
+function buildLiveScorePairs(
+  runId: string,
+  registry: ExpandedArenaRegistry,
+  mode: Exclude<EvalMode, "validate">,
+  runDir: string,
+  progressLogPath: string,
+): LiveScorePair[] {
+  return selectedLiveTasks(registry, mode).map((task) => {
+    const baseline = runCodexWorker(runId, registry, task, "baseline", runDir, progressLogPath);
+    const assisted = runCodexWorker(runId, registry, task, "assisted", runDir, progressLogPath);
+    return {
+      task,
+      baseline: baseline.score,
+      assisted: assisted.score,
+      baseline_evidence_refs: [
+        relativeRuntimePath(baseline.stdout_path),
+        relativeRuntimePath(baseline.stderr_path),
+        relativeRuntimePath(baseline.final_path),
+        relativeRuntimePath(baseline.status_path),
+        relativeRuntimePath(baseline.patch_path),
+      ],
+      assisted_evidence_refs: [
+        relativeRuntimePath(assisted.stdout_path),
+        relativeRuntimePath(assisted.stderr_path),
+        relativeRuntimePath(assisted.final_path),
+        relativeRuntimePath(assisted.status_path),
+        relativeRuntimePath(assisted.patch_path),
+      ],
+    };
+  });
+}
+
+function liveMetricRows(task: ExpandedArenaTask, baseline: MetricScores, assisted: MetricScores): KrnBenchmarkReport["tasks"][number]["metrics"] {
+  return task.required_metrics.map((metricId) => {
+    const baselineScore = baseline[metricId] ?? 0;
+    const assistedScore = assisted[metricId] ?? 0;
+    return {
+      metric_id: metricId,
+      baseline_score: baselineScore,
+      assisted_score: assistedScore,
+      assisted_minus_baseline: roundScore(assistedScore - baselineScore),
+      weight: 1,
+      source_refs: ["docs/evals/krn-benchmark-expanded-arena/tasks.json", ...task.source_refs],
+      interpretation_caveat:
+        "Metric score is deterministic live-runner scoring over captured worker output and patch/status evidence; it does not prove productivity lift.",
+    };
+  });
+}
+
+function buildLiveBenchmarkTasks(scorePairs: readonly LiveScorePair[]): KrnBenchmarkReport["tasks"] {
+  return scorePairs.map((pair) => {
+    const completed = pair.baseline.parsed?.status === "completed" && pair.assisted.parsed?.status === "completed";
+    const blocked = pair.baseline.parsed?.status === "blocked" || pair.assisted.parsed?.status === "blocked";
+    return {
+      task_id: pair.task.task_id,
+      title: pair.task.title,
+      status: completed ? "completed" : blocked ? "blocked" : "failed",
+      task_source_refs: pair.task.source_refs,
+      baseline: {
+        label: "baseline_codex",
+        score: pair.baseline.score,
+        evidence_refs: pair.baseline_evidence_refs,
+        interpretation_caveat:
+          "Baseline live worker uses normal Codex repo-reading behavior inside an isolated temporary worktree.",
+      },
+      assisted: {
+        label: "krn_assisted_codex",
+        score: pair.assisted.score,
+        evidence_refs: pair.assisted_evidence_refs,
+        interpretation_caveat:
+          "Assisted live worker uses task-owned source refs and guidance inside an isolated temporary worktree.",
+      },
+      assisted_minus_baseline: roundScore(pair.assisted.score - pair.baseline.score),
+      metrics: liveMetricRows(pair.task, pair.baseline.metrics, pair.assisted.metrics),
+      repair_targets: completed ? [] : repairTargets(),
+      interpretation_caveat:
+        "This task contributes isolated live worker evidence only; it is not standalone productivity proof.",
+    };
+  });
+}
+
+function buildLiveBenchmarkReport(
+  runId: string,
+  now: Date,
+  mode: Exclude<EvalMode, "validate">,
+  registry: ExpandedArenaRegistry,
+  scorePairs: readonly LiveScorePair[],
+): KrnBenchmarkReport {
+  const tasks = buildLiveBenchmarkTasks(scorePairs);
+  const reportPath = `${BENCHMARK_DIR}/${runId}/report.json`;
+  const report = {
+    schema_version: "krn-benchmark-report.v1",
+    kind: "krn_benchmark_report",
+    run_id: runId,
+    created_at: now.toISOString(),
+    target_root: process.cwd(),
+    benchmark_id: registry.benchmark_id,
+    suite_id: registry.arena_id,
+    measurement_mode: "live_codex_exec",
+    baseline_label: "baseline_codex",
+    assisted_label: "krn_assisted_codex",
+    minimum_task_count_for_lift_claim: registry.minimum_live_task_count_for_lift_claim,
+    productivity_lift_claimed: false,
+    lift_status: "no_lift_evidence",
+    task_count: tasks.length,
+    completed_task_count: tasks.filter((task) => task.status === "completed").length,
+    blocked_task_count: tasks.filter((task) => task.status === "blocked").length,
+    failed_task_count: tasks.filter((task) => task.status === "failed").length,
+    baseline_score: averageScore(tasks.map((task) => task.baseline.score)),
+    assisted_score: averageScore(tasks.map((task) => task.assisted.score)),
+    assisted_minus_baseline: roundScore(
+      averageScore(tasks.map((task) => task.assisted.score)) - averageScore(tasks.map((task) => task.baseline.score)),
+    ),
+    tasks,
+    repair_targets: repairTargets(),
+    benchmark_report_path: reportPath,
+    source_refs: [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-032.md",
+      "docs/goals/goal-033.md",
+      "docs/evals/krn-benchmark-expanded-arena/README.md",
+      "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+      "docs/evals/krn-benchmark-expanded-arena/codex-output.schema.json",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/plans/canonical/SOURCES.md",
+    ],
+    interpretation_caveat:
+      mode === "live-smoke"
+        ? "This expanded-arena live smoke report proves only the isolated live runner path for one selected task; it does not prove all 20 tasks ran, measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+        : "This expanded-arena live full report can support future lift review only if all 20 tasks complete cleanly with positive delta; this report itself keeps productivity_lift_claimed false until reviewed.",
+  } satisfies KrnBenchmarkReport;
+
+  return parseKrnBenchmarkReport(report);
+}
+
+function runValidation(mode: EvalMode, runIdOverride: string | null = null): EvalReport {
   const now = new Date();
-  const runId = createRunId(now);
-  const cases = parseCases(readJson(resolve("docs/evals/krn-benchmark-expanded-arena/cases.json")));
-  const registryPath = "docs/evals/krn-benchmark-expanded-arena/tasks.json";
+  const runId = runIdOverride ?? createRunId(now);
+  const cases = parseCases(readJson(resolve(CASES_PATH)));
+  const registryPath = TASK_REGISTRY_PATH;
   const results: CaseResult[] = [];
   let registry: ExpandedArenaRegistry | null = null;
   let arenaSummary: ArenaSummary | null = null;
   let generatedBenchmarkReportPath: string | null = null;
   let scoringSummary: ScoringSummary | null = null;
+  let liveRunSummary: LiveRunSummary | null = null;
 
   const parseCase = caseById(cases, "expanded-arena-registry-parses");
   try {
@@ -642,9 +1347,58 @@ function runValidation(): EvalReport {
     ),
   );
 
+  const modeCase = caseById(cases, "explicit-live-runner-modes-available");
+  try {
+    const scripts = packageScripts();
+    results.push(
+      result(
+        modeCase.id,
+        scripts["eval:krn-benchmark-expanded-arena"]?.includes("--mode validate") === true &&
+          scripts["eval:krn-benchmark-expanded-arena:live-smoke"]?.includes("--mode live-smoke") === true &&
+          scripts["eval:krn-benchmark-expanded-arena:live-full"]?.includes("--mode live-full") === true &&
+          scripts["eval:krn-eval"]?.includes("validate-krn-eval.ts --mode validate") === true &&
+          scripts["eval:krn-eval"]?.includes("live-smoke") !== true &&
+          scripts["eval:krn-eval"]?.includes("live-full") !== true,
+        modeCase.assertions,
+        modeCase.failure_mode,
+        "Expanded arena live-smoke/live-full scripts are explicit and default aggregate eval remains validate-only.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        modeCase.id,
+        false,
+        ["live runner scripts parse"],
+        modeCase.failure_mode,
+        error instanceof Error ? error.message : "unknown package script parse error",
+      ),
+    );
+  }
+
+  const isolationCase = caseById(cases, "isolated-live-runner-policy-preserved");
+  results.push(
+    result(
+      isolationCase.id,
+      registry !== null &&
+        registry.live_execution_policy.isolation === "temporary_git_worktree_per_worker" &&
+        registry.live_execution_policy.codex_sandbox === "workspace-write" &&
+        registry.live_execution_policy.per_codex_exec_timeout_ms > 0 &&
+        registry.live_execution_policy.max_codex_exec_output_buffer_bytes >= 1_048_576 &&
+        registry.live_execution_policy.progress_log_path_pattern.includes("{run_id}") &&
+        registry.live_execution_policy.resume_completed_workers_required &&
+        registry.live_execution_policy.max_concurrent_codex_exec_runs === 1,
+      isolationCase.assertions,
+      isolationCase.failure_mode,
+      registry === null
+        ? "Expanded arena registry did not parse."
+        : `Live policy: isolation=${registry.live_execution_policy.isolation}, sandbox=${registry.live_execution_policy.codex_sandbox}, timeout_ms=${registry.live_execution_policy.per_codex_exec_timeout_ms}.`,
+    ),
+  );
+
   const knownBadCase = caseById(cases, "known-bad-registry-fails");
   try {
-    parseRegistry(readJson(resolve("docs/evals/krn-benchmark-expanded-arena/fixtures/bad-expanded-arena-tasks.json")));
+    parseRegistry(readJson(resolve(BAD_REGISTRY_FIXTURE_PATH)));
     results.push(
       result(
         knownBadCase.id,
@@ -668,8 +1422,8 @@ function runValidation(): EvalReport {
 
   const scoringCase = caseById(cases, "fixture-scoring-builds-benchmark-report");
   try {
-    const baselineFixturePath = "docs/evals/krn-benchmark-expanded-arena/fixtures/baseline-scoring-fixture.json";
-    const assistedFixturePath = "docs/evals/krn-benchmark-expanded-arena/fixtures/assisted-scoring-fixture.json";
+    const baselineFixturePath = BASELINE_SCORING_FIXTURE_PATH;
+    const assistedFixturePath = ASSISTED_SCORING_FIXTURE_PATH;
     const baselineFixture = parseScoringFixture(readJson(resolve(baselineFixturePath)));
     const assistedFixture = parseScoringFixture(readJson(resolve(assistedFixturePath)));
 
@@ -680,9 +1434,13 @@ function runValidation(): EvalReport {
     const fixturesAreValid =
       scoringFixtureIsValid(baselineFixture, registry, "baseline_codex") &&
       scoringFixtureIsValid(assistedFixture, registry, "krn_assisted_codex");
-    const benchmarkReport = buildBenchmarkReport(runId, now, registry, baselineFixture, assistedFixture);
-    generatedBenchmarkReportPath = writeBenchmarkReport(benchmarkReport);
-    const parsedReport = parseKrnBenchmarkReport(readJson(generatedBenchmarkReportPath));
+    const fixtureReportFileName = mode === "validate" ? "report.json" : "fixture-report.json";
+    const benchmarkReport = buildBenchmarkReport(runId, now, registry, baselineFixture, assistedFixture, fixtureReportFileName);
+    const fixtureBenchmarkReportPath = writeBenchmarkReport(benchmarkReport);
+    if (mode === "validate") {
+      generatedBenchmarkReportPath = fixtureBenchmarkReportPath;
+    }
+    const parsedReport = parseKrnBenchmarkReport(readJson(fixtureBenchmarkReportPath));
     scoringSummary = {
       scored_task_count: parsedReport.task_count,
       baseline_score: parsedReport.baseline_score,
@@ -734,7 +1492,7 @@ function runValidation(): EvalReport {
   const badScoringCase = caseById(cases, "known-bad-scoring-fixture-fails");
   try {
     const badFixture = parseScoringFixture(
-      readJson(resolve("docs/evals/krn-benchmark-expanded-arena/fixtures/bad-scoring-fixture-overclaims-lift.json")),
+      readJson(resolve(BAD_SCORING_FIXTURE_PATH)),
     );
     results.push(
       result(
@@ -757,15 +1515,88 @@ function runValidation(): EvalReport {
     );
   }
 
+  if (mode !== "validate") {
+    const liveCase = caseById(cases, "live-runner-builds-smoke-report");
+    try {
+      if (registry === null) {
+        throw new Error("expanded arena registry did not parse");
+      }
+
+      const runDir = resolve(BENCHMARK_DIR, runId);
+      const progressLogPath = resolve(runDir, "progress.jsonl");
+      mkdirSync(runDir, { recursive: true });
+      appendProgress(progressLogPath, {
+        event: "live_run_started",
+        mode,
+        selected_task_count: selectedLiveTasks(registry, mode).length,
+      });
+      const livePairs = buildLiveScorePairs(runId, registry, mode, runDir, progressLogPath);
+      const benchmarkReport = buildLiveBenchmarkReport(runId, now, mode, registry, livePairs);
+      generatedBenchmarkReportPath = writeBenchmarkReport(benchmarkReport);
+      const parsedReport = parseKrnBenchmarkReport(readJson(generatedBenchmarkReportPath));
+      liveRunSummary = {
+        mode,
+        selected_task_count: parsedReport.task_count,
+        completed_task_count: parsedReport.completed_task_count,
+        failed_task_count: parsedReport.failed_task_count,
+        benchmark_report_path: parsedReport.benchmark_report_path,
+        progress_log_path: relativeRuntimePath(progressLogPath),
+      };
+      appendProgress(progressLogPath, {
+        event: "live_run_completed",
+        mode,
+        completed_task_count: parsedReport.completed_task_count,
+        failed_task_count: parsedReport.failed_task_count,
+      });
+
+      const allEvidenceFilesExist = parsedReport.tasks.every((task) =>
+        [...task.baseline.evidence_refs, ...task.assisted.evidence_refs].every((evidenceRef) =>
+          existsSync(resolve(evidenceRef)),
+        ),
+      );
+      results.push(
+        result(
+          liveCase.id,
+          parsedReport.tasks.every((task) => task.baseline.evidence_refs.length >= 5) &&
+            parsedReport.tasks.every((task) => task.assisted.evidence_refs.length >= 5) &&
+            parsedReport.tasks.every((task) => task.baseline.evidence_refs.some((ref) => ref.endsWith(".status.txt"))) &&
+            parsedReport.tasks.every((task) => task.assisted.evidence_refs.some((ref) => ref.endsWith(".patch"))) &&
+            existsSync(progressLogPath) &&
+            allEvidenceFilesExist &&
+            existsSync(generatedBenchmarkReportPath) &&
+            parsedReport.measurement_mode === "live_codex_exec" &&
+            parsedReport.productivity_lift_claimed === false &&
+            parsedReport.lift_status === "no_lift_evidence" &&
+            parsedReport.repair_targets.length > 0,
+          liveCase.assertions,
+          liveCase.failure_mode,
+          `Live ${mode} report: tasks=${parsedReport.task_count}, completed=${parsedReport.completed_task_count}, failed=${parsedReport.failed_task_count}, baseline=${parsedReport.baseline_score}, assisted=${parsedReport.assisted_score}, delta=${parsedReport.assisted_minus_baseline}.`,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          liveCase.id,
+          false,
+          ["live runner report builds"],
+          liveCase.failure_mode,
+          error instanceof Error ? error.message : "unknown live runner error",
+        ),
+      );
+    }
+  }
+
   const caveat =
-    "This validates the expanded arena task registry and fixture scoring only: it proves no productivity lift and no live expanded run has executed.";
+    mode === "validate"
+      ? "This validates the expanded arena task registry and fixture scoring only: it proves no productivity lift and no live expanded run has executed."
+      : "This validates an explicit isolated expanded-arena live runner path only: it proves no productivity lift and does not prove a full clean 20-task live run.";
   const caveatCase = caseById(cases, "eval-report-preserves-registry-only-boundary");
   results.push(
     result(
       caveatCase.id,
-      caveat.includes("fixture scoring only") &&
+      (mode === "validate" ? caveat.includes("fixture scoring only") : caveat.includes("live runner path only")) &&
         caveat.includes("no productivity lift") &&
-        caveat.includes("no live expanded run"),
+        (mode === "validate" ? caveat.includes("no live expanded run") : caveat.includes("20-task live run")),
       caveatCase.assertions,
       caveatCase.failure_mode,
       "Eval caveat preserves registry-only boundary.",
@@ -785,7 +1616,7 @@ function runValidation(): EvalReport {
     kind: "krn_benchmark_expanded_arena_result",
     run_id: runId,
     created_at: now.toISOString(),
-    mode: "validate",
+    mode,
     total_cases: totalCases,
     passed_cases: passedCases,
     failed_cases: totalCases - passedCases,
@@ -799,13 +1630,15 @@ function runValidation(): EvalReport {
     generated_benchmark_report_path: generatedBenchmarkReportPath,
     arena_summary: arenaSummary,
     scoring_summary: scoringSummary,
+    live_run_summary: liveRunSummary,
     interpretation_caveat: caveat,
   };
 }
 
 export function main(): void {
-  const report = runValidation();
-  const reportDir = resolve(".krn/evals/krn-benchmark-expanded-arena", report.run_id);
+  const argv = process.argv.slice(2);
+  const report = runValidation(parseMode(argv), parseRunId(argv));
+  const reportDir = resolve(".krn/evals", MODULE_ID, report.run_id);
   const reportPath = resolve(reportDir, "report.json");
 
   mkdirSync(dirname(reportPath), { recursive: true });

@@ -29,7 +29,12 @@
     "max_concurrent_codex_exec_runs": 1,
     "concurrency_expansion_requires_separate_eval": true,
     "resume_completed_workers_required": true,
-    "progress_log_required": true
+    "progress_log_required": true,
+    "isolation": "temporary_git_worktree_per_worker",
+    "codex_sandbox": "workspace-write",
+    "per_codex_exec_timeout_ms": 240000,
+    "max_codex_exec_output_buffer_bytes": 32000000,
+    "progress_log_path_pattern": ".krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl"
   },
   "pipeline_ergonomics": {
     "progress_log_required": true,

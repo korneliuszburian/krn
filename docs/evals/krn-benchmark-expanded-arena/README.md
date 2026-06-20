@@ -19,11 +19,17 @@ arena contract
   -> task-family and quality-rubric coverage
   -> deterministic fixture scoring
   -> fixture_contract KrnBenchmarkReport
+  -> explicit isolated live smoke/full runner modes
   -> explicit live boundary and pipeline ergonomics
   -> deterministic registry report
 ```
 
-It does not run live `codex exec`; it is safe for default `krn eval`.
+Validate mode does not run live `codex exec`; it is safe for default `krn eval`.
+
+Live modes are explicit because they call `codex exec` workers:
+
+- `live-smoke` runs one registry task through isolated baseline and assisted worker worktrees.
+- `live-full` uses the same runner path for all 20 registry tasks.
 
 ## What This Tests
 
@@ -36,17 +42,26 @@ It does not run live `codex exec`; it is safe for default `krn eval`.
 - A known-bad planning-only default-live registry fails deterministically.
 - Baseline and assisted scoring fixtures cover all 20 task IDs, generate a parseable `KrnBenchmarkReport`, and keep `productivity_lift_claimed: false`.
 - A known-bad scoring fixture that covers too few tasks, omits review-burden coverage, or claims lift fails deterministically.
+- Explicit live runner modes are callable but not part of default aggregate `krn eval`.
+- Live workers use temporary detached Git worktrees with `--sandbox workspace-write`, schema-constrained final output, patch/status capture, and a progress log.
+- Live reports remain `productivity_lift_claimed: false` unless a future full clean 20-task run satisfies the benchmark lift gate.
 
 ## Command
 
 ```bash
 pnpm run eval:krn-benchmark-expanded-arena
+pnpm run eval:krn-benchmark-expanded-arena:live-smoke
+pnpm run eval:krn-benchmark-expanded-arena:live-full
 ```
+
+Only the first command belongs in default deterministic validation. The live commands are explicit worker runs.
 
 ## Runtime Output
 
 ```text
 .krn/evals/krn-benchmark-expanded-arena/{run_id}/report.json
+.krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/report.json
+.krn/benchmarks/krn-benchmark-expanded-arena/{run_id}/progress.jsonl
 ```
 
 Runtime outputs stay local. Durable conclusions move to `docs/memory`.
@@ -58,3 +73,5 @@ A green run means KRN has implemented a deterministic 20-task expanded-arena reg
 It also proves deterministic fixture scoring and benchmark-report generation for that registry.
 
 It does not prove live expanded execution, measured productivity lift, statistical validity, isolated coding-task runner safety, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.
+
+A green `live-smoke` run proves only that the isolated live runner path can execute and capture evidence for one selected task. It does not prove all 20 tasks ran or that KRN improves productivity.
