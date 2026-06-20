@@ -1,0 +1,26 @@
+{
+  "schema_version": "krn-source-graph.v1",
+  "kind": "krn_source_graph",
+  "graph_id": "krn-bad-source-graph-conflict",
+  "created_at": "2026-06-20T21:30:00.000Z",
+  "records": [
+    {
+      "schema_version": "krn-source-record.v1",
+      "kind": "krn_source_record",
+      "id": "src-conflict-no-target",
+      "ref": "docs/goals/goal-038.md",
+      "type": "local_doc",
+      "status": "conflicting",
+      "freshness": "fresh",
+      "confidence": "medium",
+      "owner": "krn",
+      "last_verified_at": "2026-06-20T21:30:00.000Z",
+      "supports_decisions": ["C062"],
+      "conflicts_with": [],
+      "invalidation_rule": "Bad fixture.",
+      "source_refs": ["docs/goals/goal-038.md"]
+    }
+  ],
+  "source_refs": ["docs/goals/goal-038.md"],
+  "overclaim_boundary": "Bad fixture."
+}

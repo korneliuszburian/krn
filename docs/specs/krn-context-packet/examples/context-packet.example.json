@@ -52,8 +52,8 @@
     {
       "id": "policy",
       "refs": [
-        "AGENTS.md",
-        "docs/goals/goal-038.md"
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/SOURCES.md#C061"
       ],
       "summary": "Required kernel terms: memory-operative, context-budgeted, deletion-friendly."
     },
@@ -167,9 +167,8 @@
   },
   "runtime_report_path": ".krn/context/20260620T212000Z-example/context-packet.json",
   "source_refs": [
-    "AGENTS.md",
     "docs/goals/goal-038.md",
-    "docs/plans/canonical/draft.md"
+    "docs/plans/canonical/SOURCES.md#C061"
   ],
   "overclaim_boundary": "This context packet proves bounded context selection/application for one local Codex run.",
   "interpretation_caveat": "This is runtime context evidence for the next action, not authoritative memory core."

@@ -1,0 +1,42 @@
+{
+  "schema_version": "krn-source-graph.v1",
+  "kind": "krn_source_graph",
+  "graph_id": "krn-local-source-graph-example",
+  "created_at": "2026-06-20T21:30:00.000Z",
+  "records": [
+    {
+      "schema_version": "krn-source-record.v1",
+      "kind": "krn_source_record",
+      "id": "src-goal-038",
+      "ref": "docs/goals/goal-038.md",
+      "type": "local_doc",
+      "status": "active",
+      "freshness": "fresh",
+      "confidence": "high",
+      "owner": "krn",
+      "last_verified_at": "2026-06-20T21:20:00.000Z",
+      "supports_decisions": ["C062"],
+      "conflicts_with": [],
+      "invalidation_rule": "Refresh if goal-038 stops being the active final-product execution contract.",
+      "source_refs": ["docs/goals/goal-038.md"]
+    },
+    {
+      "schema_version": "krn-source-record.v1",
+      "kind": "krn_source_record",
+      "id": "src-c061",
+      "ref": "docs/plans/canonical/SOURCES.md#C061",
+      "type": "local_doc",
+      "status": "active",
+      "freshness": "fresh",
+      "confidence": "high",
+      "owner": "krn",
+      "last_verified_at": "2026-06-20T21:20:00.000Z",
+      "supports_decisions": ["C061", "C062"],
+      "conflicts_with": [],
+      "invalidation_rule": "Refresh if MemoryStore or context packet ownership changes.",
+      "source_refs": ["docs/plans/canonical/SOURCES.md#C061"]
+    }
+  ],
+  "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"],
+  "overclaim_boundary": "This example proves source graph shape only, not global source freshness."
+}

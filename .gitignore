@@ -40,6 +40,9 @@ __pycache__/
 .krn/source-bank/*
 !.krn/source-bank/.gitignore
 !.krn/source-bank/README.md
+.krn/sources/*
+!.krn/sources/.gitignore
+!.krn/sources/README.md
 .krn/init/*
 !.krn/init/.gitignore
 !.krn/init/README.md

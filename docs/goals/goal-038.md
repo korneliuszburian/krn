@@ -562,6 +562,18 @@ source graph has a real CLI/review/context consumer.
 - [SIMPLIFY] Next candidate: after this checkpoint, reconcile `krn brief` and `krn context build` only if their consumers overlap; do not merge prematurely while the context packet is proving the context supply-chain contract.
 - [OVERCLAIM] This slice proves local bounded context-packet construction from MemoryStore selection/application. It does not prove final context quality, source graph correctness, productivity lift, dashboard usefulness, or API/team-sync readiness.
 - [NEXT] Commit and push this checkpoint; then build source graph freshness/conflict blocking for selected decisions as the next dependency-ordered slice.
+- [FACT] Source graph slice added `KrnSourceGraph`, `KrnSourceCheck`, `krn sources check --context <context-packet.json> --graph <source-graph.json>`, `.krn/sources` runtime evidence, valid/blocking/bad-conflict fixtures, and CLI/contract behavior tests.
+- [FACT] `krn sources check` verifies the source refs selected by a context packet and blocks missing, stale, superseded, or conflicting refs; unverified/aging/unknown refs warn.
+- [FACT] The context-packet example now uses selected memory source lineage instead of stale hardcoded `AGENTS.md` / canonical draft source refs.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/source-graph.test.ts packages/contracts/test/context-packet.test.ts packages/cli/test/source-graph.test.ts packages/cli/test/context.test.ts` passed 4 files / 11 tests.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [EVIDENCE] Real command pass: `pnpm run krn -- sources check --context docs/specs/krn-context-packet/examples/context-packet.example.json --graph docs/specs/krn-source-graph/examples/source-graph.example.json` wrote `.krn/sources/20260620T212546Z-430656/source-check.json` with `decision: pass`.
+- [EVIDENCE] Real command block: `pnpm run krn -- sources check --context docs/specs/krn-context-packet/examples/context-packet.example.json --graph docs/specs/krn-source-graph/fixtures/source-graph-blocking.example.json` wrote `.krn/sources/20260620T212546Z-430680/source-check.json` and exited 1 with `decision: block`.
+- [SIMPLIFY] Keep: source graph/check contracts, `krn sources check`, `.krn/sources` runtime boundary, and focused fixtures/tests because the context packet is the current consumer.
+- [SIMPLIFY] Delete/avoid: no dashboard, no broad API/cloud sync, no web freshness crawler, no default benchmark lane, and no parsing `docs/plans/canonical/SOURCES.md` as the product source database.
+- [SIMPLIFY] Next candidate: split eval modules into core/current/lab lanes so normal verification stops paying for historical dashboard/benchmark/lab modules.
+- [OVERCLAIM] This slice proves local typed source-ref pass/warn/block behavior over one context packet and local graph adapter. It does not prove global source freshness, internet source refresh, final source service, productivity lift, or dashboard usefulness.
+- [NEXT] Commit and push this checkpoint; then build the eval-lane split as the next dependency-ordered slice.
 
 ## Disproves Completion
 

@@ -5,6 +5,17 @@ export {
   type KrnContextPacket,
 } from "./context-packet.js";
 export {
+  KrnSourceCheckSchema,
+  KrnSourceGraphSchema,
+  krnSourceCheckJsonSchema,
+  krnSourceGraphJsonSchema,
+  parseKrnSourceCheck,
+  parseKrnSourceGraph,
+  type KrnSourceCheck,
+  type KrnSourceGraph,
+  type SourceCheckDecision,
+} from "./source-graph.js";
+export {
   KrnEngineeringGateSchema,
   krnEngineeringGateJsonSchema,
   parseKrnEngineeringGate,

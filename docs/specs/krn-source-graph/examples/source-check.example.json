@@ -1,0 +1,39 @@
+{
+  "schema_version": "krn-source-check.v1",
+  "kind": "krn_source_check",
+  "run_id": "20260620T213000Z-example",
+  "created_at": "2026-06-20T21:30:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "command": "krn sources check",
+  "context_packet_ref": "docs/specs/krn-context-packet/examples/context-packet.example.json",
+  "source_graph_ref": "docs/specs/krn-source-graph/examples/source-graph.example.json",
+  "checked_refs": [
+    {
+      "ref": "docs/goals/goal-038.md",
+      "source_id": "src-goal-038",
+      "status": "active",
+      "freshness": "fresh",
+      "confidence": "high",
+      "action": "pass",
+      "reason": "Source is active and fresh enough for the selected decision."
+    },
+    {
+      "ref": "docs/plans/canonical/SOURCES.md#C061",
+      "source_id": "src-c061",
+      "status": "active",
+      "freshness": "fresh",
+      "confidence": "high",
+      "action": "pass",
+      "reason": "Source is active and fresh enough for the selected decision."
+    }
+  ],
+  "blocked_refs": [],
+  "warning_refs": [],
+  "missing_refs": [],
+  "decision": "pass",
+  "required_actions": [],
+  "runtime_report_path": ".krn/sources/20260620T213000Z-example/source-check.json",
+  "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"],
+  "overclaim_boundary": "This example proves source-check shape only, not global source freshness.",
+  "interpretation_caveat": "The source graph is a local adapter and test fixture in this example."
+}
