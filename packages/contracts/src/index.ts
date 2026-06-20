@@ -1,4 +1,14 @@
 export {
+  KrnBenchmarkReportSchema,
+  krnBenchmarkReportJsonSchema,
+  parseKrnBenchmarkReport,
+  type BenchmarkLiftStatus,
+  type BenchmarkMeasurementMode,
+  type BenchmarkRepairTarget,
+  type BenchmarkTaskResult,
+  type KrnBenchmarkReport,
+} from "./benchmark-report.js";
+export {
   InitManifestSchema,
   initManifestJsonSchema,
   parseInitManifest,

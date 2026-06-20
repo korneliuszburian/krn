@@ -1,0 +1,66 @@
+[
+  {
+    "id": "valid-benchmark-fixture-parses",
+    "expected_behavior": "The valid benchmark report fixture parses through @krn/contracts while keeping productivity_lift_claimed false and lift_status no_lift_evidence.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-017.md",
+      "docs/specs/krn-benchmark-report/README.md"
+    ],
+    "assertions": [
+      "valid fixture parses",
+      "productivity lift remains unclaimed",
+      "lift status is no_lift_evidence",
+      "repair target present"
+    ],
+    "metrics": ["schema_contract_score", "anti_slop_score"],
+    "failure_mode": "Benchmark report fixtures can no longer prove the no-lift contract boundary."
+  },
+  {
+    "id": "known-bad-lift-fixture-fails",
+    "expected_behavior": "The known-bad benchmark report fixture that claims productivity lift from fixture data fails deterministically.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/plans/canonical/SOURCES.md"
+    ],
+    "assertions": ["known-bad fixture rejected"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "KRN accepts fixture or aggregate-eval data as measured productivity lift."
+  },
+  {
+    "id": "generated-benchmark-report-writes-and-parses",
+    "expected_behavior": "The runner writes a benchmark report under .krn/benchmarks/krn-benchmark-spine and parses it through @krn/contracts.",
+    "source_patterns": [
+      "docs/goals/goal-017.md",
+      "docs/evals/STANDARD.md",
+      "docs/specs/krn-benchmark-report/README.md"
+    ],
+    "assertions": [
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "generated report has source refs",
+      "generated report keeps no-lift state",
+      "generated report keeps repair target",
+      "generated report path is under .krn/benchmarks"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "repair_readiness_score"],
+    "failure_mode": "The benchmark runner produces unparseable, unsourced, or overclaiming runtime evidence."
+  },
+  {
+    "id": "eval-report-preserves-overclaim-boundary",
+    "expected_behavior": "The eval report names the generated benchmark report path and states that fixture-contract output is not live productivity lift.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-017.md",
+      "docs/product/final-product-plan.md"
+    ],
+    "assertions": [
+      "eval report has generated benchmark path",
+      "eval report caveat names no productivity lift",
+      "eval report caveat names live benchmark gap"
+    ],
+    "metrics": ["goal_alignment_score", "anti_slop_score"],
+    "failure_mode": "A green benchmark-spine eval is overclaimed as live productivity improvement."
+  }
+]

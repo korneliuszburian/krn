@@ -25,6 +25,7 @@ sources:
   - docs/goals/goal-014.md
   - docs/goals/goal-015.md
   - docs/goals/goal-016.md
+  - docs/goals/goal-017.md
 ---
 
 # KRN Final Product Plan
@@ -106,6 +107,7 @@ repo + task
   -> proposal promotion workflow records and can explicitly apply exact approved memory payloads
   -> Promotion Review dashboard renders promotion-store audit state without command writes
   -> Eval Runs dashboard renders aggregate eval health without lift or command claims
+  -> Benchmark report spine records no-lift-gated benchmark evidence
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -294,6 +296,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
+- The current benchmark report spine is only the typed report and no-lift gate; live measured lift remains future work.
 
 Acceptance evidence:
 

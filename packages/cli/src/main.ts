@@ -155,6 +155,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/goals/goal-014.md",
     ],
   },
+  {
+    moduleId: "krn-benchmark-spine",
+    command: ["pnpm", "run", "eval:krn-benchmark-spine"],
+    sourceRefs: [
+      "docs/evals/krn-benchmark-spine/README.md",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/goals/goal-017.md",
+    ],
+  },
 ];
 
 function usage(): string {

@@ -96,6 +96,13 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-dashboard-eval-runs-ui` generated `.krn/evals/krn-dashboard-eval-runs-ui/20260620T051305Z-2375941/report.json` with 5/5 cases and 20/20 assertions.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T051314Z-2376293/report.json` with 13/13 modules, 58/58 cases, and 181/181 assertions, including `krn-dashboard-eval-runs-ui`.
   - This still does not prove benchmark lift, productivity improvement, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
+  - `packages/contracts` now exports `KrnBenchmarkReport`, the first typed benchmark report spine for baseline Codex versus KRN-assisted Codex task evidence.
+  - `KrnBenchmarkReport` rejects fixture-contract productivity lift claims and requires no-lift/non-positive-lift states to carry repair targets.
+  - `docs/specs/krn-benchmark-report/` contains a valid no-lift fixture and a known-bad fixture that claims productivity lift from fixture data.
+  - `packages/evals/src/validate-krn-benchmark-spine.ts` writes generated benchmark reports under `.krn/benchmarks/krn-benchmark-spine/{run_id}/report.json` and eval reports under `.krn/evals/krn-benchmark-spine/{run_id}/report.json`.
+  - `pnpm run eval:krn-benchmark-spine` generated `.krn/evals/krn-benchmark-spine/20260620T052834Z-2409080/report.json` with 4/4 cases and 14/14 assertions.
+  - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T052950Z-2410440/report.json` with 14/14 modules, 62/62 cases, and 195/195 assertions, including `krn-benchmark-spine`.
+  - This proves the benchmark report contract and no-lift gate only. It still does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
 
 ## Objective
 
@@ -342,7 +349,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-016.md
+docs/goals/goal-017.md
 ```
 
-Next child-goal candidates after `goal-016` are a promotion-aware dashboard command proposal surface over existing typed objects, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or benchmark/control-plane evidence. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims without benchmark evidence.
+Next child-goal candidates after `goal-017` are a live `codex exec` benchmark pilot using `KrnBenchmarkReport` with `measurement_mode: "live_codex_exec"`, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from fixture-contract benchmark evidence.

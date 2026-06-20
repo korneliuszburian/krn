@@ -50,6 +50,7 @@ const REQUIRED_MODULES = [
   "krn-dashboard-eval-runs-ui",
   "krn-proposal-review-decision",
   "krn-proposal-promotion",
+  "krn-benchmark-spine",
 ];
 
 function readJson(path: string): unknown {

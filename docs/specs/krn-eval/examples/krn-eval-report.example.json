@@ -259,17 +259,37 @@
         "docs/goals/goal-014.md"
       ],
       "interpretation_caveat": "This eval proves the local approved proposal promotion boundary for exact memory_update payloads only; it does not prove general promotion correctness, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift."
+    },
+    {
+      "module_id": "krn-benchmark-spine",
+      "command": ["pnpm", "run", "eval:krn-benchmark-spine"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-benchmark-spine/20260619T215911Z-example/report.json",
+      "total_cases": 4,
+      "passed_cases": 4,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 14,
+      "passed_assertions": 14,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-benchmark-spine/README.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/goals/goal-017.md"
+      ],
+      "interpretation_caveat": "This eval proves the benchmark report contract and no-lift gate only; it does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     }
   ],
   "summary": {
-    "total_modules": 13,
-    "passed_modules": 13,
+    "total_modules": 14,
+    "passed_modules": 14,
     "failed_modules": 0,
-    "total_cases": 58,
-    "passed_cases": 58,
+    "total_cases": 62,
+    "passed_cases": 62,
     "failed_cases": 0,
-    "total_assertions": 181,
-    "passed_assertions": 181,
+    "total_assertions": 195,
+    "passed_assertions": 195,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",

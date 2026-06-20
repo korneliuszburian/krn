@@ -1,0 +1,137 @@
+{
+  "schema_version": "krn-benchmark-report.v1",
+  "kind": "krn_benchmark_report",
+  "run_id": "20260620T060000Z-example",
+  "created_at": "2026-06-20T06:00:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "benchmark_id": "krn-benchmark-spine",
+  "suite_id": "fixture-contract-smoke",
+  "measurement_mode": "fixture_contract",
+  "baseline_label": "baseline_codex",
+  "assisted_label": "krn_assisted_codex",
+  "minimum_task_count_for_lift_claim": 20,
+  "productivity_lift_claimed": false,
+  "lift_status": "no_lift_evidence",
+  "task_count": 3,
+  "completed_task_count": 3,
+  "blocked_task_count": 0,
+  "failed_task_count": 0,
+  "baseline_score": 0.5833,
+  "assisted_score": 0.7333,
+  "assisted_minus_baseline": 0.15,
+  "tasks": [
+    {
+      "task_id": "memory-source-discipline",
+      "title": "Preserve source-backed memory rules before planning",
+      "status": "completed",
+      "task_source_refs": ["docs/memory/INDEX.md", "docs/goals/goal-006.md"],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0.55,
+        "evidence_refs": ["docs/evals/operator-skill-impact/fixtures/bad-premature-completion-claim.md"],
+        "interpretation_caveat": "Fixture score only; this is not a live Codex baseline."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.75,
+        "evidence_refs": ["docs/evals/operator-skill-impact/cases.json"],
+        "interpretation_caveat": "Fixture score only; this is not live KRN-assisted Codex evidence."
+      },
+      "assisted_minus_baseline": 0.2,
+      "metrics": [
+        {
+          "metric_id": "source_grounding_score",
+          "baseline_score": 0.5,
+          "assisted_score": 0.8,
+          "assisted_minus_baseline": 0.3,
+          "weight": 1,
+          "source_refs": ["docs/evals/STANDARD.md"],
+          "interpretation_caveat": "Metric delta is fixture-contract evidence only."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task row proves report shape only; it is not a live productivity result."
+    },
+    {
+      "task_id": "overclaim-boundary",
+      "title": "Reject productivity claims without benchmark evidence",
+      "status": "completed",
+      "task_source_refs": ["docs/plans/canonical/SOURCES.md", "docs/product/final-product-plan.md"],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0.6,
+        "evidence_refs": ["docs/plans/canonical/SOURCES.md#C023"],
+        "interpretation_caveat": "Fixture score only; source anchors document the failure mode."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.7,
+        "evidence_refs": ["docs/plans/canonical/SOURCES.md#C038"],
+        "interpretation_caveat": "Fixture score only; this is not a measured workflow result."
+      },
+      "assisted_minus_baseline": 0.1,
+      "metrics": [
+        {
+          "metric_id": "anti_slop_score",
+          "baseline_score": 0.6,
+          "assisted_score": 0.7,
+          "assisted_minus_baseline": 0.1,
+          "weight": 1,
+          "source_refs": ["docs/product/final-product-plan.md"],
+          "interpretation_caveat": "Metric delta is fixture-contract evidence only."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task row proves overclaim boundaries only."
+    },
+    {
+      "task_id": "benchmark-report-contract",
+      "title": "Represent benchmark evidence as a typed report",
+      "status": "completed",
+      "task_source_refs": ["docs/goals/goal-017.md", "docs/specs/krn-benchmark-report/README.md"],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0.6,
+        "evidence_refs": ["docs/goals/goal-006.md"],
+        "interpretation_caveat": "Fixture score only; live report generation is not exercised here."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.75,
+        "evidence_refs": ["docs/specs/krn-benchmark-report/README.md"],
+        "interpretation_caveat": "Fixture score only; parser behavior is the only proven behavior."
+      },
+      "assisted_minus_baseline": 0.15,
+      "metrics": [
+        {
+          "metric_id": "schema_contract_score",
+          "baseline_score": 0.6,
+          "assisted_score": 0.75,
+          "assisted_minus_baseline": 0.15,
+          "weight": 1,
+          "source_refs": ["docs/specs/technology-stack/decision.md"],
+          "interpretation_caveat": "Metric delta is fixture-contract evidence only."
+        }
+      ],
+      "repair_targets": [],
+      "interpretation_caveat": "This task row proves parser-facing report shape only."
+    }
+  ],
+  "repair_targets": [
+    {
+      "id": "run-live-baseline-assisted-benchmark",
+      "owner": "krn",
+      "next_action": "Add a later live_codex_exec benchmark batch before claiming productivity lift.",
+      "source_refs": ["docs/goals/goal-006.md", "docs/product/final-product-plan.md"],
+      "failure_mode": "Fixture deltas are overclaimed as measured workflow improvement."
+    }
+  ],
+  "benchmark_report_path": ".krn/benchmarks/krn-benchmark-spine/20260620T060000Z-example/report.json",
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-017.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/evals/STANDARD.md"
+  ],
+  "interpretation_caveat": "This fixture proves benchmark report contract behavior only; it does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+}
