@@ -23,7 +23,7 @@ It does not claim productivity lift, benchmark lift, hook semantic correctness, 
 
 - The valid `krn-eval` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
-- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, `krn-review-contracts`, `krn-mcp-read-model`, `krn-mcp-transport`, `krn-proposal-store`, `krn-mcp-proposal-tool`, `krn-pending-review-view-model`, `krn-dashboard-pending-review-ui`, `krn-dashboard-promotion-review-ui`, `krn-dashboard-eval-runs-ui`, `krn-proposal-review-decision`, `krn-proposal-promotion`, `krn-benchmark-spine`, and `krn-dashboard-benchmark-reports-ui`.
+- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, `krn-review-contracts`, `krn-mcp-read-model`, `krn-mcp-transport`, `krn-proposal-store`, `krn-mcp-proposal-tool`, `krn-pending-review-view-model`, `krn-dashboard-pending-review-ui`, `krn-dashboard-promotion-review-ui`, `krn-dashboard-eval-runs-ui`, `krn-proposal-review-decision`, `krn-proposal-promotion`, `krn-benchmark-spine`, `krn-dashboard-benchmark-reports-ui`, and `krn-benchmark-live-suite`.
 - The eval writes a machine-readable report under `.krn/evals/krn-eval-contracts/{run_id}/report.json`.
 
 ## Command

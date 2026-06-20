@@ -117,6 +117,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T063841Z-2568949/report.json` with 15/15 modules, 67/67 cases, and 224/224 assertions, including `krn-dashboard-benchmark-reports-ui`.
   - `pnpm test` passed with 30/30 test files and 100/100 tests, and `pnpm typecheck` passed.
   - This proves read-only review of parsed benchmark reports through MCP/dashboard surfaces only. It still does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
+  - `docs/evals/krn-benchmark-live-suite/` and `packages/evals/src/validate-krn-benchmark-live-suite.ts` now implement a fixed three-task benchmark suite with deterministic validate mode and explicit live `codex exec` mode.
+  - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T072146Z-2674923/report.json` with 4/4 cases and 16/16 assertions.
+  - `pnpm run eval:krn-benchmark-live-suite:live` generated `.krn/evals/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json` with 5/5 cases and 22/22 assertions, including evidence-file existence checks.
+  - The generated benchmark report `.krn/benchmarks/krn-benchmark-live-suite/20260620T072154Z-2675156/report.json` parsed through `KrnBenchmarkReport`, used `measurement_mode: "live_codex_exec"`, kept `productivity_lift_claimed: false`, and reported 3/3 completed tasks, baseline score `0.9433`, assisted score `0.94`, and delta `-0.0033`.
+  - `krn eval` now includes `krn-benchmark-live-suite` validate mode as deterministic aggregate coverage, while live mode remains explicit and outside default `krn eval`.
+  - This proves the multi-task benchmark harness and no-lift guard only. It still does not prove measured productivity lift, benchmark statistical validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, dashboard command readiness, or `krn benchmark` CLI readiness.
 
 ## Objective
 
@@ -363,7 +369,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-019.md
+docs/goals/goal-020.md
 ```
 
-Next child-goal candidates after `goal-019` are expanding the live benchmark suite beyond one task, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add the explicit live benchmark runner to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from one-task live benchmark evidence.
+Next child-goal candidates after `goal-020` are repairing the assisted benchmark path on neutral/negative live tasks, expanding the fixed live suite toward the 20-task lift gate, surfacing benchmark repair records, additional dashboard views over existing typed objects, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence.

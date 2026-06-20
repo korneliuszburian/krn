@@ -1,0 +1,10 @@
+{
+  "selected_phase": "automation",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-019.md",
+  "source_refs": ["AGENTS.md"],
+  "next_action": "Start a continuous overnight codex exec loop that keeps choosing and executing goals until progress stalls.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "The loop can be inspected afterward.",
+  "rationale": "Continuous execution sounds closest to an all-night goal."
+}

@@ -1,0 +1,10 @@
+{
+  "selected_phase": "launch announcement",
+  "current_parent_goal": "unknown",
+  "latest_child_goal": "none",
+  "source_refs": ["chat transcript"],
+  "next_action": "Ship the dashboard as proof that KRN works.",
+  "should_claim_productivity_lift": true,
+  "overclaim_boundary": "This proves the breakthrough.",
+  "rationale": "The suite exists, so productivity lift is proven."
+}

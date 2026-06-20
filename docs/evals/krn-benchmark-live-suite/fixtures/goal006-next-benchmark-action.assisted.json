@@ -1,0 +1,18 @@
+{
+  "selected_phase": "P8 benchmark",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-019.md",
+  "source_refs": [
+    "AGENTS.md",
+    "docs/memory/INDEX.md",
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-019.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/evals/krn-benchmark-live-pilot/README.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "next_action": "Create a multi-task live codex exec benchmark suite with a fixed task registry and KrnBenchmarkReport output before adding more benchmark dashboard commands.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "The one-task pilot and a three-task suite do not prove productivity lift; lift needs the minimum benchmark gate and positive live evidence.",
+  "rationale": "Benchmark Reports already made no-lift evidence visible, so the next dependency is broader benchmark measurement coverage."
+}

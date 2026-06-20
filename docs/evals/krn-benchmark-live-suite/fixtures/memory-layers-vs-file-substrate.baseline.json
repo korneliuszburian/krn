@@ -1,0 +1,10 @@
+{
+  "selected_phase": "P4 memory infrastructure",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-009.md",
+  "source_refs": ["docs/product/final-product-plan.md"],
+  "next_action": "Add a vector database and graph memory store so KRN has more than files.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "File memory is limited and should eventually be replaced.",
+  "rationale": "The current memory layer is file-backed, so richer infrastructure seems like the next step."
+}

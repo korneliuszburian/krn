@@ -1,0 +1,15 @@
+{
+  "selected_phase": "P8 benchmark",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-019.md",
+  "source_refs": [
+    "AGENTS.md",
+    "docs/goals/goal-006.md",
+    "docs/evals/STANDARD.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "next_action": "Use an explicit benchmark worker suite with read-only codex exec runs, fixed tasks, captured JSONL/final artifacts, and typed KrnBenchmarkReport output.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "codex exec is not continuous goal conversation; it is an explicit worker lane, and even a multi-task worker suite does not prove lift below the gate.",
+  "rationale": "Interactive goals and worker evals solve different problems, so the suite should measure behavior without pretending to be an autonomous conversational loop."
+}

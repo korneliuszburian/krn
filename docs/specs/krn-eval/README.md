@@ -48,6 +48,7 @@ Supported module IDs:
 - `krn-proposal-promotion`
 - `krn-benchmark-spine`
 - `krn-dashboard-benchmark-reports-ui`
+- `krn-benchmark-live-suite`
 
 If no module is supplied, the command runs all supported modules.
 
@@ -73,7 +74,7 @@ Allowed writes:
 
 - `.krn/eval/{run_id}/report.json`
 - `.krn/evals/{module_id}/{module_run_id}/report.json`
-- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, transport eval output under `.krn/evals/krn-mcp-transport/**`, proposal-store eval output under `.krn/evals/krn-proposal-store/**`, proposal-tool eval output under `.krn/evals/krn-mcp-proposal-tool/**`, Pending Review eval output under `.krn/evals/krn-pending-review-view-model/**`, dashboard UI eval output under `.krn/evals/krn-dashboard-pending-review-ui/**`, Promotion Review dashboard eval output under `.krn/evals/krn-dashboard-promotion-review-ui/**`, Eval Runs dashboard eval output under `.krn/evals/krn-dashboard-eval-runs-ui/**`, proposal review decision eval output under `.krn/evals/krn-proposal-review-decision/**`, proposal promotion eval output under `.krn/evals/krn-proposal-promotion/**`, benchmark-spine eval output under `.krn/evals/krn-benchmark-spine/**`, benchmark-spine report output under `.krn/benchmarks/krn-benchmark-spine/**`, or Benchmark Reports dashboard eval output under `.krn/evals/krn-dashboard-benchmark-reports-ui/**`
+- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, transport eval output under `.krn/evals/krn-mcp-transport/**`, proposal-store eval output under `.krn/evals/krn-proposal-store/**`, proposal-tool eval output under `.krn/evals/krn-mcp-proposal-tool/**`, Pending Review eval output under `.krn/evals/krn-pending-review-view-model/**`, dashboard UI eval output under `.krn/evals/krn-dashboard-pending-review-ui/**`, Promotion Review dashboard eval output under `.krn/evals/krn-dashboard-promotion-review-ui/**`, Eval Runs dashboard eval output under `.krn/evals/krn-dashboard-eval-runs-ui/**`, proposal review decision eval output under `.krn/evals/krn-proposal-review-decision/**`, proposal promotion eval output under `.krn/evals/krn-proposal-promotion/**`, benchmark-spine eval output under `.krn/evals/krn-benchmark-spine/**`, benchmark-spine report output under `.krn/benchmarks/krn-benchmark-spine/**`, Benchmark Reports dashboard eval output under `.krn/evals/krn-dashboard-benchmark-reports-ui/**`, benchmark live suite validate output under `.krn/evals/krn-benchmark-live-suite/**`, or benchmark live suite fixture reports under `.krn/benchmarks/krn-benchmark-live-suite/**`
 
 Forbidden default writes:
 

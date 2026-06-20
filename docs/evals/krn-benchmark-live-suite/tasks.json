@@ -1,0 +1,90 @@
+{
+  "schema_version": "krn-benchmark-live-suite-tasks.v1",
+  "benchmark_id": "krn-benchmark-live-suite",
+  "suite_id": "goal006-expanded-routing-suite",
+  "minimum_task_count_for_lift_claim": 20,
+  "tasks": [
+    {
+      "task_id": "goal006-next-benchmark-action",
+      "title": "Route the next KRN benchmark action after Benchmark Reports",
+      "prompt": "Inspect this repository and identify the next concrete action for the active KRN product goal after the Benchmark Reports surface. Preserve benchmark overclaim boundaries.",
+      "assisted_guidance": [
+        "Read AGENTS.md and docs/memory/INDEX.md before selecting the next action.",
+        "Treat docs/goals/goal-006.md as the active parent goal.",
+        "Use docs/goals/goal-019.md as the latest completed child goal.",
+        "Use docs/specs/krn-benchmark-report/README.md and docs/plans/canonical/SOURCES.md for the benchmark lift gate."
+      ],
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-019.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "expected_phase_keywords": ["p8", "benchmark"],
+      "required_source_ref_keywords": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-019.md",
+        "docs/specs/krn-benchmark-report",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "next_action_keywords": ["benchmark", "suite", "codex exec", "task"],
+      "overclaim_keywords": ["does not prove", "productivity", "lift", "minimum"],
+      "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/goal006-next-benchmark-action.baseline.json",
+      "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/goal006-next-benchmark-action.assisted.json"
+    },
+    {
+      "task_id": "memory-layers-vs-file-substrate",
+      "title": "Preserve layered memory direction without vector-store drift",
+      "prompt": "Inspect the KRN direction and decide whether the next product action should add a vector database/graph store now or continue through benchmark evidence. Preserve what is known about memory layers.",
+      "assisted_guidance": [
+        "Read the product memory note about operating architecture and memory layers.",
+        "Distinguish file-backed memory as auditable substrate from the actual product breakthrough.",
+        "Route the next implementation through the current active goal instead of adding premature infrastructure."
+      ],
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
+        "docs/product/final-product-plan.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "expected_phase_keywords": ["p8", "benchmark"],
+      "required_source_ref_keywords": [
+        "docs/goals/goal-006.md",
+        "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
+        "docs/product/final-product-plan.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "next_action_keywords": ["benchmark", "memory", "source-backed", "suite"],
+      "overclaim_keywords": ["file-backed", "not", "breakthrough", "lift"],
+      "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/memory-layers-vs-file-substrate.baseline.json",
+      "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/memory-layers-vs-file-substrate.assisted.json"
+    },
+    {
+      "task_id": "codex-exec-worker-boundary",
+      "title": "Keep codex exec as an explicit worker lane",
+      "prompt": "Inspect KRN's Codex execution rules and decide whether the next step should be a continuous overnight codex exec goal loop or an explicit benchmark worker suite.",
+      "assisted_guidance": [
+        "Read AGENTS.md and docs/goals/goal-006.md.",
+        "Use the source ledger entries for S009-S012 and C040-C041.",
+        "Preserve the difference between interactive goals and codex exec worker/eval runs."
+      ],
+      "source_refs": [
+        "AGENTS.md",
+        "docs/goals/goal-006.md",
+        "docs/evals/STANDARD.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "expected_phase_keywords": ["p8", "benchmark"],
+      "required_source_ref_keywords": [
+        "AGENTS.md",
+        "docs/goals/goal-006.md",
+        "docs/evals/STANDARD.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "next_action_keywords": ["explicit", "benchmark", "worker", "codex exec"],
+      "overclaim_keywords": ["not continuous", "worker", "lift", "explicit"],
+      "fixture_baseline_path": "docs/evals/krn-benchmark-live-suite/fixtures/codex-exec-worker-boundary.baseline.json",
+      "fixture_assisted_path": "docs/evals/krn-benchmark-live-suite/fixtures/codex-exec-worker-boundary.assisted.json"
+    }
+  ]
+}

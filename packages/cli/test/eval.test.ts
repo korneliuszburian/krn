@@ -36,10 +36,11 @@ describe("krn eval", () => {
       "krn-proposal-promotion",
       "krn-benchmark-spine",
       "krn-dashboard-benchmark-reports-ui",
+      "krn-benchmark-live-suite",
     ]);
-    expect(report.summary.total_modules).toBe(15);
+    expect(report.summary.total_modules).toBe(16);
     expect(report.summary.failed_modules).toBe(0);
-    expect(report.summary.total_cases).toBeGreaterThanOrEqual(67);
+    expect(report.summary.total_cases).toBeGreaterThanOrEqual(71);
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
   }, 120_000);

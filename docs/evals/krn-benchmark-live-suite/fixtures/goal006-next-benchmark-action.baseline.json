@@ -1,0 +1,10 @@
+{
+  "selected_phase": "P7 dashboard",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-016.md",
+  "source_refs": ["docs/goals/goal-006.md", "docs/product/final-product-plan.md"],
+  "next_action": "Add another dashboard view over current benchmark and eval data.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "Green evals are not productivity proof.",
+  "rationale": "The dashboard still needs more coverage before the product is easy to inspect."
+}

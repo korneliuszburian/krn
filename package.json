@@ -25,6 +25,8 @@
     "eval:krn-dashboard-benchmark-reports-ui": "tsx packages/evals/src/validate-krn-dashboard-benchmark-reports-ui.ts --mode validate",
     "eval:krn-benchmark-live-pilot": "tsx packages/evals/src/validate-krn-benchmark-live-pilot.ts --mode validate",
     "eval:krn-benchmark-live-pilot:live": "tsx packages/evals/src/validate-krn-benchmark-live-pilot.ts --mode live",
+    "eval:krn-benchmark-live-suite": "tsx packages/evals/src/validate-krn-benchmark-live-suite.ts --mode validate",
+    "eval:krn-benchmark-live-suite:live": "tsx packages/evals/src/validate-krn-benchmark-live-suite.ts --mode live",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {

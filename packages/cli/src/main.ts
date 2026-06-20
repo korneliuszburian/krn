@@ -173,6 +173,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/goals/goal-019.md",
     ],
   },
+  {
+    moduleId: "krn-benchmark-live-suite",
+    command: ["pnpm", "run", "eval:krn-benchmark-live-suite"],
+    sourceRefs: [
+      "docs/evals/krn-benchmark-live-suite/README.md",
+      "docs/evals/krn-benchmark-live-suite/tasks.json",
+      "docs/goals/goal-020.md",
+    ],
+  },
 ];
 
 function usage(): string {

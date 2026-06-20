@@ -1,0 +1,67 @@
+[
+  {
+    "id": "task-registry-parses",
+    "expected_behavior": "The suite task registry parses, contains at least three fixed benchmark tasks, and preserves a minimum task gate for lift claims.",
+    "source_patterns": ["S010", "S011", "S088", "docs/goals/goal-020.md"],
+    "assertions": ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
+    "metrics": ["runtime_contract_score", "drift_resistance_score"],
+    "failure_mode": "The expanded benchmark suite is an ad hoc prompt list instead of a typed registry."
+  },
+  {
+    "id": "fixture-suite-scores-assisted",
+    "expected_behavior": "Validate mode scores every fixture baseline and assisted output deterministically, and the KRN-assisted fixture average beats the baseline fixture average.",
+    "source_patterns": ["S014", "S015", "S016", "docs/evals/STANDARD.md"],
+    "assertions": ["all baseline fixtures parse", "all assisted fixtures parse", "assisted average score is higher", "all task metrics exist"],
+    "metrics": ["runtime_contract_score", "goal_alignment_score", "source_grounding_score"],
+    "failure_mode": "The scorer cannot distinguish source-grounded KRN-assisted outputs from weaker baseline outputs across multiple tasks."
+  },
+  {
+    "id": "known-bad-output-fails",
+    "expected_behavior": "Validate mode penalizes an output that claims productivity lift from a small or fixture-backed benchmark.",
+    "source_patterns": ["C039", "C040", "C041", "docs/specs/krn-benchmark-report/README.md"],
+    "assertions": ["known-bad output parses", "known-bad score is below pass threshold", "lift claim is penalized"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "The scorer accepts unsupported productivity claims as benchmark success."
+  },
+  {
+    "id": "validate-report-shape",
+    "expected_behavior": "Validate mode writes a parseable fixture-contract KrnBenchmarkReport with task_count at least three, productivity_lift_claimed false, and repair targets.",
+    "source_patterns": ["C039", "docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-020.md"],
+    "assertions": [
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "measurement mode is fixture_contract",
+      "task count is at least three",
+      "productivity lift remains unclaimed",
+      "repair target present"
+    ],
+    "metrics": ["runtime_contract_score", "anti_slop_score", "repair_readiness_score"],
+    "failure_mode": "The deterministic suite cannot emit benchmark evidence without overclaiming."
+  },
+  {
+    "id": "live-report-shape",
+    "expected_behavior": "Live mode writes a parseable KrnBenchmarkReport with measurement_mode live_codex_exec, task_count at least three, productivity_lift_claimed false, and captured Codex evidence refs.",
+    "source_patterns": ["S009", "S010", "S011", "docs/goals/goal-020.md"],
+    "assertions": [
+      "baseline codex exec runs captured",
+      "assisted codex exec runs captured",
+      "captured evidence files exist",
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "measurement mode is live_codex_exec",
+      "task count is at least three",
+      "productivity lift remains unclaimed",
+      "repair target present"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "repair_readiness_score"],
+    "failure_mode": "Live worker output cannot be represented as typed multi-task benchmark evidence without overclaiming."
+  },
+  {
+    "id": "live-overclaim-boundary",
+    "expected_behavior": "Live mode keeps the eval report caveat explicit that three live tasks are still below the productivity lift gate.",
+    "source_patterns": ["S010", "S011", "C039", "C040", "C041"],
+    "assertions": ["eval report caveat names no productivity lift", "eval report caveat names the three-task limitation", "eval report caveat names the twenty-task gate"],
+    "metrics": ["anti_slop_score", "goal_alignment_score"],
+    "failure_mode": "The expanded live suite is overclaimed as statistical or product lift evidence."
+  }
+]

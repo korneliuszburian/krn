@@ -112,6 +112,7 @@ repo + task
   -> Benchmark report spine records no-lift-gated benchmark evidence
   -> live benchmark pilot records one baseline-vs-assisted codex exec task below the lift gate
   -> Benchmark Reports dashboard renders parsed benchmark reports without run/repair/write commands
+  -> expanded benchmark suite validates fixed multi-task baseline-vs-assisted tasks and keeps live mode explicit
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -301,7 +302,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine, live pilot, and Benchmark Reports dashboard surface prove the typed report path, no-lift gate, one explicit live `codex exec` measurement path, and read-only review of no-lift/negative-delta benchmark evidence. Measured lift remains future work until a larger suite satisfies the lift gate.
+- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, and expanded live suite prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, and fixed three-task suite harness. Measured lift remains future work until a larger suite satisfies the lift gate with positive live evidence.
 
 Acceptance evidence:
 
@@ -309,7 +310,7 @@ Acceptance evidence:
 - Every dashboard metric has owner, source, action, and failure mode.
 - MCP/API resources are allowlisted and schema-backed.
 - Proposal writes are append-only, idempotent, and reviewable.
-- Benchmark report shows either measured lift or an explicit no-lift result with repair targets; one-task live pilots remain below the lift gate.
+- Benchmark report shows either measured lift or an explicit no-lift result with repair targets; one-task pilots and three-task suites remain below the lift gate.
 
 Disproves completion:
 
