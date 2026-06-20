@@ -39,8 +39,10 @@ sources:
   - docs/goals/goal-028.md
   - docs/goals/goal-029.md
   - docs/goals/goal-030.md
+  - docs/goals/goal-031.md
   - docs/memory/evals/2026-06-20--coding-quality-rubric.md
   - docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md
+  - docs/memory/product/2026-06-20--krn-benchmark-expanded-arena-registry.md
 ---
 
 # KRN Final Product Plan
@@ -136,7 +138,8 @@ repo + task
   -> live-runner stability repair makes the latest explicit three-task live report clean but still below repeated-clean expansion and lift gates
   -> repeat-clean live stability unlocks suite-expansion review without claiming lift
   -> benchmark arena contract fixes the 20-task lift gate, explicit live boundary, pipeline ergonomics, task mix, and coding-quality rubric before expansion implementation
-  -> expanded benchmark arena measures coding quality: assumptions, simplicity, surgical diffs, verification, and review burden
+  -> expanded benchmark arena registry stores 20 source-backed coding-agent tasks with explicit live boundary and rubric coverage
+  -> later expanded benchmark runner measures coding quality: assumptions, simplicity, surgical diffs, verification, and review burden
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -326,7 +329,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, expanded live suite, lift-status gate, live-suite registry policy gate, live stability readiness gate, live-runner stability repair, repeat-clean stability slice, and benchmark arena contract prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, fixed three-task suite harness, deterministic stale-context/runner-policy protection, deterministic classification of dirty versus repeated-clean live evidence, one clean latest explicit live run after typed output-capture/baseline-scope repair, repeated clean small-suite evidence for suite-expansion review, and deterministic contract readiness for a larger arena. Measured lift remains future work until the expanded arena is implemented and a larger suite satisfies the lift gate with positive live evidence. The next benchmark arena should measure coding quality dimensions such as assumptions, simplicity, surgical diffs, verification quality, and human review burden.
+- The current benchmark report spine, live pilot, Benchmark Reports dashboard surface, expanded live suite, lift-status gate, live-suite registry policy gate, live stability readiness gate, live-runner stability repair, repeat-clean stability slice, benchmark arena contract, and expanded arena task registry prove the typed report path, no-lift gate, explicit live `codex exec` measurement path, read-only review of no-lift/negative-delta benchmark evidence, fixed three-task suite harness, deterministic stale-context/runner-policy protection, deterministic classification of dirty versus repeated-clean live evidence, one clean latest explicit live run after typed output-capture/baseline-scope repair, repeated clean small-suite evidence for suite-expansion review, deterministic contract readiness for a larger arena, and a source-backed 20-task registry for the next arena. Measured lift remains future work until the expanded runner executes the registry and a larger suite satisfies the lift gate with positive live evidence. The next benchmark arena should score coding quality dimensions such as assumptions, simplicity, surgical diffs, verification quality, and human review burden.
 
 Acceptance evidence:
 

@@ -201,6 +201,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
     ],
   },
   {
+    moduleId: "krn-benchmark-expanded-arena",
+    command: ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
+    sourceRefs: [
+      "docs/evals/krn-benchmark-expanded-arena/README.md",
+      "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+      "docs/goals/goal-031.md",
+    ],
+  },
+  {
     moduleId: "krn-repair-record",
     command: ["pnpm", "run", "eval:krn-repair-record"],
     sourceRefs: [

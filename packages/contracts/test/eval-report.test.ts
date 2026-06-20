@@ -34,6 +34,7 @@ describe("KrnEvalReport contract", () => {
       "krn-benchmark-live-suite",
       "krn-benchmark-live-stability",
       "krn-benchmark-arena-contract",
+      "krn-benchmark-expanded-arena",
       "krn-repair-record",
     ]);
   });

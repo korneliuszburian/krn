@@ -104,6 +104,7 @@ Before major planning work:
 - [KRN Benchmark Live Runner Stability Repair](./product/2026-06-20--krn-benchmark-live-runner-stability-repair.md)
 - [KRN Benchmark Repeat-Clean Live Stability](./product/2026-06-20--krn-benchmark-repeat-clean-live-stability.md)
 - [KRN Benchmark Arena Contract](./product/2026-06-20--krn-benchmark-arena-contract.md)
+- [KRN Benchmark Expanded Arena Registry](./product/2026-06-20--krn-benchmark-expanded-arena-registry.md)
 - [KRN operating architecture and memory layers](./product/2026-06-20--krn-operating-architecture-and-memory-layers.md)
 - [KRN product principles and dashboard control plane](./product/2026-06-19--krn-product-principles.md)
 

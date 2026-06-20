@@ -1,0 +1,101 @@
+[
+  {
+    "id": "expanded-arena-registry-parses",
+    "expected_behavior": "The expanded arena registry parses, aligns with the arena contract, and stays anchored to goal-006, goal-030, and goal-031.",
+    "source_patterns": ["C031", "C054", "docs/goals/goal-006.md", "docs/goals/goal-030.md"],
+    "assertions": [
+      "registry parses",
+      "contract ref preserved",
+      "parent goal preserved",
+      "current child goal preserved",
+      "latest completed child goal preserved",
+      "source refs include arena contract"
+    ],
+    "metrics": ["schema_contract_score", "source_grounding_score", "goal_alignment_score"],
+    "failure_mode": "The expanded arena is an unanchored prompt list instead of a goal-bound registry."
+  },
+  {
+    "id": "twenty-task-lift-gate",
+    "expected_behavior": "The expanded arena contains exactly the initial 20 tasks required by the contract and keeps productivity lift gated.",
+    "source_patterns": ["C050", "C052", "C054"],
+    "assertions": [
+      "task count is twenty",
+      "initial task count matches task count",
+      "minimum lift gate remains twenty",
+      "task ids are unique"
+    ],
+    "metrics": ["benchmark_validity_score", "anti_slop_score"],
+    "failure_mode": "KRN implements a smaller suite while preserving language that implies a 20-task lift gate."
+  },
+  {
+    "id": "task-mix-covers-coding-work",
+    "expected_behavior": "The task registry covers implementation, debugging, refactor, review, continuity-after-compaction, and benchmark-repair families with enough implementation-heavy tasks.",
+    "source_patterns": ["S016", "C053", "C054", "LOCAL040"],
+    "assertions": [
+      "implementation family present",
+      "debugging family present",
+      "refactor family present",
+      "review family present",
+      "continuity family present",
+      "benchmark repair family present",
+      "implementation-heavy minimum satisfied",
+      "no unsupported task families"
+    ],
+    "metrics": ["coding_quality_score", "goal_alignment_score"],
+    "failure_mode": "The arena measures only planning answers or JSON formatting instead of real coding-agent behavior."
+  },
+  {
+    "id": "quality-rubric-per-task",
+    "expected_behavior": "Every task carries at least five required coding-quality metrics and the arena covers all contract metrics including review burden.",
+    "source_patterns": ["C053", "C054", "docs/memory/evals/2026-06-20--coding-quality-rubric.md"],
+    "assertions": [
+      "assumption clarity metric covered",
+      "simplicity metric covered",
+      "surgical diff metric covered",
+      "verification coverage metric covered",
+      "review burden metric covered",
+      "source grounding metric covered",
+      "goal alignment metric covered",
+      "anti slop metric covered"
+    ],
+    "metrics": ["coding_quality_score", "review_burden_score", "anti_slop_score"],
+    "failure_mode": "The registry cannot score implementation quality, verification quality, or human cleanup burden."
+  },
+  {
+    "id": "pipeline-and-live-boundary-preserved",
+    "expected_behavior": "The registry preserves explicit live mode, fixture/live separation, progress/resume/smoke/full lanes, and sequential codex exec concurrency.",
+    "source_patterns": ["S009", "S011", "S088", "C048", "C054"],
+    "assertions": [
+      "default eval excludes live mode",
+      "live mode requires explicit command",
+      "fixture and live evidence separated",
+      "progress log required",
+      "resume completed workers required",
+      "quick smoke lane required",
+      "full suite lane required",
+      "concurrency remains sequential"
+    ],
+    "metrics": ["runtime_contract_score", "repair_readiness_score", "drift_resistance_score"],
+    "failure_mode": "The expanded arena becomes hidden-cost, non-resumable, default-live, or concurrency-unsafe."
+  },
+  {
+    "id": "known-bad-registry-fails",
+    "expected_behavior": "The known-bad registry with a small planning-only default-live arena fails deterministically.",
+    "source_patterns": ["C052", "C053", "C054", "docs/evals/STANDARD.md"],
+    "assertions": ["known-bad registry rejected"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "KRN accepts a shallow planning-only arena or default-live small suite."
+  },
+  {
+    "id": "eval-report-preserves-registry-only-boundary",
+    "expected_behavior": "The eval report caveat states that this validates the registry only and does not prove live expanded execution or productivity lift.",
+    "source_patterns": ["C052", "C054", "docs/goals/goal-006.md"],
+    "assertions": [
+      "eval report caveat names registry only",
+      "eval report caveat names no productivity lift",
+      "eval report caveat names no live expanded run"
+    ],
+    "metrics": ["goal_alignment_score", "anti_slop_score"],
+    "failure_mode": "A green registry eval is overclaimed as completed arena execution or product lift."
+  }
+]

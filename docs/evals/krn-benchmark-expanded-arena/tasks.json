@@ -1,0 +1,637 @@
+{
+  "schema_version": "krn-benchmark-expanded-arena-tasks.v1",
+  "kind": "krn_benchmark_expanded_arena_registry",
+  "benchmark_id": "krn-benchmark-expanded-arena",
+  "arena_id": "krn-expanded-autoresearch-arena",
+  "contract_ref": "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+  "parent_goal_ref": "docs/goals/goal-006.md",
+  "current_child_goal_ref": "docs/goals/goal-031.md",
+  "latest_completed_child_goal_ref": "docs/goals/goal-030.md",
+  "minimum_live_task_count_for_lift_claim": 20,
+  "initial_task_count": 20,
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-031.md",
+    "docs/goals/goal-030.md",
+    "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+    "docs/memory/evals/2026-06-20--coding-quality-rubric.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-arena-contract.md",
+    "docs/plans/canonical/SOURCES.md",
+    "docs/evals/STANDARD.md"
+  ],
+  "measurement_modes": {
+    "default_eval_includes_live": false,
+    "supported_modes": ["fixture_contract", "live_codex_exec"],
+    "live_mode_requires_explicit_command": true,
+    "separate_fixture_and_live_stores_required": true
+  },
+  "live_execution_policy": {
+    "max_concurrent_codex_exec_runs": 1,
+    "concurrency_expansion_requires_separate_eval": true,
+    "resume_completed_workers_required": true,
+    "progress_log_required": true
+  },
+  "pipeline_ergonomics": {
+    "progress_log_required": true,
+    "resume_completed_workers_required": true,
+    "quick_smoke_lane_required": true,
+    "full_suite_lane_required": true,
+    "separate_fixture_and_live_evidence_required": true
+  },
+  "quality_rubric": {
+    "required_metrics": [
+      "assumption_clarity_score",
+      "simplicity_score",
+      "surgical_diff_score",
+      "verification_coverage_score",
+      "review_burden_score",
+      "source_grounding_score",
+      "goal_alignment_score",
+      "anti_slop_score"
+    ],
+    "minimum_metrics_per_task": 5,
+    "review_burden_metric_required": true
+  },
+  "task_mix": {
+    "required_task_families": [
+      "implementation",
+      "debugging",
+      "refactor",
+      "review",
+      "continuity_after_compaction",
+      "benchmark_repair"
+    ],
+    "minimum_implementation_heavy_tasks": 8,
+    "implementation_heavy_families": ["implementation", "debugging", "refactor", "benchmark_repair"]
+  },
+  "tasks": [
+    {
+      "task_id": "contract-parser-known-bad-boundary",
+      "family": "implementation",
+      "title": "Add a parser boundary for a known-bad contract fixture",
+      "prompt": "Implement the smallest TypeScript parser/test slice that rejects a known-bad KRN contract fixture without broadening adjacent product behavior.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+        "docs/specs/technology-stack/decision.md",
+        "packages/contracts/src/eval-report.ts"
+      ],
+      "assisted_guidance": [
+        "Name the public parser boundary before editing.",
+        "Treat fixture JSON as unknown until parsed.",
+        "Add one known-bad regression instead of a broad schema rewrite."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["parser", "known-bad", "unknown", "test", "minimal"],
+      "overclaim_keywords": ["does not prove", "productivity", "lift"]
+    },
+    {
+      "task_id": "eval-module-aggregate-integration",
+      "family": "implementation",
+      "title": "Integrate a deterministic eval module into krn eval",
+      "prompt": "Add a new deterministic eval module to the KRN aggregate without adding live execution to default krn eval.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/evals/STANDARD.md",
+        "packages/cli/src/main.ts",
+        "packages/evals/src/validate-krn-eval.ts"
+      ],
+      "assisted_guidance": [
+        "Keep live codex exec outside the aggregate.",
+        "Update aggregate fixtures and tests only for the new deterministic module.",
+        "Preserve interpretation caveats."
+      ],
+      "required_metrics": [
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["deterministic", "aggregate", "caveat", "no live", "test"],
+      "overclaim_keywords": ["live", "default", "productivity"]
+    },
+    {
+      "task_id": "dashboard-read-model-consumer",
+      "family": "implementation",
+      "title": "Add a read-only dashboard data consumer",
+      "prompt": "Implement a dashboard data consumer over an existing typed KRN view model without adding mutation commands or mocked state.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/product/final-product-plan.md",
+        "apps/dashboard/src/App.tsx",
+        "apps/dashboard/scripts/write-dashboard-data.ts"
+      ],
+      "assisted_guidance": [
+        "Use generated typed dashboard data.",
+        "Do not add run, repair, approve, or write buttons.",
+        "Every visible metric must keep source/action/failure-mode semantics."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score"
+      ],
+      "acceptance_keywords": ["read-only", "typed", "no mock", "failure mode", "source"],
+      "overclaim_keywords": ["command", "write", "lift"]
+    },
+    {
+      "task_id": "mcp-resource-allowlist-extension",
+      "family": "implementation",
+      "title": "Extend a read-only MCP resource allowlist",
+      "prompt": "Add a KRN MCP read resource for an existing runtime report while preserving allowlist and proposal-only boundaries.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-mcp-read-model/README.md",
+        "packages/mcp/src/index.ts",
+        "packages/mcp/src/server.ts"
+      ],
+      "assisted_guidance": [
+        "Expose only read-only resource data.",
+        "Parse report objects before returning them.",
+        "Do not add destructive tools."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["read-only", "allowlist", "parse", "resource", "no destructive"],
+      "overclaim_keywords": ["deployed", "ChatGPT", "mutation"]
+    },
+    {
+      "task_id": "proposal-ledger-append-only-path",
+      "family": "implementation",
+      "title": "Add an append-only proposal ledger path",
+      "prompt": "Implement a new append-only KRN proposal ledger path that preserves idempotency and source-ref validation.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-control-plane-proposal/README.md",
+        "packages/mcp/src/proposal-store.ts",
+        "packages/mcp/test/proposal-store.test.ts"
+      ],
+      "assisted_guidance": [
+        "Keep writes under .krn only.",
+        "Validate source refs before persistence.",
+        "Do not treat proposal storage as approval."
+      ],
+      "required_metrics": [
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["append-only", "idempotent", "source refs", ".krn", "not approval"],
+      "overclaim_keywords": ["approved", "promotion", "target mutation"]
+    },
+    {
+      "task_id": "eval-report-invalid-module-debug",
+      "family": "debugging",
+      "title": "Debug a failed aggregate eval module",
+      "prompt": "Diagnose why a KRN aggregate eval report marks one module failed and produce the smallest repair path without claiming broad product failure.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-eval/README.md",
+        "docs/evals/STANDARD.md",
+        "packages/evals/src/validate-krn-eval.ts"
+      ],
+      "assisted_guidance": [
+        "Separate module failure from parent-goal completion.",
+        "Inspect the module report before changing code.",
+        "Create or preserve a regression case."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["module report", "regression", "smallest repair", "caveat", "rerun"],
+      "overclaim_keywords": ["full product", "breakthrough", "done"]
+    },
+    {
+      "task_id": "benchmark-report-dirty-positive-debug",
+      "family": "debugging",
+      "title": "Debug dirty positive benchmark evidence",
+      "prompt": "Inspect a benchmark report with positive delta and failed tasks, then decide the next repair without claiming productivity lift.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-030.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Apply C047 and C052 from the source ledger.",
+        "Treat failed tasks as dirty evidence.",
+        "Route to repair or stability, not lift."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["dirty", "failed tasks", "no lift", "repair", "source ledger"],
+      "overclaim_keywords": ["positive_lift", "productivity_lift_claimed", "breakthrough"]
+    },
+    {
+      "task_id": "compact-resume-context-debug",
+      "family": "debugging",
+      "title": "Debug stale compact resume context",
+      "prompt": "Diagnose a KRN run that rereads broad historical docs after compaction and propose a selector-first repair.",
+      "source_refs": [
+        "AGENTS.md",
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        ".krn/compact/latest-postcompact.md",
+        ".krn/compact/latest-checkpoint.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Treat compact files as selectors, not source truth.",
+        "Prefer changed files and active child goal.",
+        "Do not reload the full source ledger unless needed."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["selector", "changed files", "active child", "token", "compact"],
+      "overclaim_keywords": ["source truth", "full reread", "complete"]
+    },
+    {
+      "task_id": "dashboard-overclaim-debug",
+      "family": "debugging",
+      "title": "Debug dashboard command-surface drift",
+      "prompt": "Review a dashboard change that adds a command button and determine whether it violates the current KRN boundary.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/product/final-product-plan.md",
+        "apps/dashboard/src/App.tsx",
+        "docs/evals/README.md"
+      ],
+      "assisted_guidance": [
+        "Separate read-only review surface from command center.",
+        "Check whether the underlying typed command contract exists.",
+        "Prefer removing or gating unsupported commands."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["read-only", "command contract", "remove", "gate", "typed"],
+      "overclaim_keywords": ["command center", "run", "repair", "approve"]
+    },
+    {
+      "task_id": "eval-runner-duplication-refactor",
+      "family": "refactor",
+      "title": "Refactor duplicated eval-runner helpers",
+      "prompt": "Refactor a small duplicated eval-runner helper without changing eval semantics or broadening module scope.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "packages/evals/src/validate-krn-eval.ts",
+        "packages/evals/src/validate-krn-benchmark-arena-contract.ts",
+        "docs/specs/technology-stack/decision.md"
+      ],
+      "assisted_guidance": [
+        "Name the duplication and the public behavior preserved.",
+        "Avoid a framework-level abstraction from one use case.",
+        "Run narrow eval/typecheck evidence."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["preserve behavior", "small", "narrow", "typecheck", "no framework"],
+      "overclaim_keywords": ["all evals", "generic", "rewrite"]
+    },
+    {
+      "task_id": "contracts-export-map-refactor",
+      "family": "refactor",
+      "title": "Refactor contract exports without consumer breakage",
+      "prompt": "Move a KRN contract export to a cleaner module shape while preserving public parser imports and tests.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "packages/contracts/src/index.ts",
+        "packages/contracts/src/eval-report.ts",
+        "packages/contracts/test/eval-report.test.ts"
+      ],
+      "assisted_guidance": [
+        "Keep parser imports stable or update all consumers.",
+        "Do not split schemas into unowned copies.",
+        "Verify through public parser tests."
+      ],
+      "required_metrics": [
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["public parser", "consumer", "stable", "tests", "no duplicate"],
+      "overclaim_keywords": ["full migration", "all contracts", "any"]
+    },
+    {
+      "task_id": "dashboard-component-boundary-refactor",
+      "family": "refactor",
+      "title": "Refactor a dashboard component boundary",
+      "prompt": "Refactor one dashboard component to reduce repetition while preserving typed view-model rendering and no command claims.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "apps/dashboard/src/EvalRunsDashboard.tsx",
+        "apps/dashboard/src/BenchmarkReportsDashboard.tsx",
+        "apps/dashboard/test/eval-runs-dashboard.test.tsx"
+      ],
+      "assisted_guidance": [
+        "Keep display behavior stable.",
+        "Do not introduce nested cards or command controls.",
+        "Verify with existing dashboard tests."
+      ],
+      "required_metrics": [
+        "simplicity_score",
+        "surgical_diff_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["stable", "typed view model", "test", "no command", "small"],
+      "overclaim_keywords": ["redesign", "command", "landing"]
+    },
+    {
+      "task_id": "release-verifier-finding-review",
+      "family": "review",
+      "title": "Review a release verifier done-claim",
+      "prompt": "Review a KRN done-claim and identify whether the cited evidence proves every claimed requirement.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        ".agents/skills/release-verifier/SKILL.md",
+        "docs/evals/STANDARD.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Find requirement-by-requirement evidence.",
+        "Treat weak or indirect evidence as not achieved.",
+        "Lead with blocking findings."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["requirement", "evidence", "blocking", "indirect", "not achieved"],
+      "overclaim_keywords": ["looks good", "probably", "complete"]
+    },
+    {
+      "task_id": "typescript-slice-review",
+      "family": "review",
+      "title": "Review a TypeScript contract slice",
+      "prompt": "Review a TypeScript KRN slice for unknown-first boundaries, runtime parsing, public-interface tests, and overbroad abstractions.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/technology-stack/decision.md",
+        ".agents/skills/typescript-contract-engineer/SKILL.md",
+        ".agents/skills/typescript-contract-engineer/references/total-typescript-standards.md"
+      ],
+      "assisted_guidance": [
+        "Check external input boundaries first.",
+        "Prefer parser tests over private-helper tests.",
+        "Flag abstractions that are not justified by real reuse."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["unknown", "parser", "public interface", "abstraction", "test"],
+      "overclaim_keywords": ["type only", "private helper", "broad"]
+    },
+    {
+      "task_id": "benchmark-report-review",
+      "family": "review",
+      "title": "Review benchmark report lift wording",
+      "prompt": "Review a KRN benchmark report summary and find any language that overclaims fixture, dirty, or below-gate evidence.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/evals/krn-benchmark-live-stability/README.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Separate clean evidence, dirty evidence, and lift evidence.",
+        "Apply C047, C052, and C054.",
+        "Suggest exact wording that preserves the boundary."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["fixture", "dirty", "below gate", "wording", "no lift"],
+      "overclaim_keywords": ["positive", "breakthrough", "productivity"]
+    },
+    {
+      "task_id": "memory-promotion-review",
+      "family": "review",
+      "title": "Review a memory promotion proposal",
+      "prompt": "Review a proposed memory update and determine whether its sources, failure mode, and review trigger are sufficient for durable KRN memory.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/memory/INDEX.md",
+        "docs/specs/krn-proposal-promotion/README.md",
+        "docs/product/final-product-plan.md"
+      ],
+      "assisted_guidance": [
+        "Check source refs and status labels.",
+        "Require failure mode and review trigger.",
+        "Do not promote runtime artifacts directly without review."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["source", "failure mode", "review trigger", "status", "promotion"],
+      "overclaim_keywords": ["runtime truth", "unsourced", "approved"]
+    },
+    {
+      "task_id": "postcompact-active-goal-continuity",
+      "family": "continuity_after_compaction",
+      "title": "Resume from compact into the active child goal",
+      "prompt": "After compaction, identify the active KRN parent and latest completed child goal, then choose the next benchmark action without broad rereads.",
+      "source_refs": [
+        "AGENTS.md",
+        "docs/memory/INDEX.md",
+        ".krn/compact/latest-postcompact.md",
+        ".krn/compact/latest-checkpoint.md",
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/goals/goal-030.md"
+      ],
+      "assisted_guidance": [
+        "Use compact files as selectors.",
+        "Verify git status before relying on prior context.",
+        "Choose the expanded arena implementation path from goal-030."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["selector", "goal-006", "goal-030", "git status", "expanded arena"],
+      "overclaim_keywords": ["reload all", "memory alone", "complete"]
+    },
+    {
+      "task_id": "source-ledger-targeted-lookup",
+      "family": "continuity_after_compaction",
+      "title": "Use targeted source-ledger lookup after resume",
+      "prompt": "Find the source-backed claims relevant to expanded benchmark arena work without reading the whole source ledger.",
+      "source_refs": [
+        "AGENTS.md",
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/plans/canonical/SOURCES.md",
+        "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json"
+      ],
+      "assisted_guidance": [
+        "Use targeted lookup for C052, C053, C054, S088, and LOCAL041.",
+        "Do not treat the source ledger as context to dump into the prompt.",
+        "Convert claims into implementation checks."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["C052", "C053", "C054", "S088", "checks"],
+      "overclaim_keywords": ["bibliography", "full context", "generic"]
+    },
+    {
+      "task_id": "no-lift-repair-record-routing",
+      "family": "benchmark_repair",
+      "title": "Route no-lift evidence into a repair record",
+      "prompt": "Given no-lift benchmark evidence, create the next bounded repair handoff without tuning prompts directly.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-031.md",
+        "docs/specs/krn-repair-record/README.md",
+        "docs/evals/krn-repair-record/README.md",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Use a typed repair record before tuning.",
+        "Name validator, stop reason, and before/after metric.",
+        "Do not claim the repair is validated until rerun evidence exists."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["repair record", "validator", "stop reason", "before", "after"],
+      "overclaim_keywords": ["validated", "fixed", "lift"]
+    },
+    {
+      "task_id": "live-runner-stability-repair-routing",
+      "family": "benchmark_repair",
+      "title": "Route dirty live runner evidence into stability repair",
+      "prompt": "Given dirty live benchmark evidence with failed tasks, choose the next runner stability repair before expanding live execution.",
+      "source_refs": [
+        "docs/goals/goal-006.md",
+        "docs/goals/goal-030.md",
+        "docs/goals/goal-031.md",
+        "docs/evals/krn-benchmark-live-stability/README.md",
+        "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+        "docs/plans/canonical/SOURCES.md"
+      ],
+      "assisted_guidance": [
+        "Classify dirty evidence before repair.",
+        "Preserve explicit live mode and sequential concurrency.",
+        "Do not expand concurrency without a separate eval."
+      ],
+      "required_metrics": [
+        "assumption_clarity_score",
+        "simplicity_score",
+        "verification_coverage_score",
+        "review_burden_score",
+        "source_grounding_score",
+        "goal_alignment_score",
+        "anti_slop_score"
+      ],
+      "acceptance_keywords": ["dirty evidence", "stability", "explicit live", "sequential", "separate eval"],
+      "overclaim_keywords": ["concurrency", "lift", "breakthrough"]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": "krn-benchmark-expanded-arena-tasks.v1",
+  "kind": "krn_benchmark_expanded_arena_registry",
+  "benchmark_id": "krn-benchmark-expanded-arena",
+  "arena_id": "bad-expanded-arena",
+  "contract_ref": "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+  "parent_goal_ref": "docs/goals/goal-006.md",
+  "current_child_goal_ref": "docs/goals/goal-031.md",
+  "latest_completed_child_goal_ref": "docs/goals/goal-030.md",
+  "minimum_live_task_count_for_lift_claim": 20,
+  "initial_task_count": 3,
+  "source_refs": ["docs/goals/goal-006.md"],
+  "measurement_modes": {
+    "default_eval_includes_live": true,
+    "supported_modes": ["live_codex_exec"],
+    "live_mode_requires_explicit_command": false,
+    "separate_fixture_and_live_stores_required": false
+  },
+  "live_execution_policy": {
+    "max_concurrent_codex_exec_runs": 4,
+    "concurrency_expansion_requires_separate_eval": false,
+    "resume_completed_workers_required": false,
+    "progress_log_required": false
+  },
+  "pipeline_ergonomics": {
+    "progress_log_required": false,
+    "resume_completed_workers_required": false,
+    "quick_smoke_lane_required": false,
+    "full_suite_lane_required": false,
+    "separate_fixture_and_live_evidence_required": false
+  },
+  "quality_rubric": {
+    "required_metrics": ["task_answer_score"],
+    "minimum_metrics_per_task": 1,
+    "review_burden_metric_required": false
+  },
+  "task_mix": {
+    "required_task_families": ["planning"],
+    "minimum_implementation_heavy_tasks": 0,
+    "implementation_heavy_families": []
+  },
+  "tasks": [
+    {
+      "task_id": "planning-only-task",
+      "family": "planning",
+      "title": "Plan the arena",
+      "prompt": "Plan something impressive.",
+      "source_refs": ["docs/goals/goal-006.md"],
+      "assisted_guidance": ["Use the current vibe."],
+      "required_metrics": ["task_answer_score"],
+      "acceptance_keywords": ["plan"],
+      "overclaim_keywords": ["breakthrough"]
+    }
+  ]
+}

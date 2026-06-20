@@ -361,6 +361,26 @@
       "interpretation_caveat": "This eval proves deterministic arena-expansion contract readiness only; it does not prove measured productivity lift, suite expansion implementation, statistical validity, live Codex quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
     },
     {
+      "module_id": "krn-benchmark-expanded-arena",
+      "command": ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
+      "status": "passed",
+      "report_path": ".krn/evals/krn-benchmark-expanded-arena/20260619T215915Z-example/report.json",
+      "total_cases": 7,
+      "passed_cases": 7,
+      "failed_cases": 0,
+      "case_pass_rate": 1,
+      "total_assertions": 38,
+      "passed_assertions": 38,
+      "failed_assertions": 0,
+      "assertion_pass_rate": 1,
+      "source_refs": [
+        "docs/evals/krn-benchmark-expanded-arena/README.md",
+        "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+        "docs/goals/goal-031.md"
+      ],
+      "interpretation_caveat": "This eval proves the expanded arena task registry only; it does not prove measured productivity lift, live expanded execution, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+    },
+    {
       "module_id": "krn-repair-record",
       "command": ["pnpm", "run", "eval:krn-repair-record"],
       "status": "passed",
@@ -382,14 +402,14 @@
     }
   ],
   "summary": {
-    "total_modules": 19,
-    "passed_modules": 19,
+    "total_modules": 20,
+    "passed_modules": 20,
     "failed_modules": 0,
-    "total_cases": 89,
-    "passed_cases": 89,
+    "total_cases": 96,
+    "passed_cases": 96,
     "failed_cases": 0,
-    "total_assertions": 312,
-    "passed_assertions": 312,
+    "total_assertions": 350,
+    "passed_assertions": 350,
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260619T220000Z-example/report.json",
