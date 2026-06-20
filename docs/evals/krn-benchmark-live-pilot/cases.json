@@ -1,0 +1,42 @@
+[
+  {
+    "id": "fixture-scorer-distinguishes-assisted",
+    "expected_behavior": "Validate mode scores fixture baseline and assisted outputs deterministically and detects the assisted output as better on the fixed routing task.",
+    "source_patterns": ["docs/goals/goal-006.md", "docs/goals/goal-018.md", "docs/evals/STANDARD.md"],
+    "assertions": ["baseline fixture parses", "assisted fixture parses", "assisted fixture score is higher"],
+    "metrics": ["runtime_contract_score", "goal_alignment_score"],
+    "failure_mode": "The scorer cannot distinguish a source-grounded KRN-assisted output from a weaker baseline fixture."
+  },
+  {
+    "id": "known-bad-output-fails",
+    "expected_behavior": "Validate mode rejects a known-bad output that claims productivity lift and omits the live benchmark boundary.",
+    "source_patterns": ["docs/specs/krn-benchmark-report/README.md", "docs/plans/canonical/SOURCES.md"],
+    "assertions": ["known-bad output parses", "known-bad score is below pass threshold", "lift claim is penalized"],
+    "metrics": ["anti_slop_score", "drift_resistance_score"],
+    "failure_mode": "The scorer accepts unsupported productivity claims as benchmark success."
+  },
+  {
+    "id": "live-report-shape",
+    "expected_behavior": "Live mode writes a parseable KrnBenchmarkReport with measurement_mode live_codex_exec, productivity_lift_claimed false, repair targets, and captured Codex evidence refs.",
+    "source_patterns": ["S009", "docs/goals/goal-018.md", "docs/specs/krn-benchmark-report/README.md"],
+    "assertions": [
+      "baseline codex exec run captured",
+      "assisted codex exec run captured",
+      "generated benchmark report exists",
+      "generated benchmark report parses",
+      "measurement mode is live_codex_exec",
+      "productivity lift remains unclaimed",
+      "repair target present"
+    ],
+    "metrics": ["runtime_contract_score", "source_grounding_score", "repair_readiness_score"],
+    "failure_mode": "Live worker output cannot be represented as typed benchmark evidence without overclaiming."
+  },
+  {
+    "id": "live-overclaim-boundary",
+    "expected_behavior": "Live mode keeps the eval report caveat explicit that one live task is not measured productivity lift.",
+    "source_patterns": ["S010", "S011", "C039", "docs/goals/goal-018.md"],
+    "assertions": ["eval report caveat names no productivity lift", "eval report caveat names one-task limitation"],
+    "metrics": ["anti_slop_score", "goal_alignment_score"],
+    "failure_mode": "The first live pilot is overclaimed as statistical or product lift evidence."
+  }
+]

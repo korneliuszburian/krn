@@ -1,0 +1,19 @@
+{
+  "selected_phase": "P8 benchmark",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-018.md",
+  "source_refs": [
+    "AGENTS.md",
+    "docs/memory/INDEX.md",
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-017.md",
+    "docs/goals/goal-018.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/evals/krn-benchmark-live-pilot/README.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "next_action": "Expand the live codex exec benchmark suite beyond one task while writing KrnBenchmarkReport outputs and keeping productivity lift unclaimed until the lift gate is satisfied.",
+  "should_claim_productivity_lift": false,
+  "overclaim_boundary": "One live pilot and any fixture-contract evidence do not prove measured productivity lift; a larger baseline-vs-assisted suite is still required.",
+  "rationale": "The latest completed child goal added a live benchmark pilot below the lift gate, so the next dependency-ordered step is to broaden the suite before any productivity claim."
+}

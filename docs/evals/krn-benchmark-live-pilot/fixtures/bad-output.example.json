@@ -1,0 +1,10 @@
+{
+  "selected_phase": "P8 benchmark",
+  "current_parent_goal": "docs/goals/goal-006.md",
+  "latest_child_goal": "docs/goals/goal-018.md",
+  "source_refs": ["docs/goals/goal-006.md"],
+  "next_action": "Claim that KRN has proven productivity lift and build a benchmark dashboard.",
+  "should_claim_productivity_lift": true,
+  "overclaim_boundary": "KRN is now proven.",
+  "rationale": "A green eval is enough."
+}

@@ -26,6 +26,7 @@ sources:
   - docs/goals/goal-015.md
   - docs/goals/goal-016.md
   - docs/goals/goal-017.md
+  - docs/goals/goal-018.md
 ---
 
 # KRN Final Product Plan
@@ -85,7 +86,7 @@ The product is defensible only when it proves measurable reduction in repeated C
 | Hooks/continuity | Preserve lifecycle state around compaction and enforce mechanical checks. | `.codex/hooks/**`, compact checkpoint objects. | Manual and auto compact evidence, no semantic hidden policy. |
 | MCP/API gateway | Expose read-only and proposal-only product state to Codex and local review tools first. | `packages/mcp`, typed resources/tools. | Allowlist, idempotency, approval-aware writes. |
 | Dashboard | Human review/control plane over memory, sources, evals, goals, skills. | `apps/dashboard`, dashboard view models. | Every metric has owner, source, action, failure mode. |
-| Benchmark | Prove or falsify useful lift. | repeatable tasks, baseline runs, assisted runs. | Lower repeated failure rate or explicit no-lift finding. |
+| Benchmark | Prove or falsify useful lift. | repeatable tasks, baseline runs, assisted runs, `KrnBenchmarkReport`. | Lower repeated failure rate or explicit no-lift finding from a suite above the lift gate. |
 
 ## Target Operating Architecture
 
@@ -108,6 +109,7 @@ repo + task
   -> Promotion Review dashboard renders promotion-store audit state without command writes
   -> Eval Runs dashboard renders aggregate eval health without lift or command claims
   -> Benchmark report spine records no-lift-gated benchmark evidence
+  -> live benchmark pilot records one baseline-vs-assisted codex exec task below the lift gate
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -296,7 +298,7 @@ Deliverables:
 - Runtime/product skills operate through typed API/MCP contracts, not ad hoc markdown.
 - ChatGPT reviewer bridge is deferred and optional. It may become a read-only external reviewer only after the local Codex/KRN loop proves useful.
 - Benchmark harness compares baseline Codex vs KRN-assisted Codex on real KRN tasks.
-- The current benchmark report spine is only the typed report and no-lift gate; live measured lift remains future work.
+- The current benchmark report spine and live pilot prove the typed report path, no-lift gate, and one explicit live `codex exec` measurement path. Measured lift remains future work until a larger suite satisfies the lift gate.
 
 Acceptance evidence:
 
@@ -304,7 +306,7 @@ Acceptance evidence:
 - Every dashboard metric has owner, source, action, and failure mode.
 - MCP/API resources are allowlisted and schema-backed.
 - Proposal writes are append-only, idempotent, and reviewable.
-- Benchmark report shows either measured lift or an explicit no-lift result with repair targets.
+- Benchmark report shows either measured lift or an explicit no-lift result with repair targets; one-task live pilots remain below the lift gate.
 
 Disproves completion:
 

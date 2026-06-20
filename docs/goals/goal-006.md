@@ -103,6 +103,12 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-benchmark-spine` generated `.krn/evals/krn-benchmark-spine/20260620T052834Z-2409080/report.json` with 4/4 cases and 14/14 assertions.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T052950Z-2410440/report.json` with 14/14 modules, 62/62 cases, and 195/195 assertions, including `krn-benchmark-spine`.
   - This proves the benchmark report contract and no-lift gate only. It still does not prove measured productivity lift, live Codex benchmark quality, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
+  - `docs/evals/krn-benchmark-live-pilot/` and `packages/evals/src/validate-krn-benchmark-live-pilot.ts` implement the first explicit live `codex exec` benchmark pilot with separate validate and live modes.
+  - The live pilot runs one baseline prompt and one KRN-assisted prompt in read-only `codex exec`, constrains final output with `docs/evals/krn-benchmark-live-pilot/codex-output.schema.json`, scores both deterministically, and writes a `KrnBenchmarkReport` with `measurement_mode: "live_codex_exec"`.
+  - `pnpm run eval:krn-benchmark-live-pilot` generated `.krn/evals/krn-benchmark-live-pilot/20260620T060328Z-2492624/report.json` with 2/2 cases and 6/6 assertions.
+  - `pnpm run eval:krn-benchmark-live-pilot:live` generated `.krn/evals/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json` with 4/4 cases and 15/15 assertions.
+  - The generated benchmark report `.krn/benchmarks/krn-benchmark-live-pilot/20260620T060340Z-2493285/report.json` parsed through `KrnBenchmarkReport`, used `measurement_mode: "live_codex_exec"`, kept `productivity_lift_claimed: false`, and reported baseline score 0.95, assisted score 0.85, delta -0.1.
+  - This proves the live worker-to-typed-benchmark evidence path only. It still does not prove measured productivity lift, statistical benchmark validity, repair-loop quality, HTTP/API readiness, ChatGPT connector behavior, human review quality, or dashboard command readiness.
 
 ## Objective
 
@@ -349,7 +355,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-017.md
+docs/goals/goal-018.md
 ```
 
-Next child-goal candidates after `goal-017` are a live `codex exec` benchmark pilot using `KrnBenchmarkReport` with `measurement_mode: "live_codex_exec"`, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from fixture-contract benchmark evidence.
+Next child-goal candidates after `goal-018` are expanding the live benchmark suite beyond one task, surfacing benchmark reports through read-only dashboard/MCP view models, additional dashboard views over existing typed objects, HTTP/API read model hardening, repair-record surfacing, or Skill Impact / Goal Continuity surfaces. Run the research/plan checkpoint first. Do not add the explicit live benchmark runner to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from one-task live benchmark evidence.
