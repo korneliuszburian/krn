@@ -140,6 +140,14 @@ This goal supersedes `goal-005` as the product direction. `goal-005` remains use
   - `pnpm run eval:krn-benchmark-live-suite:live` generated `.krn/evals/krn-benchmark-live-suite/20260620T090346Z-2900772/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T090346Z-2900772/report.json` with 3/3 completed tasks, baseline `0.9456`, assisted `0.94`, and delta `-0.0056`.
   - `pnpm run eval:krn-eval` generated `.krn/eval/20260620T092221Z-2969002/report.json` with 17/17 modules, 74/74 cases, and 249/249 assertions after the prompt-load repair.
   - This repairs the specific first-task assisted timeout and stabilizes the benchmark evidence compared with `-0.3444`, but still does not prove productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or `krn benchmark`/`krn repair` CLI readiness.
+  - `docs/goals/goal-024.md` applied a bounded memory-layer next-action repair by updating `memory-layers-vs-file-substrate` to use `goal-023`, the prompt-load repair memory note, and source-backed memory/control/eval benchmark repair guidance instead of stale prompt-load guidance.
+  - `pnpm run eval:krn-benchmark-live-suite` generated `.krn/evals/krn-benchmark-live-suite/20260620T093329Z-2982842/report.json` with 4/4 cases and 16/16 assertions after the memory-layer repair.
+  - `pnpm typecheck` passed after the memory-layer repair.
+  - The first explicit live memory-layer repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T093350Z-2983111/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T093350Z-2983111/report.json` with 2/3 completed tasks, 1 failed baseline timeout, baseline `0.5589`, assisted `0.9733`, and delta `+0.4144`.
+  - In that first live rerun, `memory-layers-vs-file-substrate` completed with baseline `1`, assisted `1`, and assisted `next_action_score` `1`, improving the target metric from the previous assisted `0.5`.
+  - The repeat live memory-layer repair rerun generated `.krn/evals/krn-benchmark-live-suite/20260620T094837Z-3002586/report.json` with 5/5 cases and 22/22 assertions, plus `.krn/benchmarks/krn-benchmark-live-suite/20260620T094837Z-3002586/report.json` with 1/3 completed tasks, 2 failed baseline timeouts, baseline `0.2756`, assisted `0.9733`, and delta `+0.6977`.
+  - In that repeat live rerun, `memory-layers-vs-file-substrate` completed with baseline `0.8267`, assisted `1`, and assisted `next_action_score` `1`.
+  - This keeps the memory-layer repair because the target assisted metric improved and repeated, but the positive suite deltas are not clean productivity evidence because non-target baseline tasks timed out. The next benchmark repair should target live runner timeout/concurrency/stability before suite expansion or lift claims.
 
 ## Objective
 
@@ -386,7 +394,7 @@ Do not mark complete for:
 Continue Slice 3 by creating the next bounded child goal from the latest completed child goal:
 
 ```bash
-docs/goals/goal-023.md
+docs/goals/goal-024.md
 ```
 
-Next child-goal candidates after `goal-023` are a bounded repair for the `memory-layers-vs-file-substrate` assisted `next_action_score` regression, a repeat/stability live-run check before suite expansion, live runner timeout/concurrency policy hardening, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until repair attempts produce stable non-negative or positive deltas. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, or a green live shape report with negative delta.
+Next child-goal candidates after `goal-024` are live runner timeout/concurrency policy hardening, a repeat/stability live-run check that requires clean completed tasks before suite expansion, read-only repair-record MCP/dashboard surfacing, HTTP/API read model hardening, or Skill Impact / Goal Continuity surfaces. Expanding the fixed live suite toward the 20-task lift gate should wait until repair attempts produce stable completed-task evidence, not just positive deltas inflated by baseline timeouts. Run the research/plan checkpoint first. Do not add explicit live benchmark runner mode to default deterministic `krn eval`, expose destructive MCP/API tools, mocked dashboard state, broad promotion mutation, dashboard rerun/repair commands, or productivity claims from three-task live benchmark evidence, a proposed repair record, a green live shape report, or positive suite deltas with failed baseline tasks.

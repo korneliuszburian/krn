@@ -43,26 +43,26 @@
       "prompt": "Inspect the KRN direction and decide whether the next product action should add a vector database/graph store now or continue through benchmark evidence. Preserve what is known about memory layers.",
       "assisted_guidance": [
         "Read the product memory note about operating architecture and memory layers.",
-        "Read the current-child repair-attempt memory note before proposing new storage infrastructure.",
+        "Read the assisted prompt-load repair note before proposing new storage infrastructure.",
         "Distinguish file-backed memory as auditable substrate from the actual product breakthrough.",
-        "Route the next implementation through the current active goal and bounded assisted prompt-load repair instead of adding premature infrastructure."
+        "Route the next implementation through a bounded source-backed memory/control/eval benchmark repair instead of adding premature infrastructure."
       ],
       "source_refs": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
+        "docs/goals/goal-023.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
         "docs/product/final-product-plan.md",
         "docs/plans/canonical/SOURCES.md"
       ],
       "parent_goal_keywords": ["docs/goals/goal-006.md", "goal-006"],
-      "latest_child_goal_keywords": ["docs/goals/goal-022.md", "goal-022"],
+      "latest_child_goal_keywords": ["docs/goals/goal-023.md", "goal-023"],
       "expected_phase_keywords": ["p3", "p8", "repair", "benchmark"],
       "required_source_ref_keywords": [
         "docs/goals/goal-006.md",
-        "docs/goals/goal-022.md",
+        "docs/goals/goal-023.md",
         "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-        "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
         "docs/product/final-product-plan.md",
         "docs/plans/canonical/SOURCES.md"
       ],

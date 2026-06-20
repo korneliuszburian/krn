@@ -33,8 +33,11 @@ It does not claim measured productivity lift. Validate mode uses fixtures and ma
 - Live mode, when explicitly run, calls `codex exec --json --sandbox read-only` with schema-constrained final output and captured evidence refs.
 - Three-task reports keep `productivity_lift_claimed: false` because the lift gate requires at least 20 tasks.
 - The first repair attempt made current-parent/latest-child routing data-driven and routed assisted guidance through `goal-021`/`KrnRepairRecord` before suite expansion.
-- The current repair attempt reduces assisted prompt load by using task-owned `source_refs` and task-specific guidance instead of a universal read list.
-- The latest live repair run completed 3/3 tasks and improved the suite delta from `-0.3444` to `-0.0056`; this is stabilized no-lift evidence, not productivity lift.
+- The assisted prompt-load repair reduces assisted prompt load by using task-owned `source_refs` and task-specific guidance instead of a universal read list.
+- The prompt-load repair run completed 3/3 tasks and improved the suite delta from `-0.3444` to `-0.0056`; this is stabilized no-lift evidence, not productivity lift.
+- The memory-layer next-action repair updates `memory-layers-vs-file-substrate` to use `goal-023` and the prompt-load repair note as current context instead of stale prompt-load guidance.
+- Two explicit live reruns after the memory-layer repair kept assisted `memory-layers-vs-file-substrate` `next_action_score` at `1`, up from the previous assisted score of `0.5`.
+- Those live reruns also exposed baseline timeout instability in non-target tasks, so their positive suite deltas are not productivity lift or clean suite-success evidence.
 
 ## Commands
 

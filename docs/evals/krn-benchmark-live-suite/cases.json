@@ -2,7 +2,15 @@
   {
     "id": "task-registry-parses",
     "expected_behavior": "The suite task registry parses, contains at least three fixed benchmark tasks, and preserves a minimum task gate for lift claims.",
-    "source_patterns": ["S010", "S011", "S088", "docs/goals/goal-020.md", "docs/goals/goal-022.md", "docs/goals/goal-023.md"],
+    "source_patterns": [
+      "S010",
+      "S011",
+      "S088",
+      "docs/goals/goal-020.md",
+      "docs/goals/goal-022.md",
+      "docs/goals/goal-023.md",
+      "docs/goals/goal-024.md"
+    ],
     "assertions": ["task registry parses", "task count is at least three", "minimum lift gate is at least twenty"],
     "metrics": ["runtime_contract_score", "drift_resistance_score"],
     "failure_mode": "The expanded benchmark suite is an ad hoc prompt list instead of a typed registry."
@@ -32,7 +40,8 @@
       "C044",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
-      "docs/goals/goal-023.md"
+      "docs/goals/goal-023.md",
+      "docs/goals/goal-024.md"
     ],
     "assertions": [
       "generated benchmark report exists",
@@ -48,7 +57,16 @@
   {
     "id": "live-report-shape",
     "expected_behavior": "Live mode writes a parseable KrnBenchmarkReport with measurement_mode live_codex_exec, task_count at least three, productivity_lift_claimed false, and captured Codex evidence refs.",
-    "source_patterns": ["S009", "S010", "S011", "S013", "docs/goals/goal-020.md", "docs/goals/goal-022.md", "docs/goals/goal-023.md"],
+    "source_patterns": [
+      "S009",
+      "S010",
+      "S011",
+      "S013",
+      "docs/goals/goal-020.md",
+      "docs/goals/goal-022.md",
+      "docs/goals/goal-023.md",
+      "docs/goals/goal-024.md"
+    ],
     "assertions": [
       "baseline codex exec runs captured",
       "assisted codex exec runs captured",

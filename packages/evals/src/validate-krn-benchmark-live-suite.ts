@@ -459,21 +459,24 @@ function relativeRuntimePath(path: string): string {
 function repairTargets(): KrnBenchmarkReport["repair_targets"] {
   return [
     {
-      id: "repair-live-suite-assisted-prompt-load",
+      id: "repair-live-suite-memory-layer-next-action",
       owner: "krn",
       next_action:
-        "Reduce assisted prompt load and first-task timeout risk, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
+        "Repair the memory-layers-vs-file-substrate assisted next-action regression, rerun live_codex_exec explicitly, and compare delta before expanding the suite.",
       source_refs: [
         "docs/goals/goal-006.md",
         "docs/goals/goal-022.md",
         "docs/goals/goal-023.md",
+        "docs/goals/goal-024.md",
         "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+        "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+        "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
         "docs/specs/krn-benchmark-report/README.md",
         "docs/specs/krn-repair-record/README.md",
         "docs/evals/krn-benchmark-live-suite/README.md",
       ],
       failure_mode:
-        "A timed-out assisted run is routed to broad tuning or suite expansion without a measured prompt-load repair attempt.",
+        "The memory-layer benchmark task routes next action to stale prompt-load repair or storage infrastructure instead of source-backed memory/control/eval repair evidence.",
     },
   ];
 }
@@ -577,7 +580,10 @@ function buildBenchmarkReport(
       "docs/goals/goal-021.md",
       "docs/goals/goal-022.md",
       "docs/goals/goal-023.md",
+      "docs/goals/goal-024.md",
       "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+      "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
+      "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
       "docs/specs/krn-benchmark-report/README.md",
       "docs/specs/krn-repair-record/README.md",
       "docs/evals/krn-benchmark-live-suite/README.md",
@@ -587,8 +593,8 @@ function buildBenchmarkReport(
     ],
     interpretation_caveat:
       mode === "live"
-        ? "This live suite proves only a multi-task codex exec benchmark path and assisted prompt-load repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
-        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the assisted prompt-load repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
+        ? "This live suite proves only a multi-task codex exec benchmark path and memory-layer next-action repair-attempt measurement; three tasks remain below the 20-task lift gate and do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality."
+        : "This fixture-contract suite proves only deterministic parser/scorer/report behavior for the memory-layer next-action repair-attempt benchmark suite; fixture data and three tasks do not prove measured productivity lift, statistical validity, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, or human review quality.",
   } satisfies KrnBenchmarkReport;
 
   return parseKrnBenchmarkReport(report);

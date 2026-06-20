@@ -1,17 +1,17 @@
 {
-  "selected_phase": "P8 benchmark",
+  "selected_phase": "P3/P8 benchmark repair",
   "current_parent_goal": "docs/goals/goal-006.md",
-  "latest_child_goal": "docs/goals/goal-022.md",
+  "latest_child_goal": "docs/goals/goal-023.md",
   "source_refs": [
     "docs/goals/goal-006.md",
-    "docs/goals/goal-022.md",
+    "docs/goals/goal-023.md",
     "docs/memory/product/2026-06-20--krn-operating-architecture-and-memory-layers.md",
-    "docs/memory/product/2026-06-20--krn-benchmark-current-child-repair-attempt.md",
+    "docs/memory/product/2026-06-20--krn-benchmark-assisted-prompt-load-repair.md",
     "docs/product/final-product-plan.md",
     "docs/plans/canonical/SOURCES.md"
   ],
-  "next_action": "Keep file-backed source-backed memory as the auditable substrate and run a bounded benchmark prompt-load repair attempt so memory/control changes are judged by measured behavior instead of premature infrastructure.",
+  "next_action": "Keep file-backed source-backed memory as the auditable substrate and run a bounded memory/control/eval benchmark repair so source-backed memory behavior is judged by measured repair evidence instead of premature infrastructure.",
   "should_claim_productivity_lift": false,
   "overclaim_boundary": "File-backed memory is not the breakthrough by itself, and a benchmark suite still must not claim lift until the evidence passes the gate.",
-  "rationale": "The current gap is not a missing vector store; goal 022 shows the immediate product need is reducing failed assisted benchmark runs and measuring whether the layered memory/control/eval loop improves Codex behavior."
+  "rationale": "The current gap is not a missing vector store; goal 023 shows the assisted prompt-load repair removed the timeout and improved the live suite delta to near-neutral no-lift evidence. The next bounded repair should target source-backed memory/control/eval next-action behavior before adding storage infrastructure."
 }
