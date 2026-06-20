@@ -181,14 +181,24 @@ export const KrnBenchmarkReportSchema = z
       });
     }
 
+    const canHavePositiveLiftStatus =
+      report.measurement_mode === "live_codex_exec" &&
+      report.task_count >= report.minimum_task_count_for_lift_claim &&
+      report.blocked_task_count === 0 &&
+      report.failed_task_count === 0 &&
+      report.assisted_minus_baseline > 0;
+
+    if (report.lift_status === "positive_lift" && !canHavePositiveLiftStatus) {
+      context.addIssue({
+        code: "custom",
+        path: ["lift_status"],
+        message:
+          "positive_lift requires live_codex_exec, enough tasks, no blocked/failed tasks, and positive delta",
+      });
+    }
+
     if (report.productivity_lift_claimed) {
-      const canClaimLift =
-        report.measurement_mode === "live_codex_exec" &&
-        report.lift_status === "positive_lift" &&
-        report.task_count >= report.minimum_task_count_for_lift_claim &&
-        report.blocked_task_count === 0 &&
-        report.failed_task_count === 0 &&
-        report.assisted_minus_baseline > 0;
+      const canClaimLift = report.lift_status === "positive_lift" && canHavePositiveLiftStatus;
 
       if (!canClaimLift) {
         context.addIssue({

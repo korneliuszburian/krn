@@ -28,6 +28,14 @@ describe("KrnBenchmarkReport contract", () => {
     ).toThrow();
   });
 
+  it("rejects positive lift status with failed task evidence", () => {
+    expect(() =>
+      parseKrnBenchmarkReport(
+        readJson("docs/specs/krn-benchmark-report/fixtures/bad-positive-lift-status-with-failed-task.example.json"),
+      ),
+    ).toThrow();
+  });
+
   it("rejects mismatched task totals and aggregate deltas", () => {
     const fixture = parseKrnBenchmarkReport(
       readJson("docs/specs/krn-benchmark-report/examples/benchmark-report.example.json"),

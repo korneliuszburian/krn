@@ -7,6 +7,7 @@ updated: 2026-06-20
 sources:
   - docs/goals/goal-006.md
   - docs/goals/goal-017.md
+  - docs/goals/goal-025.md
   - docs/product/final-product-plan.md
   - docs/evals/STANDARD.md
   - docs/plans/canonical/SOURCES.md
@@ -47,10 +48,9 @@ Every benchmark report includes:
 
 ## Lift Gate
 
-`productivity_lift_claimed: true` is valid only when all of these are true:
+`lift_status: "positive_lift"` and `productivity_lift_claimed: true` are valid only when all of these are true:
 
 - `measurement_mode` is `live_codex_exec`,
-- `lift_status` is `positive_lift`,
 - `task_count` is at least `minimum_task_count_for_lift_claim`,
 - no tasks are blocked or failed,
 - assisted score is higher than baseline score.

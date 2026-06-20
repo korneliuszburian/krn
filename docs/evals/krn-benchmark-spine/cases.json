@@ -29,6 +29,19 @@
     "failure_mode": "KRN accepts fixture or aggregate-eval data as measured productivity lift."
   },
   {
+    "id": "known-bad-positive-status-with-failed-task-fails",
+    "expected_behavior": "The known-bad benchmark report fixture that labels failed-task evidence as positive_lift fails deterministically even when productivity_lift_claimed is false.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-024.md",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/plans/canonical/SOURCES.md"
+    ],
+    "assertions": ["known-bad positive status fixture rejected"],
+    "metrics": ["anti_slop_score", "drift_resistance_score", "runtime_contract_score"],
+    "failure_mode": "KRN accepts positive lift status from a dirty positive delta with failed baseline tasks."
+  },
+  {
     "id": "generated-benchmark-report-writes-and-parses",
     "expected_behavior": "The runner writes a benchmark report under .krn/benchmarks/krn-benchmark-spine and parses it through @krn/contracts.",
     "source_patterns": [

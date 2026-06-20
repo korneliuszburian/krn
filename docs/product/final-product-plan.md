@@ -33,6 +33,7 @@ sources:
   - docs/goals/goal-022.md
   - docs/goals/goal-023.md
   - docs/goals/goal-024.md
+  - docs/goals/goal-025.md
 ---
 
 # KRN Final Product Plan
@@ -122,6 +123,7 @@ repo + task
   -> first repair attempt measures before/after delta and records worse/no-lift outcomes without claiming lift
   -> assisted prompt-load repair uses task-owned source refs and records stabilized/no-lift outcomes without claiming lift
   -> memory-layer next-action repair preserves source-backed memory/control/eval routing while exposing baseline timeout instability
+  -> benchmark lift-status gate rejects dirty positive live deltas before suite expansion
   -> later broader promotion writes source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior

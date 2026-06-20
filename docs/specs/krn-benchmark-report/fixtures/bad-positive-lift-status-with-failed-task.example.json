@@ -1,0 +1,85 @@
+{
+  "schema_version": "krn-benchmark-report.v1",
+  "kind": "krn_benchmark_report",
+  "run_id": "20260620T101500Z-bad-positive-status",
+  "created_at": "2026-06-20T10:15:00.000Z",
+  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "benchmark_id": "krn-benchmark-live-suite",
+  "suite_id": "dirty-positive-delta-fixture",
+  "measurement_mode": "live_codex_exec",
+  "baseline_label": "baseline_codex",
+  "assisted_label": "krn_assisted_codex",
+  "minimum_task_count_for_lift_claim": 20,
+  "productivity_lift_claimed": false,
+  "lift_status": "positive_lift",
+  "task_count": 1,
+  "completed_task_count": 0,
+  "blocked_task_count": 0,
+  "failed_task_count": 1,
+  "baseline_score": 0,
+  "assisted_score": 0.8,
+  "assisted_minus_baseline": 0.8,
+  "tasks": [
+    {
+      "task_id": "baseline-timeout-dirty-positive-delta",
+      "title": "Reject positive lift status when baseline evidence failed",
+      "status": "failed",
+      "task_source_refs": ["docs/goals/goal-024.md", "docs/plans/canonical/SOURCES.md"],
+      "baseline": {
+        "label": "baseline_codex",
+        "score": 0,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/example/baseline-timeout.baseline.final.json"
+        ],
+        "interpretation_caveat": "Baseline timed out; this is not a completed comparable task."
+      },
+      "assisted": {
+        "label": "krn_assisted_codex",
+        "score": 0.8,
+        "evidence_refs": [
+          ".krn/benchmarks/krn-benchmark-live-suite/example/baseline-timeout.assisted.final.json"
+        ],
+        "interpretation_caveat": "Assisted score cannot establish productivity lift against a failed baseline."
+      },
+      "assisted_minus_baseline": 0.8,
+      "metrics": [
+        {
+          "metric_id": "dirty_delta_score",
+          "baseline_score": 0,
+          "assisted_score": 0.8,
+          "assisted_minus_baseline": 0.8,
+          "weight": 1,
+          "source_refs": ["docs/specs/krn-benchmark-report/README.md"],
+          "interpretation_caveat": "Positive delta with failed baseline task is not clean lift evidence."
+        }
+      ],
+      "repair_targets": [
+        {
+          "id": "repair-live-suite-timeout-stability",
+          "owner": "krn",
+          "next_action": "Harden live runner timeout and completed-task policy before suite expansion.",
+          "source_refs": ["docs/goals/goal-024.md"],
+          "failure_mode": "Positive deltas with failed baseline tasks are mislabeled as positive lift."
+        }
+      ],
+      "interpretation_caveat": "This known-bad row must not support positive lift status."
+    }
+  ],
+  "repair_targets": [
+    {
+      "id": "repair-live-suite-timeout-stability",
+      "owner": "krn",
+      "next_action": "Harden live runner timeout and completed-task policy before suite expansion.",
+      "source_refs": ["docs/goals/goal-024.md"],
+      "failure_mode": "Positive deltas with failed baseline tasks are mislabeled as positive lift."
+    }
+  ],
+  "benchmark_report_path": ".krn/benchmarks/krn-benchmark-live-suite/20260620T101500Z-bad-positive-status/report.json",
+  "source_refs": [
+    "docs/goals/goal-006.md",
+    "docs/goals/goal-024.md",
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/plans/canonical/SOURCES.md"
+  ],
+  "interpretation_caveat": "This fixture must fail because positive lift status cannot be represented with failed tasks or too few tasks."
+}

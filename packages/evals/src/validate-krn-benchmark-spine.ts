@@ -172,6 +172,32 @@ function runValidation(): EvalReport {
     );
   }
 
+  const knownBadPositiveStatusCase = caseById(cases, "known-bad-positive-status-with-failed-task-fails");
+  try {
+    parseKrnBenchmarkReport(
+      readJson(resolve("docs/specs/krn-benchmark-report/fixtures/bad-positive-lift-status-with-failed-task.example.json")),
+    );
+    results.push(
+      result(
+        knownBadPositiveStatusCase.id,
+        false,
+        ["known-bad positive status fixture rejected"],
+        knownBadPositiveStatusCase.failure_mode,
+        "Known-bad positive lift status fixture unexpectedly parsed.",
+      ),
+    );
+  } catch {
+    results.push(
+      result(
+        knownBadPositiveStatusCase.id,
+        true,
+        ["known-bad positive status fixture rejected"],
+        knownBadPositiveStatusCase.failure_mode,
+        "Known-bad positive lift status fixture failed as expected.",
+      ),
+    );
+  }
+
   const generatedCase = caseById(cases, "generated-benchmark-report-writes-and-parses");
   try {
     generatedBenchmarkReport = buildBenchmarkReport(runId, now);
