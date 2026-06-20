@@ -18,7 +18,8 @@ type InitAgentInstructionsPayload = Extract<
   { payload_type: "init_agent_instructions" }
 >;
 type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_local_config" }>;
-type InitBootstrapPayload = InitAgentInstructionsPayload | InitLocalConfigPayload;
+type InitSourcePointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_source_pointers" }>;
+type InitBootstrapPayload = InitAgentInstructionsPayload | InitLocalConfigPayload | InitSourcePointersPayload;
 export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
 function sha256(content: string): string {
@@ -79,6 +80,40 @@ dashboard = "disabled"
 `;
 }
 
+function sourcePointersFileContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-source-graph.v1",
+      kind: "krn_source_graph",
+      graph_id: "krn-init-source-graph-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      records: [
+        {
+          schema_version: "krn-source-record.v1",
+          kind: "krn_source_record",
+          id: "bootstrap-source-policy",
+          ref: "krn://source/bootstrap-policy",
+          type: "runtime_evidence",
+          status: "unverified",
+          freshness: "unknown",
+          confidence: "medium",
+          owner: "krn init",
+          last_verified_at: null,
+          supports_decisions: ["source_graph_seed"],
+          conflicts_with: [],
+          invalidation_rule: "Replace this seed with reviewed project sources before claiming source-backed decisions.",
+          source_refs: ["krn://source/bootstrap-policy"],
+        },
+      ],
+      source_refs: ["krn://source/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed is a source graph boundary only; it is not a copied bibliography, active source list, or proof of source freshness.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
 export function buildInitAgentInstructionsPayload(targetPath: string): InitAgentInstructionsPayload {
   const fileContent = agentInstructionsFileContent();
   return {
@@ -103,12 +138,26 @@ export function buildInitLocalConfigPayload(targetPath: string): InitLocalConfig
   };
 }
 
+export function buildInitSourcePointersPayload(targetPath: string): InitSourcePointersPayload {
+  const fileContent = sourcePointersFileContent();
+  return {
+    payload_type: "init_source_pointers",
+    bootstrap_capability: "source_pointers",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
 export function buildInitBootstrapPayload(capability: InitBootstrapCapability, targetPath: string): InitBootstrapPayload {
   switch (capability) {
     case "agent_instructions":
       return buildInitAgentInstructionsPayload(targetPath);
     case "local_config":
       return buildInitLocalConfigPayload(targetPath);
+    case "source_pointers":
+      return buildInitSourcePointersPayload(targetPath);
   }
 }
 
@@ -118,7 +167,8 @@ function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
   }
   if (
     proposal.promotion_payload?.payload_type !== "init_agent_instructions" &&
-    proposal.promotion_payload?.payload_type !== "init_local_config"
+    proposal.promotion_payload?.payload_type !== "init_local_config" &&
+    proposal.promotion_payload?.payload_type !== "init_source_pointers"
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
@@ -135,7 +185,9 @@ export function buildInitPromotion(
   const payload = proposal.promotion_payload;
   if (
     !payload ||
-    (payload.payload_type !== "init_agent_instructions" && payload.payload_type !== "init_local_config")
+    (payload.payload_type !== "init_agent_instructions" &&
+      payload.payload_type !== "init_local_config" &&
+      payload.payload_type !== "init_source_pointers")
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }

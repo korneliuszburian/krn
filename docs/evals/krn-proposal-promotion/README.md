@@ -44,6 +44,7 @@ A green result proves only the local proposal promotion boundary:
 - explicit apply mode writes exact target content only after approved review,
 - exact `init_bootstrap` agent-instructions payloads can be applied only through the approved promotion boundary,
 - exact `init_bootstrap` local-config payloads can be applied only through the approved promotion boundary,
+- exact `init_bootstrap` source-pointers payloads can be applied only through the approved promotion boundary,
 - rejected decisions cannot promote proposals,
 - proposals without machine-applicable payload cannot promote,
 - duplicate promotion writes are idempotent,

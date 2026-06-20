@@ -151,6 +151,57 @@ describe("KRN control-plane proposal contract", () => {
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
   });
 
+  it("parses an init source-pointers proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-source-pointers-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init source-pointers bootstrap",
+      rationale: "The source graph seed target must be reviewed before target mutation.",
+      proposed_change: "Review the .krn/sources/index.json bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_source_pointers",
+        bootstrap_capability: "source_pointers",
+        target_path: ".krn/sources/index.json",
+        write_mode: "exact_file_content",
+        file_content: "{\"schema_version\":\"krn-source-graph.v1\"}\n",
+        content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      target: {
+        target_type: "path",
+        path: ".krn/sources/index.json",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:source_pointers:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate .krn/sources/index.json or prove write-mode safety.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_source_pointers",
+      bootstrap_capability: "source_pointers",
+      target_path: ".krn/sources/index.json",
+    });
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("rejects an init payload attached to a non-init proposal", () => {
     expect(() =>
       parseKrnControlPlaneProposal({
@@ -221,6 +272,49 @@ describe("KRN control-plane proposal contract", () => {
           default_effect: "no_mutation",
           allowed_persistence: "append_only",
           idempotency_key: "bad-init-local-config-target:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an init source-pointers payload targeting a different path", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-init-source-pointers-target",
+        proposal_kind: "init_bootstrap",
+        status: "proposal_only",
+        title: "Bad source pointers target",
+        rationale: "Source pointer payloads must target the source graph seed path.",
+        proposed_change: "Write source pointers to the wrong place.",
+        promotion_payload: {
+          payload_type: "init_source_pointers",
+          bootstrap_capability: "source_pointers",
+          target_path: "docs/plans/canonical/SOURCES.md",
+          write_mode: "exact_file_content",
+          file_content: "{\"schema_version\":\"krn-source-graph.v1\"}\n",
+          content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        target: {
+          target_type: "path",
+          path: "docs/plans/canonical/SOURCES.md",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-source-pointers-target:test",
         },
         review_gate: {
           required: true,

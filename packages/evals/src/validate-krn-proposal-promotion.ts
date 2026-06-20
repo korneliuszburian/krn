@@ -119,6 +119,40 @@ function initLocalConfigContent(): string {
   return "schema_version = \"krn-local-config.v1\"\n";
 }
 
+function initSourcePointersContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-source-graph.v1",
+      kind: "krn_source_graph",
+      graph_id: "krn-init-source-graph-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      records: [
+        {
+          schema_version: "krn-source-record.v1",
+          kind: "krn_source_record",
+          id: "bootstrap-source-policy",
+          ref: "krn://source/bootstrap-policy",
+          type: "runtime_evidence",
+          status: "unverified",
+          freshness: "unknown",
+          confidence: "medium",
+          owner: "krn init",
+          last_verified_at: null,
+          supports_decisions: ["source_graph_seed"],
+          conflicts_with: [],
+          invalidation_rule: "Replace this seed with reviewed project sources before claiming source-backed decisions.",
+          source_refs: ["krn://source/bootstrap-policy"],
+        },
+      ],
+      source_refs: ["krn://source/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed is a source graph boundary only; it is not a copied bibliography, active source list, or proof of source freshness.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
 function validProposal(): KrnControlPlaneProposal {
   return parseKrnControlPlaneProposal(
     readJson(resolve("docs/specs/krn-control-plane-proposal/examples/control-plane-proposal.example.json")),
@@ -214,6 +248,49 @@ function validInitLocalConfigProposal(): KrnControlPlaneProposal {
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/config.toml until explicit apply mode.",
+  });
+}
+
+function validInitSourcePointersProposal(): KrnControlPlaneProposal {
+  const fileContent = initSourcePointersContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-source-pointers-eval",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init source-pointers bootstrap",
+    rationale: "The source graph seed target must be reviewed before target mutation.",
+    proposed_change: "Write a minimal .krn/sources/index.json only after approved review.",
+    promotion_payload: {
+      payload_type: "init_source_pointers",
+      bootstrap_capability: "source_pointers",
+      target_path: ".krn/sources/index.json",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/sources/index.json",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:source_pointers:eval",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/eval/manifest.json"],
+    source_refs: [".krn/init/eval/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "copied_source_truth"],
+    created_at: "2026-06-20T22:55:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/sources/index.json until explicit apply mode.",
   });
 }
 
@@ -565,6 +642,61 @@ function runValidation(): EvalReport {
         ["apply exact init local-config promotion"],
         initLocalConfigApplyCase.failure_mode,
         error instanceof Error ? error.message : "unknown init local-config apply promotion error",
+      ),
+    );
+  }
+
+  const initSourcePointersApplyCase = caseById(cases, "apply-exact-init-source-pointers-promotion");
+  try {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-sources-eval-"));
+    const proposal = validInitSourcePointersProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-source-pointers-eval",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-source-pointers-eval:decision",
+      },
+    });
+    const stored = storeKrnProposalPromotion(promotion, { targetInput: targetRoot, now });
+    const targetPath = join(targetRoot, ".krn", "sources", "index.json");
+    appliedTargetPath = ".krn/sources/index.json";
+
+    results.push(
+      result(
+        initSourcePointersApplyCase.id,
+        stored.status === "stored" &&
+          stored.target_written === true &&
+          readFileSync(targetPath, "utf8") === initSourcePointersContent() &&
+          existsSync(join(targetRoot, stored.promotion_path)),
+        [
+          "approved init source-pointers proposal stored",
+          "init source-pointers apply promotion stored",
+          ".krn/sources/index.json written in explicit apply mode",
+          "promotion record persisted",
+        ],
+        initSourcePointersApplyCase.failure_mode,
+        "Explicit apply mode wrote exact reviewed init source-pointers payload after approved review.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        initSourcePointersApplyCase.id,
+        false,
+        ["apply exact init source-pointers promotion"],
+        initSourcePointersApplyCase.failure_mode,
+        error instanceof Error ? error.message : "unknown init source-pointers apply promotion error",
       ),
     );
   }

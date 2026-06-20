@@ -552,6 +552,13 @@ local `KRN_MEMORY_STORE_PATH` and runtime directories, but does not embed memory
 bodies, active-goal truth, copied source lists, dashboard state, API sync, or
 cloud defaults.
 
+[FACT] `krn init --proposal source_pointers` and `krn init --apply
+source_pointers` reuse the same reviewed promotion spine for the third absent
+bootstrap target: `.krn/sources/index.json`. The exact `init_source_pointers`
+payload seeds a minimal `krn-source-graph.v1` boundary without copying canonical
+source ledgers, active source lists, source bodies, dashboard state, API sync, or
+memory-core truth.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -561,12 +568,12 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with source pointers, context pointers,
-eval baseline, skill wiring, policy boundaries, or repo-bootstrap readiness
-before adding dashboard, benchmark, broad API/cloud sync, research runtime, or
-passive docs. Do not turn init into a broad scaffold writer and do not add
-another target mutation without review/promotion, no-overwrite behavior,
-source/evidence lineage, and focused eval coverage.
+[NEXT] After this checkpoint, continue with context pointers, eval baseline,
+skill wiring, policy boundaries, or repo-bootstrap readiness before adding
+dashboard, benchmark, broad API/cloud sync, research runtime, or passive docs.
+Do not turn init into a broad scaffold writer and do not add another target
+mutation without review/promotion, no-overwrite behavior, source/evidence
+lineage, and focused eval coverage.
 
 ## Progress Ledger
 
@@ -701,6 +708,21 @@ source/evidence lineage, and focused eval coverage.
 - [SIMPLIFY] Next candidate: source pointers, context pointers, eval baseline, skill wiring, policy boundaries, or repo-bootstrap readiness; each must reuse reviewed payload boundaries before target mutation.
 - [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/config.toml` apply boundary. It does not prove broad config consumption, full repo bootstrap usefulness, merge-mode safety, dashboard/API readiness, final memory quality, or productivity lift.
 - [NEXT] Commit and push this checkpoint; then continue with the next non-memory-core bootstrap boundary or repo-bootstrap readiness check.
+- [FACT] Third reviewed `krn init` apply-target slice added `krn init --proposal source_pointers` and `krn init --apply source_pointers --proposal-path <path> --decision-path <path>`.
+- [FACT] `krn init --apply source_pointers` reads an existing `init_bootstrap` proposal and approved review decision, builds a `KrnProposalPromotion` with `promotion_scope: "approved_init_bootstrap_only"`, and writes `.krn/sources/index.json` only from the exact `init_source_pointers` payload when the target is absent.
+- [FACT] `KrnControlPlaneProposal` now supports exact `init_source_pointers` payloads only for `init_bootstrap` proposals targeting `.krn/sources/index.json`, while the shared promotion boundary still rejects target mismatches, unsafe paths, existing targets, and unapproved decisions.
+- [FACT] The generated source graph seed is a minimal `krn-source-graph.v1` boundary with one unverified bootstrap policy ref and an overclaim boundary. It does not copy `docs/plans/canonical/SOURCES.md`, `goal-038`, active source lists, source bodies, dashboard state, API sync, or memory-core truth.
+- [EVIDENCE] Pre-edit gate passed: `pnpm run krn -- gate --task "Add reviewed source_pointers init bootstrap capability without broad scaffold writes or copied source truth" --path packages/cli/src/init.ts` wrote `.krn/gates/20260620T233918Z-745977/engineering-gate.json`.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-promotion-store.test.ts packages/cli/test/init-dry-run.test.ts` passed 4 files / 32 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260620T235217Z-781736` with 8/8 cases and 33/33 assertions.
+- [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `20260620T234845Z-776982` with 10/10 cases and 34/34 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260620T235236Z-782131` with 5/5 modules, 20/20 cases, and 64/64 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: exact `init_source_pointers` payload, shared `init_bootstrap` proposal/promotion boundary, no-overwrite `.krn/sources/index.json` apply path, source graph seed overclaim boundary, and focused init/promotion eval cases because each protects repo bootstrap without copying active source truth.
+- [SIMPLIFY] Delete/avoid: no broad scaffold writer, no merge/overwrite mode for existing `.krn/sources/index.json`, no dashboard, no benchmark expansion, no broad API/cloud sync, no source bodies in repo config/runtime seed, no canonical source ledger copy, and no parallel source-pointers writer outside proposal promotion.
+- [SIMPLIFY] Next candidate: source graph seed content is repeated in test/eval fixtures for exact payload parity; extract a shared fixture only if another bootstrap target or consumer creates meaningful duplication pressure.
+- [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/sources/index.json` apply boundary. It does not prove source freshness, source ingestion, final source service quality, broad repo bootstrap usefulness, merge-mode safety, dashboard/API readiness, final memory quality, or productivity lift.
+- [NEXT] Commit and push this checkpoint; then continue with context pointers, eval baseline, skill wiring, policy boundaries, or repo-bootstrap readiness.
 
 ## Disproves Completion
 

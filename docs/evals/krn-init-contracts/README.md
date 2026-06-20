@@ -15,8 +15,8 @@ This eval verifies the final-shaped dry-run bootstrap and first proposal-only bo
 
 ```text
 InitManifest parser -> krn init --dry-run -> bootstrap plan -> runtime manifest -> eval report
-InitManifest parser -> krn init --proposal agent_instructions|local_config -> KrnControlPlaneProposal -> append-only proposal store -> eval report
-Init proposal -> approved review decision -> krn init --apply agent_instructions|local_config -> KrnProposalPromotion -> exact target write
+InitManifest parser -> krn init --proposal agent_instructions|local_config|source_pointers -> KrnControlPlaneProposal -> append-only proposal store -> eval report
+Init proposal -> approved review decision -> krn init --apply agent_instructions|local_config|source_pointers -> KrnProposalPromotion -> exact target write
 ```
 
 It does not claim productivity lift, dashboard readiness, MCP readiness, memory-core quality, paper-research automation, broad repo bootstrap, or merge-mode safety.
@@ -35,6 +35,8 @@ It does not claim productivity lift, dashboard readiness, MCP readiness, memory-
 - The generated apply path writes `AGENTS.md` from the exact reviewed payload and records a promotion.
 - The CLI-generated `local_config` apply path requires an approved review decision.
 - The generated apply path writes `.krn/config.toml` from the exact reviewed payload, avoids active-goal runtime truth, and records a promotion.
+- The CLI-generated `source_pointers` apply path requires an approved review decision.
+- The generated apply path writes `.krn/sources/index.json` from the exact reviewed payload, avoids copying active source truth, and records a promotion.
 - The eval writes a machine-readable report under `.krn/evals/krn-init-contracts/{run_id}/report.json`.
 
 ## Command
@@ -53,4 +55,4 @@ Runtime outputs stay local. Reviewed durable lessons move to `docs/memory`.
 
 ## Interpretation Policy
 
-A green run means the final-shaped bootstrap dry-run contract, first proposal-only bootstrap targets, and reviewed exact `AGENTS.md` / `.krn/config.toml` apply paths are locally checkable. It does not mean KRN improves Codex behavior or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.
+A green run means the final-shaped bootstrap dry-run contract, first proposal-only bootstrap targets, and reviewed exact `AGENTS.md` / `.krn/config.toml` / `.krn/sources/index.json` apply paths are locally checkable. It does not mean KRN improves Codex behavior or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.

@@ -76,10 +76,22 @@ const InitLocalConfigPromotionPayloadSchema = z
   })
   .strict();
 
+const InitSourcePointersPromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("init_source_pointers"),
+    bootstrap_capability: z.literal("source_pointers"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
 const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [
   MemoryPromotionPayloadSchema,
   InitAgentInstructionsPromotionPayloadSchema,
   InitLocalConfigPromotionPayloadSchema,
+  InitSourcePointersPromotionPayloadSchema,
 ]);
 
 export const KrnControlPlaneProposalSchema = z
@@ -115,13 +127,25 @@ export const KrnControlPlaneProposalSchema = z
 
     if (
       (proposal.promotion_payload?.payload_type === "init_agent_instructions" ||
-        proposal.promotion_payload?.payload_type === "init_local_config") &&
+        proposal.promotion_payload?.payload_type === "init_local_config" ||
+        proposal.promotion_payload?.payload_type === "init_source_pointers") &&
       proposal.proposal_kind !== "init_bootstrap"
     ) {
       context.addIssue({
         code: "custom",
         path: ["promotion_payload"],
         message: "init bootstrap promotion payloads are supported only for init_bootstrap proposals",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "init_source_pointers" &&
+      proposal.promotion_payload.target_path !== ".krn/sources/index.json"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "init source pointers payload must target .krn/sources/index.json",
       });
     }
 

@@ -42,7 +42,7 @@ Every proposal includes:
 - proposal kind,
 - `status: "proposal_only"`,
 - target path or resource URI,
-- optional machine-applicable `promotion_payload` for exact memory-entry, init agent-instructions, or init local-config promotion,
+- optional machine-applicable `promotion_payload` for exact memory-entry, init agent-instructions, init local-config, or init source-pointers promotion,
 - idempotency key,
 - source refs,
 - evidence refs,
@@ -61,7 +61,8 @@ Allowed behavior:
 - carry exact reviewed memory-entry content for later promotion when `promotion_payload.payload_type: "memory_entry"` is present,
 - carry exact init `AGENTS.md` content for later promotion when `promotion_payload.payload_type: "init_agent_instructions"` is present,
 - carry exact init `.krn/config.toml` content for later promotion when `promotion_payload.payload_type: "init_local_config"` is present,
-- carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions|local_config` through `proposal_kind: "init_bootstrap"`,
+- carry exact init `.krn/sources/index.json` content for later promotion when `promotion_payload.payload_type: "init_source_pointers"` is present,
+- carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions|local_config|source_pointers` through `proposal_kind: "init_bootstrap"`,
 - validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
 - persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
 

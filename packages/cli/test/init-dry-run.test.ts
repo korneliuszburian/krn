@@ -8,6 +8,7 @@ import {
   parseKrnControlPlaneProposal,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
+  parseKrnSourceGraph,
 } from "@krn/contracts";
 import { storeKrnProposalReviewDecision } from "@krn/mcp";
 
@@ -242,6 +243,92 @@ describe("krn init --dry-run", () => {
     expect(configContent).toContain('memory_store_env = "KRN_MEMORY_STORE_PATH"');
     expect(configContent).not.toContain("goal-038");
     expect(configContent).not.toContain("docs/plans/canonical/draft.md");
+  }, 30_000);
+
+  it("applies reviewed source-pointers proposal through an approved decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-sources-apply-target-"));
+    const proposalStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "source_pointers", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const proposalPath = proposalStdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    const decision = parseKrnProposalReviewDecision({
+      schema_version: "krn-proposal-review-decision.v1",
+      kind: "krn_proposal_review_decision",
+      decision_id: `decision-${proposal.proposal_id}`,
+      proposal_id: proposal.proposal_id,
+      proposal_path: proposalRelativePath,
+      decision: "approved_for_promotion",
+      review_scope: "proposal_review_only",
+      target_mutated: false,
+      promotion_state: "not_promoted",
+      reviewer: "krn-init-test",
+      rationale: "The generated source graph seed is minimal, target is absent, and the exact payload is safe to apply.",
+      write_policy: {
+        default_effect: "no_target_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+      },
+      evidence_refs: proposal.evidence_refs,
+      source_refs: proposal.source_refs,
+      blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_source_truth"],
+      created_at: "2026-06-20T22:50:00.000Z",
+      created_by: "krn init test",
+      interpretation_caveat:
+        "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+    });
+    const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
+
+    const promotionStdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "init",
+        "--apply",
+        "source_pointers",
+        "--proposal-path",
+        proposalPath,
+        "--decision-path",
+        join(targetRoot, storedDecision.decision_path),
+        "--target",
+        targetRoot,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const promotionPath = promotionStdout.trim();
+    const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+    const sourceGraphContent = readFileSync(join(targetRoot, ".krn", "sources", "index.json"), "utf8");
+    const sourceGraph = parseKrnSourceGraph(JSON.parse(sourceGraphContent) as unknown);
+
+    expect(proposal.target).toEqual({ target_type: "path", path: ".krn/sources/index.json" });
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_source_pointers",
+      bootstrap_capability: "source_pointers",
+      target_path: ".krn/sources/index.json",
+    });
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.apply_mode).toBe("apply_exact_target_write");
+    expect(promotion.target_mutated).toBe(true);
+    expect(sourceGraphContent).toBe(promotion.target.file_content);
+    expect(sourceGraph.records).toHaveLength(1);
+    expect(sourceGraph.records[0]?.ref).toBe("krn://source/bootstrap-policy");
+    expect(sourceGraph.overclaim_boundary).toContain("not a copied bibliography");
+    expect(sourceGraphContent).not.toContain("docs/plans/canonical/SOURCES.md");
+    expect(sourceGraphContent).not.toContain("goal-038");
   }, 30_000);
 
   it("rejects apply paths outside the target root before reading them", () => {

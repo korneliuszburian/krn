@@ -22,6 +22,8 @@ context packet source_refs -> source graph records -> pass / warn / block
 
 This is the first source-quality gate after the bounded context packet. It is a local adapter and runtime evidence path, not the final cloud/API source service.
 
+`krn init --apply source_pointers` may seed `.krn/sources/index.json` with a minimal `krn-source-graph.v1` boundary after approved review and exact-payload promotion. That seed is not a copied bibliography, active canonical source ledger, final source service, or source freshness proof.
+
 ## Command
 
 ```bash

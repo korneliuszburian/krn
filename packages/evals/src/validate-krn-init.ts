@@ -6,6 +6,7 @@ import {
   parseKrnControlPlaneProposal,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
+  parseKrnSourceGraph,
 } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
 import { storeKrnProposalReviewDecision } from "@krn/mcp";
@@ -449,6 +450,111 @@ function runValidation(): EvalReport {
       );
     }
   }
+  const sourcePointersApplyCase = caseById.get("generated-source-pointers-apply-writes-reviewed-target");
+  if (!sourcePointersApplyCase) {
+    throw new Error("Missing case generated-source-pointers-apply-writes-reviewed-target");
+  }
+  const sourcePointersTarget = mkdtempSync(join(tmpdir(), "krn-init-source-pointers-apply-eval-"));
+  const sourcePointersProposalResult = runKrnCli(["init", "--proposal", "source_pointers", "--target", sourcePointersTarget]);
+  const sourcePointersProposalPath = sourcePointersProposalResult.stdout.trim();
+  if (sourcePointersProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        sourcePointersApplyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        sourcePointersApplyCase.failure_mode,
+        sourcePointersProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(sourcePointersProposalPath));
+      const proposalRelativePath = relative(sourcePointersTarget, sourcePointersProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated source graph seed is minimal, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_source_truth"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: sourcePointersTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "source_pointers",
+        "--proposal-path",
+        sourcePointersProposalPath,
+        "--decision-path",
+        join(sourcePointersTarget, storedDecision.decision_path),
+        "--target",
+        sourcePointersTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetSourcePath = join(sourcePointersTarget, ".krn", "sources", "index.json");
+      const sourceContent = existsSync(targetSourcePath) ? readFileSync(targetSourcePath, "utf8") : "";
+      const sourceGraph = sourceContent.length > 0 ? parseKrnSourceGraph(JSON.parse(sourceContent) as unknown) : null;
+
+      results.push(
+        result(
+          sourcePointersApplyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetSourcePath) &&
+            sourceContent === promotion.target.file_content &&
+            sourceGraph?.records.length === 1 &&
+            sourceGraph.records[0]?.ref === "krn://source/bootstrap-policy" &&
+            sourceGraph.overclaim_boundary.includes("not a copied bibliography") &&
+            !sourceContent.includes("docs/plans/canonical/SOURCES.md") &&
+            !sourceContent.includes("goal-038"),
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target .krn/sources/index.json matches exact payload",
+            "source seed avoids copied source truth",
+          ],
+          sourcePointersApplyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed source graph seed payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          sourcePointersApplyCase.id,
+          false,
+          ["generated source pointers apply"],
+          sourcePointersApplyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated source pointers apply error",
+        ),
+      );
+    }
+  }
   const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
   const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
   const proposalPath = proposalResult.stdout.trim();
@@ -524,7 +630,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

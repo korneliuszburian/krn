@@ -17,7 +17,11 @@ import { createRunId, pathKind } from "./runtime-utils.js";
 
 type InitProposalCapability = InitBootstrapCapability;
 
-const INIT_PROPOSAL_CAPABILITIES = ["agent_instructions", "local_config"] as const satisfies readonly InitProposalCapability[];
+const INIT_PROPOSAL_CAPABILITIES = [
+  "agent_instructions",
+  "local_config",
+  "source_pointers",
+] as const satisfies readonly InitProposalCapability[];
 
 type InitArgs = {
   target: string;
@@ -46,6 +50,7 @@ export type InitCliResult = {
 const DETECTED_PATHS = [
   { path: "AGENTS.md", expectedKind: "file" },
   { path: ".krn/config.toml", expectedKind: "file" },
+  { path: ".krn/sources/index.json", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
   { path: "docs/memory/INDEX.md", expectedKind: "file" },
@@ -176,6 +181,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
       return "Root Codex instructions already exist and must not be overwritten by dry-run init.";
     case ".krn/config.toml":
       return "KRN local config already exists and must not be overwritten by dry-run init.";
+    case ".krn/sources/index.json":
+      return "KRN source graph seed already exists and must not be overwritten by dry-run init.";
     case ".codex":
       return "Project-local Codex config/hooks directory already exists.";
     case ".agents":
@@ -216,6 +223,8 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
 
   const agentsExists = detectedArtifacts.find((artifact) => artifact.path === "AGENTS.md")?.exists ?? false;
   const localConfigExists = detectedArtifacts.find((artifact) => artifact.path === ".krn/config.toml")?.exists ?? false;
+  const sourcePointersExist =
+    detectedArtifacts.find((artifact) => artifact.path === ".krn/sources/index.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
 
@@ -265,6 +274,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: ["docs/specs/krn-init/README.md"],
       },
       {
+        path: ".krn/sources/index.json",
+        action: sourcePointersExist ? "skip" : "proposal_only",
+        reason: sourcePointersExist
+          ? "Existing source graph seed is preserved; changes require a reviewed proposal."
+          : "KRN would propose a minimal source graph seed in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-source-graph/README.md", "docs/specs/krn-init/README.md"],
+      },
+      {
         path: "docs/memory/INDEX.md",
         action: memoryIndexExists ? "proposal_only" : "create",
         reason: memoryIndexExists
@@ -301,6 +318,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           : "No local config collision detected; future writes still require approved promotion.",
       },
       {
+        path: ".krn/sources/index.json",
+        strategy: collisionStrategy(sourcePointersExist),
+        reason: sourcePointersExist
+          ? "Existing source graph seed must be reviewed instead of overwritten."
+          : "No source graph seed collision detected; future writes still require approved promotion.",
+      },
+      {
         path: "docs/memory/INDEX.md",
         strategy: "proposal_only",
         reason: memoryIndexExists
@@ -328,7 +352,7 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       {
         capability: "source_pointers",
         path: ".krn/sources/index.json",
-        action: "proposal_only",
+        action: sourcePointersExist ? "skip" : "proposal_only",
         purpose: "Point Codex/KRN at source graph entries used for source-backed planning and stale/conflict checks.",
         boundary: "Source pointers are indexes and lineage, not a copied bibliography or hardcoded active source list.",
         source_refs: ["docs/specs/krn-source-graph/README.md", "docs/plans/canonical/SOURCES.md"],
@@ -420,11 +444,8 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
       : "review a future exact-file proposal before any target mutation";
   const promotionPayload =
     bootstrapItem.action === "skip" ? undefined : buildInitBootstrapPayload(capability, bootstrapItem.path);
-  const targetLabel = capability === "agent_instructions" ? "agent-instructions" : "local-config";
-  const targetDescription =
-    capability === "agent_instructions"
-      ? "Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database."
-      : "Local config is the next bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.";
+  const targetLabel = bootstrapTargetLabel(capability);
+  const targetDescription = bootstrapTargetDescription(capability);
 
   return parseKrnControlPlaneProposal({
     schema_version: "krn-control-plane-proposal.v1",
@@ -464,6 +485,28 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     interpretation_caveat:
       "This init proposal is append-only review input for one bootstrap capability; it does not mutate target setup files, approve write mode, create memory core, publish a dashboard event, or prove productivity lift.",
   });
+}
+
+function bootstrapTargetLabel(capability: InitProposalCapability): string {
+  switch (capability) {
+    case "agent_instructions":
+      return "agent-instructions";
+    case "local_config":
+      return "local-config";
+    case "source_pointers":
+      return "source-pointers";
+  }
+}
+
+function bootstrapTargetDescription(capability: InitProposalCapability): string {
+  switch (capability) {
+    case "agent_instructions":
+      return "Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database.";
+    case "local_config":
+      return "Local config is a bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.";
+    case "source_pointers":
+      return "Source pointers must seed a source graph boundary without copying a bibliography, active source list, or KRN product truth into the target repo.";
+  }
 }
 
 export function writeInitProposal(
