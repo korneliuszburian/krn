@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@10.25.0",
   "scripts": {
-    "typecheck": "tsc -b packages/contracts packages/cli packages/mcp packages/evals",
+    "typecheck": "tsc -b packages/contracts packages/cli packages/mcp packages/evals apps/dashboard",
     "test": "vitest run",
     "krn": "tsx packages/cli/src/main.ts",
     "eval:krn-init": "tsx packages/evals/src/validate-krn-init.ts --mode validate",
@@ -16,6 +16,7 @@
     "eval:krn-proposal-store": "tsx packages/evals/src/validate-krn-proposal-store.ts --mode validate",
     "eval:krn-mcp-proposal-tool": "tsx packages/evals/src/validate-krn-mcp-proposal-tool.ts --mode validate",
     "eval:krn-pending-review-view-model": "tsx packages/evals/src/validate-krn-pending-review-view-model.ts --mode validate",
+    "eval:krn-dashboard-pending-review-ui": "tsx packages/evals/src/validate-krn-dashboard-pending-review-ui.ts --mode validate",
     "eval:krn-eval": "tsx packages/evals/src/validate-krn-eval.ts --mode validate"
   },
   "devDependencies": {

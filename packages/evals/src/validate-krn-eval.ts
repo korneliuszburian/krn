@@ -45,6 +45,7 @@ const REQUIRED_MODULES = [
   "krn-proposal-store",
   "krn-mcp-proposal-tool",
   "krn-pending-review-view-model",
+  "krn-dashboard-pending-review-ui",
 ];
 
 function readJson(path: string): unknown {
@@ -226,7 +227,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_report_path: generatedReportPath,
     interpretation_caveat:
-      "This eval proves krn eval aggregate-report contract behavior only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness.",
+      "This eval proves krn eval aggregate-report contract behavior only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality.",
   };
 }
 

@@ -110,6 +110,15 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
       "docs/specs/krn-pending-review-view-model/README.md",
     ],
   },
+  {
+    moduleId: "krn-dashboard-pending-review-ui",
+    command: ["pnpm", "run", "eval:krn-dashboard-pending-review-ui"],
+    sourceRefs: [
+      "docs/evals/krn-dashboard-pending-review-ui/README.md",
+      "docs/goals/goal-012.md",
+      "apps/dashboard/package.json",
+    ],
+  },
 ];
 
 function usage(): string {
@@ -775,7 +784,7 @@ function buildKrnEvalReport(args: EvalArgs, now = new Date()): KrnEvalReport {
       "docs/product/final-product-plan.md",
     ],
     interpretation_caveat:
-      "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, or dashboard readiness.",
+      "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality.",
   };
 
   return parseKrnEvalReport(candidateReport);

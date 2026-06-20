@@ -17,13 +17,13 @@ This eval verifies the third Slice 2 runtime path:
 KrnEvalReport parser -> krn eval -> aggregate runtime eval report -> eval report
 ```
 
-It does not claim productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, dashboard readiness, or human review quality.
+It does not claim productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, complete dashboard readiness, or human review quality.
 
 ## What This Tests
 
 - The valid `krn-eval` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
-- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, `krn-review-contracts`, `krn-mcp-read-model`, `krn-mcp-transport`, `krn-proposal-store`, `krn-mcp-proposal-tool`, and `krn-pending-review-view-model`.
+- The CLI-generated aggregate eval report exists, parses through `@krn/contracts`, and includes `krn-init-contracts`, `krn-doctor-contracts`, `krn-review-contracts`, `krn-mcp-read-model`, `krn-mcp-transport`, `krn-proposal-store`, `krn-mcp-proposal-tool`, `krn-pending-review-view-model`, and `krn-dashboard-pending-review-ui`.
 - The eval writes a machine-readable report under `.krn/evals/krn-eval-contracts/{run_id}/report.json`.
 
 ## Command

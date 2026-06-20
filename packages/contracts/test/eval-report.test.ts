@@ -24,6 +24,7 @@ describe("KrnEvalReport contract", () => {
       "krn-proposal-store",
       "krn-mcp-proposal-tool",
       "krn-pending-review-view-model",
+      "krn-dashboard-pending-review-ui",
     ]);
   });
 

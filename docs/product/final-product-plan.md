@@ -20,6 +20,7 @@ sources:
   - docs/goals/goal-009.md
   - docs/goals/goal-010.md
   - docs/goals/goal-011.md
+  - docs/goals/goal-012.md
 ---
 
 # KRN Final Product Plan
@@ -96,6 +97,7 @@ repo + task
   -> evals test behavior and failure modes
   -> MCP proposal tool records source-backed append-only review input in the proposal store
   -> Pending Review view model renders proposal-store records for human review
+  -> apps/dashboard renders the Pending Review queue from generated typed dashboard data
   -> human/dashboard review promotes approved memory/source/decision/repair records
   -> next Codex run consumes reviewed repo truth
   -> benchmark compares baseline vs KRN-assisted behavior
@@ -110,7 +112,7 @@ Layer responsibilities:
 - `packages/evals` turns patterns and failures into deterministic gates before dashboard/API claims.
 - `packages/mcp` exposes the control plane: read-only resources first, proposal-only append-only writes second, destructive tools never by default.
 - `.krn/` stores runtime artifacts. Reviewed knowledge moves into `docs/memory`, `docs/plans/canonical/SOURCES.md`, ADRs, or goal files.
-- `apps/dashboard` comes after view models and proposal records. It reads typed product objects only, including `KrnPendingReviewViewModel` for proposal-store review queues.
+- `apps/dashboard` comes after view models and proposal records. The first dashboard surface renders `KrnPendingReviewViewModel` from generated typed dashboard data and keeps generated data out of durable truth.
 
 ## Codex Paradoxes KRN Must Resolve
 

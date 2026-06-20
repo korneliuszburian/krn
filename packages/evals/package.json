@@ -6,7 +6,14 @@
   "dependencies": {
     "@krn/cli": "workspace:*",
     "@krn/contracts": "workspace:*",
+    "@krn/dashboard": "workspace:*",
     "@krn/mcp": "workspace:*",
-    "@modelcontextprotocol/sdk": "1.29.0"
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3"
   }
 }

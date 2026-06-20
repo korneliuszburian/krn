@@ -41,6 +41,7 @@ Supported module IDs:
 - `krn-proposal-store`
 - `krn-mcp-proposal-tool`
 - `krn-pending-review-view-model`
+- `krn-dashboard-pending-review-ui`
 
 If no module is supplied, the command runs all supported modules.
 
@@ -66,7 +67,7 @@ Allowed writes:
 
 - `.krn/eval/{run_id}/report.json`
 - `.krn/evals/{module_id}/{module_run_id}/report.json`
-- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, transport eval output under `.krn/evals/krn-mcp-transport/**`, proposal-store eval output under `.krn/evals/krn-proposal-store/**`, proposal-tool eval output under `.krn/evals/krn-mcp-proposal-tool/**`, or Pending Review eval output under `.krn/evals/krn-pending-review-view-model/**`
+- runtime reports created by evaluated commands under `.krn/init/**`, `.krn/doctor/**`, `.krn/review/**`, read-model eval output under `.krn/evals/krn-mcp-read-model/**`, transport eval output under `.krn/evals/krn-mcp-transport/**`, proposal-store eval output under `.krn/evals/krn-proposal-store/**`, proposal-tool eval output under `.krn/evals/krn-mcp-proposal-tool/**`, Pending Review eval output under `.krn/evals/krn-pending-review-view-model/**`, or dashboard UI eval output under `.krn/evals/krn-dashboard-pending-review-ui/**`
 
 Forbidden default writes:
 
@@ -81,7 +82,7 @@ Forbidden default writes:
 
 A green `krn eval` report means the selected deterministic local eval modules ran and their reports were aggregated through the KRN eval contract.
 
-It does not prove productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, dashboard readiness, or human review quality.
+It does not prove productivity lift, benchmark lift, hook semantic correctness, API/MCP readiness, complete dashboard readiness, or human review quality.
 
 ## Validation
 

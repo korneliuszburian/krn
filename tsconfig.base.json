@@ -19,7 +19,8 @@
     "paths": {
       "@krn/contracts": ["packages/contracts/src/index.ts"],
       "@krn/cli": ["packages/cli/src/main.ts"],
-      "@krn/mcp": ["packages/mcp/src/index.ts"]
+      "@krn/mcp": ["packages/mcp/src/index.ts"],
+      "@krn/dashboard": ["apps/dashboard/src/index.ts"]
     }
   }
 }

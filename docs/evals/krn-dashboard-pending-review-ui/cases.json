@@ -1,0 +1,84 @@
+[
+  {
+    "id": "dashboard-data-generation-real-product-object",
+    "expected_behavior": "The dashboard data generator writes a parsed Pending Review view model from real proposal-store records.",
+    "source_patterns": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-012.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "dashboard data command exits",
+      "generated data file exists",
+      "generated data parses",
+      "proposal store row present",
+      "target path not mutated"
+    ],
+    "metrics": ["dashboard_ui_score", "source_grounding_score", "anti_slop_score"],
+    "failure_mode": "Dashboard boot data is mocked, stale, unparseable, or mutates the proposal target."
+  },
+  {
+    "id": "ready-proposal-row-renders-review-evidence",
+    "expected_behavior": "A ready Pending Review proposal row renders its title, source refs, next action, and failure mode without mutation commands.",
+    "source_patterns": [
+      "docs/goals/goal-012.md",
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/product/final-product-plan.md"
+    ],
+    "assertions": [
+      "proposal title rendered",
+      "source ref rendered",
+      "next action rendered",
+      "failure mode rendered",
+      "mutation commands absent"
+    ],
+    "metrics": ["dashboard_ui_score", "anti_slop_score"],
+    "failure_mode": "Dashboard shows a row without review evidence or exposes approve/reject/mutate commands."
+  },
+  {
+    "id": "empty-proposal-store-renders-explicit-zero",
+    "expected_behavior": "An empty proposal store renders an explicit empty state from a parsed Pending Review object.",
+    "source_patterns": [
+      "docs/goals/goal-012.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "empty source parses",
+      "empty label rendered",
+      "no proposal rows invented"
+    ],
+    "metrics": ["dashboard_ui_score", "drift_resistance_score"],
+    "failure_mode": "Dashboard invents pending rows or hides the explicit zero state."
+  },
+  {
+    "id": "invalid-proposal-record-renders-blocked",
+    "expected_behavior": "An invalid proposal record renders a blocked queue state and the invalid proposal path.",
+    "source_patterns": [
+      "docs/goals/goal-012.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "invalid record surfaced",
+      "blocked state rendered",
+      "invalid path rendered"
+    ],
+    "metrics": ["dashboard_ui_score", "anti_slop_score"],
+    "failure_mode": "Dashboard hides invalid proposal files or presents them as reviewable proposals."
+  },
+  {
+    "id": "stale-source-ref-renders-blocked",
+    "expected_behavior": "A stored proposal with stale source refs renders a blocked queue state and stale source status.",
+    "source_patterns": [
+      "docs/goals/goal-012.md",
+      "docs/plans/canonical/SOURCES.md",
+      "docs/specs/krn-pending-review-view-model/README.md"
+    ],
+    "assertions": [
+      "stale proposal parsed",
+      "blocked state rendered",
+      "stale status rendered"
+    ],
+    "metrics": ["dashboard_ui_score", "source_grounding_score"],
+    "failure_mode": "Dashboard presents stale source-backed proposals as ready for promotion."
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "run_id",
+    "created_at",
+    "total_cases",
+    "passed_cases",
+    "failed_cases",
+    "case_pass_rate",
+    "total_assertions",
+    "passed_assertions",
+    "failed_assertions",
+    "assertion_pass_rate",
+    "cases",
+    "generated_data_path",
+    "interpretation_caveat"
+  ],
+  "properties": {
+    "schema_version": { "const": "krn-dashboard-pending-review-ui-result.v1" },
+    "kind": { "const": "krn_dashboard_pending_review_ui_result" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "minLength": 1 },
+    "total_cases": { "type": "integer", "minimum": 0 },
+    "passed_cases": { "type": "integer", "minimum": 0 },
+    "failed_cases": { "type": "integer", "minimum": 0 },
+    "case_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "total_assertions": { "type": "integer", "minimum": 0 },
+    "passed_assertions": { "type": "integer", "minimum": 0 },
+    "failed_assertions": { "type": "integer", "minimum": 0 },
+    "assertion_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "passed", "assertions", "failure_mode", "message"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" },
+          "assertions": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "failure_mode": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "generated_data_path": { "type": ["string", "null"] },
+    "interpretation_caveat": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}
