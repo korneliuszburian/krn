@@ -5,8 +5,6 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-038.md
-  - docs/plans/canonical/draft.md
   - docs/specs/technology-stack/decision.md
   - docs/evals/STANDARD.md
   - https://developers.openai.com/codex/mcp
@@ -17,7 +15,7 @@ sources:
 
 ## Purpose
 
-`packages/mcp` is the first Slice 3 control-plane package. It exposes an allowlisted read-only resource model over local `.krn` runtime reports and a local STDIO MCP transport for that model.
+`packages/mcp` exposes an allowlisted read-only resource model over local `.krn` runtime reports and a local STDIO MCP transport for that model.
 
 This is not yet registered in project or user `.codex/config.toml`, not a ChatGPT/HTTP connector, and not a write-capable API. It is the typed read model plus local STDIO server that later control-plane work can harden.
 
@@ -50,6 +48,8 @@ The read model consumes the latest local reports from:
 - `.krn/benchmarks/**/report.json`
 
 Each report is parsed through the existing `@krn/contracts` parser before it is exposed as a resource payload.
+
+The MCP resource envelope cites the stable read-model or report contract that defines the exposed wrapper. Runtime report payloads keep their own `source_refs` internally; the read-model envelope must not hardcode active goals, canonical plan paths, or other volatile product truth as its own source lineage.
 
 ## Boundary
 

@@ -1427,6 +1427,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no eval registry rewrite, no dashboard/MCP read-model cleanup, no lab/default-lane expansion, no source service, no committed runtime evidence, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves aggregate eval and MCP proposal-tool source-ref hygiene only. It does not prove eval quality, final source freshness, dashboard trust, MCP API readiness, or review-burden reduction.
 - [NEXT] Commit and push this cleanup; then stop unless another default-lane CLI/MCP consumer exposes a concrete failing check or volatile hardcoded-truth bug.
+- [EVIDENCE] The MCP read-model source-lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T062649Z-1563637/engineering-gate.json`.
+- [FACT] `packages/mcp` read-model resource envelopes no longer hardcode `docs/goals/goal-038.md` or `docs/plans/canonical/draft.md` as their own runtime lineage. Runtime report payloads keep their own internal `source_refs`; the MCP envelope now cites stable read-model or report contracts only.
+- [FACT] Dashboard view-model aggregate source refs from `packages/mcp/src/index.ts` no longer hardcode active/historical goal refs and now cite the stable dashboard/read-model specs.
+- [FACT] `docs/specs/krn-mcp-read-model` examples and contract text now match the stable-envelope boundary, preventing fixture copy-paste from reintroducing active-goal truth.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/control-plane-resource.test.ts packages/mcp/test/read-model.test.ts packages/mcp/test/dashboard-view-model.test.ts` passed 3 files / 9 tests.
+- [EVIDENCE] Focused MCP read-model eval passed: `pnpm run eval:krn-mcp` run `.krn/evals/krn-mcp-read-model/20260621T062954Z-1574588/report.json` passed 3/3 cases and 9/9 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: stable MCP envelope lineage, one regression assertion in unit tests, one current read-model eval assertion, and existing read-only MCP consumers.
+- [SIMPLIFY] Delete/avoid: no payload history rewrite, no dashboard panel, no benchmark run, no source graph service, no broad API/cloud sync, no committed `.krn/**` runtime evidence, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves MCP read-model envelope source-ref hygiene only. It does not prove final source freshness, memory quality, dashboard usefulness, MCP API readiness, human review quality, or product lift.
+- [NEXT] Commit and push this cleanup; then inspect remaining hardcoded-truth candidates only if they sit in a current default-lane consumer with focused verification.
 
 ## Disproves Completion
 

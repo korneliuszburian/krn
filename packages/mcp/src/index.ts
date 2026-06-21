@@ -30,9 +30,7 @@ type ArtifactSpec = {
 };
 
 const RESOURCE_SOURCE_REFS = [
-  "docs/goals/goal-038.md",
   "docs/specs/krn-mcp-read-model/README.md",
-  "docs/plans/canonical/draft.md",
   "https://developers.openai.com/codex/mcp",
 ] as const;
 
@@ -44,7 +42,7 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     resourceKind: "init_manifest",
     runtimeDir: ".krn/init",
     fileName: "manifest.json",
-    sourceRefs: ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
+    sourceRefs: ["docs/specs/krn-init/README.md"],
     parse: parseInitManifest,
   },
   {
@@ -54,7 +52,7 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     resourceKind: "doctor_report",
     runtimeDir: ".krn/doctor",
     fileName: "report.json",
-    sourceRefs: ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
+    sourceRefs: ["docs/specs/krn-doctor/README.md"],
     parse: parseDoctorReport,
   },
   {
@@ -64,7 +62,7 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     resourceKind: "eval_report",
     runtimeDir: ".krn/eval",
     fileName: "report.json",
-    sourceRefs: ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"],
+    sourceRefs: ["docs/specs/krn-eval/README.md"],
     parse: parseKrnEvalReport,
   },
   {
@@ -74,7 +72,7 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     resourceKind: "review_report",
     runtimeDir: ".krn/review",
     fileName: "report.json",
-    sourceRefs: ["docs/specs/krn-review/README.md", "docs/goals/goal-038.md"],
+    sourceRefs: ["docs/specs/krn-review/README.md"],
     parse: parseKrnReviewReport,
   },
   {
@@ -84,7 +82,7 @@ const ARTIFACT_SPECS: readonly ArtifactSpec[] = [
     resourceKind: "benchmark_report",
     runtimeDir: ".krn/benchmarks",
     fileName: "report.json",
-    sourceRefs: ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-038.md"],
+    sourceRefs: ["docs/specs/krn-benchmark-report/README.md"],
     parse: parseKrnBenchmarkReport,
   },
 ] as const;
@@ -476,8 +474,6 @@ export function buildKrnDashboardViewModel(targetInput = ".", now = new Date()):
     },
     next_allowed_action: dashboardNextAllowedAction(index.summary, pendingReview.pendingProposals, pendingReview.sourceRefs),
     source_refs: [
-      "docs/goals/goal-038.md",
-      "docs/goals/goal-008.md",
       "docs/specs/krn-dashboard-view-model/README.md",
       "docs/specs/krn-mcp-read-model/README.md",
     ],

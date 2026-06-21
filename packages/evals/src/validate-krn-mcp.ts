@@ -229,6 +229,15 @@ function runValidation(): EvalReport {
           review.status === "available" &&
           benchmark.status === "available" &&
           benchmark.payload?.kind === "krn_benchmark_report" &&
+          !index.source_refs.includes("docs/goals/goal-038.md") &&
+          !index.source_refs.includes("docs/plans/canonical/draft.md") &&
+          !summary.source_refs.includes("docs/goals/goal-038.md") &&
+          !summary.source_refs.includes("docs/plans/canonical/draft.md") &&
+          index.resources.every(
+            (resource) =>
+              !resource.source_refs.includes("docs/goals/goal-038.md") &&
+              !resource.source_refs.includes("docs/plans/canonical/draft.md"),
+          ) &&
           !index.summary.write_tools_enabled &&
           !index.summary.proposal_tools_enabled,
         [
@@ -236,6 +245,7 @@ function runValidation(): EvalReport {
           "summary resource parses",
           "latest review resource parses",
           "latest benchmark resource parses",
+          "read-model source refs exclude active-goal truth",
           "write tools disabled",
         ],
         generatedCase.failure_mode,

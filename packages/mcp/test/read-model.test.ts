@@ -59,6 +59,12 @@ describe("KRN MCP read model", () => {
     expect(index.summary.available_resources).toBe(6);
     expect(index.summary.write_tools_enabled).toBe(false);
     expect(index.summary.proposal_tools_enabled).toBe(false);
+    expect(index.source_refs).not.toContain("docs/goals/goal-038.md");
+    expect(index.source_refs).not.toContain("docs/plans/canonical/draft.md");
+    for (const resource of index.resources) {
+      expect(resource.source_refs).not.toContain("docs/goals/goal-038.md");
+      expect(resource.source_refs).not.toContain("docs/plans/canonical/draft.md");
+    }
   });
 
   it("reads parsed latest runtime resources without mutating target files", () => {
@@ -84,6 +90,8 @@ describe("KRN MCP read model", () => {
     expect(summary.resource_kind).toBe("runtime_summary");
     expect(summary.read_only).toBe(true);
     expect(summary.status).toBe("available");
+    expect(summary.source_refs).not.toContain("docs/goals/goal-038.md");
+    expect(summary.source_refs).not.toContain("docs/plans/canonical/draft.md");
     expect(review.resource_kind).toBe("review_report");
     expect(review.status).toBe("available");
     expect(review.payload?.kind).toBe("krn_review_report");
