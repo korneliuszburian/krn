@@ -676,6 +676,10 @@ dumps, and guide the init-eval refactor before editing.
 selects `typescript-contract-engineer` from TypeScript target paths even when
 the task text omits TypeScript keywords.
 
+[FACT] The same context routing path now selects `eval-designer` from
+`packages/evals/**` and `docs/evals/**` target paths even when task text omits
+eval keywords.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -974,6 +978,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no skill registry expansion, no new skill text, no broad operator-pipeline rewrite, no passive memory note, and no default context growth.
 - [OVERCLAIM] This slice proves one context-routing repair caused by dogfood. It does not prove all skill triggers are correct, final context quality, productivity lift, or autonomous self-growth.
 - [NEXT] Continue with another consumer-led dogfood slice only if it exposes a real capability bug or cleanup bottleneck; otherwise run a small repo sediment inventory before choosing the next product layer.
+- [EVIDENCE] The eval-target context-routing pre-edit gate passed and wrote `.krn/gates/20260621T023913Z-1111473/engineering-gate.json`.
+- [FACT] `krn context build` now routes `eval-designer` from `packages/evals/**` and `docs/evals/**` target paths, not only from task-text keywords.
+- [EVIDENCE] Focused test passed: `pnpm exec vitest run packages/cli/test/context.test.ts` passed 1 file / 2 tests, including an eval-target path with task text omitting eval keywords.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T024021Z-1112909/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: target-path routing for eval surfaces, shared public CLI test helper, and no new skill body or registry.
+- [SIMPLIFY] Delete/avoid: no broad skill taxonomy, no social/research note, no dashboard/API surface, no new eval module.
+- [OVERCLAIM] This proves only deterministic skill routing for eval target paths. It does not prove eval quality, skill quality, broad agent behavior, or productivity lift.
+- [NEXT] Run a small sediment inventory before the next product slice; do not keep patching context routing unless another real dogfood miss appears.
 
 ## Disproves Completion
 

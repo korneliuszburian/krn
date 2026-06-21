@@ -10,38 +10,52 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
 }
 
+function buildContextPacket(task: string, targetPath: string): {
+  targetRoot: string;
+  storePath: string;
+  packet: ReturnType<typeof parseKrnContextPacket>;
+} {
+  const targetRoot = mkdtempSync(join(tmpdir(), "krn-context-target-"));
+  const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
+  const storePath = join(storeRoot, "memory-store.json");
+  writeMemoryStoreFixture(storePath);
+
+  const stdout = execFileSync(
+    "pnpm",
+    [
+      "exec",
+      "tsx",
+      "packages/cli/src/main.ts",
+      "--",
+      "context",
+      "build",
+      "--target",
+      targetRoot,
+      "--task",
+      task,
+      "--path",
+      targetPath,
+    ],
+    {
+      cwd: process.cwd(),
+      env: { ...process.env, KRN_MEMORY_STORE_PATH: storePath },
+      encoding: "utf8",
+    },
+  );
+
+  return {
+    targetRoot,
+    storePath,
+    packet: parseKrnContextPacket(readJson(stdout.trim())),
+  };
+}
+
 describe("krn context build", () => {
   it("writes a bounded context packet from selected MemoryStore IDs", () => {
-    const targetRoot = mkdtempSync(join(tmpdir(), "krn-context-target-"));
-    const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
-    const storePath = join(storeRoot, "memory-store.json");
-    writeMemoryStoreFixture(storePath);
-
-    const stdout = execFileSync(
-      "pnpm",
-      [
-        "exec",
-        "tsx",
-        "packages/cli/src/main.ts",
-        "--",
-        "context",
-        "build",
-        "--target",
-        targetRoot,
-        "--task",
-        "Refactor context packet routing without keyword hints",
-        "--path",
-        "packages/contracts/src/context-packet.ts",
-      ],
-      {
-        cwd: process.cwd(),
-        env: { ...process.env, KRN_MEMORY_STORE_PATH: storePath },
-        encoding: "utf8",
-      },
+    const { packet, storePath, targetRoot } = buildContextPacket(
+      "Refactor context packet routing without keyword hints",
+      "packages/contracts/src/context-packet.ts",
     );
-
-    const packetPath = stdout.trim();
-    const packet = parseKrnContextPacket(readJson(packetPath));
 
     expect(packet.kind).toBe("krn_context_packet");
     expect(packet.command).toBe("krn context build");
@@ -61,5 +75,16 @@ describe("krn context build", () => {
 
     const storeAfterPacket = readJson(storePath) as { feedback?: unknown[] };
     expect(storeAfterPacket.feedback).toHaveLength(1);
+  }, 30_000);
+
+  it("routes eval-designer from eval target paths without task keywords", () => {
+    const { packet } = buildContextPacket(
+      "Refactor repeated bootstrap apply scaffolding without keyword hints",
+      "packages/evals/src/validate-krn-init.ts",
+    );
+
+    const requiredSkillNames = packet.required_skills.map((skill) => skill.name);
+    expect(requiredSkillNames).toContain("typescript-contract-engineer");
+    expect(requiredSkillNames).toContain("eval-designer");
   }, 30_000);
 });

@@ -78,8 +78,18 @@ function selectedContextFromRecords(
     }));
 }
 
+function normalizeTargetPath(path: string | null): string | null {
+  return path?.replaceAll("\\", "/") ?? null;
+}
+
 function isTypeScriptTargetPath(path: string | null): boolean {
-  return path !== null && /\.(?:ts|tsx|mts|cts)$/.test(path);
+  const normalized = normalizeTargetPath(path);
+  return normalized !== null && /\.(?:ts|tsx|mts|cts)$/.test(normalized);
+}
+
+function isEvalTargetPath(path: string | null): boolean {
+  const normalized = normalizeTargetPath(path);
+  return normalized !== null && (normalized.startsWith("packages/evals/") || normalized.startsWith("docs/evals/"));
 }
 
 function requiredSkillsForTask(task: string, targetPath: string | null): KrnContextPacket["required_skills"] {
@@ -101,10 +111,10 @@ function requiredSkillsForTask(task: string, targetPath: string | null): KrnCont
     });
   }
 
-  if (/\b(eval|fixture|known-bad|metric|assertion|validation|gate)\b/.test(lowerTask)) {
+  if (/\b(eval|fixture|known-bad|metric|assertion|validation|gate)\b/.test(lowerTask) || isEvalTargetPath(targetPath)) {
     skills.push({
       name: "eval-designer",
-      reason: "The task changes eval behavior, fixtures, metrics, or validation gates.",
+      reason: "The task changes eval behavior, fixtures, metrics, validation gates, or eval target paths.",
     });
   }
 
