@@ -8,7 +8,7 @@
   "trigger": "manual",
   "turn_id": "goal-002-smoke",
   "checkpoint_path": ".krn/compact/latest-checkpoint.md",
-  "project_root": "/home/krn/coding/krn/active/krn-gastown",
+  "project_root": "/workspace/krn-gastown",
   "source_refs": [
     ".krn/compact/latest-checkpoint.md",
     "docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md",

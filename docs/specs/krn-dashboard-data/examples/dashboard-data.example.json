@@ -1,13 +1,13 @@
 {
   "schema_version": "krn-dashboard-data.v1",
   "kind": "krn_dashboard_data",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "generated_at": "2026-06-20T03:00:00.000Z",
   "no_mock_state": true,
   "pending_review": {
     "schema_version": "krn-pending-review-view-model.v1",
     "kind": "krn_pending_review_view_model",
-    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "target_root": "/workspace/krn-gastown",
     "generated_at": "2026-06-20T03:00:00.000Z",
     "no_mock_state": true,
     "source": "explicit_zero_no_proposals",
@@ -39,7 +39,7 @@
   "promotion_review": {
     "schema_version": "krn-promotion-review-view-model.v1",
     "kind": "krn_promotion_review_view_model",
-    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "target_root": "/workspace/krn-gastown",
     "generated_at": "2026-06-20T03:00:00.000Z",
     "no_mock_state": true,
     "source": "explicit_zero_no_promotions",
@@ -69,7 +69,7 @@
   "eval_runs": {
     "schema_version": "krn-eval-runs-view-model.v1",
     "kind": "krn_eval_runs_view_model",
-    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "target_root": "/workspace/krn-gastown",
     "generated_at": "2026-06-20T03:00:00.000Z",
     "no_mock_state": true,
     "source": "missing_eval_report",
@@ -107,7 +107,7 @@
   "benchmark_reports": {
     "schema_version": "krn-benchmark-reports-view-model.v1",
     "kind": "krn_benchmark_reports_view_model",
-    "target_root": "/home/krn/coding/krn/active/krn-gastown",
+    "target_root": "/workspace/krn-gastown",
     "generated_at": "2026-06-20T03:00:00.000Z",
     "no_mock_state": true,
     "source": "missing_benchmark_reports",

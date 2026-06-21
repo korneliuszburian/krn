@@ -1146,6 +1146,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new MCP/API behavior, no dashboard panel, no benchmark lane, no broad historical fixture rewrite, no passive source note, and no product-truth copy in runtime artifacts.
 - [SIMPLIFY] Next candidate: continue cleaning stale source refs only when a touched consumer needs them; otherwise move to the next capability dogfood task instead of doing repo-wide string sweeps.
 - [OVERCLAIM] This slice proves MCP metadata source-ref freshness and behavior parity only. It does not prove MCP readiness, security quality, source graph completeness, dashboard usefulness, review-burden reduction, or product lift.
+- [EVIDENCE] The spec example portability cleanup pre-edit gate passed and wrote `.krn/gates/20260621T035358Z-1296361/engineering-gate.json`.
+- [FACT] User-specific `/home/krn/coding/krn/active/krn-gastown` paths were removed from `docs/specs/**` examples and fixtures and replaced with neutral `/workspace/krn-gastown` example roots.
+- [FACT] Runtime behavior was not changed: real KRN runtime reports may still record their actual `target_root`; this cleanup only removes machine-local truth from portable checked-in examples.
+- [EVIDENCE] `rg -n '/home/krn/coding/krn/active/krn-gastown' docs/specs packages --glob '!packages/contracts/dist/**'` returned no matches.
+- [EVIDENCE] Focused contract suite passed: `pnpm exec vitest run packages/contracts/test` passed 27 files / 126 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T035429Z-1299714/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: neutral portable example roots, existing contract examples/fixtures, and runtime ability to emit actual target roots.
+- [SIMPLIFY] Delete/avoid: no parser restriction against real absolute runtime paths, no dashboard/API/benchmark behavior changes, no broad source-ref rewrite, and no new passive documentation.
+- [SIMPLIFY] Next candidate: stale `goal-006` refs in dashboard/proposal/benchmark specs should be cleaned only through touched consumers or archived lab/default-lane decisions, not by an unbounded string replacement.
+- [OVERCLAIM] This slice proves checked-in example portability only. It does not prove runtime path privacy, source graph correctness, memory quality, dashboard usefulness, review-burden reduction, or product lift.
 
 ## Disproves Completion
 

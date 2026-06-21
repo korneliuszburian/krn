@@ -1,7 +1,7 @@
 {
   "schema_version": "krn-dashboard-view-model.v1",
   "kind": "krn_dashboard_view_model",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "generated_at": "2026-06-20T00:00:00.000Z",
   "no_mock_state": true,
   "resource_health": {

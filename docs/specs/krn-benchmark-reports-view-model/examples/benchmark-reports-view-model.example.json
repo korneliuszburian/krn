@@ -1,7 +1,7 @@
 {
   "schema_version": "krn-benchmark-reports-view-model.v1",
   "kind": "krn_benchmark_reports_view_model",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "generated_at": "2026-06-20T06:30:00.000Z",
   "no_mock_state": true,
   "source": "benchmark_report_store",

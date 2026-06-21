@@ -3,7 +3,7 @@
   "kind": "krn_benchmark_report",
   "run_id": "20260620T101500Z-bad-positive-status",
   "created_at": "2026-06-20T10:15:00.000Z",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "benchmark_id": "krn-benchmark-live-suite",
   "suite_id": "dirty-positive-delta-fixture",
   "measurement_mode": "live_codex_exec",

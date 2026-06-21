@@ -3,7 +3,7 @@
   "kind": "krn_control_plane_resource",
   "uri": "krn://runtime/summary",
   "name": "KRN runtime summary",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "generated_at": "2026-06-19T22:40:00.000Z",
   "resource_kind": "runtime_summary",
   "mime_type": "application/json",

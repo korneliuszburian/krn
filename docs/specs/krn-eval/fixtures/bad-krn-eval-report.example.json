@@ -3,7 +3,7 @@
   "kind": "krn_eval_report",
   "run_id": "bad-missing-caveat",
   "created_at": "2026-06-19T22:00:00.000Z",
-  "target_root": "/home/krn/coding/krn/active/krn-gastown",
+  "target_root": "/workspace/krn-gastown",
   "command": "krn eval",
   "mode": "validate",
   "overall_status": "passed",
