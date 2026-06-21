@@ -1,5 +1,24 @@
 [
   {
+    "id": "registry-parses-and-known-bad-fails",
+    "expected_behavior": "The eval module registry parses through @krn/contracts, contains module descriptors outside product code, and rejects duplicate module IDs.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/registry.json"
+    ],
+    "assertions": [
+      "registry parses",
+      "known-bad duplicate registry rejected"
+    ],
+    "metrics": [
+      "schema_contract_score",
+      "anti_hardcode_score",
+      "eval_lane_routing_score"
+    ],
+    "failure_mode": "The eval module list moves back into product code or accepts duplicate module IDs that make lane selection ambiguous."
+  },
+  {
     "id": "valid-fixture-parses",
     "expected_behavior": "The valid krn-eval report fixture parses through @krn/contracts, declares default current lane selection, includes core/current lanes, and excludes lab.",
     "source_patterns": [

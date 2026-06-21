@@ -1,0 +1,195 @@
+{
+  "schema_version": "krn-eval-module-registry.v1",
+  "kind": "krn_eval_module_registry",
+  "default_lane": "current",
+  "modules": [
+    {
+      "module_id": "krn-init-contracts",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-init"],
+      "source_refs": ["docs/evals/krn-init-contracts/README.md", "docs/specs/krn-init/README.md"]
+    },
+    {
+      "module_id": "krn-doctor-contracts",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-doctor"],
+      "source_refs": ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"]
+    },
+    {
+      "module_id": "krn-review-contracts",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-review"],
+      "source_refs": ["docs/evals/krn-review-contracts/README.md", "docs/specs/krn-review/README.md"]
+    },
+    {
+      "module_id": "krn-mcp-read-model",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-mcp"],
+      "source_refs": ["docs/evals/krn-mcp-read-model/README.md", "docs/specs/krn-mcp-read-model/README.md"]
+    },
+    {
+      "module_id": "krn-mcp-transport",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-mcp-transport"],
+      "source_refs": ["docs/evals/krn-mcp-transport/README.md", "docs/specs/krn-mcp-read-model/README.md"]
+    },
+    {
+      "module_id": "krn-proposal-store",
+      "lane": "current",
+      "command": ["pnpm", "run", "eval:krn-proposal-store"],
+      "source_refs": ["docs/evals/krn-proposal-store/README.md", "docs/specs/krn-control-plane-proposal/README.md"]
+    },
+    {
+      "module_id": "krn-mcp-proposal-tool",
+      "lane": "current",
+      "command": ["pnpm", "run", "eval:krn-mcp-proposal-tool"],
+      "source_refs": ["docs/evals/krn-mcp-proposal-tool/README.md", "docs/specs/krn-mcp-proposal-tool/README.md"]
+    },
+    {
+      "module_id": "krn-pending-review-view-model",
+      "lane": "current",
+      "command": ["pnpm", "run", "eval:krn-pending-review-view-model"],
+      "source_refs": [
+        "docs/evals/krn-pending-review-view-model/README.md",
+        "docs/specs/krn-pending-review-view-model/README.md"
+      ]
+    },
+    {
+      "module_id": "krn-dashboard-pending-review-ui",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-dashboard-pending-review-ui"],
+      "source_refs": [
+        "docs/evals/krn-dashboard-pending-review-ui/README.md",
+        "docs/goals/goal-012.md",
+        "apps/dashboard/package.json"
+      ]
+    },
+    {
+      "module_id": "krn-dashboard-promotion-review-ui",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
+      "source_refs": [
+        "docs/evals/krn-dashboard-promotion-review-ui/README.md",
+        "docs/specs/krn-promotion-review-view-model/README.md",
+        "docs/goals/goal-015.md"
+      ]
+    },
+    {
+      "module_id": "krn-dashboard-eval-runs-ui",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-dashboard-eval-runs-ui"],
+      "source_refs": [
+        "docs/evals/krn-dashboard-eval-runs-ui/README.md",
+        "docs/specs/krn-eval-runs-view-model/README.md",
+        "docs/goals/goal-016.md"
+      ]
+    },
+    {
+      "module_id": "krn-proposal-review-decision",
+      "lane": "current",
+      "command": ["pnpm", "run", "eval:krn-proposal-review-decision"],
+      "source_refs": [
+        "docs/evals/krn-proposal-review-decision/README.md",
+        "docs/specs/krn-proposal-review-decision/README.md",
+        "docs/goals/goal-013.md"
+      ]
+    },
+    {
+      "module_id": "krn-proposal-promotion",
+      "lane": "current",
+      "command": ["pnpm", "run", "eval:krn-proposal-promotion"],
+      "source_refs": [
+        "docs/evals/krn-proposal-promotion/README.md",
+        "docs/specs/krn-proposal-promotion/README.md",
+        "docs/goals/goal-014.md"
+      ]
+    },
+    {
+      "module_id": "krn-benchmark-spine",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-benchmark-spine"],
+      "source_refs": [
+        "docs/evals/krn-benchmark-spine/README.md",
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/goals/goal-017.md"
+      ]
+    },
+    {
+      "module_id": "krn-dashboard-benchmark-reports-ui",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-dashboard-benchmark-reports-ui"],
+      "source_refs": [
+        "docs/evals/krn-dashboard-benchmark-reports-ui/README.md",
+        "docs/specs/krn-benchmark-reports-view-model/README.md",
+        "docs/goals/goal-019.md"
+      ]
+    },
+    {
+      "module_id": "krn-benchmark-live-suite",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-benchmark-live-suite"],
+      "source_refs": [
+        "docs/evals/krn-benchmark-live-suite/README.md",
+        "docs/evals/krn-benchmark-live-suite/tasks.json",
+        "docs/goals/goal-020.md"
+      ]
+    },
+    {
+      "module_id": "krn-benchmark-live-stability",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-benchmark-live-stability"],
+      "source_refs": [
+        "docs/evals/krn-benchmark-live-stability/README.md",
+        "docs/evals/krn-benchmark-live-stability/cases.json",
+        "docs/goals/goal-027.md"
+      ]
+    },
+    {
+      "module_id": "krn-benchmark-arena-contract",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-benchmark-arena-contract"],
+      "source_refs": [
+        "docs/evals/krn-benchmark-arena-contract/README.md",
+        "docs/evals/krn-benchmark-arena-contract/arena-contract.example.json",
+        "docs/goals/goal-030.md"
+      ]
+    },
+    {
+      "module_id": "krn-benchmark-expanded-arena",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-benchmark-expanded-arena"],
+      "source_refs": [
+        "docs/evals/krn-benchmark-expanded-arena/README.md",
+        "docs/evals/krn-benchmark-expanded-arena/tasks.json",
+        "docs/evals/krn-benchmark-expanded-arena/cases.json",
+        "docs/evals/krn-benchmark-expanded-arena/fixtures/live-smoke-release-claim.md",
+        "docs/goals/goal-034.md",
+        "docs/goals/goal-033.md",
+        "docs/goals/goal-032.md",
+        "docs/goals/goal-031.md"
+      ]
+    },
+    {
+      "module_id": "krn-repair-record",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-repair-record"],
+      "source_refs": [
+        "docs/evals/krn-repair-record/README.md",
+        "docs/specs/krn-repair-record/README.md",
+        "docs/goals/goal-021.md"
+      ]
+    },
+    {
+      "module_id": "krn-research-pack",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-research-pack"],
+      "source_refs": [
+        "docs/evals/krn-research-pack/README.md",
+        "docs/specs/krn-research-pack/README.md",
+        "docs/goals/goal-036.md"
+      ]
+    }
+  ],
+  "source_refs": ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md", "docs/goals/goal-038.md"],
+  "interpretation_caveat": "This registry selects local deterministic eval modules only. It does not prove eval quality, productivity lift, dashboard readiness, API readiness, or final memory quality."
+}

@@ -21,6 +21,7 @@ It does not claim productivity lift, benchmark lift, hook semantic correctness, 
 
 ## What This Tests
 
+- The typed eval module registry parses through `@krn/contracts` and rejects duplicate module IDs.
 - The valid `krn-eval` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
 - The known-bad excluded-lane fixture fails deterministically.

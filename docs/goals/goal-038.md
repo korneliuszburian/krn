@@ -1000,6 +1000,21 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no dashboard/API/benchmark expansion, no new eval family, no `codex exec` loop, no passive doc, no copied memory body, and no duplicate eval registry in `main.ts`.
 - [SIMPLIFY] Next candidate: move active eval module descriptors out of product code into a typed registry/config boundary if another slice touches eval routing; the current extraction removed the monolith pressure but did not yet make the registry data-backed.
 - [OVERCLAIM] This slice proves maintainability cleanup and public eval CLI parity only. It does not prove better eval quality, productivity lift, final eval registry architecture, dashboard usefulness, API readiness, or final memory quality.
+- [EVIDENCE] The eval registry boundary pre-edit gate passed and wrote `.krn/gates/20260621T025317Z-1145043/engineering-gate.json`.
+- [FACT] Active `krn eval` module descriptors moved from TypeScript code into `docs/evals/registry.json`, parsed through `KrnEvalModuleRegistry` in `@krn/contracts` before lane selection.
+- [FACT] `packages/cli/src/eval.ts` now reads `docs/evals/registry.json` as unknown JSON, parses it through `parseKrnEvalModuleRegistry`, and uses typed descriptors for default, lane, and custom module selection.
+- [FACT] `packages/evals/src/validate-krn-eval.ts` and `packages/cli/test/eval.test.ts` now derive expected default/current/lab modules from the typed registry instead of keeping local active-module lists.
+- [FACT] `packages/cli/src/eval.ts` dropped from 548 lines after the extraction slice to 362 lines after moving the registry out of code; `packages/cli/src/main.ts` remains 574 lines.
+- [EVIDENCE] Focused contract tests passed: `pnpm exec vitest run packages/contracts/test/eval-module-registry.test.ts packages/contracts/test/eval-report.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] Focused CLI eval test passed: `pnpm exec vitest run packages/cli/test/eval.test.ts` passed 1 file / 3 tests through the registry-backed path.
+- [EVIDENCE] Narrow no-emit checks passed for `packages/contracts/tsconfig.json` and `packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run eval:krn-eval` passed run `.krn/evals/krn-eval-contracts/20260621T030220Z-1160532/report.json` with 6/6 cases and 14/14 assertions passing, including the registry parse plus duplicate-module known-bad case.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T030308Z-1162239/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one typed eval registry, one parser, one CLI consumer, registry-derived eval expectations, and one duplicate-module known-bad fixture.
+- [SIMPLIFY] Delete/avoid: no active eval module list in product code, no duplicated module list in the eval validator or README, no dashboard/API/benchmark expansion, no broad registry service, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves data-backed eval module routing and parser-backed registry validation only. It does not prove eval quality, final registry UX, source freshness quality, product lift, API readiness, or dashboard usefulness.
+- [NEXT] Continue cleanup/condense by selecting the next product bottleneck from current code pressure, not by adding another eval or dashboard surface. Good candidates: `packages/cli/src/init.ts` size/target boundaries, duplicate docs/source truth, or MemoryStore/source graph hardcoded fixtures if a real consumer touches them.
 
 ## Disproves Completion
 

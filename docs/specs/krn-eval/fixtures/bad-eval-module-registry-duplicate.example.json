@@ -1,0 +1,21 @@
+{
+  "schema_version": "krn-eval-module-registry.v1",
+  "kind": "krn_eval_module_registry",
+  "default_lane": "current",
+  "modules": [
+    {
+      "module_id": "krn-init-contracts",
+      "lane": "core",
+      "command": ["pnpm", "run", "eval:krn-init"],
+      "source_refs": ["docs/evals/krn-init-contracts/README.md"]
+    },
+    {
+      "module_id": "krn-init-contracts",
+      "lane": "lab",
+      "command": ["pnpm", "run", "eval:krn-init"],
+      "source_refs": ["docs/evals/krn-init-contracts/README.md"]
+    }
+  ],
+  "source_refs": ["docs/specs/krn-eval/README.md"],
+  "interpretation_caveat": "Known-bad duplicate fixture."
+}

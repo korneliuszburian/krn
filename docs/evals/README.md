@@ -12,6 +12,10 @@ This folder contains repo-local evaluation definitions. Runtime outputs belong i
 
 ## Modules
 
+`docs/evals/registry.json` is the typed module registry consumed by `krn eval`.
+Lane, command, and source-ref changes belong there, not in CLI product code or
+duplicated README lists.
+
 - [codex-memory-compliance](./codex-memory-compliance/README.md) checks whether Codex follows repo-local instructions and memory conventions from neutral prompts, without being explicitly told to read `docs/memory`.
 - [krn-doctor-contracts](./krn-doctor-contracts/README.md) checks whether `krn doctor` emits a schema-backed readiness report covering AGENTS, memory, skills, hooks, evals, and runtime surfaces.
 - [krn-eval-contracts](./krn-eval-contracts/README.md) checks whether `krn eval` emits a schema-backed aggregate report over deterministic local eval modules.

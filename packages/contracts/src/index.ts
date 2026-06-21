@@ -121,6 +121,14 @@ export {
   type DoctorReport,
 } from "./doctor-report.js";
 export {
+  EvalModuleDescriptorSchema,
+  KrnEvalModuleRegistrySchema,
+  krnEvalModuleRegistryJsonSchema,
+  parseKrnEvalModuleRegistry,
+  type EvalModuleDescriptor,
+  type KrnEvalModuleRegistry,
+} from "./eval-module-registry.js";
+export {
   KrnEvalReportSchema,
   krnEvalReportJsonSchema,
   parseKrnEvalReport,

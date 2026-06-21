@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseKrnEvalReport } from "@krn/contracts";
+import { parseKrnEvalModuleRegistry, parseKrnEvalReport, type KrnEvalModuleRegistry } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
 
 type EvalCase = {
@@ -35,33 +35,6 @@ type EvalReport = {
   generated_report_path: string | null;
   interpretation_caveat: string;
 };
-
-const DEFAULT_CURRENT_MODULES = [
-  "krn-init-contracts",
-  "krn-doctor-contracts",
-  "krn-review-contracts",
-  "krn-mcp-read-model",
-  "krn-mcp-transport",
-  "krn-proposal-store",
-  "krn-mcp-proposal-tool",
-  "krn-pending-review-view-model",
-  "krn-proposal-review-decision",
-  "krn-proposal-promotion",
-];
-
-const LAB_MODULES = [
-  "krn-dashboard-pending-review-ui",
-  "krn-dashboard-promotion-review-ui",
-  "krn-dashboard-eval-runs-ui",
-  "krn-benchmark-spine",
-  "krn-dashboard-benchmark-reports-ui",
-  "krn-benchmark-live-suite",
-  "krn-benchmark-live-stability",
-  "krn-benchmark-arena-contract",
-  "krn-benchmark-expanded-arena",
-  "krn-repair-record",
-  "krn-research-pack",
-];
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -114,14 +87,28 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
-function hasDefaultCurrentModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
-  const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
-  return DEFAULT_CURRENT_MODULES.every((moduleId) => moduleIds.includes(moduleId));
+function moduleIdsForLanes(registry: KrnEvalModuleRegistry, lanes: readonly string[]): string[] {
+  return registry.modules.filter((module) => lanes.includes(module.lane)).map((module) => module.module_id);
 }
 
-function hasNoLabModules(report: ReturnType<typeof parseKrnEvalReport>): boolean {
+function hasDefaultCurrentModules(report: ReturnType<typeof parseKrnEvalReport>, registry: KrnEvalModuleRegistry): boolean {
   const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
-  return LAB_MODULES.every((moduleId) => !moduleIds.includes(moduleId));
+  return moduleIdsForLanes(registry, ["core", "current"]).every((moduleId) => moduleIds.includes(moduleId));
+}
+
+function hasNoLabModules(report: ReturnType<typeof parseKrnEvalReport>, registry: KrnEvalModuleRegistry): boolean {
+  const moduleIds = report.modules.map((moduleResult) => moduleResult.module_id);
+  return moduleIdsForLanes(registry, ["lab"]).every((moduleId) => !moduleIds.includes(moduleId));
+}
+
+function selectCustomLabModule(registry: KrnEvalModuleRegistry): KrnEvalModuleRegistry["modules"][number] {
+  const preferredModule = registry.modules.find((module) => module.module_id === "krn-research-pack" && module.lane === "lab");
+  const fallbackModule = registry.modules.find((module) => module.lane === "lab");
+  const selectedModule = preferredModule ?? fallbackModule;
+  if (!selectedModule) {
+    throw new Error("Eval registry has no lab module for custom module validation");
+  }
+  return selectedModule;
 }
 
 function runValidation(): EvalReport {
@@ -132,6 +119,34 @@ function runValidation(): EvalReport {
   let generatedReportPath: string | null = null;
 
   const caseById = new Map(cases.map((testCase) => [testCase.id, testCase]));
+  const registry = parseKrnEvalModuleRegistry(readJson(resolve("docs/evals/registry.json")));
+
+  const registryCase = caseById.get("registry-parses-and-known-bad-fails");
+  if (!registryCase) {
+    throw new Error("Missing case registry-parses-and-known-bad-fails");
+  }
+  try {
+    parseKrnEvalModuleRegistry(readJson(resolve("docs/specs/krn-eval/fixtures/bad-eval-module-registry-duplicate.example.json")));
+    results.push(
+      result(
+        registryCase.id,
+        false,
+        ["registry parses", "known-bad duplicate registry rejected"],
+        registryCase.failure_mode,
+        "Known-bad duplicate eval registry unexpectedly parsed.",
+      ),
+    );
+  } catch {
+    results.push(
+      result(
+        registryCase.id,
+        registry.modules.length > 0 && registry.modules.every((module) => module.command.length > 0 && module.source_refs.length > 0),
+        ["registry parses", "known-bad duplicate registry rejected"],
+        registryCase.failure_mode,
+        "Eval module registry parsed and duplicate known-bad fixture failed as expected.",
+      ),
+    );
+  }
 
   const validFixtureCase = caseById.get("valid-fixture-parses");
   if (!validFixtureCase) {
@@ -145,7 +160,7 @@ function runValidation(): EvalReport {
         report.command === "krn eval" &&
           report.lane_selection.requested_lane === "current" &&
           report.lane_selection.excluded_lanes.includes("lab") &&
-          hasNoLabModules(report),
+          hasNoLabModules(report, registry),
         ["valid fixture parses", "default current lane excludes lab"],
         validFixtureCase.failure_mode,
         "Valid krn-eval fixture parsed through @krn/contracts.",
@@ -239,8 +254,8 @@ function runValidation(): EvalReport {
             report.lane_selection.requested_lane === "current" &&
             report.lane_selection.included_lanes.join(",") === "core,current" &&
             report.lane_selection.excluded_lanes.includes("lab") &&
-            hasDefaultCurrentModules(report) &&
-            hasNoLabModules(report),
+            hasDefaultCurrentModules(report, registry) &&
+            hasNoLabModules(report, registry),
           [
             "CLI exits zero",
             "generated report exists",
@@ -269,7 +284,8 @@ function runValidation(): EvalReport {
   if (!customCase) {
     throw new Error("Missing case custom-module-report-parses");
   }
-  const customCliResult = runKrnCli(["eval", "--module", "krn-research-pack"]);
+  const customModule = selectCustomLabModule(registry);
+  const customCliResult = runKrnCli(["eval", "--module", customModule.module_id]);
   if (customCliResult.exitCode !== 0) {
     results.push(
       result(
@@ -287,11 +303,11 @@ function runValidation(): EvalReport {
         result(
           customCase.id,
           report.lane_selection.requested_lane === "custom" &&
-            report.lane_selection.module_filter.join(",") === "krn-research-pack" &&
-            report.lane_selection.included_lanes.join(",") === "lab" &&
+            report.lane_selection.module_filter.join(",") === customModule.module_id &&
+            report.lane_selection.included_lanes.join(",") === customModule.lane &&
             report.modules.length === 1 &&
-            report.modules[0]?.module_id === "krn-research-pack" &&
-            report.modules[0]?.lane === "lab",
+            report.modules[0]?.module_id === customModule.module_id &&
+            report.modules[0]?.lane === customModule.lane,
           ["custom module CLI exits zero", "custom module report parses", "custom module keeps lab lane explicit"],
           customCase.failure_mode,
           "Custom krn eval report parsed through @krn/contracts.",

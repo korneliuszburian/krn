@@ -37,29 +37,10 @@ Default behavior:
 - `lab` modules are excluded from default runs;
 - explicit `--module` bypasses lane filtering and emits `requested_lane: "custom"`.
 
-Supported module IDs:
-
-- `krn-init-contracts`
-- `krn-doctor-contracts`
-- `krn-review-contracts`
-- `krn-mcp-read-model`
-- `krn-mcp-transport`
-- `krn-proposal-store`
-- `krn-mcp-proposal-tool`
-- `krn-pending-review-view-model`
-- `krn-dashboard-pending-review-ui`
-- `krn-dashboard-promotion-review-ui`
-- `krn-dashboard-eval-runs-ui`
-- `krn-proposal-review-decision`
-- `krn-proposal-promotion`
-- `krn-benchmark-spine`
-- `krn-dashboard-benchmark-reports-ui`
-- `krn-benchmark-live-suite`
-- `krn-benchmark-live-stability`
-- `krn-benchmark-arena-contract`
-- `krn-benchmark-expanded-arena`
-- `krn-repair-record`
-- `krn-research-pack`
+Supported module IDs are loaded from `docs/evals/registry.json` through the
+`KrnEvalModuleRegistry` parser. Keep lane, command, and source-ref changes in
+that registry instead of duplicating the active module list in product code or
+this README.
 
 If no module or lane is supplied, the command runs only the default current-lane selection. Use `--lane all` for the historical aggregate and `--lane lab` for lab-only checks.
 
@@ -116,6 +97,6 @@ It does not prove productivity lift, benchmark lift, hook semantic correctness, 
 Run:
 
 ```bash
-pnpm test -- packages/contracts/test/eval-report.test.ts packages/cli/test/eval.test.ts
+pnpm test -- packages/contracts/test/eval-report.test.ts packages/contracts/test/eval-module-registry.test.ts packages/cli/test/eval.test.ts
 pnpm run eval:krn-eval
 ```
