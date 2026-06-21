@@ -1448,6 +1448,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: active-goal/canonical refs in research-pack runtime scaffold output, no researcher worker, no new docs, no dashboard/API/benchmark expansion, and no committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves research-pack scaffold source-ref hygiene only. It does not prove source quality, researcher quality, memory promotion correctness, final source graph quality, or product lift.
 - [NEXT] Commit and push this cleanup; then stop unless another current consumer exposes a focused product-code drift.
+- [EVIDENCE] The MemoryStore feedback-closure pre-edit gate passed and wrote `.krn/gates/20260621T063923Z-1603260/engineering-gate.json`.
+- [FACT] `krn memory feedback --artifact <path> --outcome used|ignored|harmful|missed|stale|blocked_bad_action --reason <text>` now records reviewed outcomes for existing `krn brief`, `krn context build`, or `krn review` memory feedback artifacts.
+- [FACT] The feedback closure writes back to the same `local-dev-json:` MemoryStore sink referenced by the pending feedback artifact, and runtime output stores memory IDs/outcomes only, not authoritative memory bodies.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/memory-feedback.test.ts packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/contracts/test/memory-store.test.ts` passed 4 files / 11 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one small MemoryStore feedback CLI module, existing brief/context/review feedback artifacts as the consumer, the current local-first store adapter, and one known-bad CLI outcome test.
+- [SIMPLIFY] Delete/avoid: no new dashboard/API/benchmark surface, no new memory body storage under `.krn/**`, no broad dogfood lab, no `codex exec` worker loop, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves the pending MemoryStore application feedback loop can be resolved by operator evidence. It does not prove memory precision, self-growing behavior, review-burden reduction, cloud/API sync, or final Memory Core quality.
+- [NEXT] Commit and push this feedback-closure slice; then continue only with another consumed final-product capability or cleanup bottleneck that a CLI/review/eval/source/memory consumer exposes.
 
 ## Disproves Completion
 

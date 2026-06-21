@@ -252,8 +252,8 @@ export function buildReviewMemoryBundle(targetRoot: string, runId: string, now: 
   });
 }
 
-export function recordMemoryFeedback(feedback: KrnMemoryFeedback): void {
-  const storePath = resolveLocalMemoryStorePath();
+export function recordMemoryFeedback(feedback: KrnMemoryFeedback, storePathInput?: string): void {
+  const storePath = storePathInput ?? resolveLocalMemoryStorePath();
   const storeFile = loadLocalMemoryStore(storePath);
   const selectedMemoryIds = new Set(feedback.memory_outcomes.map((outcome) => outcome.memory_id));
   const nextStoreFile = parseKrnLocalMemoryStore({

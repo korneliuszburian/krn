@@ -4,6 +4,7 @@ import { buildDoctorReport, parseDoctorArgs, writeDoctorReport } from "./doctor.
 import { buildKrnEvalReport, parseEvalArgs, writeKrnEvalReport } from "./eval.js";
 import { buildKrnEngineeringGate, parseKrnGateArgs, writeKrnEngineeringGate } from "./gate.js";
 import { initProposalCapabilityUsage, runKrnInit } from "./init.js";
+import { parseMemoryFeedbackArgs, recordResolvedMemoryFeedback } from "./memory-feedback.js";
 import { buildKrnResearchPack, parseResearchPackArgs, writeKrnResearchPack } from "./research-pack.js";
 import { buildKrnReviewReport, parseReviewArgs, writeKrnReviewReport } from "./review.js";
 import { buildKrnSourceCheck, parseSourceCheckArgs, writeKrnSourceCheck } from "./source-graph.js";
@@ -27,6 +28,7 @@ Commands:
   review [--target <path>]
   brief --task <text> [--path <path>] [--target <path>]
   context build --task <text> [--path <path>] [--target <path>]
+  memory feedback --artifact <path> --outcome used|ignored|harmful|missed|stale|blocked_bad_action --reason <text>
   sources check --context <path> --graph <path> [--target <path>]
   gate --task <text> [--path <path>] [--target <path>]
   research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]
@@ -79,6 +81,12 @@ export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliR
       const packet = buildKrnContextPacket(args);
       const packetPath = writeKrnContextPacket(args.target, packet);
       return { exitCode: 0, stdout: `${packetPath}\n`, stderr: "" };
+    }
+
+    if (normalizedArgv[0] === "memory") {
+      const args = parseMemoryFeedbackArgs(normalizedArgv);
+      const feedback = recordResolvedMemoryFeedback(args);
+      return { exitCode: 0, stdout: `${JSON.stringify(feedback, null, 2)}\n`, stderr: "" };
     }
 
     if (normalizedArgv[0] === "sources") {

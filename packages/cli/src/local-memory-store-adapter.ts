@@ -15,6 +15,18 @@ export function localMemoryStoreRef(storePath: string): string {
   return `local-dev-json:${storePath}`;
 }
 
+export function localMemoryStorePathFromRef(storeRef: string): string {
+  const prefix = "local-dev-json:";
+  if (!storeRef.startsWith(prefix)) {
+    throw new Error(`Unsupported KRN MemoryStore ref: ${storeRef}`);
+  }
+  const storePath = storeRef.slice(prefix.length).trim();
+  if (storePath.length === 0) {
+    throw new Error("KRN MemoryStore ref is missing a local path.");
+  }
+  return resolve(storePath);
+}
+
 function readJsonFile(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
 }
