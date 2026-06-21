@@ -1378,6 +1378,19 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: parser branches inside `init.ts`, no broad CLI parser framework, no new command behavior, no dashboard/API/benchmark work, and no runtime artifacts committed.
 - [OVERCLAIM] This slice proves init parser extraction only. It does not prove final repo bootstrap quality, merge-mode safety, source/memory quality, policy hook enforcement, or productivity lift.
 - [NEXT] Commit and push this cleanup; then stop if no next obvious consumed cleanup exists. Do not invent another surface just to keep running.
+- [EVIDENCE] The local MemoryStore adapter extraction pre-edit gate passed and wrote `.krn/gates/20260621T060448Z-1506307/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T060448Z-1506318/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] Local JSON store path resolution, `local-dev-json:` refs, read/parse, and write behavior moved from `packages/cli/src/memory-store.ts` into `packages/cli/src/local-memory-store-adapter.ts`.
+- [FACT] `packages/cli/src/memory-store.ts` now keeps memory selection, application, and feedback logic while depending on the local adapter for persistence.
+- [FACT] The local adapter is a current local-first implementation boundary, not final memory core and not repo-local authoritative memory.
+- [EVIDENCE] The first focused test run failed because `parseKrnLocalMemoryStore` was incorrectly removed from `memory-store.ts`; the repair kept the parser in the selection/feedback module because it still builds the next typed store object.
+- [EVIDENCE] Focused tests passed after repair: `pnpm exec vitest run packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/contracts/test/memory-store.test.ts` passed 4 files / 10 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T060617Z-1514676/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one explicit local MemoryStore adapter, existing brief/context/review consumers, and contract parser coverage.
+- [SIMPLIFY] Delete/avoid: filesystem/path/default-store code inside `memory-store.ts`, no service/cloud memory implementation yet, no repo-local memory-core claim, no dashboard/API/benchmark work, and no committed runtime evidence.
+- [OVERCLAIM] This slice proves local MemoryStore adapter separation only. It does not prove final service-backed memory, memory precision, source quality, review-burden reduction, API sync, team memory, or productivity lift.
+- [NEXT] Commit and push this cleanup; then stop or continue only if another consumed cleanup is obvious from code pressure.
 
 ## Disproves Completion
 

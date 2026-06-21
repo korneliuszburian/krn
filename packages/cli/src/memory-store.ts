@@ -1,19 +1,21 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
 import {
   parseKrnLocalMemoryStore,
   parseKrnMemoryApplication,
   parseKrnMemoryFeedback,
   parseKrnMemoryRecord,
   parseKrnMemorySelection,
-  type KrnLocalMemoryStore,
   type KrnMemoryApplication,
   type KrnMemoryFeedback,
   type KrnMemoryRecord,
   type KrnMemoryRetrievalPolicy,
   type KrnMemorySelection,
 } from "@krn/contracts";
+import {
+  loadLocalMemoryStore,
+  localMemoryStoreRef,
+  resolveLocalMemoryStorePath,
+  writeLocalMemoryStore,
+} from "./local-memory-store-adapter.js";
 
 type MemoryBundle = {
   selection: KrnMemorySelection;
@@ -24,32 +26,6 @@ type MemoryBundle = {
 
 type MemoryTaskKind = KrnMemorySelection["task_kind"];
 type MemoryApplicationSurface = KrnMemoryApplication["surface"];
-
-function resolveMemoryStorePath(): string {
-  const explicitPath = process.env["KRN_MEMORY_STORE_PATH"];
-  if (explicitPath && explicitPath.trim().length > 0) {
-    return resolve(explicitPath);
-  }
-  return join(homedir(), ".krn", "memory-store.json");
-}
-
-function readJsonFile(path: string): unknown {
-  return JSON.parse(readFileSync(path, "utf8")) as unknown;
-}
-
-function loadMemoryStoreFile(storePath: string): KrnLocalMemoryStore {
-  if (!existsSync(storePath)) {
-    throw new Error(
-      `KRN MemoryStore not found at ${storePath}. Set KRN_MEMORY_STORE_PATH to a local store file outside the target repo before running memory-aware review.`,
-    );
-  }
-  return parseKrnLocalMemoryStore(readJsonFile(storePath));
-}
-
-function writeMemoryStoreFile(storePath: string, storeFile: KrnLocalMemoryStore): void {
-  mkdirSync(dirname(storePath), { recursive: true });
-  writeFileSync(storePath, `${JSON.stringify(storeFile, null, 2)}\n`, "utf8");
-}
 
 function selectRecords(records: readonly KrnMemoryRecord[], taskKind: MemoryTaskKind, maxSelected: number): {
   selected: KrnMemoryRecord[];
@@ -222,9 +198,9 @@ function buildMemoryBundle(input: {
   taskKind: MemoryTaskKind;
   surface: MemoryApplicationSurface;
 }): MemoryBundle {
-  const storePath = resolveMemoryStorePath();
-  const storeRef = `local-dev-json:${storePath}`;
-  const storeFile = loadMemoryStoreFile(storePath);
+  const storePath = resolveLocalMemoryStorePath();
+  const storeRef = localMemoryStoreRef(storePath);
+  const storeFile = loadLocalMemoryStore(storePath);
   const createdAt = input.now.toISOString();
   const selection = createMemorySelection(
     input.targetRoot,
@@ -277,8 +253,8 @@ export function buildReviewMemoryBundle(targetRoot: string, runId: string, now: 
 }
 
 export function recordMemoryFeedback(feedback: KrnMemoryFeedback): void {
-  const storePath = resolveMemoryStorePath();
-  const storeFile = loadMemoryStoreFile(storePath);
+  const storePath = resolveLocalMemoryStorePath();
+  const storeFile = loadLocalMemoryStore(storePath);
   const selectedMemoryIds = new Set(feedback.memory_outcomes.map((outcome) => outcome.memory_id));
   const nextStoreFile = parseKrnLocalMemoryStore({
     schema_version: storeFile.schema_version,
@@ -294,5 +270,5 @@ export function recordMemoryFeedback(feedback: KrnMemoryFeedback): void {
     feedback: [...storeFile.feedback, feedback],
   });
 
-  writeMemoryStoreFile(storePath, nextStoreFile);
+  writeLocalMemoryStore(storePath, nextStoreFile);
 }
