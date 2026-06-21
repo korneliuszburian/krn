@@ -12,6 +12,7 @@ import {
   applyInitProposal,
   buildInitBootstrapPayload,
 } from "./init-bootstrap.js";
+import { buildInitDetectedArtifacts, initArtifactExists } from "./init-artifacts.js";
 import {
   INIT_BOOTSTRAP_TARGETS,
   initCapabilityList,
@@ -21,7 +22,7 @@ import {
   type InitBootstrapTarget,
   type InitProposalCapability,
 } from "./init-targets.js";
-import { createRunId, pathKind } from "./runtime-utils.js";
+import { createRunId } from "./runtime-utils.js";
 
 export { initProposalCapabilityUsage } from "./init-targets.js";
 
@@ -48,20 +49,6 @@ export type InitCliResult = {
   stdout: string;
   stderr: string;
 };
-
-const DETECTED_PATHS = [
-  { path: "AGENTS.md", expectedKind: "file" },
-  { path: ".krn/config.toml", expectedKind: "file" },
-  { path: ".krn/sources/index.json", expectedKind: "file" },
-  { path: ".krn/context/index.json", expectedKind: "file" },
-  { path: ".krn/evals/baseline.json", expectedKind: "file" },
-  { path: ".agents/skills/README.md", expectedKind: "file" },
-  { path: ".krn/policies/boundaries.json", expectedKind: "file" },
-  { path: ".codex", expectedKind: "directory" },
-  { path: ".agents", expectedKind: "directory" },
-  { path: "docs/memory/INDEX.md", expectedKind: "file" },
-  { path: ".krn", expectedKind: "directory" },
-] as const;
 
 export function parseInitArgs(argv: readonly string[]): InitArgs {
   if (argv[0] !== "init") {
@@ -166,39 +153,6 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
   return { target, mode: "dry-run" };
 }
 
-function artifactReason(relativePath: string, exists: boolean): string {
-  if (!exists) {
-    return `${relativePath} is absent and can be planned safely.`;
-  }
-
-  switch (relativePath) {
-    case "AGENTS.md":
-      return "Root Codex instructions already exist and must not be overwritten by dry-run init.";
-    case ".krn/config.toml":
-      return "KRN local config already exists and must not be overwritten by dry-run init.";
-    case ".krn/sources/index.json":
-      return "KRN source graph seed already exists and must not be overwritten by dry-run init.";
-    case ".krn/context/index.json":
-      return "KRN context pointer index already exists and must not be overwritten by dry-run init.";
-    case ".krn/evals/baseline.json":
-      return "KRN eval baseline seed already exists and must not be overwritten by dry-run init.";
-    case ".agents/skills/README.md":
-      return "KRN skill wiring seed already exists and must not be overwritten by dry-run init.";
-    case ".krn/policies/boundaries.json":
-      return "KRN policy boundary seed already exists and must not be overwritten by dry-run init.";
-    case ".codex":
-      return "Project-local Codex config/hooks directory already exists.";
-    case ".agents":
-      return "Repo-local skill directory already exists.";
-    case "docs/memory/INDEX.md":
-      return "Reviewed memory index already exists.";
-    case ".krn":
-      return "KRN runtime artifact directory already exists.";
-    default:
-      return `${relativePath} exists in the target project.`;
-  }
-}
-
 function plannedAction(exists: boolean): "create" | "skip" | "proposal_only" {
   return exists ? "skip" : "create";
 }
@@ -212,34 +166,18 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
   const runId = createRunId(now);
   const runtimeManifestPath = `.krn/init/${runId}/manifest.json`;
 
-  const detectedArtifacts = DETECTED_PATHS.map((artifact) => {
-    const kind = pathKind(targetRoot, artifact.path);
-    const exists = kind !== "missing";
+  const detectedArtifacts = buildInitDetectedArtifacts(targetRoot);
 
-    return {
-      path: artifact.path,
-      kind,
-      exists,
-      reason: artifactReason(artifact.path, exists),
-    };
-  });
-
-  const agentsExists = detectedArtifacts.find((artifact) => artifact.path === "AGENTS.md")?.exists ?? false;
-  const localConfigExists = detectedArtifacts.find((artifact) => artifact.path === ".krn/config.toml")?.exists ?? false;
-  const sourcePointersExist =
-    detectedArtifacts.find((artifact) => artifact.path === ".krn/sources/index.json")?.exists ?? false;
-  const contextPointersExist =
-    detectedArtifacts.find((artifact) => artifact.path === ".krn/context/index.json")?.exists ?? false;
-  const evalBaselineExists =
-    detectedArtifacts.find((artifact) => artifact.path === ".krn/evals/baseline.json")?.exists ?? false;
-  const skillWiringExists =
-    detectedArtifacts.find((artifact) => artifact.path === ".agents/skills/README.md")?.exists ?? false;
-  const policyBoundariesExist =
-    detectedArtifacts.find((artifact) => artifact.path === ".krn/policies/boundaries.json")?.exists ?? false;
-  const memoryIndexExists =
-    detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
+  const agentsExists = initArtifactExists(detectedArtifacts, "AGENTS.md");
+  const localConfigExists = initArtifactExists(detectedArtifacts, ".krn/config.toml");
+  const sourcePointersExist = initArtifactExists(detectedArtifacts, ".krn/sources/index.json");
+  const contextPointersExist = initArtifactExists(detectedArtifacts, ".krn/context/index.json");
+  const evalBaselineExists = initArtifactExists(detectedArtifacts, ".krn/evals/baseline.json");
+  const skillWiringExists = initArtifactExists(detectedArtifacts, ".agents/skills/README.md");
+  const policyBoundariesExist = initArtifactExists(detectedArtifacts, ".krn/policies/boundaries.json");
+  const memoryIndexExists = initArtifactExists(detectedArtifacts, "docs/memory/INDEX.md");
   const bootstrapTargetExists = (target: InitBootstrapTarget): boolean =>
-    detectedArtifacts.find((artifact) => artifact.path === target.path)?.exists ?? false;
+    initArtifactExists(detectedArtifacts, target.path);
 
   const candidateManifest: unknown = {
     schema_version: "krn-init-manifest.v1",

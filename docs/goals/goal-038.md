@@ -1354,6 +1354,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new docs/source system, no passive research note, no dashboard/API/benchmark work, no new eval module, and no path-specific hardcode in three separate command files.
 - [OVERCLAIM] This slice proves pre-edit skill routing for canonical goal/source paths only. It does not prove research quality, source freshness, ADR completeness, skill impact, final memory quality, or productivity lift.
 - [NEXT] Commit and push this cleanup; then pick the next slice from real code pressure. If no concrete consumer exposes a bug, inspect monolith pressure around `packages/cli/src/init.ts` before adding behavior.
+- [EVIDENCE] The init artifact detection extraction pre-edit gate passed and wrote `.krn/gates/20260621T050156Z-1482726/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T050156Z-1482709/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] Init artifact path inventory and reason generation moved from `packages/cli/src/init.ts` into `packages/cli/src/init-artifacts.ts`.
+- [FACT] `packages/cli/src/init.ts` now calls `buildInitDetectedArtifacts` and `initArtifactExists`, reducing the init command monolith while preserving dry-run/proposal/apply behavior.
+- [EVIDENCE] Focused public-interface test passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] Focused init eval passed: `pnpm run eval:krn-init` run `.krn/evals/krn-init-contracts/20260621T050428Z-1487541/report.json` passed 13/13 cases and 62/62 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T050429Z-1487565/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one small artifact inventory module, unchanged public `krn init` behavior, public init tests, and init eval coverage.
+- [SIMPLIFY] Delete/avoid: the local `DETECTED_PATHS` / `artifactReason` block inside `init.ts`, repeated artifact `find(...).exists` calls, no new init capability, no dashboard/API/benchmark work, and no broad init rewrite.
+- [OVERCLAIM] This slice proves init monolith pressure reduction for artifact detection only. It does not prove broader repo bootstrap quality, merge-mode safety, policy enforcement, memory quality, source freshness, or productivity lift.
+- [NEXT] Commit and push this cleanup; then continue only with another small consumed cleanup if the next code pressure is obvious. Otherwise stop with status rather than inventing another surface.
 
 ## Disproves Completion
 
