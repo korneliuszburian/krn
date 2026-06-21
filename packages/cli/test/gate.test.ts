@@ -227,4 +227,35 @@ describe("krn gate", () => {
     expect(gate.gate_status).toBe("pass");
     expect(gate.required_skills.map((skill) => skill.name)).toContain("research-synthesis");
   }, 30_000);
+
+  it("routes canonical docs by stable directory surface instead of one active file", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-canonical-path-skill-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "gate",
+        "--target",
+        targetRoot,
+        "--task",
+        "Simplify the touched cleanup surface without adding dashboard benchmark API or passive docs",
+        "--path",
+        "docs/plans/canonical/draft.md",
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const gate = parseKrnEngineeringGate(readJson(stdout.trim()));
+    const skillNames = gate.required_skills.map((skill) => skill.name);
+    expect(gate.gate_status).toBe("pass");
+    expect(skillNames).toContain("research-synthesis");
+    expect(skillNames).not.toContain("goal-execplan");
+  }, 30_000);
 });

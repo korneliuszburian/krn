@@ -10,6 +10,8 @@ type SkillRule = {
   targetPathMatches?: (targetPath: string | null) => boolean;
 };
 
+const CANONICAL_DOC_PREFIX = "docs/plans/canonical/";
+
 const SKILL_RULES: readonly SkillRule[] = [
   {
     pattern: /\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model|schema)\b/,
@@ -53,18 +55,12 @@ function isEvalTargetPath(path: string | null): boolean {
 
 function isGoalTargetPath(path: string | null): boolean {
   const normalized = normalizeTargetPath(path);
-  return normalized !== null && (normalized.startsWith("docs/goals/") || normalized === "docs/plans/canonical/draft.md");
+  return normalized !== null && normalized.startsWith("docs/goals/");
 }
 
 function isResearchTargetPath(path: string | null): boolean {
   const normalized = normalizeTargetPath(path);
-  return (
-    normalized !== null &&
-    (normalized === "docs/plans/canonical/SOURCES.md" ||
-      normalized === "docs/plans/canonical/pattern-matrix.md" ||
-      normalized === "docs/plans/canonical/draft.md" ||
-      normalized.startsWith("docs/memory/"))
-  );
+  return normalized !== null && (normalized.startsWith(CANONICAL_DOC_PREFIX) || normalized.startsWith("docs/memory/"));
 }
 
 export function resolveKrnRequiredSkills(input: {
