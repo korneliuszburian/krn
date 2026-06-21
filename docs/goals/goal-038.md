@@ -965,7 +965,7 @@ above plus the newest `[NEXT]` entry.
 - [NEXT] Continue with a consumer-led product slice: either use MemoryStore/context/source/review boundaries on the next real code capability, or stop and simplify another touched monolith only when the next task creates that pressure.
 - [EVIDENCE] The context-skill-routing pre-edit gate passed and wrote `.krn/gates/20260621T023541Z-1104083/engineering-gate.json`.
 - [EVIDENCE] Pre-fix dogfood exposed a practical routing weakness: the init-eval refactor context packet selected `eval-designer` but not `typescript-contract-engineer` for a TypeScript file when the task text did not carry the right keyword.
-- [FACT] `krn context build` now routes `typescript-contract-engineer` when `--path` ends in `.ts`, `.tsx`, `.mts`, `.mtsx`, `.cts`, or `.ctsx`, not only when the task text contains TypeScript-like words.
+- [FACT] `krn context build` now routes `typescript-contract-engineer` when `--path` ends in `.ts`, `.tsx`, `.mts`, or `.cts`, not only when the task text contains TypeScript-like words.
 - [EVIDENCE] Focused test passed: `pnpm exec vitest run packages/cli/test/context.test.ts` passed 1 file / 1 test, with task text omitting TypeScript keywords and target path `packages/contracts/src/context-packet.ts`.
 - [EVIDENCE] Post-fix runtime context packet `.krn/context/20260621T023656Z-1107950/context-packet.json` selected `goal-execplan` and `typescript-contract-engineer`, selected memory IDs `mem-goal-038-memory-boundary` / `mem-goal-038-simplify-cadence`, and rejected full memory dumps plus stale lab context.
 - [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T023709Z-1108651/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.

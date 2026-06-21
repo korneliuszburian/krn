@@ -79,7 +79,7 @@ function selectedContextFromRecords(
 }
 
 function isTypeScriptTargetPath(path: string | null): boolean {
-  return path !== null && /\.(?:c|m)?tsx?$/.test(path);
+  return path !== null && /\.(?:ts|tsx|mts|cts)$/.test(path);
 }
 
 function requiredSkillsForTask(task: string, targetPath: string | null): KrnContextPacket["required_skills"] {
