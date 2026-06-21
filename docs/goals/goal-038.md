@@ -1413,6 +1413,20 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no review report schema change, no source graph service, no broad MCP/dashboard cleanup, no committed runtime evidence, and no claim that all non-review surfaces are cleaned.
 - [OVERCLAIM] This slice proves review artifact source-ref hygiene only. It does not prove source freshness, final source graph quality, memory precision, dashboard trust, human review quality, or productivity lift.
 - [NEXT] Commit and push this cleanup; then inspect remaining active-goal hardcodes only if a concrete consumer and focused verification path exist. Do not continue into MCP/dashboard or eval surfaces merely because `rg` finds strings.
+- [EVIDENCE] The eval aggregate source-ref cleanup pre-edit gate passed and wrote `.krn/gates/20260621T061636Z-1534256/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T061636Z-1534257/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] `krn eval` aggregate report `source_refs` now derive from the stable eval contract plus selected module descriptor lineage from `docs/evals/registry.json`, instead of hardcoding the active goal or canonical draft into eval runtime output.
+- [FACT] The first aggregate eval public test failed because `krn-mcp-proposal-tool` could not store the source-backed proposal fixture: the fixture cited `docs/goals/goal-038.md`, but the isolated MCP target did not provide that source ref. The repair removed the active-goal ref from the portable control-plane proposal fixture and MCP tool result lineage.
+- [FACT] `krn_store_control_plane_proposal` tool results now cite stable proposal/tool contracts; stored proposals keep their own validated source lineage separately.
+- [EVIDENCE] Focused MCP tests passed: `pnpm exec vitest run packages/mcp/test/stdio-server.test.ts packages/contracts/test/mcp-proposal-tool.test.ts packages/contracts/test/control-plane-proposal.test.ts` passed 3 files / 25 tests.
+- [EVIDENCE] Focused MCP proposal-tool eval passed: `pnpm run eval:krn-mcp-proposal-tool` run `.krn/evals/krn-mcp-proposal-tool/20260621T062215Z-1544767/report.json` passed 5/5 cases and 17/17 assertions.
+- [EVIDENCE] Focused eval/report tests passed after repair: `pnpm exec vitest run packages/cli/test/eval.test.ts packages/contracts/test/eval-report.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] Focused eval contract passed: `pnpm run eval:krn-eval` run `.krn/evals/krn-eval-contracts/20260621T062349Z-1547694/report.json` passed 6/6 cases and 14/14 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one aggregate eval source-ref derivation, one portable control-plane proposal fixture, one MCP tool-result regression, and the existing module registry as the selected-module lineage source.
+- [SIMPLIFY] Delete/avoid: no eval registry rewrite, no dashboard/MCP read-model cleanup, no lab/default-lane expansion, no source service, no committed runtime evidence, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves aggregate eval and MCP proposal-tool source-ref hygiene only. It does not prove eval quality, final source freshness, dashboard trust, MCP API readiness, or review-burden reduction.
+- [NEXT] Commit and push this cleanup; then stop unless another default-lane CLI/MCP consumer exposes a concrete failing check or volatile hardcoded-truth bug.
 
 ## Disproves Completion
 

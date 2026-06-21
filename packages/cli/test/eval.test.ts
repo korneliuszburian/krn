@@ -34,6 +34,11 @@ describe("krn eval", () => {
     expect(report.summary.total_modules).toBe(expectedModuleIds.length);
     expect(report.summary.failed_modules).toBe(0);
     expect(report.summary.total_cases).toBeGreaterThanOrEqual(34);
+    expect(report.source_refs).toContain("docs/specs/krn-eval/README.md");
+    expect(report.source_refs).toContain("docs/evals/STANDARD.md");
+    expect(report.source_refs).toContain("docs/evals/krn-init-contracts/README.md");
+    expect(report.source_refs).not.toContain("docs/goals/goal-038.md");
+    expect(report.source_refs).not.toContain("docs/plans/canonical/draft.md");
     expect(existsSync(reportPath)).toBe(true);
     expect(report.modules.every((moduleResult) => moduleResult.report_path?.startsWith(".krn/evals/"))).toBe(true);
   }, 120_000);

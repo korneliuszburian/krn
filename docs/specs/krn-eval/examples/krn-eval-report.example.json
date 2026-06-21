@@ -96,6 +96,15 @@
     "failed_assertions": 0
   },
   "runtime_report_path": ".krn/eval/20260620T220000Z-example/report.json",
-  "source_refs": ["docs/goals/goal-038.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md", "docs/plans/canonical/draft.md"],
+  "source_refs": [
+    "docs/specs/krn-eval/README.md",
+    "docs/evals/STANDARD.md",
+    "docs/evals/krn-init-contracts/README.md",
+    "docs/specs/krn-init/README.md",
+    "docs/evals/krn-doctor-contracts/README.md",
+    "docs/specs/krn-doctor/README.md",
+    "docs/evals/krn-proposal-store/README.md",
+    "docs/specs/krn-control-plane-proposal/README.md"
+  ],
   "interpretation_caveat": "This report proves local deterministic eval lane selection and aggregation only; it does not prove productivity lift, lab quality, API/MCP readiness, complete dashboard readiness, or human approval quality."
 }

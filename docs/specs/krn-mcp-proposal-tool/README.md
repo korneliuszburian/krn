@@ -41,6 +41,8 @@ parseKrnMcpProposalToolResult(input)
 krnMcpProposalToolResultJsonSchema
 ```
 
+Tool-result `source_refs` should cite stable proposal/tool contracts. The stored proposal keeps its own validated source lineage; the tool result must not copy the active goal or canonical blueprint as volatile product truth.
+
 ## Boundary
 
 Allowed behavior:

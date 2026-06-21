@@ -198,6 +198,7 @@ describe("KRN MCP stdio server", () => {
       expect(firstResult.status).toBe("stored");
       expect(firstResult.approved).toBe(false);
       expect(firstResult.mutated_target).toBe(false);
+      expect(firstResult.source_refs).not.toContain("docs/goals/goal-038.md");
       expect(firstResult.proposal_store.proposal_path).toMatch(/^\.krn\/proposals\/.+\/proposal\.json$/);
       expect(existsSync(join(targetRoot, firstResult.proposal_store.proposal_path))).toBe(true);
       expect(targetPath === null || existsSync(join(targetRoot, targetPath))).toBe(false);

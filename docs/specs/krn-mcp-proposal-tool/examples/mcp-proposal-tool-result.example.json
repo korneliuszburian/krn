@@ -12,7 +12,8 @@
     "idempotency_key": "memory-update:krn-mcp-stdio-transport:2026-06-20",
     "status": "stored",
     "source_refs_validated": [
-      "docs/goals/goal-038.md",
+      "docs/goals/goal-008.md",
+      "docs/specs/krn-mcp-read-model/README.md",
       "docs/plans/canonical/SOURCES.md"
     ],
     "created_at": "2026-06-20T00:00:00.000Z",
@@ -27,7 +28,6 @@
     "destructive_mcp_tools"
   ],
   "source_refs": [
-    "docs/goals/goal-038.md",
     "docs/specs/krn-control-plane-proposal/README.md",
     "docs/specs/krn-mcp-proposal-tool/README.md"
   ],

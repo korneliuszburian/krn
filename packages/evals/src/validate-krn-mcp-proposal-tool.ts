@@ -300,13 +300,15 @@ async function runValidation(): Promise<EvalReport> {
             existsSync(join(targetRoot, toolResult.proposal_store.proposal_path)) &&
             (targetPath === null || !existsSync(join(targetRoot, targetPath))) &&
             toolResult.approved === false &&
-            toolResult.mutated_target === false,
+            toolResult.mutated_target === false &&
+            !toolResult.source_refs.includes("docs/goals/goal-038.md"),
           [
             "tool call succeeds",
             "typed tool result parses",
             "proposal stored under .krn/proposals",
             "target path not mutated",
             "result does not approve proposal",
+            "tool result avoids active-goal source-ref hardcode",
           ],
           storeCase.failure_mode,
           "MCP proposal tool stored a source-backed proposal through the append-only store.",

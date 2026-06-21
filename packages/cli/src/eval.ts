@@ -31,6 +31,7 @@ type ModuleReportSummary = {
 };
 
 const DEFAULT_EVAL_REGISTRY_PATH = "docs/evals/registry.json";
+const AGGREGATE_EVAL_SOURCE_REFS = ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"] as const;
 
 function readJsonFile(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -153,6 +154,10 @@ function uniqueEvalLanes(laneValues: readonly EvalLane[]): EvalLane[] {
     }
   }
   return lanes;
+}
+
+function uniqueSourceRefs(sourceRefs: readonly string[]): string[] {
+  return [...new Set(sourceRefs)];
 }
 
 function includedLanesForSelection(selection: EvalLaneSelection): EvalLane[] {
@@ -337,12 +342,7 @@ export function buildKrnEvalReport(args: EvalArgs, now = new Date()): KrnEvalRep
     lane_summary: summarizeEvalLanes(modules),
     summary,
     runtime_report_path: runtimeReportPath,
-    source_refs: [
-      "docs/goals/goal-038.md",
-      "docs/specs/krn-eval/README.md",
-      "docs/evals/STANDARD.md",
-      "docs/plans/canonical/draft.md",
-    ],
+    source_refs: uniqueSourceRefs([...AGGREGATE_EVAL_SOURCE_REFS, ...selectedModules.flatMap((module) => module.source_refs)]),
     interpretation_caveat:
       "This report proves local deterministic eval execution and aggregation only; it does not prove productivity lift, benchmark lift, API/MCP readiness, complete dashboard readiness, or human approval quality.",
   };
