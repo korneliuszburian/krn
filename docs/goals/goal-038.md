@@ -987,6 +987,19 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no broad skill taxonomy, no social/research note, no dashboard/API surface, no new eval module.
 - [OVERCLAIM] This proves only deterministic skill routing for eval target paths. It does not prove eval quality, skill quality, broad agent behavior, or productivity lift.
 - [NEXT] Run a small sediment inventory before the next product slice; do not keep patching context routing unless another real dogfood miss appears.
+- [EVIDENCE] Small sediment inventory selected `packages/cli/src/main.ts` as the next product bottleneck after lab-only benchmark files; it was 1119 lines and still owned eval argument parsing, eval module registry, eval execution, summary aggregation, report writing, and command dispatch.
+- [EVIDENCE] The eval CLI extraction pre-edit gate passed and wrote `.krn/gates/20260621T024158Z-1114795/engineering-gate.json`; the context packet wrote `.krn/context/20260621T024211Z-1115064/context-packet.json` and selected the goal-038 memory boundary plus simplify cadence while rejecting broad memory/lab context.
+- [FACT] `krn eval` command behavior moved from `packages/cli/src/main.ts` into `packages/cli/src/eval.ts`; `main.ts` now imports `parseEvalArgs`, `buildKrnEvalReport`, and `writeKrnEvalReport` and keeps only command dispatch for eval.
+- [FACT] `packages/cli/src/main.ts` dropped from 1119 lines before the extraction to 574 lines after it; `packages/cli/src/eval.ts` is 548 lines and has the public CLI eval path as its consumer.
+- [EVIDENCE] Narrow CLI check passed: `pnpm exec tsc --noEmit --pretty false --project packages/cli/tsconfig.json`.
+- [EVIDENCE] Focused eval CLI test passed: `pnpm exec vitest run packages/cli/test/eval.test.ts` passed 1 file / 3 tests.
+- [EVIDENCE] `pnpm run eval:krn-eval` passed run `.krn/evals/krn-eval-contracts/20260621T025016Z-1127238/report.json` with 5/5 cases and 12/12 assertions passing; generated aggregate report `.krn/eval/20260621T025014Z-1127238/report.json` parsed through the eval contract.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T025106Z-1133495/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one eval command module, unchanged public CLI command, unchanged lane policy, parser-first generated report validation, and the focused CLI/eval contract tests.
+- [SIMPLIFY] Delete/avoid: no dashboard/API/benchmark expansion, no new eval family, no `codex exec` loop, no passive doc, no copied memory body, and no duplicate eval registry in `main.ts`.
+- [SIMPLIFY] Next candidate: move active eval module descriptors out of product code into a typed registry/config boundary if another slice touches eval routing; the current extraction removed the monolith pressure but did not yet make the registry data-backed.
+- [OVERCLAIM] This slice proves maintainability cleanup and public eval CLI parity only. It does not prove better eval quality, productivity lift, final eval registry architecture, dashboard usefulness, API readiness, or final memory quality.
 
 ## Disproves Completion
 
