@@ -3,11 +3,12 @@ id: technology-stack-decision
 kind: architecture-decision
 status: proposed
 owner: krn
-updated: 2026-06-19
+updated: 2026-06-21
 sources:
   - CONTEXT.md
   - docs/adr/0001-typescript-first-product-stack.md
   - docs/product/final-product-plan.md
+  - docs/goals/goal-038.md
   - docs/goals/goal-006.md
   - docs/goals/goal-005.md
   - docs/plans/canonical/draft.md
@@ -40,7 +41,7 @@ This applies to the first real product implementation surfaces:
 
 [DECISION] Do not continue `goal-005` implementation in Python. Existing Python validators are historical/local proof artifacts from the research phase. They can stay until replaced, but no new product foundation should be added in Python.
 
-[DECISION] Do not treat `krn init --dry-run` as the whole next product direction. The next active execution contract is `goal-006`, and its first slice is the Operator Build System. `krn init --dry-run` moves into Slice 2 as the first runtime consumer of the TypeScript contracts.
+[DECISION] Do not treat `krn init --dry-run` as the whole product direction. The current active execution contract is `goal-038`; `goal-006` is historical product-build evidence. `krn init` is one dependency-ordered final-shaped carrier for the TypeScript contracts, not the whole product.
 
 This is not a "Node over TypeScript" decision. TypeScript is the product standard because KRN's core risk is contract correctness. Node.js is the practical runtime for the first CLI/API/dashboard path.
 
@@ -331,10 +332,11 @@ Current gate: static contract only. It needs an impact eval after the first real
 
 ## P0 Acceptance Gate
 
-Before product implementation starts, the repo must satisfy:
+The current stack gate requires:
 
 - this decision file exists,
-- `goal-006` is the active final-product execution contract,
+- `goal-038` is the active final-product execution contract,
+- `goal-006` is preserved as historical parent/product-build evidence,
 - `goal-005` is marked superseded as the active direction and preserved as Slice 2 context,
 - the final product plan names TypeScript-first on Node.js runtime as the stack,
 - existing Python validators are classified as legacy/local proof artifacts,

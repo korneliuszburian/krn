@@ -696,6 +696,9 @@ review questions; runtime guidance refers to active goal evidence instead.
 `packages/cli/src/init-targets.ts`; `packages/cli/src/init.ts` remains the
 manifest/proposal/apply runtime module.
 
+[FACT] `docs/specs/technology-stack/decision.md` now names `goal-038` as the
+active final-product execution contract and `goal-006` as historical evidence.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -1125,6 +1128,13 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no init behavior expansion, no extra abstraction around manifest building, no dashboard/API/MCP work, no broad bootstrap rewrite, and no new eval family.
 - [SIMPLIFY] Next candidate: only continue init cleanup if another init capability touches the manifest/apply boundary; otherwise pick the next consumer-led bottleneck.
 - [OVERCLAIM] This slice proves init maintainability cleanup and public behavior parity only. It does not prove bootstrap usefulness, fresh-repo adoption, review-burden reduction, memory quality, or product lift.
+- [EVIDENCE] The technology-stack status correction pre-edit gate passed and wrote `.krn/gates/20260621T034641Z-1276759/engineering-gate.json`.
+- [FACT] `docs/specs/technology-stack/decision.md` now treats `goal-038` as the active final-product execution contract and preserves `goal-006` as historical product-build evidence.
+- [EVIDENCE] `rg -n "goal-006|goal-038|active final-product|active execution" docs/specs/technology-stack/decision.md` shows `goal-038` as active and no remaining `goal-006 is active` wording.
+- [EVIDENCE] `git diff --check` passed.
+- [SIMPLIFY] Keep: TypeScript-first stack decision, historical goal context, and one current active-contract correction.
+- [SIMPLIFY] Delete/avoid: no new ADR, no broad source-ledger rewrite, no code changes, no extra skill edits.
+- [OVERCLAIM] This slice proves stale stack-decision routing cleanup only. It does not prove TypeScript implementation quality, productivity lift, or final product completion.
 
 ## Disproves Completion
 
