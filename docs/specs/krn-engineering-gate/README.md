@@ -45,6 +45,18 @@ krn gate --task <text> [--path <path>] [--target <path>]
 - simplify cadence
 - overclaim boundary
 
+## Blocked Surface Classifier
+
+`krn gate` blocks broad dashboard, benchmark, API/cloud sync, and `live-full`
+expansion unless the task names a typed consumer such as memory application,
+selection, review consumer, source graph, or trace consumer.
+
+Explicitly negated mentions in a local clause, such as `no dashboard state` or
+`without cloud sync`, are hardcoded-truth boundaries and must not block an
+otherwise scoped task. This is a false-positive guard only; it does not prove
+semantic policy enforcement, hook enforcement, security quality, or product
+lift.
+
 ## Validation
 
 ```bash

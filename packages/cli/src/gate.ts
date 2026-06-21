@@ -116,10 +116,23 @@ function classifyScope(task: string, targetPath: string | null): KrnEngineeringG
 
 function needsBlockedSurface(task: string): boolean {
   const lowerTask = task.toLowerCase();
-  const disallowedSurface = /\b(dashboard|benchmark|cloud sync|api sync|broad api|live-full)\b/.test(lowerTask);
+  const disallowedSurfacePattern = /\b(dashboard|benchmark|cloud sync|api sync|broad api|live-full)\b/g;
   const justifiedConsumer = /\b(typed consumer|memory application|selection|review consumer|source graph|trace consumer)\b/.test(
     lowerTask,
   );
+
+  const disallowedSurface = [...lowerTask.matchAll(disallowedSurfacePattern)].some((match) => {
+    const matchIndex = match.index ?? 0;
+    const previousBoundary = Math.max(
+      lowerTask.lastIndexOf(".", matchIndex),
+      lowerTask.lastIndexOf(";", matchIndex),
+      lowerTask.lastIndexOf("\n", matchIndex),
+    );
+    const localContext = lowerTask.slice(previousBoundary + 1, matchIndex);
+    return !/\b(no|not|without|avoid|forbid|forbidden|block|blocked|reject|exclude|excludes|forbidding)\b/.test(
+      localContext,
+    );
+  });
 
   return disallowedSurface && !justifiedConsumer;
 }

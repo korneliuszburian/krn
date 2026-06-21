@@ -795,6 +795,18 @@ no-overwrite behavior, source/evidence lineage, and focused eval coverage.
 - [SIMPLIFY] Next candidate: `skill_wiring` or repo-bootstrap readiness; extract a shared init target registry/fixture builder first only if the seventh target would otherwise keep duplicating exact seed logic across CLI/tests/evals.
 - [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/policies/boundaries.json` apply boundary. It does not prove hook enforcement, prompt-injection safety, broad API permissioning, dashboard usefulness, final memory quality, broad repo bootstrap usefulness, merge-mode safety, or productivity lift.
 - [NEXT] Commit and push this checkpoint; then continue with skill wiring, repo-bootstrap readiness, or a narrow init-target registry simplification.
+- [FACT] `krn gate` false-positive repair now distinguishes broad forbidden-surface expansion from explicitly negated hardcoded-truth boundaries such as `no cloud sync`, `no dashboard state`, and `no benchmark default`.
+- [FACT] The blocked-surface classifier remains a small local check in `packages/cli/src/gate.ts`; it is not a policy engine, hook enforcement layer, security checker, or semantic reviewer.
+- [EVIDENCE] The valid init-target registry simplification gate was incorrectly blocked in `.krn/gates/20260621T011234Z-953702/engineering-gate.json` and `.krn/gates/20260621T011255Z-954027/engineering-gate.json` because forbidden surfaces appeared inside negated boundaries.
+- [EVIDENCE] The repair pre-edit gate passed and wrote `.krn/gates/20260621T011343Z-954896/engineering-gate.json`.
+- [EVIDENCE] Focused gate regression tests passed after the classifier repair: `pnpm exec vitest run packages/contracts/test/engineering-gate.test.ts packages/cli/test/gate.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] The original init-target registry simplification gate passed with negated forbidden-surface boundaries at `.krn/gates/20260621T011508Z-956403/engineering-gate.json` and again after ledger/spec updates at `.krn/gates/20260621T011930Z-961651/engineering-gate.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T011930Z-961640/report.json` with 5/5 modules, 23/23 cases, and 82/82 assertions passing.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [SIMPLIFY] Keep: a clause-local negation filter plus one known-good regression test because it preserves goal-038 hardcoded-truth boundaries without weakening the broad-surface block.
+- [SIMPLIFY] Delete/avoid: no natural-language policy framework, no dashboard/API/benchmark exception list outside the gate, no hook/security claim, and no broad rewrite of `krn gate`.
+- [OVERCLAIM] This repair proves only that negated forbidden-surface boundary text no longer false-blocks a scoped task. It does not prove that unsafe dashboard/API/benchmark expansion is semantically impossible, that hooks enforce policy, or that KRN improved productivity.
+- [NEXT] Resume the previously selected init-target registry simplification, or choose `skill_wiring` / repo-bootstrap readiness if the registry duplication is not the current bottleneck.
 
 ## Disproves Completion
 

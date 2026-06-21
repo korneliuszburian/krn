@@ -81,4 +81,31 @@ describe("krn gate", () => {
     expect(gate.checks.map((check) => check.status)).toContain("fail");
     expect(gate.next_steps[0]?.step).toContain("Rewrite the task");
   }, 30_000);
+
+  it("does not block forbidden surfaces when they are explicitly negated", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-negated-surface-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "gate",
+        "--target",
+        targetRoot,
+        "--task",
+        "mechanism: simplify init target registry. scope: packages/cli/src/init.ts. consumer: krn init help and apply routing. verification: focused tests. rollback: revert registry. hardcoded truth: no cloud sync, no dashboard state, no benchmark default, no live-full runner. skills: typescript-contract-engineer loaded. simplify: reduce duplication. overclaim: proves cleanup only.",
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const gate = parseKrnEngineeringGate(readJson(stdout.trim()));
+    expect(gate.gate_status).toBe("pass");
+    expect(gate.checks.every((check) => check.status === "pass")).toBe(true);
+  }, 30_000);
 });
