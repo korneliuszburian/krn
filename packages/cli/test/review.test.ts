@@ -61,6 +61,8 @@ describe("krn review", () => {
       "docs/goals/goal-038.md",
       "docs/plans/canonical/SOURCES.md#C061",
     ]);
+    expect(JSON.stringify(report)).not.toContain("active final-product");
+    expect(JSON.stringify(report)).not.toContain("active goal evidence");
     expect(JSON.stringify(report)).not.toContain("KRN memory must be selected from a store boundary");
     expect(existsSync(join(targetRoot, ".krn", "review", report.run_id, "report.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);

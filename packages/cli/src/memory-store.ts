@@ -124,7 +124,7 @@ function createMemoryApplication(
     review_questions: [
       "Did selected memory change the next review/action decision?",
       "Was any selected memory stale, harmful, or ignored?",
-      "Can a fresh Codex run continue from selected IDs, evidence refs, and active goal evidence without reading old benchmark history?",
+      "Can a fresh Codex run continue from selected IDs, evidence refs, and current task evidence without reading old benchmark history?",
     ],
     blocked_bad_actions: [
       "context_dump_from_docs_memory",
@@ -226,7 +226,7 @@ export function buildReviewMemoryBundle(targetRoot: string, runId: string, now: 
     targetRoot,
     runId,
     now,
-    taskIntent: "Review current KRN runtime evidence against the active final-product goal.",
+    taskIntent: "Review current KRN runtime evidence against the review contract and selected memory guidance.",
     taskKind: "review",
     surface: "krn_review",
   });

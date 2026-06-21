@@ -70,6 +70,8 @@ describe("krn context build", () => {
     expect(packet.required_skills.map((skill) => skill.name)).toContain("typescript-contract-engineer");
     expect(packet.required_skills.map((skill) => skill.name)).not.toContain("eval-designer");
     expect(JSON.stringify(packet)).not.toContain("KRN memory must be selected from a store boundary");
+    expect(JSON.stringify(packet)).not.toContain("active final-product");
+    expect(JSON.stringify(packet)).not.toContain("active goal evidence");
     expect(existsSync(join(targetRoot, ".krn", "context", packet.run_id, "context-packet.json"))).toBe(true);
     expect(readdirSync(targetRoot).sort()).toEqual([".krn"]);
 

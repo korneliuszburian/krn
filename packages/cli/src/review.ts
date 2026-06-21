@@ -194,7 +194,7 @@ function buildReviewProposals(
       "apply-memory-store-boundary",
       "next_action",
       "Use selected memory IDs as review guidance before adding new product surfaces.",
-      "The MemoryStore boundary is the active final-product slice; selected memory must produce application guidance and feedback before it counts as product memory.",
+      "Selected memory must produce application guidance and feedback before it counts as product memory.",
       memoryEvidenceRefs,
       memorySourceRefs,
       ["repo-local memory core", "context dump", "dashboard expansion", "benchmark expansion", "cloud sync"],

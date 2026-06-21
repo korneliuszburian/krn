@@ -1516,6 +1516,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no active-goal/canonical source refs in gate runtime output, no new hook enforcement layer, no dashboard/API/benchmark work, no broad source-ref sweep, and no committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves engineering-gate source-ref hygiene only. It does not prove hook-level enforcement, semantic policy enforcement, memory quality, human review burden reduction, or product lift.
 - [NEXT] Commit and push this gate cleanup. Then continue only with another consumed hardcoded-truth, context, memory, source, review, or eval bottleneck.
+- [EVIDENCE] The MemoryStore runtime wording cleanup pre-edit gate passed and wrote `.krn/gates/20260621T072256Z-1716855/engineering-gate.json`.
+- [FACT] `krn brief`, `krn context build`, and `krn review` MemoryStore application guidance no longer emits `active final-product` or `active goal evidence` wording in runtime output.
+- [FACT] `krn review` still applies selected memory IDs and feedback guidance, but its proposal text no longer calls the MemoryStore boundary the active final-product slice.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/contracts/test/memory-store.test.ts` passed 4 files / 11 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: the existing MemoryStore consumers, selected memory ID/source lineage behavior, feedback write path, and one wording regression per public CLI surface.
+- [SIMPLIFY] Delete/avoid: no active-goal runtime narrative, no schema change, no dashboard/API/benchmark work, no memory ranking engine, no broad wording sweep, and no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves MemoryStore/review runtime wording hygiene only. It does not prove memory precision, context quality, review burden reduction, self-growing behavior, or product lift.
+- [NEXT] Commit and push this cleanup. Then continue only if another consumed runtime-output or hardcoded-truth bottleneck is concrete.
 
 ## Disproves Completion
 
