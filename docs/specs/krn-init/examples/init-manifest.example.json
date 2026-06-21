@@ -27,7 +27,8 @@
     "next_allowed_surfaces": [
       "packages/contracts",
       "packages/cli",
-      "packages/evals"
+      "packages/evals",
+      ".krn/policies"
     ],
     "blocked_surfaces": [
       "packages/mcp",
@@ -59,6 +60,36 @@
       "kind": "file",
       "exists": true,
       "reason": "Reviewed memory index already exists."
+    },
+    {
+      "path": ".krn/config.toml",
+      "kind": "file",
+      "exists": false,
+      "reason": "Local-first KRN config can be proposed when absent."
+    },
+    {
+      "path": ".krn/sources/index.json",
+      "kind": "file",
+      "exists": false,
+      "reason": "Source pointer seed can be proposed when absent."
+    },
+    {
+      "path": ".krn/context/index.json",
+      "kind": "file",
+      "exists": false,
+      "reason": "Context pointer seed can be proposed when absent."
+    },
+    {
+      "path": ".krn/evals/baseline.json",
+      "kind": "file",
+      "exists": false,
+      "reason": "Eval baseline seed can be proposed when absent."
+    },
+    {
+      "path": ".krn/policies/boundaries.json",
+      "kind": "file",
+      "exists": false,
+      "reason": "Policy boundary seed can be proposed when absent."
     },
     {
       "path": ".krn/",
@@ -94,6 +125,51 @@
         "docs/specs/krn-init/README.md",
         "docs/goals/goal-038.md"
       ]
+    },
+    {
+      "path": ".krn/config.toml",
+      "action": "proposal_only",
+      "reason": "Local config requires reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-init/README.md",
+        "docs/goals/goal-038.md"
+      ]
+    },
+    {
+      "path": ".krn/sources/index.json",
+      "action": "proposal_only",
+      "reason": "Source pointers require reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-source-graph/README.md",
+        "docs/specs/krn-init/README.md"
+      ]
+    },
+    {
+      "path": ".krn/context/index.json",
+      "action": "proposal_only",
+      "reason": "Context pointers require reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-context-packet/README.md",
+        "docs/specs/krn-init/README.md"
+      ]
+    },
+    {
+      "path": ".krn/evals/baseline.json",
+      "action": "proposal_only",
+      "reason": "Eval baseline requires reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-eval-baseline/README.md",
+        "docs/evals/STANDARD.md"
+      ]
+    },
+    {
+      "path": ".krn/policies/boundaries.json",
+      "action": "proposal_only",
+      "reason": "Policy boundaries require reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-policy-boundaries/README.md",
+        "docs/specs/krn-init/README.md"
+      ]
     }
   ],
   "planned_runtime_dirs": [
@@ -112,6 +188,31 @@
       "path": "docs/memory/INDEX.md",
       "strategy": "proposal_only",
       "reason": "Memory index changes are durable and require review."
+    },
+    {
+      "path": ".krn/config.toml",
+      "strategy": "proposal_only",
+      "reason": "Local config must be reviewed before bootstrap target mutation."
+    },
+    {
+      "path": ".krn/sources/index.json",
+      "strategy": "proposal_only",
+      "reason": "Source pointer seed must be reviewed before bootstrap target mutation."
+    },
+    {
+      "path": ".krn/context/index.json",
+      "strategy": "proposal_only",
+      "reason": "Context pointer seed must be reviewed before bootstrap target mutation."
+    },
+    {
+      "path": ".krn/evals/baseline.json",
+      "strategy": "proposal_only",
+      "reason": "Eval baseline seed must be reviewed before bootstrap target mutation."
+    },
+    {
+      "path": ".krn/policies/boundaries.json",
+      "strategy": "proposal_only",
+      "reason": "Policy boundary seed must be reviewed before bootstrap target mutation."
     }
   ],
   "bootstrap_plan": [
@@ -151,7 +252,7 @@
     },
     {
       "capability": "context_pointers",
-      "path": ".krn/context/",
+      "path": ".krn/context/index.json",
       "action": "proposal_only",
       "purpose": "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
       "boundary": "Context packets may record selected IDs and guidance; they must not store authoritative memory bodies.",
@@ -162,7 +263,7 @@
     },
     {
       "capability": "eval_baseline",
-      "path": ".krn/evals/",
+      "path": ".krn/evals/baseline.json",
       "action": "proposal_only",
       "purpose": "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
       "boundary": "Green evals are regression evidence only; lab, benchmark, and dashboard checks stay explicit.",
@@ -184,13 +285,13 @@
     },
     {
       "capability": "policy_boundaries",
-      "path": ".krn/policies/",
+      "path": ".krn/policies/boundaries.json",
       "action": "proposal_only",
       "purpose": "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
       "boundary": "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
       "source_refs": [
         "docs/goals/goal-038.md",
-        "docs/specs/krn-engineering-gate/README.md"
+        "docs/specs/krn-policy-boundaries/README.md"
       ]
     }
   ],

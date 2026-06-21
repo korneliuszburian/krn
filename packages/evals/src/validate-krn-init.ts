@@ -6,6 +6,7 @@ import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnEvalBaseline,
+  parseKrnPolicyBoundaries,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   parseKrnSourceGraph,
@@ -775,6 +776,115 @@ function runValidation(): EvalReport {
       );
     }
   }
+  const policyBoundariesApplyCase = caseById.get("generated-policy-boundaries-apply-writes-reviewed-target");
+  if (!policyBoundariesApplyCase) {
+    throw new Error("Missing case generated-policy-boundaries-apply-writes-reviewed-target");
+  }
+  const policyBoundariesTarget = mkdtempSync(join(tmpdir(), "krn-init-policy-boundaries-apply-eval-"));
+  const policyBoundariesProposalResult = runKrnCli(["init", "--proposal", "policy_boundaries", "--target", policyBoundariesTarget]);
+  const policyBoundariesProposalPath = policyBoundariesProposalResult.stdout.trim();
+  if (policyBoundariesProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        policyBoundariesApplyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        policyBoundariesApplyCase.failure_mode,
+        policyBoundariesProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(policyBoundariesProposalPath));
+      const proposalRelativePath = relative(policyBoundariesTarget, policyBoundariesProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated policy boundary seed is minimal, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "cloud_sync_default"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: policyBoundariesTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "policy_boundaries",
+        "--proposal-path",
+        policyBoundariesProposalPath,
+        "--decision-path",
+        join(policyBoundariesTarget, storedDecision.decision_path),
+        "--target",
+        policyBoundariesTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetPolicyPath = join(policyBoundariesTarget, ".krn", "policies", "boundaries.json");
+      const policyContent = existsSync(targetPolicyPath) ? readFileSync(targetPolicyPath, "utf8") : "";
+      const policy = policyContent.length > 0 ? parseKrnPolicyBoundaries(JSON.parse(policyContent) as unknown) : null;
+
+      results.push(
+        result(
+          policyBoundariesApplyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetPolicyPath) &&
+            policyContent === promotion.target.file_content &&
+            policy !== null &&
+            policy?.boundaries.find((boundary) => boundary.surface === "memory_core_write")?.enforcement === "block" &&
+            policy.boundaries.find((boundary) => boundary.surface === "target_file_mutation")?.enforcement ===
+              "require_approval" &&
+            policy.forbidden_defaults.includes("cloud_sync_default") &&
+            policy.forbidden_defaults.includes("productivity_lift_claim") &&
+            policy.overclaim_boundary.includes("does not prove hook enforcement") &&
+            !policyContent.includes("goal-038") &&
+            !policyContent.includes("docs/plans/canonical/draft.md"),
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target .krn/policies/boundaries.json matches exact payload",
+            "policy boundary seed blocks repo-local memory core and avoids hook/security overclaim",
+          ],
+          policyBoundariesApplyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed policy boundary seed payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          policyBoundariesApplyCase.id,
+          false,
+          ["generated policy boundaries apply"],
+          policyBoundariesApplyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated policy boundaries apply error",
+        ),
+      );
+    }
+  }
   const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
   const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
   const proposalPath = proposalResult.stdout.trim();
@@ -850,7 +960,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers/eval-baseline apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, eval quality, broad repo bootstrap, or merge-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers/eval-baseline/policy-boundaries apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, eval quality, hook enforcement, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

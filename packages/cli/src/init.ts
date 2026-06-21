@@ -23,6 +23,7 @@ const INIT_PROPOSAL_CAPABILITIES = [
   "source_pointers",
   "context_pointers",
   "eval_baseline",
+  "policy_boundaries",
 ] as const satisfies readonly InitProposalCapability[];
 
 type InitArgs = {
@@ -55,6 +56,7 @@ const DETECTED_PATHS = [
   { path: ".krn/sources/index.json", expectedKind: "file" },
   { path: ".krn/context/index.json", expectedKind: "file" },
   { path: ".krn/evals/baseline.json", expectedKind: "file" },
+  { path: ".krn/policies/boundaries.json", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
   { path: "docs/memory/INDEX.md", expectedKind: "file" },
@@ -191,6 +193,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
       return "KRN context pointer index already exists and must not be overwritten by dry-run init.";
     case ".krn/evals/baseline.json":
       return "KRN eval baseline seed already exists and must not be overwritten by dry-run init.";
+    case ".krn/policies/boundaries.json":
+      return "KRN policy boundary seed already exists and must not be overwritten by dry-run init.";
     case ".codex":
       return "Project-local Codex config/hooks directory already exists.";
     case ".agents":
@@ -237,6 +241,8 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
     detectedArtifacts.find((artifact) => artifact.path === ".krn/context/index.json")?.exists ?? false;
   const evalBaselineExists =
     detectedArtifacts.find((artifact) => artifact.path === ".krn/evals/baseline.json")?.exists ?? false;
+  const policyBoundariesExist =
+    detectedArtifacts.find((artifact) => artifact.path === ".krn/policies/boundaries.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
 
@@ -264,7 +270,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         "runtime artifacts stay under .krn/",
         "repo files are bootstrap/audit/export substrate, not memory core",
       ],
-      next_allowed_surfaces: ["AGENTS.md proposal", ".krn/config.toml proposal", ".krn/sources", ".krn/context", ".krn/evals"],
+      next_allowed_surfaces: [
+        "AGENTS.md proposal",
+        ".krn/config.toml proposal",
+        ".krn/sources",
+        ".krn/context",
+        ".krn/evals",
+        ".krn/policies",
+      ],
       blocked_surfaces: ["dashboard", "broad API/cloud sync", "benchmark expansion", "repo-local memory core"],
     },
     detected_artifacts: detectedArtifacts,
@@ -308,6 +321,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           ? "Existing eval baseline seed is preserved; changes require a reviewed proposal."
           : "KRN would propose a lean eval baseline seed in a reviewed write flow.",
         source_refs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-init/README.md"],
+      },
+      {
+        path: ".krn/policies/boundaries.json",
+        action: policyBoundariesExist ? "skip" : "proposal_only",
+        reason: policyBoundariesExist
+          ? "Existing policy boundary seed is preserved; changes require a reviewed proposal."
+          : "KRN would propose a minimal local policy boundary seed in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-policy-boundaries/README.md", "docs/specs/krn-init/README.md"],
       },
       {
         path: "docs/memory/INDEX.md",
@@ -365,6 +386,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         reason: evalBaselineExists
           ? "Existing eval baseline seed must be reviewed instead of overwritten."
           : "No eval baseline seed collision detected; future writes still require approved promotion.",
+      },
+      {
+        path: ".krn/policies/boundaries.json",
+        strategy: collisionStrategy(policyBoundariesExist),
+        reason: policyBoundariesExist
+          ? "Existing policy boundary seed must be reviewed instead of overwritten."
+          : "No policy boundary seed collision detected; future writes still require approved promotion.",
       },
       {
         path: "docs/memory/INDEX.md",
@@ -431,11 +459,11 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       },
       {
         capability: "policy_boundaries",
-        path: ".krn/policies/",
-        action: "proposal_only",
+        path: ".krn/policies/boundaries.json",
+        action: policyBoundariesExist ? "skip" : "proposal_only",
         purpose: "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
         boundary: "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
-        source_refs: ["docs/specs/krn-engineering-gate/README.md", "docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-policy-boundaries/README.md", "docs/specs/krn-engineering-gate/README.md", "docs/specs/krn-init/README.md"],
       },
     ],
     no_touch_paths: [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
@@ -547,6 +575,8 @@ function bootstrapTargetLabel(capability: InitProposalCapability): string {
       return "context-pointers";
     case "eval_baseline":
       return "eval-baseline";
+    case "policy_boundaries":
+      return "policy-boundaries";
   }
 }
 
@@ -562,6 +592,8 @@ function bootstrapTargetDescription(capability: InitProposalCapability): string 
       return "Context pointers must seed a bounded packet index without copying memory bodies, task intent, active goal truth, or broad docs context into the target repo.";
     case "eval_baseline":
       return "Eval baseline must seed lean core/current verification without copying live eval reports, enabling lab/all defaults, or claiming lift.";
+    case "policy_boundaries":
+      return "Policy boundaries must seed local warn/block/approval rules without claiming hook enforcement, broad security quality, dashboard/API readiness, or cloud sync.";
   }
 }
 

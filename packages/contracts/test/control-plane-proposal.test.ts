@@ -304,6 +304,57 @@ describe("KRN control-plane proposal contract", () => {
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
   });
 
+  it("parses an init policy-boundaries proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-policy-boundaries-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init policy-boundaries bootstrap",
+      rationale: "The policy boundary target must be reviewed before target mutation.",
+      proposed_change: "Review the .krn/policies/boundaries.json bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_policy_boundaries",
+        bootstrap_capability: "policy_boundaries",
+        target_path: ".krn/policies/boundaries.json",
+        write_mode: "exact_file_content",
+        file_content: "{\"schema_version\":\"krn-policy-boundaries.v1\"}\n",
+        content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      target: {
+        target_type: "path",
+        path: ".krn/policies/boundaries.json",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:policy_boundaries:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write", "cloud_sync_default"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate .krn/policies/boundaries.json or prove hook enforcement.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_policy_boundaries",
+      bootstrap_capability: "policy_boundaries",
+      target_path: ".krn/policies/boundaries.json",
+    });
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("rejects an init payload attached to a non-init proposal", () => {
     expect(() =>
       parseKrnControlPlaneProposal({
@@ -503,6 +554,49 @@ describe("KRN control-plane proposal contract", () => {
           default_effect: "no_mutation",
           allowed_persistence: "append_only",
           idempotency_key: "bad-init-eval-baseline-target:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an init policy-boundaries payload targeting a different path", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-init-policy-boundaries-target",
+        proposal_kind: "init_bootstrap",
+        status: "proposal_only",
+        title: "Bad policy boundaries target",
+        rationale: "Policy boundary payloads must target the policy boundary seed path.",
+        proposed_change: "Write policy boundaries to the wrong place.",
+        promotion_payload: {
+          payload_type: "init_policy_boundaries",
+          bootstrap_capability: "policy_boundaries",
+          target_path: ".krn/policies/unsafe.json",
+          write_mode: "exact_file_content",
+          file_content: "{\"schema_version\":\"krn-policy-boundaries.v1\"}\n",
+          content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        target: {
+          target_type: "path",
+          path: ".krn/policies/unsafe.json",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-policy-boundaries-target:test",
         },
         review_gate: {
           required: true,

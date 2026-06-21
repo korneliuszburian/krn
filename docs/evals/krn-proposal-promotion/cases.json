@@ -163,6 +163,32 @@
     "failure_mode": "KRN init can skip the review/promotion spine and write .krn/evals/baseline.json without an exact approved payload or with lab/all defaults or productivity-lift claims in the seed."
   },
   {
+    "id": "apply-exact-init-policy-boundaries-promotion",
+    "expected_behavior": "Explicit apply mode writes exact init policy-boundaries payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-policy-boundaries/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "approved init policy-boundaries proposal stored",
+      "init policy-boundaries apply promotion stored",
+      ".krn/policies/boundaries.json written in explicit apply mode",
+      "promotion record persisted",
+      "policy boundaries keep repo-local memory core and cloud sync out of default bootstrap"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "policy_boundary_score",
+      "drift_resistance_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "KRN init can skip the review/promotion spine and write .krn/policies/boundaries.json without an exact approved payload or with repo-local memory-core/cloud-sync defaults."
+  },
+  {
     "id": "rejected-decision-promotion-rejected",
     "expected_behavior": "A rejected proposal review decision cannot be promoted.",
     "source_patterns": [

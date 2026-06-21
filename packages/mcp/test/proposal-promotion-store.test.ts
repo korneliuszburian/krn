@@ -6,6 +6,7 @@ import {
   parseKrnControlPlaneProposal,
   parseKrnContextPointerIndex,
   parseKrnEvalBaseline,
+  parseKrnPolicyBoundaries,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type KrnControlPlaneProposal,
@@ -143,6 +144,79 @@ function initEvalBaselineContent(): string {
       source_refs: ["krn://eval/bootstrap-policy"],
       overclaim_boundary:
         "This seed defines a lean local eval baseline only; it does not prove eval quality, broad repo bootstrap readiness, human review quality, or productivity lift.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function initPolicyBoundariesContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-policy-boundaries.v1",
+      kind: "krn_policy_boundaries",
+      policy_id: "krn-init-policy-boundaries-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      mode: "local_first_reviewed_seed",
+      default_effect: "warn_or_block_by_boundary",
+      boundaries: [
+        {
+          boundary_id: "review-target-file-mutation",
+          surface: "target_file_mutation",
+          enforcement: "require_approval",
+          trigger: "Any KRN bootstrap target write outside runtime evidence.",
+          required_consumer: "krn init --apply <capability> with approved proposal review decision",
+          rollback_or_kill: "Remove the target and promotion record if the exact reviewed payload cannot be reproduced.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "block-repo-local-memory-core",
+          surface: "memory_core_write",
+          enforcement: "block",
+          trigger: "Any attempt to store authoritative memory bodies in docs/memory/** or .krn/**.",
+          required_consumer: "KRN MemoryStore adapter selected through KRN_MEMORY_STORE_PATH",
+          rollback_or_kill: "Move durable memory body to a reviewed store-backed record or delete the repo-local copy.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "review-source-acceptance",
+          surface: "source_acceptance",
+          enforcement: "require_approval",
+          trigger: "Any source claim promoted from candidate status to reusable project guidance.",
+          required_consumer: "krn sources check and reviewed source graph update",
+          rollback_or_kill: "Downgrade the source to unverified or quarantine conflicting lineage until source graph passes.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "warn-command-execution",
+          surface: "command_execution",
+          enforcement: "warn",
+          trigger: "Any command that changes files, external services, permissions, or network state.",
+          required_consumer: "pre-edit engineering gate plus command-specific verification evidence",
+          rollback_or_kill: "Stop the slice if verification cannot prove the command stayed within scope.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "block-dashboard-api-expansion",
+          surface: "dashboard_or_api_expansion",
+          enforcement: "block",
+          trigger: "Any dashboard, benchmark, broad API, cloud sync, or live-full expansion before a typed consumed behavior exists.",
+          required_consumer: "typed consumer with source/eval/review evidence",
+          rollback_or_kill: "Park the surface as a later decision until a consumed product object exists.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+      ],
+      forbidden_defaults: [
+        "unreviewed_target_write",
+        "memory_body_repo_write",
+        "dashboard_first",
+        "benchmark_default",
+        "cloud_sync_default",
+        "productivity_lift_claim",
+      ],
+      source_refs: ["krn://policy/bootstrap-boundaries"],
+      overclaim_boundary:
+        "This seed defines local policy boundary IDs and approval rules only; it does not prove hook enforcement, security quality, broad API readiness, dashboard usefulness, or productivity lift.",
     },
     null,
     2,
@@ -376,6 +450,50 @@ function validInitEvalBaselineProposal(overrides: Partial<KrnControlPlaneProposa
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/evals/baseline.json until explicit apply mode.",
+    ...overrides,
+  });
+}
+
+function validInitPolicyBoundariesProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initPolicyBoundariesContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-policy-boundaries-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init policy-boundaries bootstrap",
+    rationale: "The policy boundaries target must be reviewed before target mutation.",
+    proposed_change: "Write minimal policy boundary seed only after approved review.",
+    promotion_payload: {
+      payload_type: "init_policy_boundaries",
+      bootstrap_capability: "policy_boundaries",
+      target_path: ".krn/policies/boundaries.json",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/policies/boundaries.json",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:policy_boundaries:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "cloud_sync_default"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/policies/boundaries.json until explicit apply mode.",
     ...overrides,
   });
 }
@@ -669,6 +787,40 @@ describe("KRN proposal promotion store", () => {
     expect(evalBaseline.default_lane).toBe("current");
     expect(evalBaseline.forbidden_default_lanes).toEqual(["lab", "all"]);
     expect(evalBaseline.policy.productivity_lift_claimed).toBe(false);
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
+  });
+
+  it("applies exact init policy boundaries only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-policy-store-"));
+    const proposal = validInitPolicyBoundariesProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-policy-boundaries",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-policy-boundaries-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+    const policyContent = readFileSync(join(targetRoot, ".krn", "policies", "boundaries.json"), "utf8");
+    const policy = parseKrnPolicyBoundaries(JSON.parse(policyContent) as unknown);
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(policyContent).toBe(initPolicyBoundariesContent());
+    expect(policy.boundaries.find((boundary) => boundary.surface === "memory_core_write")?.enforcement).toBe("block");
+    expect(policy.forbidden_defaults).toContain("cloud_sync_default");
     expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 

@@ -5,6 +5,12 @@ export {
   type KrnEvalBaseline,
 } from "./eval-baseline.js";
 export {
+  KrnPolicyBoundariesSchema,
+  krnPolicyBoundariesJsonSchema,
+  parseKrnPolicyBoundaries,
+  type KrnPolicyBoundaries,
+} from "./policy-boundaries.js";
+export {
   KrnContextPointerIndexSchema,
   krnContextPointerIndexJsonSchema,
   parseKrnContextPointerIndex,

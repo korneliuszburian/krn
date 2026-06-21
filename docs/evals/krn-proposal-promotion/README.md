@@ -47,9 +47,10 @@ A green result proves only the local proposal promotion boundary:
 - exact `init_bootstrap` source-pointers payloads can be applied only through the approved promotion boundary,
 - exact `init_bootstrap` context-pointers payloads can be applied only through the approved promotion boundary,
 - exact `init_bootstrap` eval-baseline payloads can be applied only through the approved promotion boundary,
+- exact `init_bootstrap` policy-boundaries payloads can be applied only through the approved promotion boundary,
 - rejected decisions cannot promote proposals,
 - proposals without machine-applicable payload cannot promote,
 - duplicate promotion writes are idempotent,
 - unsafe target paths are rejected.
 
-It does not prove general promotion correctness for all proposal kinds, broad `krn init` scaffolding, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.
+It does not prove general promotion correctness for all proposal kinds, broad `krn init` scaffolding, hook enforcement, security quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.

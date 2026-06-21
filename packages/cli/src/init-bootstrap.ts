@@ -5,6 +5,7 @@ import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnEvalBaseline,
+  parseKrnPolicyBoundaries,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type ControlPlanePromotionPayload,
@@ -23,12 +24,14 @@ type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_ty
 type InitSourcePointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_source_pointers" }>;
 type InitContextPointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_context_pointers" }>;
 type InitEvalBaselinePayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_eval_baseline" }>;
+type InitPolicyBoundariesPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_policy_boundaries" }>;
 type InitBootstrapPayload =
   | InitAgentInstructionsPayload
   | InitLocalConfigPayload
   | InitSourcePointersPayload
   | InitContextPointersPayload
-  | InitEvalBaselinePayload;
+  | InitEvalBaselinePayload
+  | InitPolicyBoundariesPayload;
 export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
 function sha256(content: string): string {
@@ -195,6 +198,79 @@ function evalBaselineFileContent(): string {
   )}\n`;
 }
 
+function policyBoundariesFileContent(): string {
+  return `${JSON.stringify(
+    parseKrnPolicyBoundaries({
+      schema_version: "krn-policy-boundaries.v1",
+      kind: "krn_policy_boundaries",
+      policy_id: "krn-init-policy-boundaries-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      mode: "local_first_reviewed_seed",
+      default_effect: "warn_or_block_by_boundary",
+      boundaries: [
+        {
+          boundary_id: "review-target-file-mutation",
+          surface: "target_file_mutation",
+          enforcement: "require_approval",
+          trigger: "Any KRN bootstrap target write outside runtime evidence.",
+          required_consumer: "krn init --apply <capability> with approved proposal review decision",
+          rollback_or_kill: "Remove the target and promotion record if the exact reviewed payload cannot be reproduced.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "block-repo-local-memory-core",
+          surface: "memory_core_write",
+          enforcement: "block",
+          trigger: "Any attempt to store authoritative memory bodies in docs/memory/** or .krn/**.",
+          required_consumer: "KRN MemoryStore adapter selected through KRN_MEMORY_STORE_PATH",
+          rollback_or_kill: "Move durable memory body to a reviewed store-backed record or delete the repo-local copy.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "review-source-acceptance",
+          surface: "source_acceptance",
+          enforcement: "require_approval",
+          trigger: "Any source claim promoted from candidate status to reusable project guidance.",
+          required_consumer: "krn sources check and reviewed source graph update",
+          rollback_or_kill: "Downgrade the source to unverified or quarantine conflicting lineage until source graph passes.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "warn-command-execution",
+          surface: "command_execution",
+          enforcement: "warn",
+          trigger: "Any command that changes files, external services, permissions, or network state.",
+          required_consumer: "pre-edit engineering gate plus command-specific verification evidence",
+          rollback_or_kill: "Stop the slice if verification cannot prove the command stayed within scope.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+        {
+          boundary_id: "block-dashboard-api-expansion",
+          surface: "dashboard_or_api_expansion",
+          enforcement: "block",
+          trigger: "Any dashboard, benchmark, broad API, cloud sync, or live-full expansion before a typed consumed behavior exists.",
+          required_consumer: "typed consumer with source/eval/review evidence",
+          rollback_or_kill: "Park the surface as a later decision until a consumed product object exists.",
+          source_refs: ["krn://policy/bootstrap-boundaries"],
+        },
+      ],
+      forbidden_defaults: [
+        "unreviewed_target_write",
+        "memory_body_repo_write",
+        "dashboard_first",
+        "benchmark_default",
+        "cloud_sync_default",
+        "productivity_lift_claim",
+      ],
+      source_refs: ["krn://policy/bootstrap-boundaries"],
+      overclaim_boundary:
+        "This seed defines local policy boundary IDs and approval rules only; it does not prove hook enforcement, security quality, broad API readiness, dashboard usefulness, or productivity lift.",
+    }),
+    null,
+    2,
+  )}\n`;
+}
+
 export function buildInitAgentInstructionsPayload(targetPath: string): InitAgentInstructionsPayload {
   const fileContent = agentInstructionsFileContent();
   return {
@@ -255,6 +331,18 @@ export function buildInitEvalBaselinePayload(targetPath: string): InitEvalBaseli
   };
 }
 
+export function buildInitPolicyBoundariesPayload(targetPath: string): InitPolicyBoundariesPayload {
+  const fileContent = policyBoundariesFileContent();
+  return {
+    payload_type: "init_policy_boundaries",
+    bootstrap_capability: "policy_boundaries",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
 export function buildInitBootstrapPayload(capability: InitBootstrapCapability, targetPath: string): InitBootstrapPayload {
   switch (capability) {
     case "agent_instructions":
@@ -267,6 +355,8 @@ export function buildInitBootstrapPayload(capability: InitBootstrapCapability, t
       return buildInitContextPointersPayload(targetPath);
     case "eval_baseline":
       return buildInitEvalBaselinePayload(targetPath);
+    case "policy_boundaries":
+      return buildInitPolicyBoundariesPayload(targetPath);
   }
 }
 
@@ -279,7 +369,8 @@ function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
     proposal.promotion_payload?.payload_type !== "init_local_config" &&
     proposal.promotion_payload?.payload_type !== "init_source_pointers" &&
     proposal.promotion_payload?.payload_type !== "init_context_pointers" &&
-    proposal.promotion_payload?.payload_type !== "init_eval_baseline"
+    proposal.promotion_payload?.payload_type !== "init_eval_baseline" &&
+    proposal.promotion_payload?.payload_type !== "init_policy_boundaries"
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
@@ -300,7 +391,8 @@ export function buildInitPromotion(
       payload.payload_type !== "init_local_config" &&
       payload.payload_type !== "init_source_pointers" &&
       payload.payload_type !== "init_context_pointers" &&
-      payload.payload_type !== "init_eval_baseline")
+      payload.payload_type !== "init_eval_baseline" &&
+      payload.payload_type !== "init_policy_boundaries")
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }

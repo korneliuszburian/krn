@@ -575,6 +575,18 @@ core/current checks and explicit lab/all exclusion, without storing live eval
 report IDs, active-goal truth, copied canonical plan text, dashboard state, API
 sync, memory-core truth, or productivity-lift claims.
 
+[FACT] `krn init --proposal policy_boundaries` and `krn init --apply
+policy_boundaries` reuse the same reviewed promotion spine for the sixth absent
+bootstrap target: `.krn/policies/boundaries.json`. The exact
+`init_policy_boundaries` payload seeds a minimal `krn-policy-boundaries.v1`
+local policy boundary requiring approval for target-file mutation, blocking
+repo-local memory-core writes, requiring source acceptance handling, warning on
+command execution, blocking dashboard/API expansion, and forbidding cloud sync,
+benchmark default, dashboard-first, memory-body repo writes, unreviewed target
+writes, and productivity-lift claims. It does not prove hook enforcement,
+security quality, broad API permissioning, dashboard usefulness, final memory
+quality, or productivity lift.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -768,6 +780,21 @@ no-overwrite behavior, source/evidence lineage, and focused eval coverage.
 - [SIMPLIFY] Next candidate: extract a shared init bootstrap target registry or exact seed fixture builder if skill wiring or policy boundaries add a sixth target and duplicate payload logic becomes meaningful; separately repair `krn gate` wording so negated phrases like "without dashboard/benchmark" do not false-block a valid narrow task.
 - [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/evals/baseline.json` apply boundary. It does not prove eval quality, broad repo bootstrap usefulness, merge-mode safety, dashboard/API readiness, final memory quality, research-brain quality, or productivity lift.
 - [NEXT] Commit and push this checkpoint; then continue with skill wiring, policy boundaries, repo-bootstrap readiness, or the narrow gate false-positive repair if it blocks autonomous work.
+- [FACT] Sixth reviewed `krn init` apply-target slice added `KrnPolicyBoundaries`, `krn init --proposal policy_boundaries`, and `krn init --apply policy_boundaries --proposal-path <path> --decision-path <path>`.
+- [FACT] `krn init --apply policy_boundaries` reads an existing `init_bootstrap` proposal and approved review decision, builds a `KrnProposalPromotion` with `promotion_scope: "approved_init_bootstrap_only"`, and writes `.krn/policies/boundaries.json` only from the exact `init_policy_boundaries` payload when the target is absent.
+- [FACT] `KrnControlPlaneProposal` now supports exact `init_policy_boundaries` payloads only for `init_bootstrap` proposals targeting `.krn/policies/boundaries.json`, while the shared promotion boundary still rejects target mismatches, unsafe paths, existing targets, and unapproved decisions.
+- [FACT] The generated policy boundary seed is a minimal `krn-policy-boundaries.v1` boundary for local-first reviewed policies. It requires approval for target-file mutation, blocks repo-local memory-core writes, requires source acceptance handling, warns on command execution, blocks dashboard/API expansion, and forbids unreviewed target writes, repo-local memory bodies, dashboard-first work, benchmark defaults, cloud-sync defaults, and productivity-lift claims.
+- [EVIDENCE] Pre-edit gate passed: `pnpm run krn -- gate --task "Mechanism: add exact reviewed init policy_boundaries payload that seeds .krn/policies/boundaries.json with local policy boundary IDs and approval rules only. Scope: packages contracts policy boundaries parser, packages cli init proposal apply target, proposal promotion allowlist, focused tests evals docs. Consumer: typed consumer through krn init proposal apply policy_boundaries plus krn init and proposal promotion evals. Verification: focused contract cli mcp tests, init eval, proposal promotion eval, pnpm typecheck, git diff check. Rollback kill: remove policy_boundaries payload parser if it duplicates AGENTS prose or increases review burden without target consumer. Hardcoded truth: no live report ids, active goal text, memory bodies, source lists, cloud sync default, dashboard state, or lift claims. Skills: typescript contract engineer and eval designer loaded. Simplify: review diff stat and extract shared target registry only if this sixth target creates meaningful duplication pressure. Overclaim: proves one reviewed policy boundary seed write only, not hook enforcement security quality or product lift." --path packages/cli/src/init.ts` wrote `.krn/gates/20260621T004953Z-906474/engineering-gate.json`.
+- [EVIDENCE] Focused tests: `pnpm exec vitest run packages/contracts/test/policy-boundaries.test.ts packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-promotion-store.test.ts packages/cli/test/init-dry-run.test.ts` passed 5 files / 50 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `20260621T010539Z-940200` with 11/11 cases and 51/51 assertions.
+- [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `20260621T010539Z-940190` with 13/13 cases and 49/49 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `20260621T010833Z-948348` with 5/5 modules, 23/23 cases, and 82/82 assertions.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [SIMPLIFY] Keep: exact `init_policy_boundaries` payload, `KrnPolicyBoundaries`, shared `init_bootstrap` proposal/promotion boundary, no-overwrite `.krn/policies/boundaries.json` apply path, focused init/promotion eval cases, and explicit hook/security/lift overclaim rejection because each protects future policy/hook work from becoming prose-only instructions.
+- [SIMPLIFY] Delete/avoid: no live hook enforcement claim, no security-quality claim, no dashboard/API/cloud sync, no repo-local memory-core allowance, no copied active source/memory truth, no broad policy framework, and no parallel policy writer outside proposal promotion.
+- [SIMPLIFY] Next candidate: `skill_wiring` or repo-bootstrap readiness; extract a shared init target registry/fixture builder first only if the seventh target would otherwise keep duplicating exact seed logic across CLI/tests/evals.
+- [OVERCLAIM] This slice proves one reviewed exact absent-`.krn/policies/boundaries.json` apply boundary. It does not prove hook enforcement, prompt-injection safety, broad API permissioning, dashboard usefulness, final memory quality, broad repo bootstrap usefulness, merge-mode safety, or productivity lift.
+- [NEXT] Commit and push this checkpoint; then continue with skill wiring, repo-bootstrap readiness, or a narrow init-target registry simplification.
 
 ## Disproves Completion
 

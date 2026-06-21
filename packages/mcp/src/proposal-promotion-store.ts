@@ -121,7 +121,8 @@ function promotionPayloadForProposal(proposal: KrnControlPlaneProposal): Control
     proposal.promotion_payload.payload_type !== "init_local_config" &&
     proposal.promotion_payload.payload_type !== "init_source_pointers" &&
     proposal.promotion_payload.payload_type !== "init_context_pointers" &&
-    proposal.promotion_payload.payload_type !== "init_eval_baseline"
+    proposal.promotion_payload.payload_type !== "init_eval_baseline" &&
+    proposal.promotion_payload.payload_type !== "init_policy_boundaries"
   ) {
     throw new Error(`Init bootstrap promotion requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
