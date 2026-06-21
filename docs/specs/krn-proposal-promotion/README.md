@@ -21,7 +21,7 @@ sources:
 
 It prevents KRN from treating approval as vague permission to rewrite files. Promotion can only use a machine-applicable payload from the proposal, validates the approved decision, and records the promotion under `.krn/promotions`.
 
-Current promotion kinds are intentionally narrow: `memory_update` and the first `init_bootstrap` targets for `agent_instructions`, `local_config`, `source_pointers`, and `context_pointers`.
+Current promotion kinds are intentionally narrow: `memory_update` and the first `init_bootstrap` targets for `agent_instructions`, `local_config`, `source_pointers`, `context_pointers`, and `eval_baseline`.
 
 ## Public Interface
 
@@ -59,7 +59,7 @@ Allowed behavior:
 - persist promotion records under `.krn/promotions`,
 - in explicit apply mode only, write exact target content to the proposal target path when the path is safe and absent.
 - promote exact `memory_entry` payloads only for `memory_update` proposals,
-- promote exact `init_agent_instructions`, `init_local_config`, `init_source_pointers`, and `init_context_pointers` payloads only for `init_bootstrap` proposals.
+- promote exact `init_agent_instructions`, `init_local_config`, `init_source_pointers`, `init_context_pointers`, and `init_eval_baseline` payloads only for `init_bootstrap` proposals.
 
 Forbidden behavior:
 
@@ -69,7 +69,7 @@ Forbidden behavior:
 - no inferred target content from prose,
 - no overwrite of an existing different target file,
 - no source/goal/eval/dashboard mutation in this slice,
-- no broad init scaffolding beyond exact reviewed `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, and `.krn/context/index.json` payloads,
+- no broad init scaffolding beyond exact reviewed `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, and `.krn/evals/baseline.json` payloads,
 - no HTTP/API or dashboard command readiness claim,
 - no productivity or human-review-quality claim.
 

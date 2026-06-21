@@ -98,12 +98,24 @@ const InitContextPointersPromotionPayloadSchema = z
   })
   .strict();
 
+const InitEvalBaselinePromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("init_eval_baseline"),
+    bootstrap_capability: z.literal("eval_baseline"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
 const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [
   MemoryPromotionPayloadSchema,
   InitAgentInstructionsPromotionPayloadSchema,
   InitLocalConfigPromotionPayloadSchema,
   InitSourcePointersPromotionPayloadSchema,
   InitContextPointersPromotionPayloadSchema,
+  InitEvalBaselinePromotionPayloadSchema,
 ]);
 
 export const KrnControlPlaneProposalSchema = z
@@ -141,13 +153,25 @@ export const KrnControlPlaneProposalSchema = z
       (proposal.promotion_payload?.payload_type === "init_agent_instructions" ||
         proposal.promotion_payload?.payload_type === "init_local_config" ||
         proposal.promotion_payload?.payload_type === "init_source_pointers" ||
-        proposal.promotion_payload?.payload_type === "init_context_pointers") &&
+        proposal.promotion_payload?.payload_type === "init_context_pointers" ||
+        proposal.promotion_payload?.payload_type === "init_eval_baseline") &&
       proposal.proposal_kind !== "init_bootstrap"
     ) {
       context.addIssue({
         code: "custom",
         path: ["promotion_payload"],
         message: "init bootstrap promotion payloads are supported only for init_bootstrap proposals",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "init_eval_baseline" &&
+      proposal.promotion_payload.target_path !== ".krn/evals/baseline.json"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "init eval baseline payload must target .krn/evals/baseline.json",
       });
     }
 

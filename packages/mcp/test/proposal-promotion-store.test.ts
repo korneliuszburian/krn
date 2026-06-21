@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import {
   parseKrnControlPlaneProposal,
   parseKrnContextPointerIndex,
+  parseKrnEvalBaseline,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type KrnControlPlaneProposal,
@@ -97,6 +98,51 @@ function initContextPointersContent(): string {
       source_refs: ["krn://context/bootstrap-policy"],
       overclaim_boundary:
         "This seed points to bounded context packet runtime locations only; it is not an active context packet, memory body store, task intent, or proof of context quality.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function initEvalBaselineContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-eval-baseline.v1",
+      kind: "krn_eval_baseline",
+      baseline_id: "krn-init-eval-baseline-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      report_roots: {
+        aggregate: ".krn/eval",
+        module_reports: ".krn/evals",
+      },
+      default_lane: "current",
+      required_lanes: ["core", "current"],
+      forbidden_default_lanes: ["lab", "all"],
+      default_command: "krn eval",
+      core_command: "krn eval --lane core",
+      baseline_checks: [
+        {
+          check_id: "core-contracts",
+          command: "krn eval --lane core",
+          lane: "core",
+          purpose: "Verify stable contract and CLI foundations before claiming repo bootstrap readiness.",
+        },
+        {
+          check_id: "current-product-path",
+          command: "krn eval",
+          lane: "current",
+          purpose: "Verify the active product path without pulling historical lab checks into default bootstrap.",
+        },
+      ],
+      policy: {
+        forbid_lab_by_default: true,
+        forbid_all_by_default: true,
+        require_interpretation_caveat: true,
+        productivity_lift_claimed: false,
+      },
+      source_refs: ["krn://eval/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed defines a lean local eval baseline only; it does not prove eval quality, broad repo bootstrap readiness, human review quality, or productivity lift.",
     },
     null,
     2,
@@ -286,6 +332,50 @@ function validInitContextPointersProposal(overrides: Partial<KrnControlPlaneProp
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/context/index.json until explicit apply mode.",
+    ...overrides,
+  });
+}
+
+function validInitEvalBaselineProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initEvalBaselineContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-eval-baseline-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init eval-baseline bootstrap",
+    rationale: "The eval baseline target must be reviewed before target mutation.",
+    proposed_change: "Write minimal eval baseline seed only after approved review.",
+    promotion_payload: {
+      payload_type: "init_eval_baseline",
+      bootstrap_capability: "eval_baseline",
+      target_path: ".krn/evals/baseline.json",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/evals/baseline.json",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:eval_baseline:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "lab_default", "lift_claim"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/evals/baseline.json until explicit apply mode.",
     ...overrides,
   });
 }
@@ -544,6 +634,41 @@ describe("KRN proposal promotion store", () => {
     expect(result.target_written).toBe(true);
     expect(contextContent).toBe(initContextPointersContent());
     expect(contextIndex.memory_policy.store_memory_bodies).toBe(false);
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
+  });
+
+  it("applies exact init eval baseline only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-eval-store-"));
+    const proposal = validInitEvalBaselineProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-eval-baseline",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-eval-baseline-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+    const evalBaselineContent = readFileSync(join(targetRoot, ".krn", "evals", "baseline.json"), "utf8");
+    const evalBaseline = parseKrnEvalBaseline(JSON.parse(evalBaselineContent) as unknown);
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(evalBaselineContent).toBe(initEvalBaselineContent());
+    expect(evalBaseline.default_lane).toBe("current");
+    expect(evalBaseline.forbidden_default_lanes).toEqual(["lab", "all"]);
+    expect(evalBaseline.policy.productivity_lift_claimed).toBe(false);
     expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 

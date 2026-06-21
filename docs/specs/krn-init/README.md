@@ -10,6 +10,7 @@ sources:
   - docs/specs/technology-stack/decision.md
   - docs/specs/krn-context-packet/README.md
   - docs/specs/krn-source-graph/README.md
+  - docs/specs/krn-eval-baseline/README.md
   - docs/specs/krn-eval/README.md
 ---
 
@@ -17,13 +18,13 @@ sources:
 
 ## Purpose
 
-`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers` routes the first reviewed bootstrap target paths. `krn init --apply agent_instructions|local_config|source_pointers|context_pointers` is the exact reviewed write boundary for those targets.
+`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline` routes the first reviewed bootstrap target paths. `krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline` is the exact reviewed write boundary for those targets.
 
 It inspects a target project and writes a schema-backed dry-run manifest under `.krn/init/{run_id}/manifest.json`. It must not mutate target project setup files by default. The manifest must expose the final-shaped bootstrap plan without claiming write-mode safety or memory-core readiness.
 
 The proposal mode writes an append-only `KrnControlPlaneProposal` under `.krn/proposals/**/proposal.json`. It uses the generated init manifest as source/evidence lineage and does not write target setup files.
 
-The apply mode requires an existing `init_bootstrap` proposal, an existing `approved_for_promotion` review decision, and an exact init bootstrap payload before writing `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, or `.krn/context/index.json`. It records the write under `.krn/promotions/**/promotion.json` and refuses overwrite of an existing target.
+The apply mode requires an existing `init_bootstrap` proposal, an existing `approved_for_promotion` review decision, and an exact init bootstrap payload before writing `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, or `.krn/evals/baseline.json`. It records the write under `.krn/promotions/**/promotion.json` and refuses overwrite of an existing target.
 
 ## Command
 
@@ -33,18 +34,20 @@ pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run krn -- init --proposal local_config --target .
 pnpm run krn -- init --proposal source_pointers --target .
 pnpm run krn -- init --proposal context_pointers --target .
+pnpm run krn -- init --proposal eval_baseline --target .
 pnpm run krn -- init --apply agent_instructions --proposal-path <path> --decision-path <path> --target .
 pnpm run krn -- init --apply local_config --proposal-path <path> --decision-path <path> --target .
 pnpm run krn -- init --apply source_pointers --proposal-path <path> --decision-path <path> --target .
 pnpm run krn -- init --apply context_pointers --proposal-path <path> --decision-path <path> --target .
+pnpm run krn -- init --apply eval_baseline --proposal-path <path> --decision-path <path> --target .
 ```
 
 Accepted shape:
 
 ```text
 krn init --dry-run [--target <path>]
-krn init --proposal agent_instructions|local_config|source_pointers|context_pointers [--target <path>]
-krn init --apply agent_instructions|local_config|source_pointers|context_pointers --proposal-path <path> --decision-path <path> [--target <path>]
+krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline [--target <path>]
+krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline --proposal-path <path> --decision-path <path> [--target <path>]
 ```
 
 The command must reject missing `init`, missing mode, unsupported proposal/apply capability, missing apply paths, unknown flags, and empty target values.
@@ -65,7 +68,7 @@ Proposal mode also writes:
 {target_root}/.krn/proposals/{idempotency_key}/proposal.json
 ```
 
-The exact proposal directory is a filesystem-safe idempotency-key segment. The proposal uses `schema_version: "krn-control-plane-proposal.v1"`, `proposal_kind: "init_bootstrap"`, `status: "proposal_only"`, `target.path: "AGENTS.md"`, `".krn/config.toml"`, `".krn/sources/index.json"`, or `".krn/context/index.json"`, and `write_policy.default_effect: "no_mutation"`.
+The exact proposal directory is a filesystem-safe idempotency-key segment. The proposal uses `schema_version: "krn-control-plane-proposal.v1"`, `proposal_kind: "init_bootstrap"`, `status: "proposal_only"`, `target.path: "AGENTS.md"`, `".krn/config.toml"`, `".krn/sources/index.json"`, `".krn/context/index.json"`, or `".krn/evals/baseline.json"`, and `write_policy.default_effect: "no_mutation"`.
 
 Apply mode also writes:
 
@@ -75,6 +78,7 @@ Apply mode also writes:
 {target_root}/.krn/config.toml
 {target_root}/.krn/sources/index.json
 {target_root}/.krn/context/index.json
+{target_root}/.krn/evals/baseline.json
 ```
 
 Target setup files are written only from the exact payload already stored on the reviewed proposal. The promotion uses `schema_version: "krn-proposal-promotion.v1"`, `proposal_kind: "init_bootstrap"`, `promotion_scope: "approved_init_bootstrap_only"`, `apply_mode: "apply_exact_target_write"`, and `target_mutated: true`.
@@ -98,7 +102,7 @@ This is a planning contract for a future reviewed write flow. The dry-run comman
 Allowed writes:
 
 - `.krn/init/{run_id}/manifest.json`
-- `.krn/proposals/**/proposal.json` only when `--proposal agent_instructions|local_config|source_pointers|context_pointers` is explicit
+- `.krn/proposals/**/proposal.json` only when `--proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline` is explicit
 
 Forbidden default writes:
 
@@ -106,19 +110,19 @@ Forbidden default writes:
 - `.codex/**`
 - `.agents/**`
 - `docs/memory/**`
-- source files outside `.krn/init/**`, except `.krn/sources/index.json` or `.krn/context/index.json` in explicit reviewed apply mode
+- source files outside `.krn/init/**`, except `.krn/sources/index.json`, `.krn/context/index.json`, or `.krn/evals/baseline.json` in explicit reviewed apply mode
 
 If an artifact already exists, the command reports it as detected and chooses `skip`, `proposal_only`, or `merge_required` instead of overwriting. Direct `modify` actions are invalid in dry-run manifests.
 
 ## Reviewed Proposal Boundary
 
-`krn init --proposal agent_instructions|local_config|source_pointers|context_pointers` proves only that KRN can route narrow bootstrap targets into the existing append-only proposal/review spine.
+`krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline` proves only that KRN can route narrow bootstrap targets into the existing append-only proposal/review spine.
 
 Allowed behavior:
 
 - generate the dry-run manifest first;
 - use that manifest path as source/evidence lineage;
-- create a `proposal_only` record for `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, or `.krn/context/index.json`;
+- create a `proposal_only` record for `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, or `.krn/evals/baseline.json`;
 - include an exact init bootstrap payload only when the target is absent and eligible for future apply;
 - block target mutation, memory-core writes, source-ledger mutation, dashboard event publish, and broad API/cloud sync.
 
@@ -131,7 +135,7 @@ Forbidden behavior:
 
 ## Reviewed Apply Boundary
 
-`krn init --apply agent_instructions|local_config|source_pointers|context_pointers` proves only that absent `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, and `.krn/context/index.json` targets can be written through the existing proposal-review-promotion spine.
+`krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline` proves only that absent `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, and `.krn/evals/baseline.json` targets can be written through the existing proposal-review-promotion spine.
 
 Allowed behavior:
 
@@ -152,6 +156,7 @@ Forbidden behavior:
 - no memory-core creation.
 - no copied canonical source ledger, active source list, or source freshness claim.
 - no active context packet, task intent, memory body, `docs/memory/**` dump, or active-goal/canonical-plan copy in the context pointer seed.
+- no live eval report IDs, default lab/all lane, or productivity-lift claim in the eval baseline seed.
 
 ## Minimum Detection
 
@@ -161,6 +166,7 @@ The command must inspect whether these target artifacts exist:
 - `.krn/config.toml`
 - `.krn/sources/index.json`
 - `.krn/context/index.json`
+- `.krn/evals/baseline.json`
 - `.codex/`
 - `.agents/`
 - `docs/memory/INDEX.md`
@@ -168,7 +174,7 @@ The command must inspect whether these target artifacts exist:
 
 ## Manifest Interpretation
 
-A valid manifest proves only that KRN can inspect a target project and express a final-shaped dry-run bootstrap plan through a typed contract. A successful apply proves only exact reviewed writes for the currently supported absent targets: `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, and `.krn/context/index.json`. The source-pointers target is a source graph boundary seed, not a copied bibliography, active source ledger, final source service, or source freshness proof. The context-pointers target is a context packet pointer index, not an active packet, memory body store, task intent, or context quality proof. Neither proves productivity lift, dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.
+A valid manifest proves only that KRN can inspect a target project and express a final-shaped dry-run bootstrap plan through a typed contract. A successful apply proves only exact reviewed writes for the currently supported absent targets: `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, and `.krn/evals/baseline.json`. The source-pointers target is a source graph boundary seed, not a copied bibliography, active source ledger, final source service, or source freshness proof. The context-pointers target is a context packet pointer index, not an active packet, memory body store, task intent, or context quality proof. The eval-baseline target is a lean lane-policy seed, not a live report, eval-quality proof, benchmark result, or productivity-lift proof. None proves dashboard readiness, MCP readiness, memory-core quality, broad repo bootstrap, or merge-mode safety.
 
 ## Validation
 
@@ -176,6 +182,7 @@ Run:
 
 ```bash
 pnpm test -- packages/contracts/test/init-manifest.test.ts
+pnpm test -- packages/contracts/test/eval-baseline.test.ts
 pnpm test -- packages/contracts/test/control-plane-proposal.test.ts
 pnpm test -- packages/contracts/test/proposal-promotion.test.ts
 pnpm test -- packages/mcp/test/proposal-promotion-store.test.ts
@@ -184,6 +191,8 @@ pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run krn -- init --proposal local_config --target .
 pnpm run krn -- init --proposal source_pointers --target .
 pnpm run krn -- init --proposal context_pointers --target .
+pnpm run krn -- init --proposal eval_baseline --target .
+pnpm run krn -- init --apply eval_baseline --proposal-path <path> --decision-path <path> --target .
 pnpm run eval:krn-init
 pnpm run eval:krn-proposal-promotion
 ```

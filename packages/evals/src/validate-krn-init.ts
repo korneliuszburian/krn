@@ -5,6 +5,7 @@ import {
   parseInitManifest,
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
+  parseKrnEvalBaseline,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   parseKrnSourceGraph,
@@ -665,6 +666,115 @@ function runValidation(): EvalReport {
       );
     }
   }
+  const evalBaselineApplyCase = caseById.get("generated-eval-baseline-apply-writes-reviewed-target");
+  if (!evalBaselineApplyCase) {
+    throw new Error("Missing case generated-eval-baseline-apply-writes-reviewed-target");
+  }
+  const evalBaselineTarget = mkdtempSync(join(tmpdir(), "krn-init-eval-baseline-apply-eval-"));
+  const evalBaselineProposalResult = runKrnCli(["init", "--proposal", "eval_baseline", "--target", evalBaselineTarget]);
+  const evalBaselineProposalPath = evalBaselineProposalResult.stdout.trim();
+  if (evalBaselineProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        evalBaselineApplyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        evalBaselineApplyCase.failure_mode,
+        evalBaselineProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(evalBaselineProposalPath));
+      const proposalRelativePath = relative(evalBaselineTarget, evalBaselineProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated eval baseline seed is minimal, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "lab_default", "lift_claim"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: evalBaselineTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "eval_baseline",
+        "--proposal-path",
+        evalBaselineProposalPath,
+        "--decision-path",
+        join(evalBaselineTarget, storedDecision.decision_path),
+        "--target",
+        evalBaselineTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetEvalPath = join(evalBaselineTarget, ".krn", "evals", "baseline.json");
+      const evalBaselineContent = existsSync(targetEvalPath) ? readFileSync(targetEvalPath, "utf8") : "";
+      const evalBaseline =
+        evalBaselineContent.length > 0 ? parseKrnEvalBaseline(JSON.parse(evalBaselineContent) as unknown) : null;
+
+      results.push(
+        result(
+          evalBaselineApplyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetEvalPath) &&
+            evalBaselineContent === promotion.target.file_content &&
+            evalBaseline?.default_lane === "current" &&
+            evalBaseline.required_lanes.includes("core") &&
+            evalBaseline.required_lanes.includes("current") &&
+            evalBaseline.forbidden_default_lanes.includes("lab") &&
+            evalBaseline.forbidden_default_lanes.includes("all") &&
+            evalBaseline.policy.productivity_lift_claimed === false &&
+            !evalBaselineContent.includes("goal-038") &&
+            !evalBaselineContent.includes("docs/plans/canonical/draft.md"),
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target .krn/evals/baseline.json matches exact payload",
+            "eval baseline seed avoids lab/all defaults and lift claims",
+          ],
+          evalBaselineApplyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed eval baseline seed payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          evalBaselineApplyCase.id,
+          false,
+          ["generated eval baseline apply"],
+          evalBaselineApplyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated eval baseline apply error",
+        ),
+      );
+    }
+  }
   const proposalTarget = mkdtempSync(join(tmpdir(), "krn-init-proposal-eval-"));
   const proposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", proposalTarget]);
   const proposalPath = proposalResult.stdout.trim();
@@ -740,7 +850,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, broad repo bootstrap, or merge-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers/eval-baseline apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, eval quality, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

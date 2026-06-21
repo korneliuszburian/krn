@@ -22,6 +22,7 @@ const INIT_PROPOSAL_CAPABILITIES = [
   "local_config",
   "source_pointers",
   "context_pointers",
+  "eval_baseline",
 ] as const satisfies readonly InitProposalCapability[];
 
 type InitArgs = {
@@ -53,6 +54,7 @@ const DETECTED_PATHS = [
   { path: ".krn/config.toml", expectedKind: "file" },
   { path: ".krn/sources/index.json", expectedKind: "file" },
   { path: ".krn/context/index.json", expectedKind: "file" },
+  { path: ".krn/evals/baseline.json", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
   { path: "docs/memory/INDEX.md", expectedKind: "file" },
@@ -187,6 +189,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
       return "KRN source graph seed already exists and must not be overwritten by dry-run init.";
     case ".krn/context/index.json":
       return "KRN context pointer index already exists and must not be overwritten by dry-run init.";
+    case ".krn/evals/baseline.json":
+      return "KRN eval baseline seed already exists and must not be overwritten by dry-run init.";
     case ".codex":
       return "Project-local Codex config/hooks directory already exists.";
     case ".agents":
@@ -231,6 +235,8 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
     detectedArtifacts.find((artifact) => artifact.path === ".krn/sources/index.json")?.exists ?? false;
   const contextPointersExist =
     detectedArtifacts.find((artifact) => artifact.path === ".krn/context/index.json")?.exists ?? false;
+  const evalBaselineExists =
+    detectedArtifacts.find((artifact) => artifact.path === ".krn/evals/baseline.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
 
@@ -296,6 +302,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: ["docs/specs/krn-context-pointer-index/README.md", "docs/specs/krn-init/README.md"],
       },
       {
+        path: ".krn/evals/baseline.json",
+        action: evalBaselineExists ? "skip" : "proposal_only",
+        reason: evalBaselineExists
+          ? "Existing eval baseline seed is preserved; changes require a reviewed proposal."
+          : "KRN would propose a lean eval baseline seed in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-init/README.md"],
+      },
+      {
         path: "docs/memory/INDEX.md",
         action: memoryIndexExists ? "proposal_only" : "create",
         reason: memoryIndexExists
@@ -346,6 +360,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           : "No context pointer index collision detected; future writes still require approved promotion.",
       },
       {
+        path: ".krn/evals/baseline.json",
+        strategy: collisionStrategy(evalBaselineExists),
+        reason: evalBaselineExists
+          ? "Existing eval baseline seed must be reviewed instead of overwritten."
+          : "No eval baseline seed collision detected; future writes still require approved promotion.",
+      },
+      {
         path: "docs/memory/INDEX.md",
         strategy: "proposal_only",
         reason: memoryIndexExists
@@ -393,11 +414,12 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       },
       {
         capability: "eval_baseline",
-        path: ".krn/evals/",
-        action: "proposal_only",
+        path: ".krn/evals/baseline.json",
+        action: evalBaselineExists ? "skip" : "proposal_only",
         purpose: "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
-        boundary: "Green evals are regression evidence only; lab, benchmark, and dashboard checks stay explicit.",
-        source_refs: ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
+        boundary:
+          "Eval baseline may point at core/current verification commands; it must not store live reports, enable lab/all defaults, or claim productivity lift.",
+        source_refs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
       },
       {
         capability: "skill_wiring",
@@ -523,6 +545,8 @@ function bootstrapTargetLabel(capability: InitProposalCapability): string {
       return "source-pointers";
     case "context_pointers":
       return "context-pointers";
+    case "eval_baseline":
+      return "eval-baseline";
   }
 }
 
@@ -536,6 +560,8 @@ function bootstrapTargetDescription(capability: InitProposalCapability): string 
       return "Source pointers must seed a source graph boundary without copying a bibliography, active source list, or KRN product truth into the target repo.";
     case "context_pointers":
       return "Context pointers must seed a bounded packet index without copying memory bodies, task intent, active goal truth, or broad docs context into the target repo.";
+    case "eval_baseline":
+      return "Eval baseline must seed lean core/current verification without copying live eval reports, enabling lab/all defaults, or claiming lift.";
   }
 }
 

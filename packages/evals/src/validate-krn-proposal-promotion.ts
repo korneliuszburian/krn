@@ -5,6 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
+  parseKrnEvalBaseline,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type KrnControlPlaneProposal,
@@ -175,6 +176,51 @@ function initContextPointersContent(): string {
       source_refs: ["krn://context/bootstrap-policy"],
       overclaim_boundary:
         "This seed points to bounded context packet runtime locations only; it is not an active context packet, memory body store, task intent, or proof of context quality.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function initEvalBaselineContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-eval-baseline.v1",
+      kind: "krn_eval_baseline",
+      baseline_id: "krn-init-eval-baseline-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      report_roots: {
+        aggregate: ".krn/eval",
+        module_reports: ".krn/evals",
+      },
+      default_lane: "current",
+      required_lanes: ["core", "current"],
+      forbidden_default_lanes: ["lab", "all"],
+      default_command: "krn eval",
+      core_command: "krn eval --lane core",
+      baseline_checks: [
+        {
+          check_id: "core-contracts",
+          command: "krn eval --lane core",
+          lane: "core",
+          purpose: "Verify stable contract and CLI foundations before claiming repo bootstrap readiness.",
+        },
+        {
+          check_id: "current-product-path",
+          command: "krn eval",
+          lane: "current",
+          purpose: "Verify the active product path without pulling historical lab checks into default bootstrap.",
+        },
+      ],
+      policy: {
+        forbid_lab_by_default: true,
+        forbid_all_by_default: true,
+        require_interpretation_caveat: true,
+        productivity_lift_claimed: false,
+      },
+      source_refs: ["krn://eval/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed defines a lean local eval baseline only; it does not prove eval quality, broad repo bootstrap readiness, human review quality, or productivity lift.",
     },
     null,
     2,
@@ -362,6 +408,49 @@ function validInitContextPointersProposal(): KrnControlPlaneProposal {
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/context/index.json until explicit apply mode.",
+  });
+}
+
+function validInitEvalBaselineProposal(): KrnControlPlaneProposal {
+  const fileContent = initEvalBaselineContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-eval-baseline-eval",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init eval-baseline bootstrap",
+    rationale: "The eval baseline target must be reviewed before target mutation.",
+    proposed_change: "Write a minimal .krn/evals/baseline.json only after approved review.",
+    promotion_payload: {
+      payload_type: "init_eval_baseline",
+      bootstrap_capability: "eval_baseline",
+      target_path: ".krn/evals/baseline.json",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/evals/baseline.json",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:eval_baseline:eval",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/eval/manifest.json"],
+    source_refs: [".krn/init/eval/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "lab_default", "lift_claim"],
+    created_at: "2026-06-20T22:55:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/evals/baseline.json until explicit apply mode.",
   });
 }
 
@@ -827,6 +916,67 @@ function runValidation(): EvalReport {
         ["apply exact init context-pointers promotion"],
         initContextPointersApplyCase.failure_mode,
         error instanceof Error ? error.message : "unknown init context-pointers apply promotion error",
+      ),
+    );
+  }
+
+  const initEvalBaselineApplyCase = caseById(cases, "apply-exact-init-eval-baseline-promotion");
+  try {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-eval-baseline-eval-"));
+    const proposal = validInitEvalBaselineProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-eval-baseline-eval",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-eval-baseline-eval:decision",
+      },
+    });
+    const stored = storeKrnProposalPromotion(promotion, { targetInput: targetRoot, now });
+    const targetPath = join(targetRoot, ".krn", "evals", "baseline.json");
+    const evalBaseline = parseKrnEvalBaseline(JSON.parse(readFileSync(targetPath, "utf8")) as unknown);
+    appliedTargetPath = ".krn/evals/baseline.json";
+
+    results.push(
+      result(
+        initEvalBaselineApplyCase.id,
+        stored.status === "stored" &&
+          stored.target_written === true &&
+          readFileSync(targetPath, "utf8") === initEvalBaselineContent() &&
+          evalBaseline.default_lane === "current" &&
+          evalBaseline.forbidden_default_lanes.includes("lab") &&
+          evalBaseline.forbidden_default_lanes.includes("all") &&
+          evalBaseline.policy.productivity_lift_claimed === false &&
+          existsSync(join(targetRoot, stored.promotion_path)),
+        [
+          "approved init eval-baseline proposal stored",
+          "init eval-baseline apply promotion stored",
+          ".krn/evals/baseline.json written in explicit apply mode",
+          "promotion record persisted",
+          "eval baseline keeps lab/all and lift claims out of default bootstrap",
+        ],
+        initEvalBaselineApplyCase.failure_mode,
+        "Explicit apply mode wrote exact reviewed init eval-baseline payload after approved review.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        initEvalBaselineApplyCase.id,
+        false,
+        ["apply exact init eval-baseline promotion"],
+        initEvalBaselineApplyCase.failure_mode,
+        error instanceof Error ? error.message : "unknown init eval-baseline apply promotion error",
       ),
     );
   }

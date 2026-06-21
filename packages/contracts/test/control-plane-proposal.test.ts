@@ -253,6 +253,57 @@ describe("KRN control-plane proposal contract", () => {
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
   });
 
+  it("parses an init eval-baseline proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-eval-baseline-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init eval-baseline bootstrap",
+      rationale: "The eval baseline target must be reviewed before target mutation.",
+      proposed_change: "Review the .krn/evals/baseline.json bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_eval_baseline",
+        bootstrap_capability: "eval_baseline",
+        target_path: ".krn/evals/baseline.json",
+        write_mode: "exact_file_content",
+        file_content: "{\"schema_version\":\"krn-eval-baseline.v1\"}\n",
+        content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      target: {
+        target_type: "path",
+        path: ".krn/evals/baseline.json",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:eval_baseline:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write", "lab_default", "lift_claim"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate .krn/evals/baseline.json or prove eval quality.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_eval_baseline",
+      bootstrap_capability: "eval_baseline",
+      target_path: ".krn/evals/baseline.json",
+    });
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("rejects an init payload attached to a non-init proposal", () => {
     expect(() =>
       parseKrnControlPlaneProposal({
@@ -409,6 +460,49 @@ describe("KRN control-plane proposal contract", () => {
           default_effect: "no_mutation",
           allowed_persistence: "append_only",
           idempotency_key: "bad-init-context-pointers-target:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an init eval-baseline payload targeting a different path", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-init-eval-baseline-target",
+        proposal_kind: "init_bootstrap",
+        status: "proposal_only",
+        title: "Bad eval baseline target",
+        rationale: "Eval baseline payloads must target the eval baseline seed path.",
+        proposed_change: "Write eval baseline to the wrong place.",
+        promotion_payload: {
+          payload_type: "init_eval_baseline",
+          bootstrap_capability: "eval_baseline",
+          target_path: ".krn/evals/lab.json",
+          write_mode: "exact_file_content",
+          file_content: "{\"schema_version\":\"krn-eval-baseline.v1\"}\n",
+          content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        target: {
+          target_type: "path",
+          path: ".krn/evals/lab.json",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-eval-baseline-target:test",
         },
         review_gate: {
           required: true,

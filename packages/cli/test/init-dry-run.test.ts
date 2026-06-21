@@ -7,6 +7,7 @@ import {
   parseInitManifest,
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
+  parseKrnEvalBaseline,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   parseKrnSourceGraph,
@@ -52,6 +53,12 @@ describe("krn init --dry-run", () => {
     );
     expect(manifest.bootstrap_plan.find((item) => item.capability === "context_pointers")?.path).toBe(
       ".krn/context/index.json",
+    );
+    expect(manifest.bootstrap_plan.find((item) => item.capability === "eval_baseline")?.path).toBe(
+      ".krn/evals/baseline.json",
+    );
+    expect(manifest.bootstrap_plan.find((item) => item.capability === "eval_baseline")?.boundary).toContain(
+      "must not store live reports",
     );
     expect(existsSync(join(targetRoot, ".krn", "init", manifest.run_id, "manifest.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
@@ -422,6 +429,93 @@ describe("krn init --dry-run", () => {
     expect(contextIndex.rejected_context_refs).toContain("docs/memory/** full scan");
     expect(contextIndexContent).not.toContain("goal-038");
     expect(contextIndexContent).not.toContain("docs/plans/canonical/draft.md");
+  }, 30_000);
+
+  it("applies reviewed eval-baseline proposal through an approved decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-eval-apply-target-"));
+    const proposalStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "eval_baseline", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const proposalPath = proposalStdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    const decision = parseKrnProposalReviewDecision({
+      schema_version: "krn-proposal-review-decision.v1",
+      kind: "krn_proposal_review_decision",
+      decision_id: `decision-${proposal.proposal_id}`,
+      proposal_id: proposal.proposal_id,
+      proposal_path: proposalRelativePath,
+      decision: "approved_for_promotion",
+      review_scope: "proposal_review_only",
+      target_mutated: false,
+      promotion_state: "not_promoted",
+      reviewer: "krn-init-test",
+      rationale: "The generated eval baseline seed is minimal, target is absent, and the exact payload is safe to apply.",
+      write_policy: {
+        default_effect: "no_target_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+      },
+      evidence_refs: proposal.evidence_refs,
+      source_refs: proposal.source_refs,
+      blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "lab_default", "lift_claim"],
+      created_at: "2026-06-20T22:50:00.000Z",
+      created_by: "krn init test",
+      interpretation_caveat:
+        "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+    });
+    const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
+
+    const promotionStdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "init",
+        "--apply",
+        "eval_baseline",
+        "--proposal-path",
+        proposalPath,
+        "--decision-path",
+        join(targetRoot, storedDecision.decision_path),
+        "--target",
+        targetRoot,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const promotionPath = promotionStdout.trim();
+    const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+    const evalBaselineContent = readFileSync(join(targetRoot, ".krn", "evals", "baseline.json"), "utf8");
+    const evalBaseline = parseKrnEvalBaseline(JSON.parse(evalBaselineContent) as unknown);
+
+    expect(proposal.target).toEqual({ target_type: "path", path: ".krn/evals/baseline.json" });
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_eval_baseline",
+      bootstrap_capability: "eval_baseline",
+      target_path: ".krn/evals/baseline.json",
+    });
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.apply_mode).toBe("apply_exact_target_write");
+    expect(promotion.target_mutated).toBe(true);
+    expect(evalBaselineContent).toBe(promotion.target.file_content);
+    expect(evalBaseline.default_lane).toBe("current");
+    expect(evalBaseline.required_lanes).toEqual(["core", "current"]);
+    expect(evalBaseline.forbidden_default_lanes).toEqual(["lab", "all"]);
+    expect(evalBaseline.policy.productivity_lift_claimed).toBe(false);
+    expect(evalBaselineContent).not.toContain("goal-038");
+    expect(evalBaselineContent).not.toContain("docs/plans/canonical/draft.md");
   }, 30_000);
 
   it("rejects apply paths outside the target root before reading them", () => {

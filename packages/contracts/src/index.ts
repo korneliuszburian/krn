@@ -1,4 +1,10 @@
 export {
+  KrnEvalBaselineSchema,
+  krnEvalBaselineJsonSchema,
+  parseKrnEvalBaseline,
+  type KrnEvalBaseline,
+} from "./eval-baseline.js";
+export {
   KrnContextPointerIndexSchema,
   krnContextPointerIndexJsonSchema,
   parseKrnContextPointerIndex,

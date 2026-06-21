@@ -136,6 +136,33 @@
     "failure_mode": "KRN init can skip the review/promotion spine and write .krn/context/index.json without an exact approved payload or with a runtime seed that stores memory bodies."
   },
   {
+    "id": "apply-exact-init-eval-baseline-promotion",
+    "expected_behavior": "Explicit apply mode writes exact init eval-baseline payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-eval-baseline/README.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "approved init eval-baseline proposal stored",
+      "init eval-baseline apply promotion stored",
+      ".krn/evals/baseline.json written in explicit apply mode",
+      "promotion record persisted",
+      "eval baseline keeps lab/all and lift claims out of default bootstrap"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "eval_lane_focus_score",
+      "drift_resistance_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "KRN init can skip the review/promotion spine and write .krn/evals/baseline.json without an exact approved payload or with lab/all defaults or productivity-lift claims in the seed."
+  },
+  {
     "id": "rejected-decision-promotion-rejected",
     "expected_behavior": "A rejected proposal review decision cannot be promoted.",
     "source_patterns": [

@@ -79,6 +79,8 @@ Module-level eval reports remain under:
 {target_root}/.krn/evals/{module_id}/{module_run_id}/report.json
 ```
 
+`krn init --apply eval_baseline` may create `{target_root}/.krn/evals/baseline.json`. That file is a lane-policy seed for core/current verification, not a module report, aggregate report, lab selector, all-lane selector, or productivity-lift claim.
+
 ## Boundary
 
 Allowed writes:

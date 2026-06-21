@@ -193,6 +193,46 @@ describe("KRN proposal promotion contract", () => {
     expect(promotion.target.path).toBe(".krn/context/index.json");
   });
 
+  it("parses an init eval-baseline promotion with the init-only scope", () => {
+    const promotion = parseKrnProposalPromotion({
+      schema_version: "krn-proposal-promotion.v1",
+      kind: "krn_proposal_promotion",
+      promotion_id: "promotion-init-bootstrap-eval-baseline-test",
+      proposal_id: "init-bootstrap-eval-baseline-test",
+      proposal_path: ".krn/proposals/init-bootstrap-eval/proposal.json",
+      decision_id: "decision-init-bootstrap-eval-baseline-test",
+      decision_path: ".krn/proposal-reviews/init-bootstrap-eval/decision.json",
+      proposal_kind: "init_bootstrap",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      target: {
+        target_type: "path",
+        path: ".krn/evals/baseline.json",
+        write_mode: "exact_file_content",
+        file_content: "{\"schema_version\":\"krn-eval-baseline.v1\"}\n",
+        content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-eval-baseline-test:decision",
+      },
+      evidence_refs: [".krn/init/test/manifest.json"],
+      source_refs: [".krn/init/test/manifest.json"],
+      blocked_surfaces: ["target_overwrite", "memory_core_write", "lab_default", "lift_claim"],
+      created_at: "2026-06-20T22:40:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This promotion applies one reviewed init eval-baseline payload only; it does not prove eval quality or broad repo bootstrap.",
+    });
+
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.target.path).toBe(".krn/evals/baseline.json");
+  });
+
   it("rejects an init bootstrap promotion using the memory-only scope", () => {
     expect(() =>
       parseKrnProposalPromotion({

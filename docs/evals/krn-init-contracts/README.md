@@ -15,8 +15,8 @@ This eval verifies the final-shaped dry-run bootstrap and first proposal-only bo
 
 ```text
 InitManifest parser -> krn init --dry-run -> bootstrap plan -> runtime manifest -> eval report
-InitManifest parser -> krn init --proposal agent_instructions|local_config|source_pointers|context_pointers -> KrnControlPlaneProposal -> append-only proposal store -> eval report
-Init proposal -> approved review decision -> krn init --apply agent_instructions|local_config|source_pointers|context_pointers -> KrnProposalPromotion -> exact target write
+InitManifest parser -> krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline -> KrnControlPlaneProposal -> append-only proposal store -> eval report
+Init proposal -> approved review decision -> krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline -> KrnProposalPromotion -> exact target write
 ```
 
 It does not claim productivity lift, dashboard readiness, MCP readiness, memory-core quality, paper-research automation, broad repo bootstrap, or merge-mode safety.
@@ -39,6 +39,8 @@ It does not claim productivity lift, dashboard readiness, MCP readiness, memory-
 - The generated apply path writes `.krn/sources/index.json` from the exact reviewed payload, avoids copying active source truth, and records a promotion.
 - The CLI-generated `context_pointers` apply path requires an approved review decision.
 - The generated apply path writes `.krn/context/index.json` from the exact reviewed payload, avoids memory bodies and active-goal truth, and records a promotion.
+- The CLI-generated `eval_baseline` apply path requires an approved review decision.
+- The generated apply path writes `.krn/evals/baseline.json` from the exact reviewed payload, avoids lab/all defaults and lift claims, and records a promotion.
 - The eval writes a machine-readable report under `.krn/evals/krn-init-contracts/{run_id}/report.json`.
 
 ## Command
@@ -57,4 +59,4 @@ Runtime outputs stay local. Reviewed durable lessons move to `docs/memory`.
 
 ## Interpretation Policy
 
-A green run means the final-shaped bootstrap dry-run contract, first proposal-only bootstrap targets, and reviewed exact `AGENTS.md` / `.krn/config.toml` / `.krn/sources/index.json` / `.krn/context/index.json` apply paths are locally checkable. It does not mean KRN improves Codex behavior or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.
+A green run means the final-shaped bootstrap dry-run contract, first proposal-only bootstrap targets, and reviewed exact `AGENTS.md` / `.krn/config.toml` / `.krn/sources/index.json` / `.krn/context/index.json` / `.krn/evals/baseline.json` apply paths are locally checkable. It does not mean KRN improves Codex behavior or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.

@@ -3,7 +3,7 @@ id: krn-proposal-promotion-eval
 kind: eval-contract
 status: active
 owner: krn
-updated: 2026-06-20
+updated: 2026-06-21
 sources:
   - docs/evals/STANDARD.md
   - docs/goals/goal-006.md
@@ -46,6 +46,7 @@ A green result proves only the local proposal promotion boundary:
 - exact `init_bootstrap` local-config payloads can be applied only through the approved promotion boundary,
 - exact `init_bootstrap` source-pointers payloads can be applied only through the approved promotion boundary,
 - exact `init_bootstrap` context-pointers payloads can be applied only through the approved promotion boundary,
+- exact `init_bootstrap` eval-baseline payloads can be applied only through the approved promotion boundary,
 - rejected decisions cannot promote proposals,
 - proposals without machine-applicable payload cannot promote,
 - duplicate promotion writes are idempotent,

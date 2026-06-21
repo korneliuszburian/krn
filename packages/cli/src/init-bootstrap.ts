@@ -4,6 +4,7 @@ import { relative, resolve } from "node:path";
 import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
+  parseKrnEvalBaseline,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type ControlPlanePromotionPayload,
@@ -21,11 +22,13 @@ type InitAgentInstructionsPayload = Extract<
 type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_local_config" }>;
 type InitSourcePointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_source_pointers" }>;
 type InitContextPointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_context_pointers" }>;
+type InitEvalBaselinePayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_eval_baseline" }>;
 type InitBootstrapPayload =
   | InitAgentInstructionsPayload
   | InitLocalConfigPayload
   | InitSourcePointersPayload
-  | InitContextPointersPayload;
+  | InitContextPointersPayload
+  | InitEvalBaselinePayload;
 export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
 function sha256(content: string): string {
@@ -147,6 +150,51 @@ function contextPointersFileContent(): string {
   )}\n`;
 }
 
+function evalBaselineFileContent(): string {
+  return `${JSON.stringify(
+    parseKrnEvalBaseline({
+      schema_version: "krn-eval-baseline.v1",
+      kind: "krn_eval_baseline",
+      baseline_id: "krn-init-eval-baseline-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      report_roots: {
+        aggregate: ".krn/eval",
+        module_reports: ".krn/evals",
+      },
+      default_lane: "current",
+      required_lanes: ["core", "current"],
+      forbidden_default_lanes: ["lab", "all"],
+      default_command: "krn eval",
+      core_command: "krn eval --lane core",
+      baseline_checks: [
+        {
+          check_id: "core-contracts",
+          command: "krn eval --lane core",
+          lane: "core",
+          purpose: "Verify stable contract and CLI foundations before claiming repo bootstrap readiness.",
+        },
+        {
+          check_id: "current-product-path",
+          command: "krn eval",
+          lane: "current",
+          purpose: "Verify the active product path without pulling historical lab checks into default bootstrap.",
+        },
+      ],
+      policy: {
+        forbid_lab_by_default: true,
+        forbid_all_by_default: true,
+        require_interpretation_caveat: true,
+        productivity_lift_claimed: false,
+      },
+      source_refs: ["krn://eval/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed defines a lean local eval baseline only; it does not prove eval quality, broad repo bootstrap readiness, human review quality, or productivity lift.",
+    }),
+    null,
+    2,
+  )}\n`;
+}
+
 export function buildInitAgentInstructionsPayload(targetPath: string): InitAgentInstructionsPayload {
   const fileContent = agentInstructionsFileContent();
   return {
@@ -195,6 +243,18 @@ export function buildInitContextPointersPayload(targetPath: string): InitContext
   };
 }
 
+export function buildInitEvalBaselinePayload(targetPath: string): InitEvalBaselinePayload {
+  const fileContent = evalBaselineFileContent();
+  return {
+    payload_type: "init_eval_baseline",
+    bootstrap_capability: "eval_baseline",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
 export function buildInitBootstrapPayload(capability: InitBootstrapCapability, targetPath: string): InitBootstrapPayload {
   switch (capability) {
     case "agent_instructions":
@@ -205,6 +265,8 @@ export function buildInitBootstrapPayload(capability: InitBootstrapCapability, t
       return buildInitSourcePointersPayload(targetPath);
     case "context_pointers":
       return buildInitContextPointersPayload(targetPath);
+    case "eval_baseline":
+      return buildInitEvalBaselinePayload(targetPath);
   }
 }
 
@@ -216,7 +278,8 @@ function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
     proposal.promotion_payload?.payload_type !== "init_agent_instructions" &&
     proposal.promotion_payload?.payload_type !== "init_local_config" &&
     proposal.promotion_payload?.payload_type !== "init_source_pointers" &&
-    proposal.promotion_payload?.payload_type !== "init_context_pointers"
+    proposal.promotion_payload?.payload_type !== "init_context_pointers" &&
+    proposal.promotion_payload?.payload_type !== "init_eval_baseline"
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
@@ -236,7 +299,8 @@ export function buildInitPromotion(
     (payload.payload_type !== "init_agent_instructions" &&
       payload.payload_type !== "init_local_config" &&
       payload.payload_type !== "init_source_pointers" &&
-      payload.payload_type !== "init_context_pointers")
+      payload.payload_type !== "init_context_pointers" &&
+      payload.payload_type !== "init_eval_baseline")
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
