@@ -1593,6 +1593,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: user-specific local paths, false-blocking negated guardrails, duplicated read-model helpers inside the MCP index, dashboard/API/benchmark expansion, `codex exec`, and committed `.krn/**` runtime evidence.
 - [OVERCLAIM] These slices prove cleanup, portability, and maintainability only. They do not prove memory precision, final source freshness, security hardening, dashboard usefulness, review-burden reduction, self-growing behavior, or product lift.
 - [NEXT] Continue only through consumed final-product slices or cleanup bottlenecks with public CLI/MCP/review/eval consumers. Prefer source/context/memory capability dogfood only after the existing consumer boundary is clear; do not add broad labs, dashboards, benchmark lanes, passive docs, or cloud/API sync.
+- [EVIDENCE] The MemoryStore application-builder extraction pre-edit gate passed and wrote `.krn/gates/20260621T080356Z-1816543/engineering-gate.json`.
+- [FACT] Commit `43edfa2` moved MemoryStore application and pending-feedback object construction from `packages/cli/src/memory-store.ts` into `packages/cli/src/memory-application.ts`, while preserving public brief/context/review/feedback consumers.
+- [FACT] `packages/cli/src/memory-store.ts` is now 176 lines and owns orchestration, selection handoff, selected-record lookup, and adapter writeback; `packages/cli/src/memory-application.ts` is 89 lines and owns parsed application/feedback construction.
+- [EVIDENCE] Focused MemoryStore consumer tests passed: `pnpm exec vitest run packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/cli/test/memory-feedback.test.ts packages/contracts/test/memory-store.test.ts packages/contracts/test/review-report.test.ts` passed 6 files / 20 tests.
+- [EVIDENCE] `pnpm typecheck`, `git diff --check`, hardcoded-truth scan, and staged diff checks passed.
+- [SIMPLIFY] Keep: one public MemoryStore orchestration module, one focused application/feedback builder, existing contract parsers, and existing consumer behavior.
+- [SIMPLIFY] Delete/avoid: application/feedback builder duplication inside `memory-store.ts`, new public contract surface, dashboard/API/benchmark expansion, service/cloud memory adapter, and committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves MemoryStore maintainability cleanup only. It does not prove memory precision, final Memory Core storage, source quality, review-burden reduction, self-growing behavior, or product lift.
+- [NEXT] Continue only if another obvious code-pressure bottleneck has a current public consumer and focused verification. Otherwise stop with clean status instead of inventing another surface.
 
 ## Disproves Completion
 
