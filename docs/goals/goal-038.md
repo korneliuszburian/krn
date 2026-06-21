@@ -689,6 +689,9 @@ MemoryStore `source_lineage`; the review-report parser requires top-level
 source refs to include selected memory lineage while allowing stable spec/eval
 refs.
 
+[FACT] MemoryStore application guidance no longer names `goal-038` directly in
+review questions; runtime guidance refers to active goal evidence instead.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -1097,6 +1100,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no dashboard/MCP/API/lab cleanup, no broad `goal-006` sweep, no passive source note, and no shared helper abstraction for a one-line local dedupe.
 - [SIMPLIFY] Next candidate: inspect hardcoded review artifact/source refs only if the next consumer needs source registry behavior; otherwise move to the next real product bottleneck instead of sweeping all historical fixtures.
 - [OVERCLAIM] This slice proves review-report selected-memory lineage enforcement only. It does not prove source freshness, final memory quality, source graph completeness, human review quality, review-burden reduction, API/team sync, or productivity lift.
+- [EVIDENCE] The MemoryStore guidance wording pre-edit gate passed and wrote `.krn/gates/20260621T033847Z-1264708/engineering-gate.json`.
+- [FACT] Memory application review questions now say `active goal evidence` instead of hardcoding `goal-038` in product guidance.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/memory-store.test.ts packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts` passed 4 files / 9 tests.
+- [EVIDENCE] Narrow no-emit check passed for `packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T033938Z-1265878/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one wording change and one runtime-output assertion through `krn brief`.
+- [SIMPLIFY] Delete/avoid: no schema change, no new config surface, no broad fixture rewrite, and no claim that the memory application guidance is final-quality.
+- [OVERCLAIM] This slice proves removal of one volatile active-goal wording from MemoryStore application guidance only. It does not prove final memory quality, context quality, review quality, or product lift.
 
 ## Disproves Completion
 

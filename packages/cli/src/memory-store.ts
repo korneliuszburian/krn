@@ -169,7 +169,7 @@ function createMemoryApplication(
     review_questions: [
       "Did selected memory change the next review/action decision?",
       "Was any selected memory stale, harmful, or ignored?",
-      "Can a fresh Codex run continue from selected IDs, evidence refs, and goal-038 without reading old benchmark history?",
+      "Can a fresh Codex run continue from selected IDs, evidence refs, and active goal evidence without reading old benchmark history?",
     ],
     blocked_bad_actions: [
       "context_dump_from_docs_memory",
