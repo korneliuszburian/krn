@@ -24,6 +24,7 @@ type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_ty
 type InitSourcePointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_source_pointers" }>;
 type InitContextPointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_context_pointers" }>;
 type InitEvalBaselinePayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_eval_baseline" }>;
+type InitSkillWiringPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_skill_wiring" }>;
 type InitPolicyBoundariesPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_policy_boundaries" }>;
 type InitBootstrapPayload =
   | InitAgentInstructionsPayload
@@ -31,6 +32,7 @@ type InitBootstrapPayload =
   | InitSourcePointersPayload
   | InitContextPointersPayload
   | InitEvalBaselinePayload
+  | InitSkillWiringPayload
   | InitPolicyBoundariesPayload;
 export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
@@ -198,6 +200,25 @@ function evalBaselineFileContent(): string {
   )}\n`;
 }
 
+function skillWiringFileContent(): string {
+  return `# KRN Skill Wiring
+
+This folder is reserved for reviewed repo-local Codex/KRN skills.
+
+## Rules
+
+- Do not copy active skill bodies from another repo without review.
+- Every skill must define owner, trigger, forbidden behavior, verification, and deletion criteria.
+- Keep SKILL.md lean; move large references into explicit reference files only when the skill needs them.
+- Runtime evidence belongs in .krn/**, not in skill instructions.
+- Durable memory bodies belong in the MemoryStore, not in this folder.
+
+## Review Boundary
+
+\`krn init\` writes only this seed through approved proposal promotion. It does not create active skills, prove trigger quality, prove skill eval quality, enforce hooks, create memory core, publish dashboard/API state, or claim productivity lift.
+`;
+}
+
 function policyBoundariesFileContent(): string {
   return `${JSON.stringify(
     parseKrnPolicyBoundaries({
@@ -331,6 +352,18 @@ export function buildInitEvalBaselinePayload(targetPath: string): InitEvalBaseli
   };
 }
 
+export function buildInitSkillWiringPayload(targetPath: string): InitSkillWiringPayload {
+  const fileContent = skillWiringFileContent();
+  return {
+    payload_type: "init_skill_wiring",
+    bootstrap_capability: "skill_wiring",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
 export function buildInitPolicyBoundariesPayload(targetPath: string): InitPolicyBoundariesPayload {
   const fileContent = policyBoundariesFileContent();
   return {
@@ -355,6 +388,8 @@ export function buildInitBootstrapPayload(capability: InitBootstrapCapability, t
       return buildInitContextPointersPayload(targetPath);
     case "eval_baseline":
       return buildInitEvalBaselinePayload(targetPath);
+    case "skill_wiring":
+      return buildInitSkillWiringPayload(targetPath);
     case "policy_boundaries":
       return buildInitPolicyBoundariesPayload(targetPath);
   }
@@ -370,6 +405,7 @@ function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
     proposal.promotion_payload?.payload_type !== "init_source_pointers" &&
     proposal.promotion_payload?.payload_type !== "init_context_pointers" &&
     proposal.promotion_payload?.payload_type !== "init_eval_baseline" &&
+    proposal.promotion_payload?.payload_type !== "init_skill_wiring" &&
     proposal.promotion_payload?.payload_type !== "init_policy_boundaries"
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
@@ -392,6 +428,7 @@ export function buildInitPromotion(
       payload.payload_type !== "init_source_pointers" &&
       payload.payload_type !== "init_context_pointers" &&
       payload.payload_type !== "init_eval_baseline" &&
+      payload.payload_type !== "init_skill_wiring" &&
       payload.payload_type !== "init_policy_boundaries")
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);

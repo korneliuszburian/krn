@@ -109,6 +109,17 @@ const InitEvalBaselinePromotionPayloadSchema = z
   })
   .strict();
 
+const InitSkillWiringPromotionPayloadSchema = z
+  .object({
+    payload_type: z.literal("init_skill_wiring"),
+    bootstrap_capability: z.literal("skill_wiring"),
+    target_path: z.string().min(1),
+    write_mode: z.literal("exact_file_content"),
+    file_content: z.string().min(1),
+    content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
 const InitPolicyBoundariesPromotionPayloadSchema = z
   .object({
     payload_type: z.literal("init_policy_boundaries"),
@@ -127,6 +138,7 @@ const PromotionPayloadSchema = z.discriminatedUnion("payload_type", [
   InitSourcePointersPromotionPayloadSchema,
   InitContextPointersPromotionPayloadSchema,
   InitEvalBaselinePromotionPayloadSchema,
+  InitSkillWiringPromotionPayloadSchema,
   InitPolicyBoundariesPromotionPayloadSchema,
 ]);
 
@@ -167,6 +179,7 @@ export const KrnControlPlaneProposalSchema = z
         proposal.promotion_payload?.payload_type === "init_source_pointers" ||
         proposal.promotion_payload?.payload_type === "init_context_pointers" ||
         proposal.promotion_payload?.payload_type === "init_eval_baseline" ||
+        proposal.promotion_payload?.payload_type === "init_skill_wiring" ||
         proposal.promotion_payload?.payload_type === "init_policy_boundaries") &&
       proposal.proposal_kind !== "init_bootstrap"
     ) {
@@ -185,6 +198,17 @@ export const KrnControlPlaneProposalSchema = z
         code: "custom",
         path: ["promotion_payload", "target_path"],
         message: "init policy boundaries payload must target .krn/policies/boundaries.json",
+      });
+    }
+
+    if (
+      proposal.promotion_payload?.payload_type === "init_skill_wiring" &&
+      proposal.promotion_payload.target_path !== ".agents/skills/README.md"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["promotion_payload", "target_path"],
+        message: "init skill wiring payload must target .agents/skills/README.md",
       });
     }
 

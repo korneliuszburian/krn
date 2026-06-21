@@ -776,6 +776,111 @@ function runValidation(): EvalReport {
       );
     }
   }
+
+  const skillWiringApplyCase = caseById.get("generated-skill-wiring-apply-writes-reviewed-target");
+  if (!skillWiringApplyCase) {
+    throw new Error("Missing case generated-skill-wiring-apply-writes-reviewed-target");
+  }
+  const skillWiringTarget = mkdtempSync(join(tmpdir(), "krn-init-skill-wiring-apply-eval-"));
+  const skillWiringProposalResult = runKrnCli(["init", "--proposal", "skill_wiring", "--target", skillWiringTarget]);
+  const skillWiringProposalPath = skillWiringProposalResult.stdout.trim();
+  if (skillWiringProposalResult.exitCode !== 0) {
+    results.push(
+      result(
+        skillWiringApplyCase.id,
+        false,
+        ["proposal CLI exits zero", "apply CLI exits zero"],
+        skillWiringApplyCase.failure_mode,
+        skillWiringProposalResult.stderr,
+      ),
+    );
+  } else {
+    try {
+      const proposal = parseKrnControlPlaneProposal(readJson(skillWiringProposalPath));
+      const proposalRelativePath = relative(skillWiringTarget, skillWiringProposalPath).replaceAll("\\", "/");
+      const decision = parseKrnProposalReviewDecision({
+        schema_version: "krn-proposal-review-decision.v1",
+        kind: "krn_proposal_review_decision",
+        decision_id: `decision-${proposal.proposal_id}`,
+        proposal_id: proposal.proposal_id,
+        proposal_path: proposalRelativePath,
+        decision: "approved_for_promotion",
+        review_scope: "proposal_review_only",
+        target_mutated: false,
+        promotion_state: "not_promoted",
+        reviewer: "krn-init-eval",
+        rationale: "The generated skill wiring seed is minimal, target is absent, and the exact payload is safe to apply.",
+        write_policy: {
+          default_effect: "no_target_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+        },
+        evidence_refs: proposal.evidence_refs,
+        source_refs: proposal.source_refs,
+        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_skill_body"],
+        created_at: now.toISOString(),
+        created_by: "krn init eval",
+        interpretation_caveat:
+          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
+      });
+      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: skillWiringTarget, now });
+      const applyResult = runKrnCli([
+        "init",
+        "--apply",
+        "skill_wiring",
+        "--proposal-path",
+        skillWiringProposalPath,
+        "--decision-path",
+        join(skillWiringTarget, storedDecision.decision_path),
+        "--target",
+        skillWiringTarget,
+      ]);
+      const promotionPath = applyResult.stdout.trim();
+      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
+      const targetSkillWiringPath = join(skillWiringTarget, ".agents", "skills", "README.md");
+      const skillWiringContent = existsSync(targetSkillWiringPath) ? readFileSync(targetSkillWiringPath, "utf8") : "";
+
+      results.push(
+        result(
+          skillWiringApplyCase.id,
+          applyResult.exitCode === 0 &&
+            promotion?.proposal_kind === "init_bootstrap" &&
+            promotion.promotion_scope === "approved_init_bootstrap_only" &&
+            promotion.apply_mode === "apply_exact_target_write" &&
+            existsSync(promotionPath) &&
+            existsSync(targetSkillWiringPath) &&
+            skillWiringContent === promotion.target.file_content &&
+            skillWiringContent.includes("Do not copy active skill bodies") &&
+            skillWiringContent.includes("does not create active skills") &&
+            !skillWiringContent.includes("goal-038") &&
+            !skillWiringContent.includes("docs/plans/canonical/draft.md"),
+          [
+            "proposal CLI exits zero",
+            "approved review decision stored",
+            "apply CLI exits zero",
+            "promotion parses",
+            "target .agents/skills/README.md matches exact payload",
+            "skill wiring seed avoids copied skill bodies and active-goal truth",
+          ],
+          skillWiringApplyCase.failure_mode,
+          applyResult.exitCode === 0
+            ? "Generated init proposal applied exact reviewed skill wiring seed payload through promotion boundary."
+            : applyResult.stderr,
+        ),
+      );
+    } catch (error: unknown) {
+      results.push(
+        result(
+          skillWiringApplyCase.id,
+          false,
+          ["generated skill wiring apply"],
+          skillWiringApplyCase.failure_mode,
+          error instanceof Error ? error.message : "unknown generated skill wiring apply error",
+        ),
+      );
+    }
+  }
+
   const policyBoundariesApplyCase = caseById.get("generated-policy-boundaries-apply-writes-reviewed-target");
   if (!policyBoundariesApplyCase) {
     throw new Error("Missing case generated-policy-boundaries-apply-writes-reviewed-target");
@@ -960,7 +1065,7 @@ function runValidation(): EvalReport {
     cases: results,
     generated_manifest_path: generatedManifestPath,
     interpretation_caveat:
-      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers/eval-baseline/policy-boundaries apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, eval quality, hook enforcement, broad repo bootstrap, or merge-mode safety.",
+      "This eval proves krn-init dry-run, proposal-only, and reviewed exact agent-instructions/local-config/source-pointers/context-pointers/eval-baseline/skill-wiring/policy-boundaries apply paths only; it does not prove productivity lift, dashboard readiness, MCP readiness, memory-core quality, source freshness, context quality, eval quality, skill quality, hook enforcement, broad repo bootstrap, or merge-mode safety.",
   };
 }
 

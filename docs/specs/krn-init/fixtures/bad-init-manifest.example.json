@@ -78,7 +78,7 @@
     },
     {
       "capability": "skill_wiring",
-      "path": ".agents/skills/",
+      "path": ".agents/skills/README.md",
       "action": "proposal_only",
       "purpose": "Wire only required operator skills.",
       "boundary": "Skills are not prompt sprawl.",

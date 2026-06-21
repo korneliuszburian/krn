@@ -239,6 +239,34 @@
     "failure_mode": "The eval_baseline init apply path can write eval setup without an approved decision, without exact payload provenance, with lab/all as default verification, or with productivity-lift claims embedded in runtime config."
   },
   {
+    "id": "generated-skill-wiring-apply-writes-reviewed-target",
+    "expected_behavior": "The CLI applies a generated skill_wiring proposal only after an approved review decision and writes .agents/skills/README.md from the exact promotion payload without copying skill bodies or active-goal truth.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "proposal CLI exits zero",
+      "approved review decision stored",
+      "apply CLI exits zero",
+      "promotion parses",
+      "target .agents/skills/README.md matches exact payload",
+      "skill wiring seed avoids copied skill bodies and active-goal truth"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "unsafe_write_prevention_score",
+      "bootstrap_safety_score",
+      "skill_lifecycle_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "The skill_wiring init apply path can write skill setup without an approved decision, without exact payload provenance, or with copied skill bodies / active-goal truth embedded in the seed."
+  },
+  {
     "id": "generated-policy-boundaries-apply-writes-reviewed-target",
     "expected_behavior": "The CLI applies a generated policy_boundaries proposal only after an approved review decision and writes .krn/policies/boundaries.json from the exact promotion payload without claiming hook enforcement or enabling cloud/dashboard defaults.",
     "source_patterns": [

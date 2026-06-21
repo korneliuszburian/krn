@@ -228,6 +228,10 @@ function initEvalBaselineContent(): string {
   )}\n`;
 }
 
+function initSkillWiringContent(): string {
+  return "# KRN Skill Wiring\n\nThis folder is reserved for reviewed repo-local Codex/KRN skills.\n";
+}
+
 function initPolicyBoundariesContent(): string {
   return `${JSON.stringify(
     {
@@ -525,6 +529,49 @@ function validInitEvalBaselineProposal(): KrnControlPlaneProposal {
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/evals/baseline.json until explicit apply mode.",
+  });
+}
+
+function validInitSkillWiringProposal(): KrnControlPlaneProposal {
+  const fileContent = initSkillWiringContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-skill-wiring-eval",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init skill-wiring bootstrap",
+    rationale: "The skill wiring target must be reviewed before target mutation.",
+    proposed_change: "Write a minimal .agents/skills/README.md only after approved review.",
+    promotion_payload: {
+      payload_type: "init_skill_wiring",
+      bootstrap_capability: "skill_wiring",
+      target_path: ".agents/skills/README.md",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".agents/skills/README.md",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:skill_wiring:eval",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/eval/manifest.json"],
+    source_refs: [".krn/init/eval/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "copied_skill_body"],
+    created_at: "2026-06-20T22:55:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .agents/skills/README.md until explicit apply mode.",
   });
 }
 
@@ -1098,6 +1145,63 @@ function runValidation(): EvalReport {
     );
   }
 
+  const initSkillWiringApplyCase = caseById(cases, "apply-exact-init-skill-wiring-promotion");
+  try {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-skill-wiring-eval-"));
+    const proposal = validInitSkillWiringProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-skill-wiring-eval",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-skill-wiring-eval:decision",
+      },
+    });
+    const stored = storeKrnProposalPromotion(promotion, { targetInput: targetRoot, now });
+    const targetPath = join(targetRoot, ".agents", "skills", "README.md");
+    appliedTargetPath = ".agents/skills/README.md";
+
+    results.push(
+      result(
+        initSkillWiringApplyCase.id,
+        stored.status === "stored" &&
+          stored.target_written === true &&
+          readFileSync(targetPath, "utf8") === initSkillWiringContent() &&
+          !readFileSync(targetPath, "utf8").includes("goal-038") &&
+          existsSync(join(targetRoot, stored.promotion_path)),
+        [
+          "approved init skill-wiring proposal stored",
+          "init skill-wiring apply promotion stored",
+          ".agents/skills/README.md written in explicit apply mode",
+          "promotion record persisted",
+          "skill wiring seed avoids active-goal truth",
+        ],
+        initSkillWiringApplyCase.failure_mode,
+        "Explicit apply mode wrote exact reviewed init skill-wiring payload after approved review.",
+      ),
+    );
+  } catch (error: unknown) {
+    results.push(
+      result(
+        initSkillWiringApplyCase.id,
+        false,
+        ["apply exact init skill-wiring promotion"],
+        initSkillWiringApplyCase.failure_mode,
+        error instanceof Error ? error.message : "unknown init skill-wiring apply promotion error",
+      ),
+    );
+  }
+
   const initPolicyBoundariesApplyCase = caseById(cases, "apply-exact-init-policy-boundaries-promotion");
   try {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-policy-boundaries-eval-"));
@@ -1339,7 +1443,7 @@ function runValidation(): EvalReport {
     stored_promotion_path: storedPromotionPath,
     applied_target_path: appliedTargetPath,
     interpretation_caveat:
-      "This eval proves the local approved proposal promotion boundary for exact memory_update and init_bootstrap payloads, including policy-boundaries seeds, only; it does not prove general promotion correctness for every proposal kind, hook enforcement, security quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.",
+      "This eval proves the local approved proposal promotion boundary for exact memory_update and init_bootstrap payloads, including skill-wiring and policy-boundaries seeds, only; it does not prove general promotion correctness for every proposal kind, skill quality, hook enforcement, security quality, dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, or productivity lift.",
   };
 }
 

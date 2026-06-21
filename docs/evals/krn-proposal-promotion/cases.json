@@ -163,6 +163,31 @@
     "failure_mode": "KRN init can skip the review/promotion spine and write .krn/evals/baseline.json without an exact approved payload or with lab/all defaults or productivity-lift claims in the seed."
   },
   {
+    "id": "apply-exact-init-skill-wiring-promotion",
+    "expected_behavior": "Explicit apply mode writes exact init skill-wiring payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "approved init skill-wiring proposal stored",
+      "init skill-wiring apply promotion stored",
+      ".agents/skills/README.md written in explicit apply mode",
+      "promotion record persisted",
+      "skill wiring seed avoids active-goal truth"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "skill_lifecycle_score",
+      "drift_resistance_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "KRN init can skip the review/promotion spine and write .agents/skills/README.md without an exact approved payload or with copied skill bodies / active-goal truth in the seed."
+  },
+  {
     "id": "apply-exact-init-policy-boundaries-promotion",
     "expected_behavior": "Explicit apply mode writes exact init policy-boundaries payload content only after an approved review decision.",
     "source_patterns": [

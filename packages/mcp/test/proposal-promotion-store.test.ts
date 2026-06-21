@@ -150,6 +150,10 @@ function initEvalBaselineContent(): string {
   )}\n`;
 }
 
+function initSkillWiringContent(): string {
+  return "# KRN Skill Wiring\n\nThis folder is reserved for reviewed repo-local Codex/KRN skills.\n";
+}
+
 function initPolicyBoundariesContent(): string {
   return `${JSON.stringify(
     {
@@ -450,6 +454,50 @@ function validInitEvalBaselineProposal(overrides: Partial<KrnControlPlaneProposa
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/evals/baseline.json until explicit apply mode.",
+    ...overrides,
+  });
+}
+
+function validInitSkillWiringProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initSkillWiringContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-skill-wiring-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init skill-wiring bootstrap",
+    rationale: "The skill wiring target must be reviewed before target mutation.",
+    proposed_change: "Write minimal repo-local skill wiring seed only after approved review.",
+    promotion_payload: {
+      payload_type: "init_skill_wiring",
+      bootstrap_capability: "skill_wiring",
+      target_path: ".agents/skills/README.md",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".agents/skills/README.md",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:skill_wiring:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "copied_skill_body"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .agents/skills/README.md until explicit apply mode.",
     ...overrides,
   });
 }
@@ -787,6 +835,38 @@ describe("KRN proposal promotion store", () => {
     expect(evalBaseline.default_lane).toBe("current");
     expect(evalBaseline.forbidden_default_lanes).toEqual(["lab", "all"]);
     expect(evalBaseline.policy.productivity_lift_claimed).toBe(false);
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
+  });
+
+  it("applies exact init skill wiring only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-skill-store-"));
+    const proposal = validInitSkillWiringProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-skill-wiring",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-skill-wiring-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+    const skillWiringContent = readFileSync(join(targetRoot, ".agents", "skills", "README.md"), "utf8");
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(skillWiringContent).toBe(initSkillWiringContent());
+    expect(skillWiringContent).not.toContain("goal-038");
     expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 

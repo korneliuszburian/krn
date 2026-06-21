@@ -64,8 +64,9 @@ Allowed behavior:
 - carry exact init `.krn/sources/index.json` content for later promotion when `promotion_payload.payload_type: "init_source_pointers"` is present,
 - carry exact init `.krn/context/index.json` content for later promotion when `promotion_payload.payload_type: "init_context_pointers"` is present,
 - carry exact init `.krn/evals/baseline.json` content for later promotion when `promotion_payload.payload_type: "init_eval_baseline"` is present,
+- carry exact init `.agents/skills/README.md` content for later promotion when `promotion_payload.payload_type: "init_skill_wiring"` is present,
 - carry exact init `.krn/policies/boundaries.json` content for later promotion when `promotion_payload.payload_type: "init_policy_boundaries"` is present,
-- carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|policy_boundaries` through `proposal_kind: "init_bootstrap"`,
+- carry first-step repo-bootstrap review input for `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries` through `proposal_kind: "init_bootstrap"`,
 - validate proposal source refs against existing target-root files or `docs/plans/canonical/SOURCES.md`,
 - persist proposal review inputs only under `.krn/proposals/{idempotency-key}/proposal.json`.
 

@@ -304,6 +304,57 @@ describe("KRN control-plane proposal contract", () => {
     expect(proposal.write_policy.default_effect).toBe("no_mutation");
   });
 
+  it("parses an init skill-wiring proposal without treating it as an approved write", () => {
+    const proposal = parseKrnControlPlaneProposal({
+      schema_version: "krn-control-plane-proposal.v1",
+      kind: "krn_control_plane_proposal",
+      proposal_id: "init-bootstrap-skill-wiring-test",
+      proposal_kind: "init_bootstrap",
+      status: "proposal_only",
+      title: "Review KRN init skill-wiring bootstrap",
+      rationale: "The skill wiring target must be reviewed before target mutation.",
+      proposed_change: "Review the .agents/skills/README.md bootstrap proposal without writing the target file.",
+      promotion_payload: {
+        payload_type: "init_skill_wiring",
+        bootstrap_capability: "skill_wiring",
+        target_path: ".agents/skills/README.md",
+        write_mode: "exact_file_content",
+        file_content: "# KRN Skill Wiring\n",
+        content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      target: {
+        target_type: "path",
+        path: ".agents/skills/README.md",
+      },
+      write_policy: {
+        default_effect: "no_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: "init-bootstrap:skill_wiring:test",
+      },
+      review_gate: {
+        required: true,
+        state: "not_reviewed",
+        reviewer: null,
+      },
+      evidence_refs: ["docs/specs/krn-init/README.md"],
+      source_refs: ["docs/specs/krn-init/README.md"],
+      blocked_surfaces: ["target_file_mutation", "memory_core_write", "copied_skill_body"],
+      created_at: "2026-06-20T22:30:00.000Z",
+      created_by: "krn init",
+      interpretation_caveat:
+        "This proposal is review input only; it does not mutate .agents/skills/README.md or prove skill quality.",
+    });
+
+    expect(proposal.proposal_kind).toBe("init_bootstrap");
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_skill_wiring",
+      bootstrap_capability: "skill_wiring",
+      target_path: ".agents/skills/README.md",
+    });
+    expect(proposal.status).toBe("proposal_only");
+    expect(proposal.write_policy.default_effect).toBe("no_mutation");
+  });
+
   it("parses an init policy-boundaries proposal without treating it as an approved write", () => {
     const proposal = parseKrnControlPlaneProposal({
       schema_version: "krn-control-plane-proposal.v1",
@@ -554,6 +605,49 @@ describe("KRN control-plane proposal contract", () => {
           default_effect: "no_mutation",
           allowed_persistence: "append_only",
           idempotency_key: "bad-init-eval-baseline-target:test",
+        },
+        review_gate: {
+          required: true,
+          state: "not_reviewed",
+          reviewer: null,
+        },
+        evidence_refs: ["docs/specs/krn-init/README.md"],
+        source_refs: ["docs/specs/krn-init/README.md"],
+        blocked_surfaces: ["target_file_mutation"],
+        created_at: "2026-06-20T22:30:00.000Z",
+        created_by: "test",
+        interpretation_caveat: "Bad fixture.",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects an init skill-wiring payload targeting a different path", () => {
+    expect(() =>
+      parseKrnControlPlaneProposal({
+        schema_version: "krn-control-plane-proposal.v1",
+        kind: "krn_control_plane_proposal",
+        proposal_id: "bad-init-skill-wiring-target",
+        proposal_kind: "init_bootstrap",
+        status: "proposal_only",
+        title: "Bad skill wiring target",
+        rationale: "Skill wiring payloads must target the repo-local skill seed path.",
+        proposed_change: "Write skill wiring to the wrong place.",
+        promotion_payload: {
+          payload_type: "init_skill_wiring",
+          bootstrap_capability: "skill_wiring",
+          target_path: ".agents/skills/typescript-contract-engineer/SKILL.md",
+          write_mode: "exact_file_content",
+          file_content: "# Bad copied skill\n",
+          content_sha256: "0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        target: {
+          target_type: "path",
+          path: ".agents/skills/typescript-contract-engineer/SKILL.md",
+        },
+        write_policy: {
+          default_effect: "no_mutation",
+          allowed_persistence: "append_only",
+          idempotency_key: "bad-init-skill-wiring-target:test",
         },
         review_gate: {
           required: true,

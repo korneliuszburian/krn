@@ -61,6 +61,12 @@ describe("krn init --dry-run", () => {
     expect(manifest.bootstrap_plan.find((item) => item.capability === "eval_baseline")?.boundary).toContain(
       "must not store live reports",
     );
+    expect(manifest.bootstrap_plan.find((item) => item.capability === "skill_wiring")?.path).toBe(
+      ".agents/skills/README.md",
+    );
+    expect(manifest.bootstrap_plan.find((item) => item.capability === "skill_wiring")?.boundary).toContain(
+      "must not create active skills",
+    );
     expect(manifest.bootstrap_plan.find((item) => item.capability === "policy_boundaries")?.path).toBe(
       ".krn/policies/boundaries.json",
     );
@@ -73,20 +79,89 @@ describe("krn init --dry-run", () => {
     expect(topLevelEntries).toEqual([".krn"]);
   }, 30_000);
 
-  it("keeps skill wiring in the manifest but out of proposal/apply targets until an exact payload exists", () => {
+  it("applies reviewed skill-wiring proposal through an approved decision without copying skill bodies", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-skill-wiring-target-"));
+    const proposalStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "skill_wiring", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const proposalPath = proposalStdout.trim();
+    const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+    const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+    const decision = parseKrnProposalReviewDecision({
+      schema_version: "krn-proposal-review-decision.v1",
+      kind: "krn_proposal_review_decision",
+      decision_id: `decision-${proposal.proposal_id}`,
+      proposal_id: proposal.proposal_id,
+      proposal_path: proposalRelativePath,
+      decision: "approved_for_promotion",
+      review_scope: "proposal_review_only",
+      target_mutated: false,
+      promotion_state: "not_promoted",
+      reviewer: "krn-init-test",
+      rationale: "The generated skill wiring seed is minimal, target is absent, and the exact payload is safe to apply.",
+      write_policy: {
+        default_effect: "no_target_mutation",
+        allowed_persistence: "append_only",
+        idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+      },
+      evidence_refs: proposal.evidence_refs,
+      source_refs: proposal.source_refs,
+      blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_skill_body"],
+      created_at: "2026-06-20T22:50:00.000Z",
+      created_by: "krn init test",
+      interpretation_caveat:
+        "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+    });
+    const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
 
-    expect(() =>
-      execFileSync(
-        "pnpm",
-        ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "skill_wiring", "--target", targetRoot],
-        {
-          cwd: process.cwd(),
-          encoding: "utf8",
-        },
-      ),
-    ).toThrow();
-    expect(existsSync(join(targetRoot, ".krn"))).toBe(false);
+    const promotionStdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "init",
+        "--apply",
+        "skill_wiring",
+        "--proposal-path",
+        proposalPath,
+        "--decision-path",
+        join(targetRoot, storedDecision.decision_path),
+        "--target",
+        targetRoot,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const promotionPath = promotionStdout.trim();
+    const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+    const skillWiringContent = readFileSync(join(targetRoot, ".agents", "skills", "README.md"), "utf8");
+
+    expect(proposal.target).toEqual({ target_type: "path", path: ".agents/skills/README.md" });
+    expect(proposal.promotion_payload).toMatchObject({
+      payload_type: "init_skill_wiring",
+      bootstrap_capability: "skill_wiring",
+      target_path: ".agents/skills/README.md",
+    });
+    expect(promotion.proposal_kind).toBe("init_bootstrap");
+    expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+    expect(promotion.apply_mode).toBe("apply_exact_target_write");
+    expect(promotion.target_mutated).toBe(true);
+    expect(skillWiringContent).toBe(promotion.target.file_content);
+    expect(skillWiringContent).toContain("Do not copy active skill bodies");
+    expect(skillWiringContent).toContain("does not create active skills");
+    expect(skillWiringContent).not.toContain("goal-038");
+    expect(skillWiringContent).not.toContain("docs/plans/canonical/draft.md");
+    expect(skillWiringContent).not.toContain("typescript-contract-engineer");
   }, 30_000);
 
   it("stores a reviewed agent-instructions proposal without mutating the target file", () => {

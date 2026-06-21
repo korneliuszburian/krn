@@ -86,6 +86,12 @@
       "reason": "Eval baseline seed can be proposed when absent."
     },
     {
+      "path": ".agents/skills/README.md",
+      "kind": "file",
+      "exists": false,
+      "reason": "Skill wiring seed can be proposed when absent."
+    },
+    {
       "path": ".krn/policies/boundaries.json",
       "kind": "file",
       "exists": false,
@@ -163,6 +169,14 @@
       ]
     },
     {
+      "path": ".agents/skills/README.md",
+      "action": "proposal_only",
+      "reason": "Skill wiring requires reviewed init proposal before target mutation.",
+      "source_refs": [
+        "docs/specs/krn-init/README.md"
+      ]
+    },
+    {
       "path": ".krn/policies/boundaries.json",
       "action": "proposal_only",
       "reason": "Policy boundaries require reviewed init proposal before target mutation.",
@@ -208,6 +222,11 @@
       "path": ".krn/evals/baseline.json",
       "strategy": "proposal_only",
       "reason": "Eval baseline seed must be reviewed before bootstrap target mutation."
+    },
+    {
+      "path": ".agents/skills/README.md",
+      "strategy": "proposal_only",
+      "reason": "Skill wiring seed must be reviewed before bootstrap target mutation."
     },
     {
       "path": ".krn/policies/boundaries.json",
@@ -274,13 +293,12 @@
     },
     {
       "capability": "skill_wiring",
-      "path": ".agents/skills/",
+      "path": ".agents/skills/README.md",
       "action": "proposal_only",
-      "purpose": "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
-      "boundary": "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
+      "purpose": "Reserve a bounded repo-local skill folder with owner, trigger, forbidden behavior, verification, and deletion criteria.",
+      "boundary": "Skill wiring writes a seed index only; it must not create active skills, copy skill bodies, store memory bodies, or claim skill quality.",
       "source_refs": [
-        "docs/goals/goal-038.md",
-        "docs/plans/canonical/pattern-matrix.md"
+        "docs/specs/krn-init/README.md"
       ]
     },
     {
@@ -300,7 +318,7 @@
     "node_modules",
     "AGENTS.md",
     ".codex",
-    ".agents",
+    ".agents/** except approved .agents/skills/README.md",
     "docs/memory"
   ],
   "source_refs": [

@@ -93,12 +93,14 @@ const INIT_BOOTSTRAP_TARGETS = [
   },
   {
     capability: "skill_wiring",
-    path: ".agents/skills/",
-    proposalEnabled: false,
+    path: ".agents/skills/README.md",
+    proposalEnabled: true,
     label: "skill-wiring",
-    description: "Skill wiring is intentionally not an apply-capable init target until its exact payload boundary exists.",
-    purpose: "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
-    boundary: "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
+    description:
+      "Skill wiring seeds a reviewed repo-local skill index without copying active skill bodies, prompt sprawl, or runtime memory into the target repo.",
+    purpose: "Reserve a bounded repo-local skill folder with owner, trigger, forbidden behavior, verification, and deletion criteria.",
+    boundary:
+      "Skill wiring writes a seed index only; it must not create active skills, copy skill bodies, store memory bodies, or claim skill quality.",
     sourceRefs: ["docs/specs/krn-init/README.md"],
   },
   {
@@ -117,7 +119,7 @@ const INIT_BOOTSTRAP_TARGETS = [
 function isProposalTarget(
   target: InitBootstrapTarget,
 ): target is InitBootstrapTarget & { capability: InitProposalCapability; proposalEnabled: true } {
-  return target.proposalEnabled && target.capability !== "skill_wiring";
+  return target.proposalEnabled;
 }
 
 const INIT_PROPOSAL_CAPABILITIES = INIT_BOOTSTRAP_TARGETS.filter(isProposalTarget).map(
@@ -154,6 +156,7 @@ const DETECTED_PATHS = [
   { path: ".krn/sources/index.json", expectedKind: "file" },
   { path: ".krn/context/index.json", expectedKind: "file" },
   { path: ".krn/evals/baseline.json", expectedKind: "file" },
+  { path: ".agents/skills/README.md", expectedKind: "file" },
   { path: ".krn/policies/boundaries.json", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
@@ -314,6 +317,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
       return "KRN context pointer index already exists and must not be overwritten by dry-run init.";
     case ".krn/evals/baseline.json":
       return "KRN eval baseline seed already exists and must not be overwritten by dry-run init.";
+    case ".agents/skills/README.md":
+      return "KRN skill wiring seed already exists and must not be overwritten by dry-run init.";
     case ".krn/policies/boundaries.json":
       return "KRN policy boundary seed already exists and must not be overwritten by dry-run init.";
     case ".codex":
@@ -362,14 +367,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
     detectedArtifacts.find((artifact) => artifact.path === ".krn/context/index.json")?.exists ?? false;
   const evalBaselineExists =
     detectedArtifacts.find((artifact) => artifact.path === ".krn/evals/baseline.json")?.exists ?? false;
+  const skillWiringExists =
+    detectedArtifacts.find((artifact) => artifact.path === ".agents/skills/README.md")?.exists ?? false;
   const policyBoundariesExist =
     detectedArtifacts.find((artifact) => artifact.path === ".krn/policies/boundaries.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
   const bootstrapTargetExists = (target: InitBootstrapTarget): boolean =>
-    target.capability === "skill_wiring"
-      ? false
-      : (detectedArtifacts.find((artifact) => artifact.path === target.path)?.exists ?? false);
+    detectedArtifacts.find((artifact) => artifact.path === target.path)?.exists ?? false;
 
   const candidateManifest: unknown = {
     schema_version: "krn-init-manifest.v1",
@@ -448,6 +453,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-init/README.md"],
       },
       {
+        path: ".agents/skills/README.md",
+        action: skillWiringExists ? "skip" : "proposal_only",
+        reason: skillWiringExists
+          ? "Existing skill wiring seed is preserved; changes require a reviewed proposal."
+          : "KRN would propose a minimal repo-local skill wiring seed in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-init/README.md"],
+      },
+      {
         path: ".krn/policies/boundaries.json",
         action: policyBoundariesExist ? "skip" : "proposal_only",
         reason: policyBoundariesExist
@@ -513,6 +526,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           : "No eval baseline seed collision detected; future writes still require approved promotion.",
       },
       {
+        path: ".agents/skills/README.md",
+        strategy: collisionStrategy(skillWiringExists),
+        reason: skillWiringExists
+          ? "Existing skill wiring seed must be reviewed instead of overwritten."
+          : "No skill wiring seed collision detected; future writes still require approved promotion.",
+      },
+      {
         path: ".krn/policies/boundaries.json",
         strategy: collisionStrategy(policyBoundariesExist),
         reason: policyBoundariesExist
@@ -537,7 +557,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: target.sourceRefs,
       })),
     ],
-    no_touch_paths: [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
+    no_touch_paths: [
+      ".git",
+      "node_modules",
+      "AGENTS.md",
+      ".codex",
+      ".agents/** except approved .agents/skills/README.md",
+      "docs/memory",
+    ],
     source_refs: ["docs/specs/krn-init/README.md"],
     product_spine_refs: ["project_profile", "memory_entry", "source_claim", "eval_run", "proposal", "decision"],
     validation: {

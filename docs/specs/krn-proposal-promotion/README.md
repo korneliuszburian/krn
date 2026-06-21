@@ -69,7 +69,7 @@ Forbidden behavior:
 - no inferred target content from prose,
 - no overwrite of an existing different target file,
 - no source/goal/eval/dashboard mutation in this slice,
-- no broad init scaffolding beyond exact reviewed `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, `.krn/evals/baseline.json`, and `.krn/policies/boundaries.json` payloads,
+- no broad init scaffolding beyond exact reviewed `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, `.krn/evals/baseline.json`, `.agents/skills/README.md`, and `.krn/policies/boundaries.json` payloads,
 - no HTTP/API or dashboard command readiness claim,
 - no productivity or human-review-quality claim.
 
