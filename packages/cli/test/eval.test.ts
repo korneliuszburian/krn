@@ -13,6 +13,14 @@ function registryModuleIdsFor(lanes: readonly string[]): string[] {
 }
 
 describe("krn eval", () => {
+  it("keeps active-goal truth out of the eval registry source refs", () => {
+    const registry = parseKrnEvalModuleRegistry(readJson("docs/evals/registry.json"));
+
+    expect(registry.source_refs).toEqual(["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"]);
+    expect(registry.source_refs).not.toContain("docs/goals/goal-038.md");
+    expect(registry.modules.every((module) => module.source_refs.length > 0)).toBe(true);
+  });
+
   it("writes the default current-lane aggregate eval report through the public CLI", () => {
     const expectedModuleIds = registryModuleIdsFor(["core", "current"]);
     const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "eval"], {

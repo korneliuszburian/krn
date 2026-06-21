@@ -190,6 +190,6 @@
       ]
     }
   ],
-  "source_refs": ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md", "docs/goals/goal-038.md"],
+  "source_refs": ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
   "interpretation_caveat": "This registry selects local deterministic eval modules only. It does not prove eval quality, productivity lift, dashboard readiness, API readiness, or final memory quality."
 }

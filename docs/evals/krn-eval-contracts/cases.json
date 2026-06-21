@@ -1,7 +1,7 @@
 [
   {
     "id": "registry-parses-and-known-bad-fails",
-    "expected_behavior": "The eval module registry parses through @krn/contracts, contains module descriptors outside product code, and rejects duplicate module IDs.",
+    "expected_behavior": "The eval module registry parses through @krn/contracts, contains module descriptors outside product code, rejects duplicate module IDs, and keeps active-goal truth out of top-level registry source refs.",
     "source_patterns": [
       "docs/goals/goal-038.md",
       "docs/specs/krn-eval/README.md",
@@ -9,7 +9,8 @@
     ],
     "assertions": [
       "registry parses",
-      "known-bad duplicate registry rejected"
+      "known-bad duplicate registry rejected",
+      "registry top-level refs exclude active goal truth"
     ],
     "metrics": [
       "schema_contract_score",

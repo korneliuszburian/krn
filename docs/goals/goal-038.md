@@ -1475,6 +1475,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: feedback selection helpers inside `memory-store.ts`, no new public contract, no dashboard/API/benchmark surface, no new eval family, no memory body writes, and no product-lift claim.
 - [OVERCLAIM] This slice proves maintainability cleanup after feedback-aware selection only. It does not prove better memory ranking, final Memory Core quality, review-burden reduction, or self-growing behavior.
 - [NEXT] Commit and push this condensation slice; then continue with a real consumed source/context/review capability only if it has a direct user-facing or CLI consumer.
+- [EVIDENCE] The eval registry source-ref cleanup pre-edit gate passed and wrote `.krn/gates/20260621T065145Z-1655697/engineering-gate.json`.
+- [FACT] `docs/evals/registry.json` top-level `source_refs` no longer include `docs/goals/goal-038.md`; registry-level lineage now stays on the stable eval spec and standard.
+- [FACT] `packages/cli/test/eval.test.ts` and `packages/evals/src/validate-krn-eval.ts` now reject active-goal or canonical-draft refs at the live registry top level while preserving per-module lineage.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/eval.test.ts packages/contracts/test/eval-report.test.ts` passed 2 files / 8 tests.
+- [EVIDENCE] Focused eval passed: `pnpm run eval:krn-eval` run `.krn/evals/krn-eval-contracts/20260621T065305Z-1657253/report.json` passed 6/6 cases and 15/15 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one registry-level source-ref cleanup, one public CLI regression, and the existing eval validator.
+- [SIMPLIFY] Delete/avoid: no eval-lane rewrite, no lab/default expansion, no dashboard/API/benchmark work, no broad source-ref sweep, and no claim that eval quality improved.
+- [OVERCLAIM] This slice proves eval registry source-ref hygiene only. It does not prove better eval design, productivity lift, final source graph quality, or dashboard readiness.
+- [NEXT] Commit and push this eval-registry cleanup; then stop unless a concrete current consumer exposes another unsafe hardcoded-truth or context/review friction.
 
 ## Disproves Completion
 

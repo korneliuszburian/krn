@@ -140,8 +140,11 @@ function runValidation(): EvalReport {
     results.push(
       result(
         registryCase.id,
-        registry.modules.length > 0 && registry.modules.every((module) => module.command.length > 0 && module.source_refs.length > 0),
-        ["registry parses", "known-bad duplicate registry rejected"],
+        registry.modules.length > 0 &&
+          registry.modules.every((module) => module.command.length > 0 && module.source_refs.length > 0) &&
+          !registry.source_refs.includes("docs/goals/goal-038.md") &&
+          !registry.source_refs.includes("docs/plans/canonical/draft.md"),
+        ["registry parses", "known-bad duplicate registry rejected", "registry top-level refs exclude active goal truth"],
         registryCase.failure_mode,
         "Eval module registry parsed and duplicate known-bad fixture failed as expected.",
       ),
