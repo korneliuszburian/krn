@@ -1168,6 +1168,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new eval module, no parser/product behavior change, no dashboard/API/benchmark work, no broad lint framework, and no runtime path restriction.
 - [SIMPLIFY] Next candidate: if another repeated hardcoded-truth class appears, add a focused guard only after a concrete cleanup proves the rule; do not build a general policy engine preemptively.
 - [OVERCLAIM] This slice proves regression coverage for local path leakage in checked-in specs only. It does not prove broader secret scanning, path privacy in runtime evidence, source quality, memory quality, or product lift.
+- [EVIDENCE] The active proposal/review/promotion source-ref cleanup pre-edit gate passed and wrote `.krn/gates/20260621T035827Z-1316254/engineering-gate.json`.
+- [FACT] Active control-plane proposal, proposal-review-decision, and proposal-promotion spec metadata and top-level examples now cite `goal-038` and the canonical draft instead of stale `goal-006` / compatibility product-plan refs.
+- [FACT] Embedded `promotion_payload.file_content` historical memory-note text still cites `goal-006` and keeps its existing SHA-256; it was intentionally not rewritten because that payload is fixture content, not the current spec source boundary.
+- [FACT] Proposal-store isolated targets now create `docs/goals/goal-038.md` for source-ref validation.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/control-plane-proposal.test.ts packages/contracts/test/proposal-review-decision.test.ts packages/contracts/test/proposal-promotion.test.ts packages/mcp/test/proposal-store.test.ts` passed 4 files / 37 tests.
+- [EVIDENCE] `pnpm run eval:krn-proposal-store` passed run `.krn/evals/krn-proposal-store/20260621T035942Z-1317567/report.json` with 4/4 cases and 9/9 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T035958Z-1317984/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: current source refs at the active spec boundary, historical embedded payload content, proposal-store validation, and focused proposal tests.
+- [SIMPLIFY] Delete/avoid: no broad rewrite of historical proposal payloads, no dashboard/API behavior, no benchmark lane, no new registry, and no source graph behavior claim.
+- [SIMPLIFY] Next candidate: proposal/dashboard source-ref cleanup should continue only when the touched consumer proves it needs current source metadata; do not rewrite historical lab fixtures by default.
+- [OVERCLAIM] This slice proves active control-plane spec source-ref freshness only. It does not prove proposal safety beyond existing validation, final source graph quality, dashboard usefulness, API readiness, review-burden reduction, or product lift.
 
 ## Disproves Completion
 

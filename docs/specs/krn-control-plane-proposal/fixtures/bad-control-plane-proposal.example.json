@@ -25,7 +25,7 @@
     ".krn/evals/example/report.json"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md"
+    "docs/goals/goal-038.md"
   ],
   "blocked_surfaces": [
     "mcp_tools"

@@ -18,7 +18,7 @@ function writeText(path: string, content: string): void {
 
 function createProposalTarget(): string {
   const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-store-"));
-  writeText(join(targetRoot, "docs/goals/goal-006.md"), "# Goal 006\n");
+  writeText(join(targetRoot, "docs/goals/goal-038.md"), "# Goal 038\n");
   writeText(join(targetRoot, "docs/goals/goal-008.md"), "# Goal 008\n");
   writeText(join(targetRoot, "docs/specs/krn-mcp-read-model/README.md"), "# MCP read model\n");
   writeText(

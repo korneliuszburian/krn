@@ -32,7 +32,7 @@
     ".krn/evals/krn-mcp-transport/20260620T000555Z-1943987/report.json"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md"
+    "docs/goals/goal-038.md"
   ],
   "blocked_surfaces": [
     "memory_mutation"
