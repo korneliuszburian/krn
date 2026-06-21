@@ -1,0 +1,31 @@
+{
+  "schema_version": "krn-local-memory-store.v1",
+  "records": [
+    {
+      "schema_version": "krn-memory-record.v1",
+      "kind": "krn_memory_record",
+      "id": "mem-missing-policy",
+      "status": "active",
+      "scope": "project",
+      "owner": "krn",
+      "source_lineage": ["docs/goals/goal-038.md"],
+      "confidence": "high",
+      "freshness": "fresh",
+      "kernel_terms": ["memory-operative"],
+      "ttl_days": 30,
+      "last_verified_at": "2026-06-20T20:00:00.000Z",
+      "last_used_at": null,
+      "selectors": {
+        "task_kinds": ["review"],
+        "failure_modes": ["context-dump"],
+        "target_globs": ["packages/**"],
+        "goal_refs": ["docs/goals/goal-038.md"]
+      },
+      "summary": "This bad store omits the retrieval policy.",
+      "action_rule": "Should be rejected before selection.",
+      "invalidation_rule": "N/A",
+      "privacy_level": "local"
+    }
+  ],
+  "feedback": []
+}

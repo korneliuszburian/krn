@@ -2,10 +2,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  krnLocalMemoryStoreJsonSchema,
   krnMemoryApplicationJsonSchema,
   krnMemoryFeedbackJsonSchema,
   krnMemoryRecordJsonSchema,
   krnMemorySelectionJsonSchema,
+  parseKrnLocalMemoryStore,
   parseKrnMemoryApplication,
   parseKrnMemoryFeedback,
   parseKrnMemoryRecord,
@@ -21,10 +23,13 @@ function readJson(path: string): unknown {
 describe("KRN MemoryStore contracts", () => {
   it("parses valid memory records, selections, applications, and feedback through public parsers", () => {
     const record = parseKrnMemoryRecord(readJson("docs/specs/krn-memory-store/examples/krn-memory-record.example.json"));
+    const store = parseKrnLocalMemoryStore(readJson("docs/specs/krn-memory-store/examples/local-memory-store.example.json"));
     const selection = parseKrnMemorySelection(readJson("docs/specs/krn-memory-store/examples/krn-memory-selection.example.json"));
     const application = parseKrnMemoryApplication(readJson("docs/specs/krn-memory-store/examples/krn-memory-application.example.json"));
     const feedback = parseKrnMemoryFeedback(readJson("docs/specs/krn-memory-store/examples/krn-memory-feedback.example.json"));
 
+    expect(store.policy.max_selected).toBe(3);
+    expect(store.policy.rejected_context.map((context) => context.ref)).toContain("docs/memory/** full scan");
     expect(record.id).toBe("mem-goal-038-memory-boundary");
     expect(record.kernel_terms).toContain("memory-operative");
     expect(selection.selected).toHaveLength(1);
@@ -39,6 +44,12 @@ describe("KRN MemoryStore contracts", () => {
     ).toThrow();
   });
 
+  it("rejects local MemoryStore files without retrieval policy", () => {
+    expect(() =>
+      parseKrnLocalMemoryStore(readJson("docs/specs/krn-memory-store/fixtures/bad-local-memory-store-no-policy.example.json")),
+    ).toThrow();
+  });
+
   it("rejects selected memory without application guidance", () => {
     expect(() =>
       parseKrnMemoryApplication(readJson("docs/specs/krn-memory-store/fixtures/bad-memory-application-no-guidance.example.json")),
@@ -50,5 +61,6 @@ describe("KRN MemoryStore contracts", () => {
     expect(krnMemorySelectionJsonSchema).toMatchObject({ type: "object" });
     expect(krnMemoryApplicationJsonSchema).toMatchObject({ type: "object" });
     expect(krnMemoryFeedbackJsonSchema).toMatchObject({ type: "object" });
+    expect(krnLocalMemoryStoreJsonSchema).toMatchObject({ type: "object" });
   });
 });

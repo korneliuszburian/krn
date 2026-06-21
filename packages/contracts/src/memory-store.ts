@@ -130,10 +130,29 @@ export const KrnMemoryFeedbackSchema = z
   })
   .strict();
 
+export const KrnMemoryRetrievalPolicySchema = z
+  .object({
+    max_selected: z.number().int().positive().max(5),
+    selection_policy: z.string().min(1),
+    rejected_context: z.array(RejectedContextRefSchema).min(1),
+  })
+  .strict();
+
+export const KrnLocalMemoryStoreSchema = z
+  .object({
+    schema_version: z.literal("krn-local-memory-store.v1"),
+    policy: KrnMemoryRetrievalPolicySchema,
+    records: z.array(KrnMemoryRecordSchema).min(1),
+    feedback: z.array(KrnMemoryFeedbackSchema),
+  })
+  .strict();
+
 export type KrnMemoryRecord = z.infer<typeof KrnMemoryRecordSchema>;
 export type KrnMemorySelection = z.infer<typeof KrnMemorySelectionSchema>;
 export type KrnMemoryApplication = z.infer<typeof KrnMemoryApplicationSchema>;
 export type KrnMemoryFeedback = z.infer<typeof KrnMemoryFeedbackSchema>;
+export type KrnMemoryRetrievalPolicy = z.infer<typeof KrnMemoryRetrievalPolicySchema>;
+export type KrnLocalMemoryStore = z.infer<typeof KrnLocalMemoryStoreSchema>;
 export type MemoryConfidence = z.infer<typeof MemoryConfidenceSchema>;
 export type MemoryOutcome = z.infer<typeof MemoryOutcomeSchema>;
 
@@ -153,6 +172,10 @@ export function parseKrnMemoryFeedback(input: unknown): KrnMemoryFeedback {
   return KrnMemoryFeedbackSchema.parse(input);
 }
 
+export function parseKrnLocalMemoryStore(input: unknown): KrnLocalMemoryStore {
+  return KrnLocalMemoryStoreSchema.parse(input);
+}
+
 export const krnMemoryRecordJsonSchema = z.toJSONSchema(KrnMemoryRecordSchema, {
   target: "draft-2020-12",
 });
@@ -166,5 +189,9 @@ export const krnMemoryApplicationJsonSchema = z.toJSONSchema(KrnMemoryApplicatio
 });
 
 export const krnMemoryFeedbackJsonSchema = z.toJSONSchema(KrnMemoryFeedbackSchema, {
+  target: "draft-2020-12",
+});
+
+export const krnLocalMemoryStoreJsonSchema = z.toJSONSchema(KrnLocalMemoryStoreSchema, {
   target: "draft-2020-12",
 });

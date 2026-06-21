@@ -4,6 +4,24 @@ import { dirname } from "node:path";
 export function writeMemoryStoreFixture(path: string): void {
   const store = {
     schema_version: "krn-local-memory-store.v1",
+    policy: {
+      max_selected: 3,
+      selection_policy: "active task-kind records only; reject stale/lab/archive context and full memory-bank scans",
+      rejected_context: [
+        {
+          ref: "docs/goals/goal-018.md..goal-034.md",
+          reason: "Expanded benchmark goals are lab/archive context and are rejected for default product review.",
+        },
+        {
+          ref: "docs/memory/** full scan",
+          reason: "Full memory-bank scans are context dumps; this run may use only selected memory IDs.",
+        },
+        {
+          ref: ".krn/** as memory core",
+          reason: ".krn is runtime evidence/cache/ledger and must not be treated as authoritative memory.",
+        },
+      ],
+    },
     records: [
       {
         schema_version: "krn-memory-record.v1",

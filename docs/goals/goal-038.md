@@ -1052,6 +1052,19 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new command surface, no common option-parser abstraction for two small parsers, no dashboard/API/benchmark/research runtime work, and no product-truth or memory-truth hardcoding.
 - [SIMPLIFY] Next candidate: choose the next slice from real consumer pressure. Good candidates are `packages/cli/src/init.ts` only when touching another init capability, or a MemoryStore/review capability that moves KRN closer to dogfooding its final context/memory loop.
 - [OVERCLAIM] This slice proves root dispatcher cleanup and CLI parity only. It does not prove product lift, final memory quality, review-burden reduction, API/MCP readiness, or dashboard usefulness.
+- [EVIDENCE] The MemoryStore policy-boundary pre-edit gate passed and wrote `.krn/gates/20260621T032127Z-1218366/engineering-gate.json`.
+- [FACT] Local MemoryStore files now parse through exported `KrnLocalMemoryStore` / `parseKrnLocalMemoryStore` contracts instead of a CLI-local zod schema.
+- [FACT] Retrieval policy moved out of `packages/cli/src/memory-store.ts` into the typed local store payload: `policy.max_selected`, `policy.selection_policy`, and `policy.rejected_context`.
+- [FACT] `krn brief`, `krn context build`, and `krn review` now copy selected/rejected context policy from the local MemoryStore boundary. Runtime reports still store selected IDs, reasons, lineage, rejected context, application guidance, and feedback outcomes, not authoritative memory bodies.
+- [FACT] `packages/cli/src/memory-store.ts` dropped from 320 lines before the policy-boundary cleanup to 298 lines; `packages/contracts/src/memory-store.ts` grew from 170 lines to 197 lines because the store parser moved into the contract package.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/memory-store.test.ts packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts` passed 4 files / 9 tests.
+- [EVIDENCE] Narrow no-emit checks passed for `packages/contracts/tsconfig.json` and `packages/cli/tsconfig.json` after rebuilding contracts for updated declaration output.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T032554Z-1228376/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one local MemoryStore policy object, one exported parser, one missing-policy known-bad fixture, existing brief/context/review consumers, and no new memory service abstraction.
+- [SIMPLIFY] Delete/avoid: no repo-local memory core, no dashboard/API/cloud sync, no passive memory note, no copied memory bodies in runtime evidence, no hardcoded benchmark goal ranges or `docs/memory/**` rejection policy in CLI code.
+- [SIMPLIFY] Next candidate: use this policy-backed MemoryStore boundary in the next real capability dogfood task, or inspect `packages/cli/src/init.ts` only if another reviewed init capability is actually touched.
+- [OVERCLAIM] This slice proves local MemoryStore policy parsing and consumption only. It does not prove final memory quality, graph memory, neuroscience-style synthesis, source freshness, review-burden reduction, API/team sync, or productivity lift.
 
 ## Disproves Completion
 

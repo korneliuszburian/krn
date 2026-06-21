@@ -1,31 +1,19 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { z } from "zod";
 import {
-  KrnMemoryFeedbackSchema,
-  KrnMemoryRecordSchema,
+  parseKrnLocalMemoryStore,
   parseKrnMemoryApplication,
   parseKrnMemoryFeedback,
+  parseKrnMemoryRecord,
   parseKrnMemorySelection,
+  type KrnLocalMemoryStore,
   type KrnMemoryApplication,
   type KrnMemoryFeedback,
   type KrnMemoryRecord,
+  type KrnMemoryRetrievalPolicy,
   type KrnMemorySelection,
 } from "@krn/contracts";
-
-const STORE_SCHEMA_VERSION = "krn-local-memory-store.v1";
-const DEFAULT_MAX_SELECTED = 3;
-
-const LocalMemoryStoreFileSchema = z
-  .object({
-    schema_version: z.literal(STORE_SCHEMA_VERSION),
-    records: z.array(KrnMemoryRecordSchema).min(1),
-    feedback: z.array(KrnMemoryFeedbackSchema),
-  })
-  .strict();
-
-type LocalMemoryStoreFile = z.infer<typeof LocalMemoryStoreFileSchema>;
 
 type MemoryBundle = {
   selection: KrnMemorySelection;
@@ -49,21 +37,21 @@ function readJsonFile(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
 }
 
-function loadMemoryStoreFile(storePath: string): LocalMemoryStoreFile {
+function loadMemoryStoreFile(storePath: string): KrnLocalMemoryStore {
   if (!existsSync(storePath)) {
     throw new Error(
       `KRN MemoryStore not found at ${storePath}. Set KRN_MEMORY_STORE_PATH to a local store file outside the target repo before running memory-aware review.`,
     );
   }
-  return LocalMemoryStoreFileSchema.parse(readJsonFile(storePath));
+  return parseKrnLocalMemoryStore(readJsonFile(storePath));
 }
 
-function writeMemoryStoreFile(storePath: string, storeFile: LocalMemoryStoreFile): void {
+function writeMemoryStoreFile(storePath: string, storeFile: KrnLocalMemoryStore): void {
   mkdirSync(dirname(storePath), { recursive: true });
   writeFileSync(storePath, `${JSON.stringify(storeFile, null, 2)}\n`, "utf8");
 }
 
-function selectRecords(records: readonly KrnMemoryRecord[], taskKind: MemoryTaskKind): {
+function selectRecords(records: readonly KrnMemoryRecord[], taskKind: MemoryTaskKind, maxSelected: number): {
   selected: KrnMemoryRecord[];
   rejected: KrnMemoryRecord[];
 } {
@@ -74,7 +62,7 @@ function selectRecords(records: readonly KrnMemoryRecord[], taskKind: MemoryTask
         record.freshness !== "stale" &&
         record.selectors.task_kinds.includes(taskKind),
     )
-    .slice(0, DEFAULT_MAX_SELECTED);
+    .slice(0, maxSelected);
   const selectedIds = new Set(selected.map((record) => record.id));
 
   return {
@@ -90,9 +78,10 @@ function createMemorySelection(
   storeRef: string,
   taskIntent: string,
   taskKind: MemoryTaskKind,
+  policy: KrnMemoryRetrievalPolicy,
   records: readonly KrnMemoryRecord[],
 ): KrnMemorySelection {
-  const { selected, rejected } = selectRecords(records, taskKind);
+  const { selected, rejected } = selectRecords(records, taskKind, policy.max_selected);
   if (selected.length === 0) {
     throw new Error(`KRN MemoryStore has no active ${taskKind} records to select.`);
   }
@@ -119,23 +108,10 @@ function createMemorySelection(
           ? "Not selected because the bounded review budget was already filled by higher-priority active records."
           : "Not selected because stale/lab/archive memory is not default context.",
     })),
-    rejected_context: [
-      {
-        ref: "docs/goals/goal-018.md..goal-034.md",
-        reason: "Expanded benchmark goals are lab/archive context and are rejected for default product review.",
-      },
-      {
-        ref: "docs/memory/** full scan",
-        reason: "Full memory-bank scans are context dumps; this run may use only selected memory IDs.",
-      },
-      {
-        ref: ".krn/** as memory core",
-        reason: ".krn is runtime evidence/cache/ledger and must not be treated as authoritative memory.",
-      },
-    ],
+    rejected_context: policy.rejected_context,
     retrieval_budget: {
-      max_selected: DEFAULT_MAX_SELECTED,
-      selection_policy: `active ${taskKind} records only; reject stale/lab/archive context and full memory-bank scans`,
+      max_selected: policy.max_selected,
+      selection_policy: policy.selection_policy,
     },
     overclaim_boundary:
       "This selection proves bounded local-dev memory selection only; it does not prove final memory quality, productivity lift, or cloud/team sync readiness.",
@@ -257,6 +233,7 @@ function buildMemoryBundle(input: {
     storeRef,
     input.taskIntent,
     input.taskKind,
+    storeFile.policy,
     storeFile.records,
   );
   const application = createMemoryApplication(input.targetRoot, input.runId, createdAt, input.surface, selection);
@@ -303,11 +280,12 @@ export function recordMemoryFeedback(feedback: KrnMemoryFeedback): void {
   const storePath = resolveMemoryStorePath();
   const storeFile = loadMemoryStoreFile(storePath);
   const selectedMemoryIds = new Set(feedback.memory_outcomes.map((outcome) => outcome.memory_id));
-  const nextStoreFile = LocalMemoryStoreFileSchema.parse({
-    schema_version: STORE_SCHEMA_VERSION,
+  const nextStoreFile = parseKrnLocalMemoryStore({
+    schema_version: storeFile.schema_version,
+    policy: storeFile.policy,
     records: storeFile.records.map((record) =>
       selectedMemoryIds.has(record.id)
-        ? KrnMemoryRecordSchema.parse({
+        ? parseKrnMemoryRecord({
             ...record,
             last_used_at: feedback.created_at,
           })
