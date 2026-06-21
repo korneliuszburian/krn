@@ -184,13 +184,16 @@ function runValidation(): EvalReport {
             pack.status === "scaffolded" &&
             pack.sources.length === 0 &&
             pack.mechanism_matrix.length === 0 &&
-            pack.decision_candidates.length === 0,
+            pack.decision_candidates.length === 0 &&
+            !pack.source_refs.includes("docs/goals/goal-038.md") &&
+            !pack.source_refs.includes("docs/plans/canonical/draft.md"),
           [
             "CLI exits zero",
             "generated pack exists",
             "generated pack parses",
             "status is scaffolded",
             "no completed source work is claimed",
+            "generated scaffold excludes active-goal truth",
           ],
           generatedCase.failure_mode,
           "Generated research-pack scaffold parsed through @krn/contracts.",

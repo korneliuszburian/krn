@@ -44,6 +44,8 @@ describe("krn research-pack", () => {
     expect(pack.source_budget).toMatchObject({ mode: "quick", min_sources: 5, max_sources: 8 });
     expect(pack.sources).toEqual([]);
     expect(pack.mechanism_matrix).toEqual([]);
+    expect(pack.source_refs).not.toContain("docs/goals/goal-038.md");
+    expect(pack.source_refs).not.toContain("docs/plans/canonical/draft.md");
     expect(pack.interpretation_caveat).toContain("does not prove sources were read");
     expect(existsSync(join(targetRoot, ".krn", "research-packs", pack.run_id, "research-pack.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "docs"))).toBe(false);

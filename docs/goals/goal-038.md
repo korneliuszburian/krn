@@ -1438,6 +1438,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no payload history rewrite, no dashboard panel, no benchmark run, no source graph service, no broad API/cloud sync, no committed `.krn/**` runtime evidence, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves MCP read-model envelope source-ref hygiene only. It does not prove final source freshness, memory quality, dashboard usefulness, MCP API readiness, human review quality, or product lift.
 - [NEXT] Commit and push this cleanup; then inspect remaining hardcoded-truth candidates only if they sit in a current default-lane consumer with focused verification.
+- [EVIDENCE] The research-pack scaffold lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T063151Z-1578964/engineering-gate.json`.
+- [FACT] `krn research-pack` scaffolds no longer copy `docs/goals/goal-038.md`, `docs/goals/goal-036.md`, or `docs/plans/canonical/draft.md` into scaffold `source_refs`. The scaffold now cites the long-researcher skill/template, source-bank manifest, and research-pack contract.
+- [FACT] `docs/specs/krn-research-pack` contract/example now matches the same boundary: source-backed research packs remain explicit lab/runtime artifacts, not active-goal/canonical-product-truth carriers.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/research-pack.test.ts packages/cli/test/research-pack.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] Focused research-pack eval passed: `pnpm run eval:krn-research-pack` run `.krn/evals/krn-research-pack/20260621T063246Z-1581141/report.json` passed 3/3 cases and 10/10 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: the existing explicit lab scaffold, one source-lineage regression, and the existing research-pack parser/eval.
+- [SIMPLIFY] Delete/avoid: active-goal/canonical refs in research-pack runtime scaffold output, no researcher worker, no new docs, no dashboard/API/benchmark expansion, and no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves research-pack scaffold source-ref hygiene only. It does not prove source quality, researcher quality, memory promotion correctness, final source graph quality, or product lift.
+- [NEXT] Commit and push this cleanup; then stop unless another current consumer exposes a focused product-code drift.
 
 ## Disproves Completion
 

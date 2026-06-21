@@ -145,9 +145,6 @@ export function buildKrnResearchPack(args: ResearchPackArgs, now = new Date()): 
     source_refs: [
       ".agents/skills/long-researcher/SKILL.md",
       ".agents/skills/long-researcher/references/research-pack-template.md",
-      "docs/goals/goal-038.md",
-      "docs/goals/goal-036.md",
-      "docs/plans/canonical/draft.md",
       "docs/source-bank/MANIFEST.md",
       "docs/specs/krn-research-pack/README.md",
     ],

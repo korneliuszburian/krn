@@ -5,10 +5,6 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-038.md
-  - docs/goals/goal-035.md
-  - docs/goals/goal-036.md
-  - docs/plans/canonical/draft.md
   - docs/source-bank/MANIFEST.md
   - .agents/skills/long-researcher/SKILL.md
 ---
@@ -71,3 +67,5 @@ pnpm run eval:krn-research-pack
 ```
 
 Runtime reports stay under `.krn/`. Durable lessons move to `docs/memory/` only after review.
+
+Scaffold `source_refs` must cite the research-pack contract, source-bank selector, and long-researcher skill/template lineage. They must not copy active goals or canonical blueprint paths into runtime scaffold output as product truth.
