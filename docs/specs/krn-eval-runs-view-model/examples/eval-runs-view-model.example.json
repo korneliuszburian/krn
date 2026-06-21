@@ -13,11 +13,11 @@
   "total_modules": 2,
   "passed_modules": 2,
   "failed_modules": 0,
-  "total_cases": 8,
-  "passed_cases": 8,
+  "total_cases": 6,
+  "passed_cases": 6,
   "failed_cases": 0,
-  "total_assertions": 26,
-  "passed_assertions": 26,
+  "total_assertions": 15,
+  "passed_assertions": 15,
   "failed_assertions": 0,
   "modules": [
     {
@@ -41,22 +41,22 @@
     },
     {
       "owner": "krn",
-      "source_refs": ["docs/evals/krn-dashboard-promotion-review-ui/README.md", "docs/goals/goal-015.md"],
+      "source_refs": ["docs/evals/krn-doctor-contracts/README.md", "docs/specs/krn-doctor/README.md"],
       "next_action": "Keep this eval module as deterministic regression evidence; do not claim productivity lift.",
       "failure_mode": "Eval module rows become harmful if a green deterministic result is overclaimed as benchmark lift or full product quality.",
-      "module_id": "krn-dashboard-promotion-review-ui",
-      "command": ["pnpm", "run", "eval:krn-dashboard-promotion-review-ui"],
+      "module_id": "krn-doctor-contracts",
+      "command": ["pnpm", "run", "eval:krn-doctor"],
       "status": "passed",
-      "report_path": ".krn/evals/krn-dashboard-promotion-review-ui/20260620T043648Z-2297921/report.json",
-      "total_cases": 5,
-      "passed_cases": 5,
+      "report_path": ".krn/evals/krn-doctor-contracts/20260620T043648Z-2297921/report.json",
+      "total_cases": 3,
+      "passed_cases": 3,
       "failed_cases": 0,
       "case_pass_rate": 1,
-      "total_assertions": 18,
-      "passed_assertions": 18,
+      "total_assertions": 7,
+      "passed_assertions": 7,
       "failed_assertions": 0,
       "assertion_pass_rate": 1,
-      "interpretation_caveat": "This eval proves the local dashboard UI can render typed Promotion Review product objects only; it does not prove dashboard command readiness, HTTP/API readiness, ChatGPT connector behavior, human review quality, broad promotion correctness, safe overwrite semantics, or productivity lift."
+      "interpretation_caveat": "This eval proves krn doctor readiness-report contract behavior only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness."
     }
   ],
   "invalid_report": null,
@@ -68,10 +68,22 @@
     "target_surface": "eval_reports",
     "label": "Review eval run evidence",
     "rationale": "The latest aggregate eval report passed, so it can be reviewed as deterministic regression evidence only.",
-    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-eval/README.md", "docs/specs/krn-eval-runs-view-model/README.md"]
+    "source_refs": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-eval/README.md",
+      "docs/evals/STANDARD.md",
+      "docs/plans/canonical/draft.md",
+      "docs/specs/krn-eval-runs-view-model/README.md"
+    ]
   },
   "blocked_actions": ["claim_productivity_lift", "dashboard_rerun_eval", "auto_repair_from_dashboard", "write_memory"],
-  "source_refs": ["docs/goals/goal-006.md", "docs/goals/goal-016.md", "docs/specs/krn-eval/README.md", "docs/specs/krn-eval-runs-view-model/README.md"],
+  "source_refs": [
+    "docs/goals/goal-038.md",
+    "docs/specs/krn-eval/README.md",
+    "docs/evals/STANDARD.md",
+    "docs/plans/canonical/draft.md",
+    "docs/specs/krn-eval-runs-view-model/README.md"
+  ],
   "failure_mode": "Eval Runs becomes harmful if deterministic eval reports are overclaimed as benchmark lift, productivity improvement, or permission for automated repair/write commands.",
   "interpretation_caveat": "This view model renders local aggregate eval state only; it does not run benchmarks, repair failures, mutate ledgers, or prove productivity lift."
 }

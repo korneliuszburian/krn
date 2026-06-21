@@ -29,10 +29,10 @@
     "target_surface": "benchmark",
     "label": "Claim productivity lift",
     "rationale": "Bad fixture overclaims deterministic evals as benchmark evidence.",
-    "source_refs": ["docs/goals/goal-006.md"]
+    "source_refs": ["docs/specs/krn-eval-runs-view-model/README.md"]
   },
   "blocked_actions": ["none"],
-  "source_refs": ["docs/goals/goal-006.md"],
+  "source_refs": ["docs/specs/krn-eval-runs-view-model/README.md"],
   "failure_mode": "bad fixture",
   "interpretation_caveat": "bad fixture"
 }

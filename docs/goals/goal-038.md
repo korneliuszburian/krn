@@ -1202,6 +1202,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new eval modules, no dashboard/API/benchmark work, no lab-lane execution by doctor, no broad eval redesign, and no productivity-lift claim.
 - [SIMPLIFY] Next candidate: if eval count remains misleading in other surfaces, route them to the typed registry instead of duplicating lane lists.
 - [OVERCLAIM] This slice proves doctor eval-readiness metadata is registry-backed only. It does not prove eval quality, benchmark validity, dashboard usefulness, review-burden reduction, or product lift.
+- [EVIDENCE] The Eval Runs source-lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T041136Z-1337446/engineering-gate.json`.
+- [FACT] `buildKrnEvalRunsViewModel` no longer hardcodes historical `goal-006` / `goal-016` refs for runtime source refs. Parsed eval reports now carry their own `source_refs`, and the view model only appends its stable spec ref.
+- [FACT] Missing or invalid eval-report states now use stable eval/view-model spec refs only, without pretending an active goal or historical goal is their runtime source truth.
+- [FACT] The eval-runs view-model contract example was condensed from a stale dashboard-promotion module example to current init/doctor eval evidence and current report-level source lineage.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/mcp/test/eval-runs-view-model.test.ts packages/contracts/test/eval-runs-view-model.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] Focused dashboard test passed: `pnpm --dir apps/dashboard exec vitest run test/eval-runs-dashboard.test.tsx` passed 1 file / 3 tests.
+- [EVIDENCE] Narrow MCP no-emit, `pnpm typecheck`, and `git diff --check` passed.
+- [SIMPLIFY] Keep: one source-ref derivation helper, one public builder behavior assertion, updated contract example, and no new dashboard/API/eval surface.
+- [SIMPLIFY] Delete/avoid: no broad dashboard cleanup, no registry service, no source graph behavior claim, no benchmark execution, no `codex exec`, and no productivity-lift claim.
+- [SIMPLIFY] Note: a broad dashboard test run exposed existing pending-review fixture failures for missing `benchmark_reports`; that is parked as a separate touched-consumer issue, not mixed into this Eval Runs source-lineage slice.
+- [OVERCLAIM] This slice proves Eval Runs source-ref freshness and data lineage only. It does not prove dashboard usefulness, eval quality, source graph completeness, human review quality, review-burden reduction, or product lift.
+- [NEXT] Commit and push this cleanup, then choose the next consumer-led cleanup from live failures or code pressure: either fix the existing Pending Review dashboard fixture/contract drift as a narrow consumer repair, or inspect another hardcoded source-ref surface only when it has a focused test consumer.
 
 ## Disproves Completion
 

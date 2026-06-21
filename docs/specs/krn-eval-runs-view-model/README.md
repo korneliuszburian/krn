@@ -5,9 +5,9 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
-  - docs/goals/goal-016.md
+  - docs/goals/goal-038.md
   - docs/specs/krn-eval/README.md
+  - docs/evals/STANDARD.md
 ---
 
 # KRN Eval Runs View Model

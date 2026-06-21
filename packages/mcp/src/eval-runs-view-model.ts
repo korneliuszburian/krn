@@ -7,9 +7,7 @@ import {
   type KrnEvalRunsViewModel,
 } from "@krn/contracts";
 
-const EVAL_RUNS_SOURCE_REFS = [
-  "docs/goals/goal-006.md",
-  "docs/goals/goal-016.md",
+const EVAL_RUNS_SPEC_SOURCE_REFS = [
   "docs/specs/krn-eval/README.md",
   "docs/specs/krn-eval-runs-view-model/README.md",
 ] as const;
@@ -53,9 +51,14 @@ function moduleNextAction(status: EvalModuleResult["status"]): string {
   return "Repair the eval runner or module command before relying on this dashboard row.";
 }
 
+function sourceRefsWithEvalRunsSpec(sourceRefs: readonly string[]): string[] {
+  return [...new Set([...sourceRefs, ...EVAL_RUNS_SPEC_SOURCE_REFS])];
+}
+
 function evalRunsNextAction(
   source: KrnEvalRunsViewModel["source"],
   failedModules: number,
+  sourceRefs: readonly string[],
 ): KrnEvalRunsViewModel["next_allowed_action"] {
   if (source === "missing_eval_report") {
     return {
@@ -63,7 +66,7 @@ function evalRunsNextAction(
       target_surface: "eval_reports",
       label: "Generate eval report",
       rationale: "No aggregate eval report exists, so Eval Runs must render explicit empty state.",
-      source_refs: [...EVAL_RUNS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -73,7 +76,7 @@ function evalRunsNextAction(
       target_surface: "eval_reports",
       label: "Repair invalid eval report",
       rationale: "The latest aggregate eval report failed to parse and cannot be used as dashboard evidence.",
-      source_refs: [...EVAL_RUNS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -83,7 +86,7 @@ function evalRunsNextAction(
       target_surface: "repair_loop",
       label: "Create eval repair record",
       rationale: "At least one eval module failed, so the next safe action is a bounded repair record before changes.",
-      source_refs: [...EVAL_RUNS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -92,11 +95,13 @@ function evalRunsNextAction(
     target_surface: "eval_reports",
     label: "Review eval run evidence",
     rationale: "The latest aggregate eval report passed, so it can be reviewed as deterministic regression evidence only.",
-    source_refs: [...EVAL_RUNS_SOURCE_REFS],
+    source_refs: [...sourceRefs],
   };
 }
 
 function emptyViewModel(targetRoot: string, now: Date): KrnEvalRunsViewModel {
+  const sourceRefs = sourceRefsWithEvalRunsSpec([]);
+
   return parseKrnEvalRunsViewModel({
     schema_version: "krn-eval-runs-view-model.v1",
     kind: "krn_eval_runs_view_model",
@@ -123,9 +128,9 @@ function emptyViewModel(targetRoot: string, now: Date): KrnEvalRunsViewModel {
     productivity_lift_claimed: false,
     dashboard_commands_enabled: false,
     benchmark_lift_status: "not_measured",
-    next_allowed_action: evalRunsNextAction("missing_eval_report", 0),
+    next_allowed_action: evalRunsNextAction("missing_eval_report", 0, sourceRefs),
     blocked_actions: ["claim_productivity_lift", "dashboard_rerun_eval", "auto_repair_from_dashboard", "write_memory"],
-    source_refs: [...EVAL_RUNS_SOURCE_REFS],
+    source_refs: sourceRefs,
     failure_mode:
       "Eval Runs becomes harmful if it invents eval state or treats missing reports as product lift.",
     interpretation_caveat:
@@ -136,6 +141,7 @@ function emptyViewModel(targetRoot: string, now: Date): KrnEvalRunsViewModel {
 function invalidViewModel(targetRoot: string, now: Date, reportPath: string, error: unknown): KrnEvalRunsViewModel {
   const relativeReportPath = toTargetRelativePath(targetRoot, reportPath);
   const message = error instanceof Error ? error.message : "unknown parse error";
+  const sourceRefs = sourceRefsWithEvalRunsSpec([]);
 
   return parseKrnEvalRunsViewModel({
     schema_version: "krn-eval-runs-view-model.v1",
@@ -166,9 +172,9 @@ function invalidViewModel(targetRoot: string, now: Date, reportPath: string, err
     productivity_lift_claimed: false,
     dashboard_commands_enabled: false,
     benchmark_lift_status: "not_measured",
-    next_allowed_action: evalRunsNextAction("invalid_eval_report", 0),
+    next_allowed_action: evalRunsNextAction("invalid_eval_report", 0, sourceRefs),
     blocked_actions: ["claim_productivity_lift", "dashboard_rerun_eval", "auto_repair_from_dashboard", "write_memory"],
-    source_refs: [...EVAL_RUNS_SOURCE_REFS],
+    source_refs: sourceRefs,
     failure_mode:
       "Eval Runs becomes harmful if invalid aggregate reports are hidden or rendered as passed evidence.",
     interpretation_caveat:
@@ -188,6 +194,7 @@ export function buildKrnEvalRunsViewModel(targetInput = ".", now = new Date()): 
     const report = parseKrnEvalReport(readJsonFile(latestPath));
     const failedModules = report.summary.failed_modules;
     const evalState = report.overall_status === "passed" && failedModules === 0 ? "ready" : "blocked";
+    const sourceRefs = sourceRefsWithEvalRunsSpec(report.source_refs);
 
     return parseKrnEvalRunsViewModel({
       schema_version: "krn-eval-runs-view-model.v1",
@@ -234,9 +241,9 @@ export function buildKrnEvalRunsViewModel(targetInput = ".", now = new Date()): 
       productivity_lift_claimed: false,
       dashboard_commands_enabled: false,
       benchmark_lift_status: "not_measured",
-      next_allowed_action: evalRunsNextAction("eval_report", failedModules),
+      next_allowed_action: evalRunsNextAction("eval_report", failedModules, sourceRefs),
       blocked_actions: ["claim_productivity_lift", "dashboard_rerun_eval", "auto_repair_from_dashboard", "write_memory"],
-      source_refs: [...EVAL_RUNS_SOURCE_REFS],
+      source_refs: sourceRefs,
       failure_mode:
         "Eval Runs becomes harmful if deterministic eval reports are overclaimed as benchmark lift, productivity improvement, or permission for automated repair/write commands.",
       interpretation_caveat:

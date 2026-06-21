@@ -40,6 +40,11 @@ describe("KRN eval runs view model builder", () => {
     expect(viewModel.eval_state).toBe("empty");
     expect(viewModel.total_modules).toBe(0);
     expect(viewModel.next_allowed_action.action_id).toBe("generate-eval-report");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-eval-runs-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
     expect(viewModel.productivity_lift_claimed).toBe(false);
   });
 
@@ -64,32 +69,26 @@ describe("KRN eval runs view model builder", () => {
       module_id: report.modules[0]?.module_id,
       status: "passed",
     });
+    expect(viewModel.source_refs).toEqual([
+      ...report.source_refs,
+      "docs/specs/krn-eval-runs-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-006.md");
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-016.md");
     expect(viewModel.blocked_actions).toContain("claim_productivity_lift");
   });
 
   it("blocks readiness when the latest aggregate report contains failed modules", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-eval-runs-failed-"));
-    const base = validEvalReport({
-      target_root: targetRoot,
-      overall_status: "failed",
-      summary: {
-        total_modules: 1,
-        passed_modules: 0,
-        failed_modules: 1,
-        total_cases: 1,
-        passed_cases: 0,
-        failed_cases: 1,
-        total_assertions: 2,
-        passed_assertions: 1,
-        failed_assertions: 1,
-      },
-    });
+    const base = validEvalReport({ target_root: targetRoot });
     const moduleResult = base.modules[0];
     if (!moduleResult) {
       throw new Error("fixture must include at least one module");
     }
     const report = validEvalReport({
       ...base,
+      overall_status: "failed",
       modules: [
         {
           ...moduleResult,
@@ -104,6 +103,34 @@ describe("KRN eval runs view model builder", () => {
           assertion_pass_rate: 0.5,
         },
       ],
+      lane_summary: base.lane_summary.map((laneSummary) =>
+        laneSummary.lane === moduleResult.lane
+          ? {
+              ...laneSummary,
+              total_modules: 1,
+              passed_modules: 0,
+              failed_modules: 1,
+              error_modules: 0,
+            }
+          : {
+              ...laneSummary,
+              total_modules: 0,
+              passed_modules: 0,
+              failed_modules: 0,
+              error_modules: 0,
+            },
+      ),
+      summary: {
+        total_modules: 1,
+        passed_modules: 0,
+        failed_modules: 1,
+        total_cases: 1,
+        passed_cases: 0,
+        failed_cases: 1,
+        total_assertions: 2,
+        passed_assertions: 1,
+        failed_assertions: 1,
+      },
     });
     writeEvalReport(targetRoot, report);
 
@@ -126,6 +153,10 @@ describe("KRN eval runs view model builder", () => {
     expect(viewModel.eval_state).toBe("blocked");
     expect(viewModel.invalid_report?.report_path).toBe(".krn/eval/20260620T040000Z-test/report.json");
     expect(viewModel.next_allowed_action.action_id).toBe("repair-invalid-eval-report");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-eval-runs-view-model/README.md",
+    ]);
     expect(viewModel.modules).toEqual([]);
   });
 });
