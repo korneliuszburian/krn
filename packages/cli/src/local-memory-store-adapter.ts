@@ -1,6 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { parseKrnLocalMemoryStore, type KrnLocalMemoryStore } from "@krn/contracts";
 
 export function resolveLocalMemoryStorePath(): string {
@@ -8,7 +7,7 @@ export function resolveLocalMemoryStorePath(): string {
   if (explicitPath && explicitPath.trim().length > 0) {
     return resolve(explicitPath);
   }
-  return join(homedir(), ".krn", "memory-store.json");
+  throw new Error("KRN_MEMORY_STORE_PATH must point to an explicit local MemoryStore file outside the target repo.");
 }
 
 export function localMemoryStoreRef(storePath: string): string {

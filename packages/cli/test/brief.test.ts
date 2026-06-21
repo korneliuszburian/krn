@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -11,6 +11,32 @@ function readJson(path: string): unknown {
 }
 
 describe("krn brief", () => {
+  it("fails without an explicit MemoryStore path", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-brief-missing-store-target-"));
+    const result = spawnSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "brief",
+        "--target",
+        targetRoot,
+        "--task",
+        "Build a memory-aware operating brief",
+      ],
+      {
+        cwd: process.cwd(),
+        env: { ...process.env, KRN_MEMORY_STORE_PATH: "" },
+        encoding: "utf8",
+      },
+    );
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("KRN_MEMORY_STORE_PATH must point to an explicit local MemoryStore file");
+  }, 30_000);
+
   it("writes a schema-backed operating brief from the local MemoryStore without mutating target setup files", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-brief-target-"));
     const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));

@@ -1525,6 +1525,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no active-goal runtime narrative, no schema change, no dashboard/API/benchmark work, no memory ranking engine, no broad wording sweep, and no committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves MemoryStore/review runtime wording hygiene only. It does not prove memory precision, context quality, review burden reduction, self-growing behavior, or product lift.
 - [NEXT] Commit and push this cleanup. Then continue only if another consumed runtime-output or hardcoded-truth bottleneck is concrete.
+- [EVIDENCE] The explicit MemoryStore path cleanup pre-edit gate passed and wrote `.krn/gates/20260621T072555Z-1721924/engineering-gate.json`.
+- [FACT] The local MemoryStore adapter no longer falls back to `$HOME/.krn/memory-store.json`; memory-aware CLI commands now require explicit `KRN_MEMORY_STORE_PATH`.
+- [FACT] `docs/specs/krn-memory-store/README.md` now records that the first local adapter has no implicit home-directory fallback, and `krn review` example output matches the current review-contract task intent.
+- [FACT] `packages/cli/test/brief.test.ts` now has a known-bad missing-env case that fails before KRN can read or write hidden memory state.
+- [EVIDENCE] Focused MemoryStore consumer tests passed: `pnpm exec vitest run packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/cli/test/memory-feedback.test.ts packages/contracts/test/memory-store.test.ts packages/contracts/test/review-report.test.ts` passed 6 files / 20 tests.
+- [EVIDENCE] Focused example regression passed: `pnpm exec vitest run packages/contracts/test/review-report.test.ts packages/cli/test/brief.test.ts` passed 2 files / 8 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one explicit env-selected local adapter, existing MemoryStore contracts/consumers, and one missing-env public CLI regression.
+- [SIMPLIFY] Delete/avoid: hidden home-directory memory fallback, repo-local memory core, new service/cloud adapter, dashboard/API/benchmark expansion, and committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves explicit local MemoryStore adapter configuration only. It does not prove final Memory Core storage, memory precision, privacy hardening, team sync, review-burden reduction, or product lift.
+- [NEXT] Commit and push this adapter cleanup. Then continue only with another consumed hardcoded-truth, memory-boundary, or monolith-pressure bottleneck.
 
 ## Disproves Completion
 

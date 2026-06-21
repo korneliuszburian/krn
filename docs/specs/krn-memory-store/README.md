@@ -16,7 +16,11 @@ sources:
 
 The MemoryStore contract proves that KRN memory selection is operational and bounded.
 
-`docs/memory/**` remains a pattern bank / audit export. `.krn/**` remains runtime evidence/cache/ledger. Authoritative memory records come from a typed store boundary. The first local adapter is a JSON file supplied by `KRN_MEMORY_STORE_PATH`.
+`docs/memory/**` remains a pattern bank / audit export. `.krn/**` remains runtime evidence/cache/ledger. Authoritative memory records come from a typed store boundary. The first local adapter is a JSON file supplied explicitly by `KRN_MEMORY_STORE_PATH`.
+
+The adapter has no implicit home-directory fallback. A memory-aware command must
+fail until the operator points `KRN_MEMORY_STORE_PATH` at a reviewed local store
+outside the target repo.
 
 The local store file uses `schema_version: "krn-local-memory-store.v1"` and must include a `policy` object:
 
