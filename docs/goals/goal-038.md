@@ -664,12 +664,14 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, stop adding isolated init proofs. Run the
-cleanup/condense inventory on current repo sediment, then execute the capability
-dogfood loop on one real KRN capability task using existing MemoryStore,
-context/source, review, and eval boundaries. Keep dashboard, benchmark, broad
-API/cloud sync, research runtime, and passive docs out of the default path until
-the capability task creates a real consumer.
+[FACT] The first cleanup/condense code slice extracted reviewed-bootstrap
+composition behavior from the init eval runner into a one-consumer helper:
+`packages/evals/src/krn-init-reviewed-bootstrap.ts`.
+
+[NEXT] Continue into the capability dogfood loop on one real KRN capability task
+using existing MemoryStore, context/source, review, and eval boundaries. Keep
+dashboard, benchmark, broad API/cloud sync, research runtime, and passive docs
+out of the default path until the capability task creates a real consumer.
 
 ## Progress Ledger
 
@@ -931,6 +933,16 @@ above plus the newest `[NEXT]` entry.
 - [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T021929Z-1068166/report.json`.
 - [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
 - [NEXT] After committing the repo-bootstrap composition proof and this routing correction, choose the first capability dogfood task that writes code and measures review-burden/diff-risk/context-use evidence instead of adding another report family.
+- [EVIDENCE] The eval-monolith cleanup pre-edit gate passed and wrote `.krn/gates/20260621T022113Z-1070199/engineering-gate.json`.
+- [FACT] The reviewed-bootstrap composition behavior moved from `packages/evals/src/validate-krn-init.ts` into `packages/evals/src/krn-init-reviewed-bootstrap.ts`, leaving the public eval runner as the consumer and dispatcher.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T022551Z-1074652/report.json` with 13/13 cases and 62/62 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T022619Z-1075524/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [SIMPLIFY] Keep: one composition helper, one consumer, unchanged eval case IDs, and the existing exact proposal/review/apply assertions.
+- [SIMPLIFY] Delete/avoid: no new eval family, no dashboard/API surface, no broad scaffold command, no memory-core fiction, and no second bootstrap truth source.
+- [SIMPLIFY] Next candidate: collapse the repeated individual bootstrap apply case scaffolding only when the next touched capability needs it; do not refactor every init case from momentum.
+- [OVERCLAIM] This slice proves maintainability cleanup and public runner parity only. It does not prove product lift, final bootstrap merge safety, memory quality, source quality, skill quality, hook enforcement, dashboard usefulness, or capability dogfood success.
+- [NEXT] Start the first capability dogfood task: use the existing MemoryStore/context/source/review/eval boundaries on a real KRN code change, then record keep/kill/revisit with review-burden, diff-risk, context-use, and overclaim evidence.
 
 ## Disproves Completion
 
