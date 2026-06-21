@@ -112,6 +112,35 @@ describe("krn gate", () => {
     expect(gate.checks.every((check) => check.status === "pass")).toBe(true);
   }, 30_000);
 
+  it("does not block forbidden surface words used only in verification context", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-verification-surface-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "gate",
+        "--target",
+        targetRoot,
+        "--task",
+        "mechanism: split existing MCP read resources. scope: packages/mcp/src/index.ts. consumer: MCP resource reads. verification: MCP read-model tests, stdio server tests, dashboard view-model tests. rollback: move helper back. hardcoded truth: no broad API, no cloud sync, no benchmark default, no live-full runner. skills: typescript-contract-engineer loaded. simplify: reduce monolith. overclaim: cleanup only.",
+        "--path",
+        "packages/mcp/src/index.ts",
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const gate = parseKrnEngineeringGate(readJson(stdout.trim()));
+    expect(gate.gate_status).toBe("pass");
+    expect(gate.checks.every((check) => check.status === "pass")).toBe(true);
+  }, 30_000);
+
   it("routes TypeScript skill from target path even when task wording is generic", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-path-skill-target-"));
 

@@ -97,6 +97,7 @@ function needsBlockedSurface(task: string): boolean {
   const justifiedConsumer = /\b(typed consumer|memory application|selection|review consumer|source graph|trace consumer)\b/.test(
     lowerTask,
   );
+  const explicitNegationPattern = /\b(no|not|without|avoid|forbid|forbidden|block|blocked|reject|exclude|excludes|forbidding)\b/;
 
   const disallowedSurface = [...lowerTask.matchAll(disallowedSurfacePattern)].some((match) => {
     const matchIndex = match.index ?? 0;
@@ -106,9 +107,10 @@ function needsBlockedSurface(task: string): boolean {
       lowerTask.lastIndexOf("\n", matchIndex),
     );
     const localContext = lowerTask.slice(previousBoundary + 1, matchIndex);
-    return !/\b(no|not|without|avoid|forbid|forbidden|block|blocked|reject|exclude|excludes|forbidding)\b/.test(
-      localContext,
-    );
+    const verificationFieldStart = localContext.lastIndexOf("verification:");
+    const isVerificationContext = verificationFieldStart >= 0;
+
+    return !isVerificationContext && !explicitNegationPattern.test(localContext);
   });
 
   return disallowedSurface && !justifiedConsumer;
