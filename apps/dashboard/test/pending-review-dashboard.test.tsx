@@ -10,12 +10,14 @@ import { PendingReviewDashboard } from "../src/PendingReviewDashboard.js";
 const urlRepoRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 const repoRoot = process.cwd().endsWith("apps/dashboard") ? resolve(process.cwd(), "../..") : urlRepoRoot;
 
+function readJsonFixture(path: string): unknown {
+  return JSON.parse(readFileSync(resolve(repoRoot, path), "utf8")) as unknown;
+}
+
 function fixtureViewModel(): KrnPendingReviewViewModel {
-  const input: unknown = JSON.parse(
-    readFileSync(
-      resolve(repoRoot, "docs/specs/krn-pending-review-view-model/examples/pending-review-view-model.example.json"),
-      "utf8",
-    ),
+  const input = readJsonFixture("docs/specs/krn-pending-review-view-model/examples/pending-review-view-model.example.json");
+  const dashboardDataFixture = parseDashboardData(
+    readJsonFixture("docs/specs/krn-dashboard-data/examples/dashboard-data.example.json"),
   );
 
   return parseDashboardData({
@@ -25,20 +27,17 @@ function fixtureViewModel(): KrnPendingReviewViewModel {
     generated_at: "2026-06-20T03:00:00.000Z",
     no_mock_state: true,
     pending_review: input,
-    promotion_review: JSON.parse(
-      readFileSync(
-        resolve(repoRoot, "docs/specs/krn-promotion-review-view-model/examples/promotion-review-view-model.example.json"),
-        "utf8",
-      ),
-    ) as unknown,
-    eval_runs: JSON.parse(
-      readFileSync(resolve(repoRoot, "docs/specs/krn-eval-runs-view-model/examples/eval-runs-view-model.example.json"), "utf8"),
-    ) as unknown,
+    promotion_review: readJsonFixture(
+      "docs/specs/krn-promotion-review-view-model/examples/promotion-review-view-model.example.json",
+    ),
+    eval_runs: readJsonFixture("docs/specs/krn-eval-runs-view-model/examples/eval-runs-view-model.example.json"),
+    benchmark_reports: dashboardDataFixture.benchmark_reports,
     source_refs: [
       "docs/goals/goal-006.md",
       "docs/specs/krn-pending-review-view-model/README.md",
       "docs/specs/krn-promotion-review-view-model/README.md",
       "docs/specs/krn-eval-runs-view-model/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md",
     ],
     interpretation_caveat:
       "Dashboard test fixture contains parsed KRN dashboard view models only and does not mutate targets.",

@@ -1214,6 +1214,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Note: a broad dashboard test run exposed existing pending-review fixture failures for missing `benchmark_reports`; that is parked as a separate touched-consumer issue, not mixed into this Eval Runs source-lineage slice.
 - [OVERCLAIM] This slice proves Eval Runs source-ref freshness and data lineage only. It does not prove dashboard usefulness, eval quality, source graph completeness, human review quality, review-burden reduction, or product lift.
 - [NEXT] Commit and push this cleanup, then choose the next consumer-led cleanup from live failures or code pressure: either fix the existing Pending Review dashboard fixture/contract drift as a narrow consumer repair, or inspect another hardcoded source-ref surface only when it has a focused test consumer.
+- [EVIDENCE] The Pending Review dashboard fixture repair pre-edit gate passed after narrowing around the typed consumer and wrote `.krn/gates/20260621T041744Z-1366002/engineering-gate.json`.
+- [FACT] `apps/dashboard/test/pending-review-dashboard.test.tsx` now builds its parsed `KrnDashboardData` fixture with the required `benchmark_reports` sibling object from the existing dashboard-data contract example.
+- [FACT] This repairs the existing full dashboard test-suite failure where `parseDashboardData` rejected the Pending Review test fixture because it omitted `benchmark_reports`.
+- [EVIDENCE] Focused dashboard test passed: `pnpm --dir apps/dashboard exec vitest run test/pending-review-dashboard.test.tsx` passed 1 file / 4 tests.
+- [EVIDENCE] Full dashboard test suite passed: `pnpm --dir apps/dashboard exec vitest run test` passed 4 files / 13 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T041903Z-1367732/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one fixture reader, one existing contract example as the sibling object source, unchanged dashboard component behavior, and no contract/schema changes.
+- [SIMPLIFY] Delete/avoid: no new dashboard panel, no benchmark execution, no dashboard command, no source-ref sweep, no memory/API work, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves Pending Review test fixture parity with the current dashboard-data contract only. It does not prove dashboard usefulness, benchmark quality, human review quality, source freshness, or product lift.
+- [NEXT] Commit and push this consumer repair; then continue with consumer-led cleanup only where a real test, parser, or command exposes drift.
 
 ## Disproves Completion
 
