@@ -1,21 +1,17 @@
-import { buildKrnOperatingBrief, writeKrnOperatingBrief, type BriefArgs } from "./brief.js";
+import { buildKrnOperatingBrief, parseBriefArgs, writeKrnOperatingBrief } from "./brief.js";
 import { buildKrnContextPacket, parseContextBuildArgs, writeKrnContextPacket } from "./context.js";
 import { buildDoctorReport, parseDoctorArgs, writeDoctorReport } from "./doctor.js";
 import { buildKrnEvalReport, parseEvalArgs, writeKrnEvalReport } from "./eval.js";
 import { buildKrnEngineeringGate, parseKrnGateArgs, writeKrnEngineeringGate } from "./gate.js";
 import { initProposalCapabilityUsage, runKrnInit } from "./init.js";
 import { buildKrnResearchPack, parseResearchPackArgs, writeKrnResearchPack } from "./research-pack.js";
-import { buildKrnReviewReport, writeKrnReviewReport } from "./review.js";
+import { buildKrnReviewReport, parseReviewArgs, writeKrnReviewReport } from "./review.js";
 import { buildKrnSourceCheck, parseSourceCheckArgs, writeKrnSourceCheck } from "./source-graph.js";
 
 type CliResult = {
   exitCode: number;
   stdout: string;
   stderr: string;
-};
-
-type ReviewArgs = {
-  target: string;
 };
 
 function usage(): string {
@@ -35,84 +31,6 @@ Commands:
   gate --task <text> [--path <path>] [--target <path>]
   research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]
 `;
-}
-
-function parseReviewArgs(argv: readonly string[]): ReviewArgs {
-  if (argv[0] !== "review") {
-    throw new Error("Expected command: review");
-  }
-
-  let target = ".";
-
-  for (let index = 1; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (arg === "--target") {
-      const value = argv[index + 1];
-      if (!value || value.startsWith("--")) {
-        throw new Error("Missing value for --target");
-      }
-      target = value;
-      index += 1;
-      continue;
-    }
-
-    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
-  }
-
-  return { target };
-}
-
-function parseBriefArgs(argv: readonly string[]): BriefArgs {
-  if (argv[0] !== "brief") {
-    throw new Error("Expected command: brief");
-  }
-
-  let target = ".";
-  let task: string | null = null;
-  let path: string | null = null;
-
-  for (let index = 1; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (arg === "--target") {
-      const value = argv[index + 1];
-      if (!value || value.startsWith("--")) {
-        throw new Error("Missing value for --target");
-      }
-      target = value;
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--task") {
-      const value = argv[index + 1];
-      if (!value || value.startsWith("--")) {
-        throw new Error("Missing value for --task");
-      }
-      task = value;
-      index += 1;
-      continue;
-    }
-
-    if (arg === "--path") {
-      const value = argv[index + 1];
-      if (!value || value.startsWith("--")) {
-        throw new Error("Missing value for --path");
-      }
-      path = value;
-      index += 1;
-      continue;
-    }
-
-    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
-  }
-
-  if (!task) {
-    throw new Error("Missing required --task");
-  }
-
-  return { target, task, path };
 }
 
 export function runKrnCli(argv: readonly string[] = process.argv.slice(2)): CliResult {

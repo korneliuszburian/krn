@@ -13,6 +13,36 @@ import {
 } from "@krn/contracts";
 import { buildReviewMemoryBundle, recordMemoryFeedback } from "./memory-store.js";
 
+export type ReviewArgs = {
+  target: string;
+};
+
+export function parseReviewArgs(argv: readonly string[]): ReviewArgs {
+  if (argv[0] !== "review") {
+    throw new Error("Expected command: review");
+  }
+
+  let target = ".";
+
+  for (let index = 1; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--target") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --target");
+      }
+      target = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
+  }
+
+  return { target };
+}
+
 function createRunId(now: Date): string {
   const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
   return `${stamp}-${process.pid}`;

@@ -9,6 +9,58 @@ export type BriefArgs = {
   path: string | null;
 };
 
+export function parseBriefArgs(argv: readonly string[]): BriefArgs {
+  if (argv[0] !== "brief") {
+    throw new Error("Expected command: brief");
+  }
+
+  let target = ".";
+  let task: string | null = null;
+  let path: string | null = null;
+
+  for (let index = 1; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--target") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --target");
+      }
+      target = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--task") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --task");
+      }
+      task = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--path") {
+      const value = argv[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error("Missing value for --path");
+      }
+      path = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
+  }
+
+  if (!task) {
+    throw new Error("Missing required --task");
+  }
+
+  return { target, task, path };
+}
+
 function createRunId(now: Date): string {
   const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
   return `${stamp}-${process.pid}`;

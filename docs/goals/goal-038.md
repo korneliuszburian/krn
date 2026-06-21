@@ -1041,6 +1041,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no long-researcher worker, no dashboard/API/benchmark surface, no new research runtime, no passive research note, no copied memory/source bodies, and no claim that research quality or productivity improved.
 - [SIMPLIFY] Next candidate: inspect `packages/cli/src/main.ts` again after the research-pack extraction; if no command helper remains there, shift cleanup pressure to `packages/cli/src/init.ts` or the next consumer-led MemoryStore/review capability rather than inventing another lab surface.
 - [OVERCLAIM] This slice proves research-pack scaffold extraction and source-ref freshness only. It does not prove source quality, final research-brain quality, memory promotion correctness, productivity lift, API/MCP readiness, or dashboard usefulness.
+- [EVIDENCE] The final main-dispatcher cleanup pre-edit gate passed and wrote `.krn/gates/20260621T031711Z-1197564/engineering-gate.json`.
+- [FACT] `parseReviewArgs` moved into `packages/cli/src/review.ts` and `parseBriefArgs` moved into `packages/cli/src/brief.ts`; `packages/cli/src/main.ts` now keeps command usage plus dispatch only.
+- [FACT] `packages/cli/src/main.ts` dropped from 205 lines to 123 lines. The diff was ownership-neutral at 84 insertions and 84 deletions across `brief.ts`, `review.ts`, and `main.ts`.
+- [EVIDENCE] Focused review/brief tests passed: `pnpm exec vitest run packages/cli/test/brief.test.ts packages/cli/test/review.test.ts packages/contracts/test/operating-brief.test.ts packages/contracts/test/review-report.test.ts` passed 4 files / 9 tests.
+- [EVIDENCE] Narrow CLI no-emit check passed: `pnpm exec tsc --noEmit --pretty false --project packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T031847Z-1206096/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: parser ownership inside command modules, unchanged public CLI behavior, no shared parser framework, and a thin root dispatcher.
+- [SIMPLIFY] Delete/avoid: no new command surface, no common option-parser abstraction for two small parsers, no dashboard/API/benchmark/research runtime work, and no product-truth or memory-truth hardcoding.
+- [SIMPLIFY] Next candidate: choose the next slice from real consumer pressure. Good candidates are `packages/cli/src/init.ts` only when touching another init capability, or a MemoryStore/review capability that moves KRN closer to dogfooding its final context/memory loop.
+- [OVERCLAIM] This slice proves root dispatcher cleanup and CLI parity only. It does not prove product lift, final memory quality, review-burden reduction, API/MCP readiness, or dashboard usefulness.
 
 ## Disproves Completion
 
