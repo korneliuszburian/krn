@@ -1546,6 +1546,40 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: proposal-building logic inside the init router, new init target behavior, generic scaffold engine, dashboard/API/benchmark work, and committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves init proposal maintainability cleanup and behavior parity only. It does not prove broad repo bootstrap quality, merge-mode safety, memory quality, source freshness, hook enforcement, or productivity lift.
 - [NEXT] Commit and push this init cleanup. Then continue only with another consumed monolith-pressure, hardcoded-truth, memory-boundary, or review/eval friction point.
+- [EVIDENCE] The remaining engineering-gate active-goal wording cleanup pre-edit gate passed and wrote `.krn/gates/20260621T073626Z-1738017/engineering-gate.json`.
+- [FACT] Commit `3baed5d` removed the remaining `goal-038 simplify/condense check` phrase from public `krn gate` verification text. Runtime gate output now names the stable engineering-gate simplify/condense check instead of active-goal wording.
+- [EVIDENCE] Focused gate tests passed: `pnpm exec vitest run packages/cli/test/gate.test.ts` passed 1 file / 7 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: stable gate contract language and the existing public `krn gate` consumer.
+- [SIMPLIFY] Delete/avoid: no active-goal wording in gate runtime output, no hook layer, no dashboard/API/benchmark surface, no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves gate wording cleanup only. It does not prove hook enforcement, memory quality, review-burden reduction, or product lift.
+- [EVIDENCE] The eval module-runner extraction pre-edit gate passed and wrote `.krn/gates/20260621T073834Z-1746528/engineering-gate.json`.
+- [FACT] Commit `d08f457` moved existing `krn eval` module selection, execution, lane summary, and aggregate summary logic from `packages/cli/src/eval.ts` into `packages/cli/src/eval-modules.ts`.
+- [FACT] Public `krn eval` behavior remained registry-backed; default `current` still includes `core` plus `current`, and lab modules still require explicit selection.
+- [EVIDENCE] Focused eval CLI tests passed: `pnpm exec vitest run packages/cli/test/eval.test.ts` passed 1 file / 4 tests.
+- [EVIDENCE] Focused eval contract passed: `pnpm run eval:krn-eval` run `.krn/evals/krn-eval-contracts/20260621T074221Z-1761154/report.json` passed 6/6 cases and 15/15 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: public `krn eval` report builder and registry-backed module runner.
+- [SIMPLIFY] Delete/avoid: eval runner logic inside the CLI report builder, no new eval module, no lab/default expansion, no dashboard/API/benchmark work, and no product-lift claim.
+- [OVERCLAIM] This slice proves `krn eval` maintainability cleanup and behavior parity only. It does not prove better eval quality, review-burden reduction, or productivity lift.
+- [EVIDENCE] The eval helper responsibility split pre-edit gate passed and wrote `.krn/gates/20260621T074424Z-1773765/engineering-gate.json`.
+- [FACT] Commit `19e0992` split eval lane policy into `packages/cli/src/eval-lanes.ts` and module-report summary parsing into `packages/cli/src/eval-report-summary.ts`.
+- [FACT] `packages/cli/src/eval.ts` is now 110 lines, `packages/cli/src/eval-modules.ts` is 192 lines, `packages/cli/src/eval-lanes.ts` is 38 lines, and `packages/cli/src/eval-report-summary.ts` is 60 lines.
+- [EVIDENCE] Focused eval CLI tests passed: `pnpm exec vitest run packages/cli/test/eval.test.ts` passed 1 file / 4 tests.
+- [EVIDENCE] Focused eval contract passed: `pnpm run eval:krn-eval` run `.krn/evals/krn-eval-contracts/20260621T074652Z-1785707/report.json` passed 6/6 cases and 15/15 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: small eval helper modules with one responsibility each.
+- [SIMPLIFY] Delete/avoid: moving monolith pressure from `eval.ts` into one large helper, no new abstraction layer beyond existing public behavior, no lab/default expansion, and no committed runtime evidence.
+- [OVERCLAIM] This slice proves eval helper condensation only. It does not prove eval design quality, source quality, or product lift.
+- [EVIDENCE] The canonical skill-routing cleanup pre-edit gate passed and wrote `.krn/gates/20260621T074829Z-1791245/engineering-gate.json`.
+- [FACT] Commit `90c6f54` changed `packages/cli/src/skill-routing.ts` to route canonical docs by stable `docs/plans/canonical/**` surface class instead of hardcoding `docs/plans/canonical/draft.md`.
+- [FACT] Product code scan found no remaining `goal-038`, `docs/plans/canonical/draft.md`, `active final-product`, `active goal evidence`, or `/home/krn` strings in `packages/cli/src`, `packages/contracts/src`, `packages/mcp/src`, or `apps/dashboard/src`.
+- [EVIDENCE] Focused gate tests passed: `pnpm exec vitest run packages/cli/test/gate.test.ts` passed 1 file / 8 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: path-aware skill routing by surface class, not one active canonical file.
+- [SIMPLIFY] Delete/avoid: file-specific canonical draft routing in product code, broad config engine, dashboard/API/benchmark expansion, and committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves skill-routing hardcoded-truth cleanup only. It does not prove skill quality, research quality, final memory quality, or productivity lift.
+- [NEXT] The current default product-code runtime is clean of active-goal/canonical-draft/local-machine hardcoded truth. Continue only with a consumed bottleneck: obvious monolith pressure with a real public CLI/MCP/review/eval consumer, or a final-product capability dogfood task that uses existing context/source/memory/review boundaries without adding dashboard, benchmark, broad API/cloud sync, research runtime, or passive docs.
 
 ## Disproves Completion
 
