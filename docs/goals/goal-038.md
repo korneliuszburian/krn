@@ -1249,6 +1249,20 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no broad dashboard cleanup, no benchmark execution, no source registry service, no memory/API work, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves Promotion Review source-ref freshness and data lineage only. It does not prove dashboard usefulness, source graph completeness, human review quality, benchmark quality, or product lift.
 - [NEXT] Commit and push this source-lineage cleanup; then choose the next cleanup by live consumer pressure, not by broad source-ref string sweeps.
+- [EVIDENCE] The dashboard-data aggregate lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T043004Z-1389727/engineering-gate.json`.
+- [EVIDENCE] The benchmark-reports view-model lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T043038Z-1393051/engineering-gate.json`.
+- [FACT] `buildKrnBenchmarkReportsViewModel` no longer hardcodes historical `goal-006` / `goal-018` / `goal-019` refs as global top-level or next-action source refs. It derives source lineage from parsed benchmark reports and appends stable Benchmark Report / Benchmark Reports View Model spec refs.
+- [FACT] Empty or invalid Benchmark Reports states use stable spec refs only, while benchmark rows keep each parsed benchmark report's own `source_refs`.
+- [FACT] `apps/dashboard/scripts/write-dashboard-data.ts` no longer hardcodes historical dashboard source refs. The dashboard data envelope derives aggregate lineage from parsed child view models and appends the stable Dashboard Data spec ref.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/mcp/test/benchmark-reports-view-model.test.ts packages/contracts/test/benchmark-reports-view-model.test.ts packages/contracts/test/dashboard-data.test.ts` passed 3 files / 9 tests.
+- [EVIDENCE] `KRN_TARGET_ROOT=/tmp/krn-empty-dashboard-target KRN_DASHBOARD_DATA_OUT=/tmp/krn-dashboard-data.verify.json pnpm --dir apps/dashboard data` generated parsed dashboard data whose aggregate and benchmark empty-state source refs contain spec lineage only, with no historical goal refs.
+- [EVIDENCE] Dashboard tests passed: `pnpm --dir apps/dashboard exec vitest run test` passed 4 files / 13 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T043441Z-1404032/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: child-derived source lineage, stable spec refs, one helper per generator/view-model, public parser tests, and no new dashboard/API/benchmark surface.
+- [SIMPLIFY] Delete/avoid: no live benchmark run, no dashboard command, no broad stale-goal sweep, no source registry abstraction, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves dashboard-data and benchmark-reports aggregate source lineage only. It does not prove benchmark usefulness, dashboard usefulness, source graph completeness, memory quality, human review quality, or product lift.
+- [NEXT] Commit and push this cleanup; then continue only with cleanup that has a live typed consumer or with the next capability dogfood task from the canonical blueprint.
 
 ## Disproves Completion
 

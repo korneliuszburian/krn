@@ -29,10 +29,18 @@
       "target_surface": "proposal_store",
       "label": "Wait for proposal-store input",
       "rationale": "No proposal records exist, so Pending Review must render explicit zero state.",
-      "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-pending-review-view-model/README.md"]
+      "source_refs": [
+        "docs/specs/krn-pending-review-view-model/README.md",
+        "docs/specs/krn-control-plane-proposal/README.md",
+        "docs/specs/krn-proposal-review-decision/README.md"
+      ]
     },
     "blocked_actions": ["approve_proposal", "reject_proposal", "mutate_target"],
-    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-pending-review-view-model/README.md"],
+    "source_refs": [
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md"
+    ],
     "failure_mode": "Pending Review becomes harmful if it invents rows or treats chat state as product state.",
     "interpretation_caveat": "This view model renders local proposal-store records only; it does not approve or promote proposals."
   },
@@ -59,10 +67,16 @@
       "target_surface": "promotion_store",
       "label": "Wait for promotion-store input",
       "rationale": "No promotion records exist, so Promotion Review must render explicit zero state.",
-      "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-promotion-review-view-model/README.md"]
+      "source_refs": [
+        "docs/specs/krn-proposal-promotion/README.md",
+        "docs/specs/krn-promotion-review-view-model/README.md"
+      ]
     },
     "blocked_actions": ["dashboard_promote_button", "apply_promotion_from_dashboard", "write_memory"],
-    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-promotion-review-view-model/README.md"],
+    "source_refs": [
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-promotion-review-view-model/README.md"
+    ],
     "failure_mode": "Promotion Review becomes harmful if it invents promotion state or exposes write commands.",
     "interpretation_caveat": "This view model renders local promotion records only; it does not mutate targets."
   },
@@ -97,10 +111,16 @@
       "target_surface": "eval_reports",
       "label": "Generate eval report",
       "rationale": "No aggregate eval report exists, so Eval Runs must render explicit empty state.",
-      "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-eval-runs-view-model/README.md"]
+      "source_refs": [
+        "docs/specs/krn-eval/README.md",
+        "docs/specs/krn-eval-runs-view-model/README.md"
+      ]
     },
     "blocked_actions": ["claim_productivity_lift", "dashboard_rerun_eval", "auto_repair_from_dashboard", "write_memory"],
-    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-eval-runs-view-model/README.md"],
+    "source_refs": [
+      "docs/specs/krn-eval/README.md",
+      "docs/specs/krn-eval-runs-view-model/README.md"
+    ],
     "failure_mode": "Eval Runs becomes harmful if it invents eval state or treats missing reports as product lift.",
     "interpretation_caveat": "This view model renders local aggregate eval state only; it does not run benchmarks, repair failures, mutate ledgers, or prove productivity lift."
   },
@@ -128,7 +148,10 @@
       "target_surface": "benchmark_reports",
       "label": "Wait for benchmark report input",
       "rationale": "No benchmark reports exist, so Benchmark Reports must render explicit zero state.",
-      "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-reports-view-model/README.md"]
+      "source_refs": [
+        "docs/specs/krn-benchmark-report/README.md",
+        "docs/specs/krn-benchmark-reports-view-model/README.md"
+      ]
     },
     "blocked_actions": [
       "claim_productivity_lift_from_one_task",
@@ -136,16 +159,24 @@
       "dashboard_auto_repair",
       "write_memory"
     ],
-    "source_refs": ["docs/goals/goal-006.md", "docs/specs/krn-benchmark-reports-view-model/README.md"],
+    "source_refs": [
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md"
+    ],
     "failure_mode": "Benchmark Reports becomes harmful if it invents benchmark evidence or hides missing reports.",
     "interpretation_caveat": "This view model renders local benchmark reports only; it does not run benchmarks, mutate ledgers, or prove productivity lift."
   },
   "source_refs": [
-    "docs/goals/goal-006.md",
     "docs/specs/krn-pending-review-view-model/README.md",
+    "docs/specs/krn-control-plane-proposal/README.md",
+    "docs/specs/krn-proposal-review-decision/README.md",
+    "docs/specs/krn-proposal-promotion/README.md",
     "docs/specs/krn-promotion-review-view-model/README.md",
+    "docs/specs/krn-eval/README.md",
     "docs/specs/krn-eval-runs-view-model/README.md",
-    "docs/specs/krn-benchmark-reports-view-model/README.md"
+    "docs/specs/krn-benchmark-report/README.md",
+    "docs/specs/krn-benchmark-reports-view-model/README.md",
+    "docs/specs/krn-dashboard-data/README.md"
   ],
   "interpretation_caveat": "This dashboard data object contains parsed KRN dashboard view models only; it does not mutate targets, expose API commands, or prove productivity lift."
 }

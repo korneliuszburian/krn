@@ -63,7 +63,12 @@
     "target_surface": "benchmark_suite",
     "label": "Expand live benchmark suite",
     "rationale": "The latest live benchmark report is below the lift gate and has no positive assisted delta.",
-    "source_refs": ["docs/goals/goal-006.md", "docs/goals/goal-018.md", "docs/goals/goal-019.md"]
+    "source_refs": [
+      "docs/goals/goal-006.md",
+      "docs/goals/goal-018.md",
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md"
+    ]
   },
   "blocked_actions": [
     "claim_productivity_lift_from_one_task",
@@ -74,7 +79,6 @@
   "source_refs": [
     "docs/goals/goal-006.md",
     "docs/goals/goal-018.md",
-    "docs/goals/goal-019.md",
     "docs/specs/krn-benchmark-report/README.md",
     "docs/specs/krn-benchmark-reports-view-model/README.md"
   ],

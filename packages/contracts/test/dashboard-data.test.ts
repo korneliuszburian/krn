@@ -21,6 +21,14 @@ describe("KrnDashboardData contract", () => {
     expect(dashboardData.promotion_review.kind).toBe("krn_promotion_review_view_model");
     expect(dashboardData.eval_runs.kind).toBe("krn_eval_runs_view_model");
     expect(dashboardData.benchmark_reports.kind).toBe("krn_benchmark_reports_view_model");
+    expect(dashboardData.source_refs).toEqual([
+      ...dashboardData.pending_review.source_refs,
+      ...dashboardData.promotion_review.source_refs,
+      ...dashboardData.eval_runs.source_refs,
+      ...dashboardData.benchmark_reports.source_refs,
+      "docs/specs/krn-dashboard-data/README.md",
+    ]);
+    expect(dashboardData.source_refs).not.toContain("docs/goals/goal-006.md");
   });
 
   it("rejects the known-bad dashboard-data fixture", () => {

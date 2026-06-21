@@ -5,10 +5,8 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
-  - docs/goals/goal-018.md
-  - docs/goals/goal-019.md
   - docs/specs/krn-benchmark-report/README.md
+  - docs/goals/goal-038.md
 ---
 
 # KRN Benchmark Reports View Model

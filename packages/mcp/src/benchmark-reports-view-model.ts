@@ -7,10 +7,7 @@ import {
   type KrnBenchmarkReportsViewModel,
 } from "@krn/contracts";
 
-const BENCHMARK_REPORTS_SOURCE_REFS = [
-  "docs/goals/goal-006.md",
-  "docs/goals/goal-018.md",
-  "docs/goals/goal-019.md",
+const BENCHMARK_REPORTS_SPEC_SOURCE_REFS = [
   "docs/specs/krn-benchmark-report/README.md",
   "docs/specs/krn-benchmark-reports-view-model/README.md",
 ] as const;
@@ -90,12 +87,17 @@ function rowNextAction(report: KrnBenchmarkReport): string {
   return "Keep this benchmark report as review evidence and require a larger suite before product claims.";
 }
 
+function sourceRefsWithBenchmarkReportsSpec(sourceRefs: readonly string[]): string[] {
+  return [...new Set([...sourceRefs, ...BENCHMARK_REPORTS_SPEC_SOURCE_REFS])];
+}
+
 function aggregateNextAction(
   source: KrnBenchmarkReportsViewModel["source"],
   invalidRecords: number,
   negativeDeltaReports: number,
   noLiftReports: number,
   claimedReports: number,
+  sourceRefs: readonly string[],
 ): KrnBenchmarkReportsViewModel["next_allowed_action"] {
   if (source === "missing_benchmark_reports") {
     return {
@@ -103,7 +105,7 @@ function aggregateNextAction(
       target_surface: "benchmark_reports",
       label: "Wait for benchmark report input",
       rationale: "No benchmark reports exist, so Benchmark Reports must render explicit zero state.",
-      source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -113,7 +115,7 @@ function aggregateNextAction(
       target_surface: "benchmark_reports",
       label: "Repair invalid benchmark report",
       rationale: "At least one benchmark report failed to parse and cannot be used as review evidence.",
-      source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -123,7 +125,7 @@ function aggregateNextAction(
       target_surface: "benchmark_reports",
       label: "Review benchmark lift evidence",
       rationale: "A benchmark report claims productivity lift, so it needs human/source review before promotion.",
-      source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -133,7 +135,7 @@ function aggregateNextAction(
       target_surface: "benchmark_suite",
       label: "Expand live benchmark suite",
       rationale: "Current benchmark evidence is below the lift gate or has no positive assisted delta.",
-      source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -142,7 +144,7 @@ function aggregateNextAction(
     target_surface: "benchmark_reports",
     label: "Review benchmark reports",
     rationale: "Benchmark reports are available as typed review evidence only.",
-    source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+    source_refs: [...sourceRefs],
   };
 }
 
@@ -178,6 +180,7 @@ export function buildKrnBenchmarkReportsViewModel(
   const claimedReports = parsed.filter((entry) => entry.report.productivity_lift_claimed).length;
   const latestReportPath = parsed.at(-1)?.path ?? null;
   const source = sourceForCounts(parsed.length, invalid.length);
+  const sourceRefs = sourceRefsWithBenchmarkReportsSpec(parsed.flatMap(({ report }) => report.source_refs));
 
   return parseKrnBenchmarkReportsViewModel({
     schema_version: "krn-benchmark-reports-view-model.v1",
@@ -226,14 +229,21 @@ export function buildKrnBenchmarkReportsViewModel(
       error_summary: `Benchmark report failed to parse: ${errorSummary(error)}`,
     })),
     dashboard_commands_enabled: false,
-    next_allowed_action: aggregateNextAction(source, invalid.length, negativeDeltaReports, noLiftReports, claimedReports),
+    next_allowed_action: aggregateNextAction(
+      source,
+      invalid.length,
+      negativeDeltaReports,
+      noLiftReports,
+      claimedReports,
+      sourceRefs,
+    ),
     blocked_actions: [
       "claim_productivity_lift_from_one_task",
       "dashboard_run_benchmark",
       "dashboard_auto_repair",
       "write_memory",
     ],
-    source_refs: [...BENCHMARK_REPORTS_SOURCE_REFS],
+    source_refs: sourceRefs,
     failure_mode:
       "Benchmark Reports becomes harmful if it converts local benchmark evidence into a product lift claim or dashboard command surface.",
     interpretation_caveat:

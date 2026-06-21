@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { parseKrnBenchmarkReportsViewModel } from "@krn/contracts";
+import { parseKrnBenchmarkReport, parseKrnBenchmarkReportsViewModel } from "@krn/contracts";
 import { describe, expect, it } from "vitest";
 import { buildKrnBenchmarkReportsViewModel } from "../src/index.js";
 
@@ -18,6 +18,10 @@ function copyJsonFixture(targetRoot: string, fixturePath: string, runtimePath: s
   writeFileSync(absoluteRuntimePath, readFileSync(join(root, fixturePath), "utf8"), "utf8");
 }
 
+function readJsonFixture(path: string): unknown {
+  return JSON.parse(readFileSync(join(root, path), "utf8")) as unknown;
+}
+
 function createTarget(): string {
   return mkdtempSync(join(tmpdir(), "krn-benchmark-reports-view-model-"));
 }
@@ -29,6 +33,9 @@ describe("KRN Benchmark Reports view model", () => {
       targetRoot,
       "docs/specs/krn-benchmark-report/examples/benchmark-report.example.json",
       ".krn/benchmarks/krn-benchmark-spine/20260620T060000Z-test/report.json",
+    );
+    const report = parseKrnBenchmarkReport(
+      readJsonFixture("docs/specs/krn-benchmark-report/examples/benchmark-report.example.json"),
     );
 
     const viewModel = parseKrnBenchmarkReportsViewModel(
@@ -47,6 +54,13 @@ describe("KRN Benchmark Reports view model", () => {
     expect(viewModel.reports[0]?.repair_targets).toHaveLength(1);
     expect(viewModel.dashboard_commands_enabled).toBe(false);
     expect(viewModel.blocked_actions).toContain("dashboard_run_benchmark");
+    expect(viewModel.source_refs).toEqual([
+      ...report.source_refs,
+      "docs/specs/krn-benchmark-reports-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-018.md");
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-019.md");
   });
 
   it("renders missing benchmark reports as explicit empty state", () => {
@@ -57,6 +71,14 @@ describe("KRN Benchmark Reports view model", () => {
     expect(viewModel.total_records).toBe(0);
     expect(viewModel.reports).toEqual([]);
     expect(viewModel.next_allowed_action.action_id).toBe("wait-for-benchmark-report-input");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-006.md");
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-018.md");
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-019.md");
   });
 
   it("surfaces invalid benchmark reports as blocked state", () => {
@@ -69,5 +91,10 @@ describe("KRN Benchmark Reports view model", () => {
     expect(viewModel.invalid_records_count).toBe(1);
     expect(viewModel.invalid_records[0]?.report_path).toBe(".krn/benchmarks/bad-run/report.json");
     expect(viewModel.next_allowed_action.action_id).toBe("repair-invalid-benchmark-report");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-benchmark-report/README.md",
+      "docs/specs/krn-benchmark-reports-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
   });
 });
