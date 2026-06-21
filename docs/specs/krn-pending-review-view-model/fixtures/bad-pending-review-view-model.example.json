@@ -13,7 +13,7 @@
   "proposals": [
     {
       "owner": "krn",
-      "source_refs": ["docs/goals/goal-006.md"],
+      "source_refs": ["docs/specs/krn-pending-review-view-model/README.md"],
       "next_action": "Approve this proposal.",
       "failure_mode": "This fixture should fail because it models approval as dashboard behavior.",
       "proposal_id": "bad-approved-proposal",
@@ -37,10 +37,10 @@
     "target_surface": "proposal_store",
     "label": "Approve proposal",
     "rationale": "Bad fixture.",
-    "source_refs": ["docs/goals/goal-006.md"]
+    "source_refs": ["docs/specs/krn-pending-review-view-model/README.md"]
   },
   "blocked_actions": ["mutate_target"],
-  "source_refs": ["docs/goals/goal-006.md"],
+  "source_refs": ["docs/specs/krn-pending-review-view-model/README.md"],
   "failure_mode": "Bad fixture.",
   "interpretation_caveat": "Bad fixture."
 }

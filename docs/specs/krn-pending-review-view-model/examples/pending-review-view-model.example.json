@@ -18,10 +18,10 @@
     {
       "owner": "krn",
       "source_refs": [
-        "docs/goals/goal-006.md",
-        "docs/goals/goal-011.md",
-        "docs/goals/goal-013.md",
-        "docs/specs/krn-pending-review-view-model/README.md"
+        "docs/goals/goal-038.md",
+        "docs/goals/goal-008.md",
+        "docs/specs/krn-mcp-read-model/README.md",
+        "docs/plans/canonical/SOURCES.md"
       ],
       "next_action": "Review this proposal record before promoting any memory, source, goal, eval, repair, or dashboard change.",
       "failure_mode": "Pending Review rows are unsafe if they imply approval, hide stale source refs, or detach from the proposal-store record.",
@@ -48,15 +48,18 @@
   "next_allowed_action": {
     "action_id": "review-pending-proposals",
     "target_surface": "proposal_store",
-    "label": "Review pending proposal records",
-    "rationale": "Proposal-store records are available and require human review before promotion.",
-    "source_refs": [
-      "docs/goals/goal-006.md",
-      "docs/goals/goal-011.md",
-      "docs/goals/goal-013.md",
-      "docs/specs/krn-pending-review-view-model/README.md"
-    ]
-  },
+      "label": "Review pending proposal records",
+      "rationale": "Proposal-store records are available and require human review before promotion.",
+      "source_refs": [
+        "docs/goals/goal-038.md",
+        "docs/goals/goal-008.md",
+        "docs/specs/krn-mcp-read-model/README.md",
+        "docs/plans/canonical/SOURCES.md",
+        "docs/specs/krn-pending-review-view-model/README.md",
+        "docs/specs/krn-control-plane-proposal/README.md",
+        "docs/specs/krn-proposal-review-decision/README.md"
+      ]
+    },
   "blocked_actions": [
     "approve_proposal",
     "reject_proposal",
@@ -67,9 +70,10 @@
     "publish_dashboard_event"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md",
-    "docs/goals/goal-011.md",
-    "docs/goals/goal-013.md",
+    "docs/goals/goal-038.md",
+    "docs/goals/goal-008.md",
+    "docs/specs/krn-mcp-read-model/README.md",
+    "docs/plans/canonical/SOURCES.md",
     "docs/specs/krn-pending-review-view-model/README.md",
     "docs/specs/krn-control-plane-proposal/README.md",
     "docs/specs/krn-proposal-review-decision/README.md"

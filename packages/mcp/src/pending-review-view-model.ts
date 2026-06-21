@@ -3,10 +3,7 @@ import { parseKrnPendingReviewViewModel, type KrnPendingReviewViewModel } from "
 import { listKrnProposalReviewDecisionStoreRecords } from "./proposal-review-decision-store.js";
 import { listKrnProposalStoreRecords, validateProposalSourceRefs, validateSourceRefs } from "./proposal-store.js";
 
-const PENDING_REVIEW_SOURCE_REFS = [
-  "docs/goals/goal-006.md",
-  "docs/goals/goal-011.md",
-  "docs/goals/goal-013.md",
+const PENDING_REVIEW_SPEC_SOURCE_REFS = [
   "docs/specs/krn-pending-review-view-model/README.md",
   "docs/specs/krn-control-plane-proposal/README.md",
   "docs/specs/krn-proposal-review-decision/README.md",
@@ -100,12 +97,17 @@ function reviewedProposalKeys(
   );
 }
 
+function sourceRefsWithPendingReviewSpec(sourceRefs: readonly string[]): string[] {
+  return [...new Set([...sourceRefs, ...PENDING_REVIEW_SPEC_SOURCE_REFS])];
+}
+
 function pendingReviewNextAction(
   invalidProposalRecords: number,
   invalidReviewDecisionRecords: number,
   conflictingReviewDecisions: number,
   staleSourceRefProposals: number,
   pendingProposals: number,
+  sourceRefs: readonly string[],
 ): KrnPendingReviewViewModel["next_allowed_action"] {
   if (invalidProposalRecords > 0) {
     return {
@@ -113,7 +115,7 @@ function pendingReviewNextAction(
       target_surface: "proposal_store",
       label: "Repair invalid proposal records",
       rationale: "Pending Review must not present unparseable proposal files as reviewable work.",
-      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -123,7 +125,7 @@ function pendingReviewNextAction(
       target_surface: "proposal_review_store",
       label: "Repair invalid review decision records",
       rationale: "Pending Review must not treat invalid proposal review decisions as closed review state.",
-      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -133,7 +135,7 @@ function pendingReviewNextAction(
       target_surface: "proposal_review_store",
       label: "Repair conflicting review decisions",
       rationale: "A proposal cannot be safely removed from Pending Review while multiple terminal decisions exist.",
-      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -143,7 +145,7 @@ function pendingReviewNextAction(
       target_surface: "source_refs",
       label: "Repair stale proposal source refs",
       rationale: "Pending Review must not promote proposals whose source refs no longer resolve.",
-      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -153,7 +155,7 @@ function pendingReviewNextAction(
       target_surface: "proposal_store",
       label: "Review pending proposal records",
       rationale: "Proposal-store records are available and require human review before promotion.",
-      source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -162,7 +164,7 @@ function pendingReviewNextAction(
     target_surface: "proposal_store",
     label: "Wait for proposal-store input",
     rationale: "No proposal records exist, so Pending Review must render explicit zero state.",
-    source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+    source_refs: [...sourceRefs],
   };
 }
 
@@ -222,6 +224,10 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
     reviewRecords.total_records > 0 ||
     semanticReviewRecords.invalid_records.length > 0 ||
     reviewConflicts.length > 0;
+  const sourceRefs = sourceRefsWithPendingReviewSpec([
+    ...proposalRows.flatMap((proposal) => proposal.source_refs),
+    ...semanticReviewRecords.valid_records.flatMap((record) => record.decision.source_refs),
+  ]);
 
   return parseKrnPendingReviewViewModel({
     schema_version: "krn-pending-review-view-model.v1",
@@ -249,6 +255,7 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
       reviewConflicts.length,
       staleSourceRefProposals,
       proposalRows.length,
+      sourceRefs,
     ),
     blocked_actions: [
       "approve_proposal",
@@ -259,7 +266,7 @@ export function buildKrnPendingReviewViewModel(targetInput = ".", now = new Date
       "write_source_ledger",
       "publish_dashboard_event",
     ],
-    source_refs: [...PENDING_REVIEW_SOURCE_REFS],
+    source_refs: sourceRefs,
     failure_mode:
       "Pending Review becomes harmful if proposal or review decision records are treated as approved truth, hidden chat state, or dashboard UI readiness.",
     interpretation_caveat:

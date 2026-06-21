@@ -33,7 +33,7 @@ function fixtureViewModel(): KrnPendingReviewViewModel {
     eval_runs: readJsonFixture("docs/specs/krn-eval-runs-view-model/examples/eval-runs-view-model.example.json"),
     benchmark_reports: dashboardDataFixture.benchmark_reports,
     source_refs: [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/specs/krn-pending-review-view-model/README.md",
       "docs/specs/krn-promotion-review-view-model/README.md",
       "docs/specs/krn-eval-runs-view-model/README.md",
@@ -53,7 +53,7 @@ describe("Pending Review dashboard", () => {
     const html = render(fixtureViewModel());
 
     expect(html).toContain("Record KRN MCP STDIO transport boundary");
-    expect(html).toContain("docs/goals/goal-006.md");
+    expect(html).toContain("docs/goals/goal-038.md");
     expect(html).toContain("Next action");
     expect(html).toContain("Failure mode");
     expect(html).toContain("Validated");

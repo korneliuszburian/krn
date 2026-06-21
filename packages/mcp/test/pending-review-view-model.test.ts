@@ -82,6 +82,16 @@ describe("KRN pending review view model builder", () => {
       review_gate_state: "not_reviewed",
       source_ref_status: "validated",
     });
+    expect(reparsed.source_refs).toEqual([
+      ...proposal.source_refs,
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+    ]);
+    expect(reparsed.next_allowed_action.source_refs).toEqual(reparsed.source_refs);
+    expect(reparsed.source_refs).not.toContain("docs/goals/goal-006.md");
+    expect(reparsed.source_refs).not.toContain("docs/goals/goal-011.md");
+    expect(reparsed.source_refs).not.toContain("docs/goals/goal-013.md");
     if (proposal.target.target_type === "path") {
       expect(existsSync(join(targetRoot, proposal.target.path))).toBe(false);
     }
@@ -99,6 +109,12 @@ describe("KRN pending review view model builder", () => {
     expect(viewModel.total_review_decisions).toBe(0);
     expect(viewModel.proposals).toEqual([]);
     expect(viewModel.next_allowed_action.action_id).toBe("wait-for-proposal-store-input");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-pending-review-view-model/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
   });
 
   it("excludes proposals with valid terminal review decisions from the pending queue", () => {

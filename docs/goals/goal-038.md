@@ -1225,6 +1225,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new dashboard panel, no benchmark execution, no dashboard command, no source-ref sweep, no memory/API work, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves Pending Review test fixture parity with the current dashboard-data contract only. It does not prove dashboard usefulness, benchmark quality, human review quality, source freshness, or product lift.
 - [NEXT] Commit and push this consumer repair; then continue with consumer-led cleanup only where a real test, parser, or command exposes drift.
+- [EVIDENCE] The Pending Review source-lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T042037Z-1369799/engineering-gate.json`.
+- [FACT] `buildKrnPendingReviewViewModel` no longer hardcodes historical `goal-006` / `goal-011` / `goal-013` refs for runtime top-level or next-action source refs. It derives source lineage from parsed proposal/review records and appends stable Pending Review / proposal / review-decision spec refs.
+- [FACT] Empty or invalid Pending Review states use stable spec refs only, while proposal rows keep the proposal record's own `source_refs`.
+- [FACT] Pending Review examples and dashboard render tests now cite the current proposal source lineage instead of the old parent-goal source list.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/mcp/test/pending-review-view-model.test.ts packages/contracts/test/pending-review-view-model.test.ts` passed 2 files / 10 tests.
+- [EVIDENCE] Dashboard tests passed: `pnpm --dir apps/dashboard exec vitest run test/pending-review-dashboard.test.tsx` passed 1 file / 4 tests, and `pnpm --dir apps/dashboard exec vitest run test` passed 4 files / 13 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T042243Z-1372239/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one source-ref derivation helper, existing parser/view-model contracts, focused tests, and no new dashboard/API/eval surface.
+- [SIMPLIFY] Delete/avoid: no broad dashboard cleanup, no benchmark execution, no source registry service, no memory/API work, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves Pending Review source-ref freshness and data lineage only. It does not prove dashboard usefulness, source graph completeness, human review quality, benchmark quality, or product lift.
+- [NEXT] Commit and push this source-lineage cleanup; then continue only where a concrete consumer still exposes hardcoded-truth or contract drift.
 
 ## Disproves Completion
 
