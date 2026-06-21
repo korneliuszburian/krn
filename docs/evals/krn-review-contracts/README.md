@@ -23,7 +23,7 @@ It does not claim human approval, productivity lift, benchmark lift, API/MCP rea
 
 - The valid `krn-review` fixture parses through `@krn/contracts`.
 - The known-bad fixture fails deterministically.
-- The CLI-generated review report exists, parses through `@krn/contracts`, includes the required runtime artifacts, applies selected MemoryStore IDs, and keeps every proposal in `proposal_only` state.
+- The CLI-generated review report exists, parses through `@krn/contracts`, includes the required init/doctor/eval/source-check runtime artifact rows, applies selected MemoryStore IDs, and keeps every proposal in `proposal_only` state.
 - The eval writes a machine-readable report under `.krn/evals/krn-review-contracts/{run_id}/report.json`.
 
 ## Command

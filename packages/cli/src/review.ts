@@ -1,10 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
-  parseDoctorReport,
-  parseInitManifest,
-  parseKrnEvalReport,
   parseKrnReviewReport,
+  type KrnSourceCheck,
   type KrnMemoryApplication,
   type KrnReviewReport,
   type ReviewArtifact,
@@ -12,14 +10,11 @@ import {
   type ReviewProposal,
 } from "@krn/contracts";
 import { buildReviewMemoryBundle, recordMemoryFeedback } from "./memory-store.js";
+import { buildReviewRuntimeArtifacts, type SourceCheckReviewArtifact } from "./review-artifacts.js";
 
 export type ReviewArgs = {
   target: string;
 };
-
-const INIT_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-init/README.md"] as const;
-const DOCTOR_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-doctor/README.md"] as const;
-const EVAL_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-eval/README.md"] as const;
 
 export function parseReviewArgs(argv: readonly string[]): ReviewArgs {
   if (argv[0] !== "review") {
@@ -52,33 +47,6 @@ function createRunId(now: Date): string {
   return `${stamp}-${process.pid}`;
 }
 
-function readJsonFile(path: string): unknown {
-  return JSON.parse(readFileSync(path, "utf8")) as unknown;
-}
-
-function toTargetRelativePath(targetRoot: string, absolutePath: string): string {
-  const relativePath = relative(targetRoot, absolutePath).replaceAll("\\", "/");
-  if (relativePath.length > 0 && !relativePath.startsWith("..") && !relativePath.startsWith("/")) {
-    return relativePath;
-  }
-  return absolutePath;
-}
-
-function latestRuntimeFile(targetRoot: string, runtimeDir: string, fileName: string): string | null {
-  const absoluteRuntimeDir = resolve(targetRoot, runtimeDir);
-  if (!existsSync(absoluteRuntimeDir) || !statSync(absoluteRuntimeDir).isDirectory()) {
-    return null;
-  }
-
-  const candidates = readdirSync(absoluteRuntimeDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => resolve(absoluteRuntimeDir, entry.name, fileName))
-    .filter((candidatePath) => existsSync(candidatePath) && statSync(candidatePath).isFile())
-    .sort();
-
-  return candidates.at(-1) ?? null;
-}
-
 function artifactPathForEvidence(path: string | null): string[] {
   if (!path) {
     return [];
@@ -90,136 +58,16 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values)];
 }
 
-function reviewArtifact(
-  id: string,
-  kind: ReviewArtifact["kind"],
-  status: ReviewArtifact["status"],
-  path: string | null,
-  summary: string,
-  sourceRefs: readonly string[],
-): ReviewArtifact {
-  return {
-    id,
-    kind,
-    status,
-    path,
-    summary,
-    source_refs: [...sourceRefs],
-  };
-}
-
-function buildInitReviewArtifact(targetRoot: string): ReviewArtifact {
-  const manifestPath = latestRuntimeFile(targetRoot, ".krn/init", "manifest.json");
-  if (!manifestPath) {
-    return reviewArtifact(
-      "latest-init-manifest",
-      "init_manifest",
-      "missing",
-      null,
-      "No init dry-run manifest was found.",
-      [...INIT_ARTIFACT_SOURCE_REFS],
-    );
-  }
-
-  try {
-    const manifest = parseInitManifest(readJsonFile(manifestPath));
-    return reviewArtifact(
-      "latest-init-manifest",
-      "init_manifest",
-      "present",
-      toTargetRelativePath(targetRoot, manifestPath),
-      `Latest init manifest ${manifest.run_id} parsed in ${manifest.mode} mode.`,
-      manifest.source_refs,
-    );
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "unknown parse error";
-    return reviewArtifact(
-      "latest-init-manifest",
-      "init_manifest",
-      "invalid",
-      toTargetRelativePath(targetRoot, manifestPath),
-      `Latest init manifest could not be parsed: ${message}`,
-      [...INIT_ARTIFACT_SOURCE_REFS],
-    );
-  }
-}
-
-function buildDoctorReviewArtifact(targetRoot: string): ReviewArtifact {
-  const reportPath = latestRuntimeFile(targetRoot, ".krn/doctor", "report.json");
-  if (!reportPath) {
-    return reviewArtifact(
-      "latest-doctor-report",
-      "doctor_report",
-      "missing",
-      null,
-      "No doctor readiness report was found.",
-      [...DOCTOR_ARTIFACT_SOURCE_REFS],
-    );
-  }
-
-  try {
-    const report = parseDoctorReport(readJsonFile(reportPath));
-    return reviewArtifact(
-      "latest-doctor-report",
-      "doctor_report",
-      "present",
-      toTargetRelativePath(targetRoot, reportPath),
-      `Latest doctor report ${report.run_id} parsed with overall status ${report.overall_status}.`,
-      report.source_refs,
-    );
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "unknown parse error";
-    return reviewArtifact(
-      "latest-doctor-report",
-      "doctor_report",
-      "invalid",
-      toTargetRelativePath(targetRoot, reportPath),
-      `Latest doctor report could not be parsed: ${message}`,
-      [...DOCTOR_ARTIFACT_SOURCE_REFS],
-    );
-  }
-}
-
-function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
-  const reportPath = latestRuntimeFile(targetRoot, ".krn/eval", "report.json");
-  if (!reportPath) {
-    return reviewArtifact(
-      "latest-eval-report",
-      "eval_report",
-      "missing",
-      null,
-      "No aggregate eval report was found.",
-      [...EVAL_ARTIFACT_SOURCE_REFS],
-    );
-  }
-
-  try {
-    const report = parseKrnEvalReport(readJsonFile(reportPath));
-    return reviewArtifact(
-      "latest-eval-report",
-      "eval_report",
-      "present",
-      toTargetRelativePath(targetRoot, reportPath),
-      `Latest eval aggregate ${report.run_id} parsed with ${report.summary.passed_modules}/${report.summary.total_modules} modules passing.`,
-      report.source_refs,
-    );
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "unknown parse error";
-    return reviewArtifact(
-      "latest-eval-report",
-      "eval_report",
-      "invalid",
-      toTargetRelativePath(targetRoot, reportPath),
-      `Latest aggregate eval report could not be parsed: ${message}`,
-      [...EVAL_ARTIFACT_SOURCE_REFS],
-    );
-  }
+function sourceCheckFindingSummary(report: KrnSourceCheck): string {
+  const affectedRefs = report.decision === "block" ? report.blocked_refs : report.warning_refs;
+  return `Source check ${report.run_id} returned ${report.decision} for ${affectedRefs.join(", ")}. Required actions: ${report.required_actions.join(" ")}`;
 }
 
 function buildReviewFindings(
   artifacts: readonly ReviewArtifact[],
   application: KrnMemoryApplication,
   memorySourceRefs: readonly string[],
+  sourceCheck: SourceCheckReviewArtifact,
 ): ReviewFinding[] {
   const findings: ReviewFinding[] = [];
 
@@ -243,6 +91,17 @@ function buildReviewFindings(
       summary: artifact.summary,
       evidence_refs: artifactPathForEvidence(artifact.path),
       source_refs: artifact.source_refs,
+    });
+  }
+
+  if (sourceCheck.report && sourceCheck.report.decision !== "pass") {
+    findings.push({
+      id: `latest-source-check-${sourceCheck.report.decision}`,
+      severity: sourceCheck.report.decision === "block" ? "blocking" : "warning",
+      artifact_id: sourceCheck.artifact.id,
+      summary: sourceCheckFindingSummary(sourceCheck.report),
+      evidence_refs: artifactPathForEvidence(sourceCheck.artifact.path),
+      source_refs: sourceCheck.report.source_refs,
     });
   }
 
@@ -283,6 +142,7 @@ function buildReviewProposals(
   artifacts: readonly ReviewArtifact[],
   application: KrnMemoryApplication,
   memorySourceRefs: readonly string[],
+  sourceCheck: SourceCheckReviewArtifact,
 ): ReviewProposal[] {
   const evidenceRefs = artifacts.flatMap((artifact) => (artifact.path ? [artifact.path] : []));
   const proposals: ReviewProposal[] = [];
@@ -307,10 +167,24 @@ function buildReviewProposals(
         "promote-reviewed-runtime-evidence",
         "source_claim_update",
         "Review and promote parsed runtime evidence into the source ledger.",
-        "The latest init, doctor, and eval runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
+        "The latest init, doctor, eval, and source-check runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
         evidenceRefs,
         unique([...memorySourceRefs, "docs/plans/canonical/SOURCES.md"]),
         ["broad API sync", "dashboard command surfaces", "runtime skills"],
+      ),
+    );
+  }
+
+  if (sourceCheck.report && sourceCheck.report.decision !== "pass") {
+    proposals.push(
+      proposal(
+        `repair-source-check-${sourceCheck.report.decision}`,
+        "repair_record",
+        "Resolve source graph check warnings before promoting runtime evidence.",
+        sourceCheckFindingSummary(sourceCheck.report),
+        artifactPathForEvidence(sourceCheck.artifact.path),
+        sourceCheck.report.source_refs,
+        ["source promotion", "memory promotion", "broad API sync", "dashboard command surfaces"],
       ),
     );
   }
@@ -362,13 +236,9 @@ export function buildKrnReviewReport(targetInput: string, now = new Date()): Krn
   const runtimeReportPath = `.krn/review/${runId}/report.json`;
   const memory = buildReviewMemoryBundle(targetRoot, runId, now);
   const memorySourceRefs = unique(memory.selectedRecords.flatMap((record) => record.source_lineage));
-  const artifacts = [
-    buildInitReviewArtifact(targetRoot),
-    buildDoctorReviewArtifact(targetRoot),
-    buildEvalReviewArtifact(targetRoot),
-  ];
-  const findings = buildReviewFindings(artifacts, memory.application, memorySourceRefs);
-  const proposals = buildReviewProposals(artifacts, memory.application, memorySourceRefs);
+  const { artifacts, sourceCheck } = buildReviewRuntimeArtifacts(targetRoot);
+  const findings = buildReviewFindings(artifacts, memory.application, memorySourceRefs, sourceCheck);
+  const proposals = buildReviewProposals(artifacts, memory.application, memorySourceRefs, sourceCheck);
   const summary = summarizeReview(artifacts, findings, proposals);
 
   const candidateReport: unknown = {

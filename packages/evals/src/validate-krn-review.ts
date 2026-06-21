@@ -37,7 +37,7 @@ type EvalReport = {
   interpretation_caveat: string;
 };
 
-const REQUIRED_ARTIFACTS = ["latest-init-manifest", "latest-doctor-report", "latest-eval-report"];
+const REQUIRED_ARTIFACTS = ["latest-init-manifest", "latest-doctor-report", "latest-eval-report", "latest-source-check"];
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
@@ -140,7 +140,7 @@ function runValidation(): EvalReport {
       result(
         validFixtureCase.id,
         report.command === "krn review" && hasRequiredArtifacts(report) && proposalsAreReviewOnly(report),
-        ["valid fixture parses", "required runtime artifacts present", "proposals are proposal-only"],
+        ["valid fixture parses", "required init/doctor/eval/source-check artifacts present", "proposals are proposal-only"],
         validFixtureCase.failure_mode,
         "Valid krn-review fixture parsed through @krn/contracts.",
       ),
@@ -210,6 +210,7 @@ function runValidation(): EvalReport {
             "CLI exits zero",
             "generated report exists",
             "generated report parses",
+            "required init/doctor/eval/source-check artifact rows present",
             "memory selection is applied",
             "proposals are proposal-only",
           ],

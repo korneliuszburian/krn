@@ -3,7 +3,7 @@ import { KrnMemoryApplicationSchema, KrnMemoryFeedbackSchema, KrnMemorySelection
 
 const SourceRefSchema = z.string().min(1);
 
-const ReviewArtifactKindSchema = z.enum(["init_manifest", "doctor_report", "eval_report"]);
+const ReviewArtifactKindSchema = z.enum(["init_manifest", "doctor_report", "eval_report", "source_check"]);
 const ReviewArtifactStatusSchema = z.enum(["present", "missing", "invalid"]);
 const ReviewFindingSeveritySchema = z.enum(["info", "warning", "blocking"]);
 const ReviewProposalTypeSchema = z.enum([

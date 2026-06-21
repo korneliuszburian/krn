@@ -1,7 +1,7 @@
 [
   {
     "id": "valid-fixture-parses",
-    "expected_behavior": "The valid krn-review report fixture parses through @krn/contracts and includes required runtime artifact references plus memory selection/application evidence.",
+    "expected_behavior": "The valid krn-review report fixture parses through @krn/contracts and includes required init/doctor/eval/source-check runtime artifact references plus memory selection/application evidence.",
     "source_patterns": [
       "docs/goals/goal-038.md",
       "docs/specs/krn-review/README.md",
@@ -9,7 +9,7 @@
     ],
     "assertions": [
       "valid fixture parses",
-      "required runtime artifacts present",
+      "required init/doctor/eval/source-check artifacts present",
       "proposals are proposal-only"
     ],
     "metrics": [
@@ -48,6 +48,7 @@
       "CLI exits zero",
       "generated report exists",
       "generated report parses",
+      "required init/doctor/eval/source-check artifact rows present",
       "memory selection is applied",
       "proposals are proposal-only"
     ],

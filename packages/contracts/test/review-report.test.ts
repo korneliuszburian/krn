@@ -20,6 +20,7 @@ describe("KrnReviewReport contract", () => {
       "latest-init-manifest",
       "latest-doctor-report",
       "latest-eval-report",
+      "latest-source-check",
     ]);
     expect(report.memory_selection.selected.map((selected) => selected.memory_id)).toEqual([
       "mem-goal-038-memory-boundary",

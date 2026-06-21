@@ -49,8 +49,10 @@ The report uses `schema_version: "krn-review-report.v1"` and `kind: "krn_review_
 - `.krn/init/*/manifest.json`
 - `.krn/doctor/*/report.json`
 - `.krn/eval/*/report.json`
+- `.krn/sources/*/source-check.json`
 
 Each input is parsed through `@krn/contracts` before the review report marks it as `present`.
+If the latest source check returns `warn` or `block`, `krn review` must surface that decision as warning or blocking review guidance before runtime evidence is promoted.
 
 It also requires a local MemoryStore adapter file outside the target repo:
 

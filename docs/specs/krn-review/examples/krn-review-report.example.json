@@ -31,6 +31,14 @@
       "path": ".krn/eval/20260620T210200Z-example/report.json",
       "summary": "Latest eval aggregate 20260620T210200Z-example parsed with 3/3 modules passing.",
       "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
+    },
+    {
+      "id": "latest-source-check",
+      "kind": "source_check",
+      "status": "present",
+      "path": ".krn/sources/20260620T210300Z-example/source-check.json",
+      "summary": "Latest source check 20260620T210300Z-example parsed with pass decision across 2 refs.",
+      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"]
     }
   ],
   "findings": [
@@ -59,6 +67,14 @@
       "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
     },
     {
+      "id": "latest-source-check-present",
+      "severity": "info",
+      "artifact_id": "latest-source-check",
+      "summary": "Latest source check 20260620T210300Z-example parsed with pass decision across 2 refs.",
+      "evidence_refs": [".krn/sources/20260620T210300Z-example/source-check.json"],
+      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"]
+    },
+    {
       "id": "memory-selection-applied",
       "severity": "info",
       "artifact_id": null,
@@ -73,11 +89,12 @@
       "proposal_type": "source_claim_update",
       "status": "proposal_only",
       "title": "Review and promote parsed runtime evidence into the source ledger.",
-      "rationale": "The latest init, doctor, and eval runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
+      "rationale": "The latest init, doctor, eval, and source-check runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
       "evidence_refs": [
         ".krn/init/20260620T210000Z-example/manifest.json",
         ".krn/doctor/20260620T210100Z-example/report.json",
-        ".krn/eval/20260620T210200Z-example/report.json"
+        ".krn/eval/20260620T210200Z-example/report.json",
+        ".krn/sources/20260620T210300Z-example/source-check.json"
       ],
       "source_refs": [
         "docs/goals/goal-038.md",
@@ -188,11 +205,11 @@
     "notes": "Feedback is usage evidence, not a productivity-lift claim."
   },
   "summary": {
-    "total_artifacts": 3,
-    "present_artifacts": 3,
+    "total_artifacts": 4,
+    "present_artifacts": 4,
     "missing_artifacts": 0,
     "invalid_artifacts": 0,
-    "findings": 4,
+    "findings": 5,
     "blocking_findings": 0,
     "proposals": 2
   },

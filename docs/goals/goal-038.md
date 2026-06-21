@@ -1485,6 +1485,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no eval-lane rewrite, no lab/default expansion, no dashboard/API/benchmark work, no broad source-ref sweep, and no claim that eval quality improved.
 - [OVERCLAIM] This slice proves eval registry source-ref hygiene only. It does not prove better eval design, productivity lift, final source graph quality, or dashboard readiness.
 - [NEXT] Commit and push this eval-registry cleanup; then stop unless a concrete current consumer exposes another unsafe hardcoded-truth or context/review friction.
+- [EVIDENCE] The source-check review integration pre-edit gate passed and wrote `.krn/gates/20260621T065848Z-1665602/engineering-gate.json`.
+- [FACT] `krn review` now includes the latest `.krn/sources/*/source-check.json` as a typed `source_check` review artifact instead of leaving source graph checks outside the review consumer.
+- [FACT] A parsed source check with `warn` or `block` now creates warning/blocking review guidance and a repair proposal before runtime evidence can be promoted.
+- [FACT] Runtime artifact detection/parsing for review moved into `packages/cli/src/review-artifacts.ts`, reducing `packages/cli/src/review.ts` to 280 lines after this slice.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/review.test.ts packages/cli/test/source-graph.test.ts packages/contracts/test/review-report.test.ts packages/contracts/test/source-graph.test.ts` passed 4 files / 13 tests.
+- [EVIDENCE] Focused review eval passed: `pnpm run eval:krn-review` run `.krn/evals/krn-review-contracts/20260621T070627Z-1676344/report.json` passed 3/3 cases and 10/10 assertions, including required init/doctor/eval/source-check artifact rows.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one `review-artifacts` module, one `source_check` artifact kind, existing source-check contract/parser, one blocking source-check CLI regression, and the existing review eval module with a stricter artifact assertion.
+- [SIMPLIFY] Delete/avoid: no dashboard/API/benchmark surface, no broad source service, no repo-wide source-ref sweep, no `codex exec`, no new eval family, and no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves source-check visibility and block/warn guidance inside `krn review` only. It does not prove final source graph quality, source freshness, memory quality, human review quality, dashboard readiness, or productivity lift.
+- [NEXT] Commit and push this review/source integration. Then continue only with another consumed final-product bottleneck; if no concrete consumer exposes friction, stop with status instead of inventing another surface.
 
 ## Disproves Completion
 

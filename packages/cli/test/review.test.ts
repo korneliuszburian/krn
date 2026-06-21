@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -30,7 +30,13 @@ describe("krn review", () => {
     expect(report.command).toBe("krn review");
     expect(report.mode).toBe("proposal-only");
     expect(report.overall_status).toBe("needs_attention");
-    expect(report.artifacts.map((artifact) => artifact.status)).toEqual(["missing", "missing", "missing"]);
+    expect(report.artifacts.map((artifact) => artifact.kind)).toEqual([
+      "init_manifest",
+      "doctor_report",
+      "eval_report",
+      "source_check",
+    ]);
+    expect(report.artifacts.map((artifact) => artifact.status)).toEqual(["missing", "missing", "missing", "missing"]);
     expect(report.proposals.every((proposal) => proposal.status === "proposal_only")).toBe(true);
     expect(report.memory_selection.selected.map((selected) => selected.memory_id)).toEqual([
       "mem-goal-038-memory-boundary",
@@ -68,5 +74,56 @@ describe("krn review", () => {
     const storeAfterReview = readJson(storePath) as { feedback?: unknown[]; records?: Array<{ last_used_at?: string | null }> };
     expect(storeAfterReview.feedback).toHaveLength(1);
     expect(storeAfterReview.records?.filter((record) => record.last_used_at !== null)).toHaveLength(2);
+  }, 30_000);
+
+  it("blocks review when the latest source check blocks selected source refs", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-review-source-target-"));
+    const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
+    const storePath = join(storeRoot, "memory-store.json");
+    writeMemoryStoreFixture(storePath);
+
+    const sourceCheck = spawnSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "sources",
+        "check",
+        "--target",
+        targetRoot,
+        "--context",
+        "docs/specs/krn-context-packet/examples/context-packet.example.json",
+        "--graph",
+        "docs/specs/krn-source-graph/fixtures/source-graph-blocking.example.json",
+      ],
+      { cwd: process.cwd(), encoding: "utf8" },
+    );
+
+    expect(sourceCheck.status).toBe(1);
+
+    const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "review", "--target", targetRoot], {
+      cwd: process.cwd(),
+      env: { ...process.env, KRN_MEMORY_STORE_PATH: storePath },
+      encoding: "utf8",
+    });
+
+    const report = parseKrnReviewReport(readJson(stdout.trim()));
+    const sourceArtifact = report.artifacts.find((artifact) => artifact.id === "latest-source-check");
+    const sourceFinding = report.findings.find((finding) => finding.id === "latest-source-check-block");
+
+    expect(report.overall_status).toBe("blocked");
+    expect(sourceArtifact).toMatchObject({
+      kind: "source_check",
+      status: "present",
+    });
+    expect(sourceArtifact?.source_refs).toEqual(["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"]);
+    expect(sourceFinding).toMatchObject({
+      severity: "blocking",
+      artifact_id: "latest-source-check",
+    });
+    expect(report.proposals.map((proposal) => proposal.id)).toContain("repair-source-check-block");
+    expect(JSON.stringify(report)).not.toContain("docs/plans/canonical/draft.md");
   }, 30_000);
 });
