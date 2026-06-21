@@ -1157,6 +1157,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no parser restriction against real absolute runtime paths, no dashboard/API/benchmark behavior changes, no broad source-ref rewrite, and no new passive documentation.
 - [SIMPLIFY] Next candidate: stale `goal-006` refs in dashboard/proposal/benchmark specs should be cleaned only through touched consumers or archived lab/default-lane decisions, not by an unbounded string replacement.
 - [OVERCLAIM] This slice proves checked-in example portability only. It does not prove runtime path privacy, source graph correctness, memory quality, dashboard usefulness, review-burden reduction, or product lift.
+- [EVIDENCE] The spec portability regression-guard pre-edit gate passed and wrote `.krn/gates/20260621T035601Z-1307490/engineering-gate.json`.
+- [FACT] `packages/contracts/test/spec-portability.test.ts` now fails if checked-in `docs/specs/**` content reintroduces user-specific local path prefixes such as `/home/krn/`, `C:\Users\krnij`, or `/mnt/c/Users/krnij`.
+- [FACT] The guard protects portable examples and fixtures only; it does not reject legitimate runtime reports that record an actual target root outside checked-in specs.
+- [EVIDENCE] Focused guard test passed: `pnpm exec vitest run packages/contracts/test/spec-portability.test.ts` passed 1 file / 1 test.
+- [EVIDENCE] Focused contract suite passed: `pnpm exec vitest run packages/contracts/test` passed 28 files / 127 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T035644Z-1309919/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one focused portability guard in the contracts test suite because it protects the spec examples/fixtures just cleaned.
+- [SIMPLIFY] Delete/avoid: no new eval module, no parser/product behavior change, no dashboard/API/benchmark work, no broad lint framework, and no runtime path restriction.
+- [SIMPLIFY] Next candidate: if another repeated hardcoded-truth class appears, add a focused guard only after a concrete cleanup proves the rule; do not build a general policy engine preemptively.
+- [OVERCLAIM] This slice proves regression coverage for local path leakage in checked-in specs only. It does not prove broader secret scanning, path privacy in runtime evidence, source quality, memory quality, or product lift.
 
 ## Disproves Completion
 
