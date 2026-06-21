@@ -1580,6 +1580,19 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: file-specific canonical draft routing in product code, broad config engine, dashboard/API/benchmark expansion, and committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves skill-routing hardcoded-truth cleanup only. It does not prove skill quality, research quality, final memory quality, or productivity lift.
 - [NEXT] The current default product-code runtime is clean of active-goal/canonical-draft/local-machine hardcoded truth. Continue only with a consumed bottleneck: obvious monolith pressure with a real public CLI/MCP/review/eval consumer, or a final-product capability dogfood task that uses existing context/source/memory/review boundaries without adding dashboard, benchmark, broad API/cloud sync, research runtime, or passive docs.
+- [FACT] Commit `cd44090` generalized doctor path portability checks from user-specific `/home/krn`/`krnij` patterns to generic home-directory path detection.
+- [EVIDENCE] Focused doctor tests passed: `pnpm exec vitest run packages/cli/test/doctor.test.ts packages/contracts/test/doctor-report.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] Focused doctor eval passed: `pnpm run eval:krn-doctor` run `.krn/evals/krn-doctor-contracts/20260621T075257Z-1796623/report.json` passed 3/3 cases and 7/7 assertions.
+- [FACT] Commit `bfed306` repaired `krn gate` false positives so negated verification/hardcoded-truth phrases such as `no dashboard state`, `no broad API`, and `no benchmark default` do not block a scoped cleanup.
+- [EVIDENCE] Focused gate tests passed: `pnpm exec vitest run packages/cli/test/gate.test.ts` passed 1 file / 9 tests.
+- [FACT] Commit `1da33eb` extracted the existing MCP read-only runtime resource model into `packages/mcp/src/read-model.ts`, leaving `packages/mcp/src/index.ts` as a 190-line export/dashboard composition module.
+- [EVIDENCE] Focused MCP tests passed: `pnpm exec vitest run packages/mcp/test/read-model.test.ts packages/mcp/test/stdio-server.test.ts packages/mcp/test/dashboard-view-model.test.ts` passed 3 files / 9 tests.
+- [EVIDENCE] Focused MCP eval passed: `pnpm run eval:krn-mcp` run `.krn/evals/krn-mcp-read-model/20260621T080124Z-1806046/report.json` passed 3/3 cases and 9/9 assertions.
+- [EVIDENCE] `pnpm typecheck`, `git diff --check`, and staged diff checks passed for these cleanup slices.
+- [SIMPLIFY] Keep: generic portability detection, public gate semantics, read-model behavior behind the same MCP exports, and focused consumer tests.
+- [SIMPLIFY] Delete/avoid: user-specific local paths, false-blocking negated guardrails, duplicated read-model helpers inside the MCP index, dashboard/API/benchmark expansion, `codex exec`, and committed `.krn/**` runtime evidence.
+- [OVERCLAIM] These slices prove cleanup, portability, and maintainability only. They do not prove memory precision, final source freshness, security hardening, dashboard usefulness, review-burden reduction, self-growing behavior, or product lift.
+- [NEXT] Continue only through consumed final-product slices or cleanup bottlenecks with public CLI/MCP/review/eval consumers. Prefer source/context/memory capability dogfood only after the existing consumer boundary is clear; do not add broad labs, dashboards, benchmark lanes, passive docs, or cloud/API sync.
 
 ## Disproves Completion
 
