@@ -1496,6 +1496,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no dashboard/API/benchmark surface, no broad source service, no repo-wide source-ref sweep, no `codex exec`, no new eval family, and no committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves source-check visibility and block/warn guidance inside `krn review` only. It does not prove final source graph quality, source freshness, memory quality, human review quality, dashboard readiness, or productivity lift.
 - [NEXT] Commit and push this review/source integration. Then continue only with another consumed final-product bottleneck; if no concrete consumer exposes friction, stop with status instead of inventing another surface.
+- [EVIDENCE] The init bootstrap payload extraction pre-edit gate passed and wrote `.krn/gates/20260621T070829Z-1688162/engineering-gate.json`.
+- [FACT] Exact reviewed init seed payload construction moved from `packages/cli/src/init-bootstrap.ts` into `packages/cli/src/init-bootstrap-payloads.ts`.
+- [FACT] `packages/cli/src/init-bootstrap.ts` now focuses on proposal reading, approved-decision promotion, target path safety, and exact apply orchestration, and is 132 lines after the extraction.
+- [EVIDENCE] Focused init test passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] Focused init eval passed: `pnpm run eval:krn-init` run `.krn/evals/krn-init-contracts/20260621T071248Z-1705331/report.json` passed 13/13 cases and 62/62 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: exact bootstrap payload content, public `buildInitBootstrapPayload` re-export, reviewed apply/promotion behavior, and existing init tests/eval.
+- [SIMPLIFY] Delete/avoid: seed content and payload-hash construction inside apply/promotion flow, no generic scaffold engine, no new init target, no dashboard/API/benchmark work, and no product-lift claim.
+- [OVERCLAIM] This slice proves init bootstrap maintainability and behavior parity only. It does not prove broad repo bootstrap quality, merge-mode safety, source freshness, memory quality, hook enforcement, or productivity lift.
+- [NEXT] Commit and push this init cleanup. Then continue only if another consumed bottleneck is visible from code pressure or user-facing CLI/review friction.
 
 ## Disproves Completion
 
