@@ -109,6 +109,33 @@
     "failure_mode": "KRN init can skip the review/promotion spine and write .krn/sources/index.json without an exact approved payload."
   },
   {
+    "id": "apply-exact-init-context-pointers-promotion",
+    "expected_behavior": "Explicit apply mode writes exact init context-pointers payload content only after an approved review decision.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-context-pointer-index/README.md",
+      "docs/specs/krn-context-packet/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md"
+    ],
+    "assertions": [
+      "approved init context-pointers proposal stored",
+      "init context-pointers apply promotion stored",
+      ".krn/context/index.json written in explicit apply mode",
+      "promotion record persisted",
+      "context pointer index keeps memory bodies out of runtime seed"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "context_relevance_score",
+      "drift_resistance_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "KRN init can skip the review/promotion spine and write .krn/context/index.json without an exact approved payload or with a runtime seed that stores memory bodies."
+  },
+  {
     "id": "rejected-decision-promotion-rejected",
     "expected_behavior": "A rejected proposal review decision cannot be promoted.",
     "source_patterns": [

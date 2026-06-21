@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import {
+  parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
@@ -19,7 +20,12 @@ type InitAgentInstructionsPayload = Extract<
 >;
 type InitLocalConfigPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_local_config" }>;
 type InitSourcePointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_source_pointers" }>;
-type InitBootstrapPayload = InitAgentInstructionsPayload | InitLocalConfigPayload | InitSourcePointersPayload;
+type InitContextPointersPayload = Extract<ControlPlanePromotionPayload, { payload_type: "init_context_pointers" }>;
+type InitBootstrapPayload =
+  | InitAgentInstructionsPayload
+  | InitLocalConfigPayload
+  | InitSourcePointersPayload
+  | InitContextPointersPayload;
 export type InitBootstrapCapability = InitBootstrapPayload["bootstrap_capability"];
 
 function sha256(content: string): string {
@@ -114,6 +120,33 @@ function sourcePointersFileContent(): string {
   )}\n`;
 }
 
+function contextPointersFileContent(): string {
+  return `${JSON.stringify(
+    parseKrnContextPointerIndex({
+      schema_version: "krn-context-pointer-index.v1",
+      kind: "krn_context_pointer_index",
+      pointer_id: "krn-init-context-pointer-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      runtime_root: ".krn/context",
+      packet_glob: ".krn/context/*/context-packet.json",
+      latest_packet_ref: null,
+      build_command: "krn context build --task <text> [--path <path>]",
+      memory_policy: {
+        store_memory_bodies: false,
+        require_selected_memory_ids: true,
+        require_application_guidance: true,
+        max_selected_context: 5,
+      },
+      rejected_context_refs: ["docs/memory/** full scan", "historical benchmark/lab goals by default"],
+      source_refs: ["krn://context/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed points to bounded context packet runtime locations only; it is not an active context packet, memory body store, task intent, or proof of context quality.",
+    }),
+    null,
+    2,
+  )}\n`;
+}
+
 export function buildInitAgentInstructionsPayload(targetPath: string): InitAgentInstructionsPayload {
   const fileContent = agentInstructionsFileContent();
   return {
@@ -150,6 +183,18 @@ export function buildInitSourcePointersPayload(targetPath: string): InitSourcePo
   };
 }
 
+export function buildInitContextPointersPayload(targetPath: string): InitContextPointersPayload {
+  const fileContent = contextPointersFileContent();
+  return {
+    payload_type: "init_context_pointers",
+    bootstrap_capability: "context_pointers",
+    target_path: targetPath,
+    write_mode: "exact_file_content",
+    file_content: fileContent,
+    content_sha256: sha256(fileContent),
+  };
+}
+
 export function buildInitBootstrapPayload(capability: InitBootstrapCapability, targetPath: string): InitBootstrapPayload {
   switch (capability) {
     case "agent_instructions":
@@ -158,6 +203,8 @@ export function buildInitBootstrapPayload(capability: InitBootstrapCapability, t
       return buildInitLocalConfigPayload(targetPath);
     case "source_pointers":
       return buildInitSourcePointersPayload(targetPath);
+    case "context_pointers":
+      return buildInitContextPointersPayload(targetPath);
   }
 }
 
@@ -168,7 +215,8 @@ function assertInitBootstrapPayload(proposal: KrnControlPlaneProposal): void {
   if (
     proposal.promotion_payload?.payload_type !== "init_agent_instructions" &&
     proposal.promotion_payload?.payload_type !== "init_local_config" &&
-    proposal.promotion_payload?.payload_type !== "init_source_pointers"
+    proposal.promotion_payload?.payload_type !== "init_source_pointers" &&
+    proposal.promotion_payload?.payload_type !== "init_context_pointers"
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }
@@ -187,7 +235,8 @@ export function buildInitPromotion(
     !payload ||
     (payload.payload_type !== "init_agent_instructions" &&
       payload.payload_type !== "init_local_config" &&
-      payload.payload_type !== "init_source_pointers")
+      payload.payload_type !== "init_source_pointers" &&
+      payload.payload_type !== "init_context_pointers")
   ) {
     throw new Error(`krn init apply requires an init bootstrap payload: ${proposal.proposal_id}`);
   }

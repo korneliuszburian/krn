@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import {
   parseKrnControlPlaneProposal,
+  parseKrnContextPointerIndex,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
   type KrnControlPlaneProposal,
@@ -69,6 +70,33 @@ function initSourcePointersContent(): string {
       source_refs: ["krn://source/bootstrap-policy"],
       overclaim_boundary:
         "This seed is a source graph boundary only; it is not a copied bibliography, active source list, or proof of source freshness.",
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function initContextPointersContent(): string {
+  return `${JSON.stringify(
+    {
+      schema_version: "krn-context-pointer-index.v1",
+      kind: "krn_context_pointer_index",
+      pointer_id: "krn-init-context-pointer-seed",
+      created_at: "1970-01-01T00:00:00.000Z",
+      runtime_root: ".krn/context",
+      packet_glob: ".krn/context/*/context-packet.json",
+      latest_packet_ref: null,
+      build_command: "krn context build --task <text> [--path <path>]",
+      memory_policy: {
+        store_memory_bodies: false,
+        require_selected_memory_ids: true,
+        require_application_guidance: true,
+        max_selected_context: 5,
+      },
+      rejected_context_refs: ["docs/memory/** full scan", "historical benchmark/lab goals by default"],
+      source_refs: ["krn://context/bootstrap-policy"],
+      overclaim_boundary:
+        "This seed points to bounded context packet runtime locations only; it is not an active context packet, memory body store, task intent, or proof of context quality.",
     },
     null,
     2,
@@ -214,6 +242,50 @@ function validInitSourcePointersProposal(overrides: Partial<KrnControlPlanePropo
     created_by: "krn init",
     interpretation_caveat:
       "This init proposal is append-only review input and does not mutate .krn/sources/index.json until explicit apply mode.",
+    ...overrides,
+  });
+}
+
+function validInitContextPointersProposal(overrides: Partial<KrnControlPlaneProposal> = {}): KrnControlPlaneProposal {
+  const fileContent = initContextPointersContent();
+  return parseKrnControlPlaneProposal({
+    schema_version: "krn-control-plane-proposal.v1",
+    kind: "krn_control_plane_proposal",
+    proposal_id: "init-bootstrap-context-pointers-test",
+    proposal_kind: "init_bootstrap",
+    status: "proposal_only",
+    title: "Review KRN init context-pointers bootstrap",
+    rationale: "The context pointers target must be reviewed before target mutation.",
+    proposed_change: "Write minimal context pointer index only after approved review.",
+    promotion_payload: {
+      payload_type: "init_context_pointers",
+      bootstrap_capability: "context_pointers",
+      target_path: ".krn/context/index.json",
+      write_mode: "exact_file_content",
+      file_content: fileContent,
+      content_sha256: sha256(fileContent),
+    },
+    target: {
+      target_type: "path",
+      path: ".krn/context/index.json",
+    },
+    write_policy: {
+      default_effect: "no_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: "init-bootstrap:context_pointers:test",
+    },
+    review_gate: {
+      required: true,
+      state: "not_reviewed",
+      reviewer: null,
+    },
+    evidence_refs: [".krn/init/test/manifest.json"],
+    source_refs: [".krn/init/test/manifest.json"],
+    blocked_surfaces: ["target_file_mutation", "memory_core_write", "context_dump"],
+    created_at: "2026-06-20T22:45:00.000Z",
+    created_by: "krn init",
+    interpretation_caveat:
+      "This init proposal is append-only review input and does not mutate .krn/context/index.json until explicit apply mode.",
     ...overrides,
   });
 }
@@ -439,6 +511,39 @@ describe("KRN proposal promotion store", () => {
     expect(result.status).toBe("stored");
     expect(result.target_written).toBe(true);
     expect(readFileSync(join(targetRoot, ".krn", "sources", "index.json"), "utf8")).toBe(initSourcePointersContent());
+    expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
+  });
+
+  it("applies exact init context pointers only after an approved review decision", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-proposal-promotion-init-context-store-"));
+    const proposal = validInitContextPointersProposal();
+    for (const sourceRef of proposal.source_refs) {
+      writeText(join(targetRoot, sourceRef), `# ${sourceRef}\n`);
+    }
+    const { proposalPath, decision, decisionPath } = storeApprovedReview(targetRoot, proposal);
+    const promotion = validPromotionFor(proposal, proposalPath, decision, decisionPath, {
+      promotion_id: "promotion-apply-init-bootstrap-context-pointers",
+      promotion_scope: "approved_init_bootstrap_only",
+      apply_mode: "apply_exact_target_write",
+      promotion_state: "applied",
+      target_mutated: true,
+      evidence_refs: [...proposal.evidence_refs, ...decision.evidence_refs],
+      source_refs: [...proposal.source_refs, ...decision.source_refs],
+      write_policy: {
+        default_effect: "record_only",
+        allowed_effects: ["append_promotion_record", "write_exact_target_content"],
+        idempotency_key: "init-bootstrap-apply:init-bootstrap-context-pointers-test:decision",
+      },
+    });
+
+    const result = storeKrnProposalPromotion(promotion, { targetInput: targetRoot });
+    const contextContent = readFileSync(join(targetRoot, ".krn", "context", "index.json"), "utf8");
+    const contextIndex = parseKrnContextPointerIndex(JSON.parse(contextContent) as unknown);
+
+    expect(result.status).toBe("stored");
+    expect(result.target_written).toBe(true);
+    expect(contextContent).toBe(initContextPointersContent());
+    expect(contextIndex.memory_policy.store_memory_bodies).toBe(false);
     expect(existsSync(join(targetRoot, result.promotion_path))).toBe(true);
   });
 

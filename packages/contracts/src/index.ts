@@ -1,4 +1,10 @@
 export {
+  KrnContextPointerIndexSchema,
+  krnContextPointerIndexJsonSchema,
+  parseKrnContextPointerIndex,
+  type KrnContextPointerIndex,
+} from "./context-pointer-index.js";
+export {
   KrnContextPacketSchema,
   krnContextPacketJsonSchema,
   parseKrnContextPacket,

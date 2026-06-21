@@ -21,6 +21,7 @@ const INIT_PROPOSAL_CAPABILITIES = [
   "agent_instructions",
   "local_config",
   "source_pointers",
+  "context_pointers",
 ] as const satisfies readonly InitProposalCapability[];
 
 type InitArgs = {
@@ -51,6 +52,7 @@ const DETECTED_PATHS = [
   { path: "AGENTS.md", expectedKind: "file" },
   { path: ".krn/config.toml", expectedKind: "file" },
   { path: ".krn/sources/index.json", expectedKind: "file" },
+  { path: ".krn/context/index.json", expectedKind: "file" },
   { path: ".codex", expectedKind: "directory" },
   { path: ".agents", expectedKind: "directory" },
   { path: "docs/memory/INDEX.md", expectedKind: "file" },
@@ -183,6 +185,8 @@ function artifactReason(relativePath: string, exists: boolean): string {
       return "KRN local config already exists and must not be overwritten by dry-run init.";
     case ".krn/sources/index.json":
       return "KRN source graph seed already exists and must not be overwritten by dry-run init.";
+    case ".krn/context/index.json":
+      return "KRN context pointer index already exists and must not be overwritten by dry-run init.";
     case ".codex":
       return "Project-local Codex config/hooks directory already exists.";
     case ".agents":
@@ -225,6 +229,8 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
   const localConfigExists = detectedArtifacts.find((artifact) => artifact.path === ".krn/config.toml")?.exists ?? false;
   const sourcePointersExist =
     detectedArtifacts.find((artifact) => artifact.path === ".krn/sources/index.json")?.exists ?? false;
+  const contextPointersExist =
+    detectedArtifacts.find((artifact) => artifact.path === ".krn/context/index.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
 
@@ -282,6 +288,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
         source_refs: ["docs/specs/krn-source-graph/README.md", "docs/specs/krn-init/README.md"],
       },
       {
+        path: ".krn/context/index.json",
+        action: contextPointersExist ? "skip" : "proposal_only",
+        reason: contextPointersExist
+          ? "Existing context pointer index is preserved; changes require a reviewed proposal."
+          : "KRN would propose a minimal context pointer index in a reviewed write flow.",
+        source_refs: ["docs/specs/krn-context-pointer-index/README.md", "docs/specs/krn-init/README.md"],
+      },
+      {
         path: "docs/memory/INDEX.md",
         action: memoryIndexExists ? "proposal_only" : "create",
         reason: memoryIndexExists
@@ -325,6 +339,13 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
           : "No source graph seed collision detected; future writes still require approved promotion.",
       },
       {
+        path: ".krn/context/index.json",
+        strategy: collisionStrategy(contextPointersExist),
+        reason: contextPointersExist
+          ? "Existing context pointer index must be reviewed instead of overwritten."
+          : "No context pointer index collision detected; future writes still require approved promotion.",
+      },
+      {
         path: "docs/memory/INDEX.md",
         strategy: "proposal_only",
         reason: memoryIndexExists
@@ -359,11 +380,16 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       },
       {
         capability: "context_pointers",
-        path: ".krn/context/",
-        action: "proposal_only",
+        path: ".krn/context/index.json",
+        action: contextPointersExist ? "skip" : "proposal_only",
         purpose: "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
-        boundary: "Context packets may record selected IDs and guidance; they must not store authoritative memory bodies.",
-        source_refs: ["docs/specs/krn-context-packet/README.md", "docs/specs/krn-init/README.md"],
+        boundary:
+          "Context pointer index may point at bounded packet locations; it must not store memory bodies, active task truth, or broad docs context dumps.",
+        source_refs: [
+          "docs/specs/krn-context-pointer-index/README.md",
+          "docs/specs/krn-context-packet/README.md",
+          "docs/specs/krn-init/README.md",
+        ],
       },
       {
         capability: "eval_baseline",
@@ -495,6 +521,8 @@ function bootstrapTargetLabel(capability: InitProposalCapability): string {
       return "local-config";
     case "source_pointers":
       return "source-pointers";
+    case "context_pointers":
+      return "context-pointers";
   }
 }
 
@@ -506,6 +534,8 @@ function bootstrapTargetDescription(capability: InitProposalCapability): string 
       return "Local config is a bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.";
     case "source_pointers":
       return "Source pointers must seed a source graph boundary without copying a bibliography, active source list, or KRN product truth into the target repo.";
+    case "context_pointers":
+      return "Context pointers must seed a bounded packet index without copying memory bodies, task intent, active goal truth, or broad docs context into the target repo.";
   }
 }
 

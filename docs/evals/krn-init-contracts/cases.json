@@ -177,5 +177,35 @@
       "hardcoded_truth_reduction_score"
     ],
     "failure_mode": "The source_pointers init apply path can write source graph seed without an approved decision, without exact payload provenance, or with active source truth copied into runtime config."
+  },
+  {
+    "id": "generated-context-pointers-apply-writes-reviewed-target",
+    "expected_behavior": "The CLI applies a generated context_pointers proposal only after an approved review decision and writes .krn/context/index.json from the exact promotion payload without storing memory bodies or active-goal truth.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-context-pointer-index/README.md",
+      "docs/specs/krn-context-packet/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "proposal CLI exits zero",
+      "approved review decision stored",
+      "apply CLI exits zero",
+      "promotion parses",
+      "target .krn/context/index.json matches exact payload",
+      "context pointer seed avoids memory bodies and active-goal truth"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "unsafe_write_prevention_score",
+      "bootstrap_safety_score",
+      "context_relevance_score",
+      "hardcoded_truth_reduction_score"
+    ],
+    "failure_mode": "The context_pointers init apply path can write context setup without an approved decision, without exact payload provenance, or with memory bodies / active task truth copied into runtime config."
   }
 ]
