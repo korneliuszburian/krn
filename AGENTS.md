@@ -6,9 +6,9 @@ This repo is the Gas Town workspace for building KRN: a Codex-native operating m
 
 1. The newest user message wins over every repo file.
 2. Read [docs/memory/INDEX.md](docs/memory/INDEX.md).
-3. If a `/goal` is active, read [docs/goals/INDEX.md](docs/goals/INDEX.md) first. The active read set is [docs/goals/goal-038.md](docs/goals/goal-038.md), backed by [docs/plans/canonical/draft.md](docs/plans/canonical/draft.md). Treat older goals as indexed evidence or lab history, not default context.
-4. For product direction changes, read [docs/plans/canonical/draft.md](docs/plans/canonical/draft.md). [docs/product/final-product-plan.md](docs/product/final-product-plan.md) is only a compatibility pointer. Do not reload either file for every routine resume.
-5. For synthesis work, use [docs/plans/canonical/SOURCES.md](docs/plans/canonical/SOURCES.md) with targeted `rg` lookups unless the task explicitly requires broader synthesis. Read [docs/plans/canonical/draft.md](docs/plans/canonical/draft.md) and [docs/plans/canonical/pattern-matrix.md](docs/plans/canonical/pattern-matrix.md) only on demand.
+3. If a `/goal` is active, read [docs/goals/INDEX.md](docs/goals/INDEX.md) first and follow the active read set named there. Treat older goals as indexed evidence or lab history, not default context.
+4. For product direction changes, follow the product blueprint selected by [docs/goals/INDEX.md](docs/goals/INDEX.md). [docs/product/final-product-plan.md](docs/product/final-product-plan.md) is only a compatibility pointer. Do not reload product direction files for every routine resume.
+5. For synthesis work, use [docs/plans/canonical/SOURCES.md](docs/plans/canonical/SOURCES.md) with targeted `rg` lookups unless the task explicitly requires broader synthesis. Read the selected canonical blueprint and [docs/plans/canonical/pattern-matrix.md](docs/plans/canonical/pattern-matrix.md) only on demand.
 6. For product implementation terms, read [CONTEXT.md](CONTEXT.md) only when terms are unclear or changing.
 7. After any compaction, read [.krn/compact/latest-postcompact.md](.krn/compact/latest-postcompact.md) and [.krn/compact/latest-checkpoint.md](.krn/compact/latest-checkpoint.md) as selectors first. Then run `git status -sb` and inspect changed or active-goal files before opening broad canonical docs.
 

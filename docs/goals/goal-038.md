@@ -1613,6 +1613,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new init target, no generic scaffold engine, no dashboard/API/cloud sync, no benchmark lane, no repo-local memory core, no passive memory note, no `codex exec`, and no committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves reviewed local repo-bootstrap readiness reporting only. It does not prove merge-mode safety, final Memory Core storage, memory precision, source freshness, hook/security enforcement, skill quality, dashboard/API readiness, review-burden reduction, self-growing behavior, or productivity lift.
 - [NEXT] Use `krn init --readiness` as the local dogfood gate for the next repo-bootstrap capability task. Continue only through a consumed final-product bottleneck with focused verification; if no concrete consumer exposes friction, stop with clean status instead of inventing another surface.
+- [EVIDENCE] The AGENTS selector-only cleanup pre-edit gate passed and wrote `.krn/gates/20260621T082859Z-1880046/engineering-gate.json`.
+- [FACT] `AGENTS.md` no longer copies the active goal filename or the canonical blueprint file path; it routes through `docs/goals/INDEX.md` and selected canonical docs instead.
+- [EVIDENCE] `rg -n "goal-\d{3}|docs/plans/canonical/draft\.md|/home/krn|krnij|active final-product|active goal evidence" AGENTS.md` returned no matches.
+- [EVIDENCE] Local dogfood `pnpm run krn -- init --readiness --target .` still exits `1`, but the latest report `.krn/init/20260621T082935Z-1880661/readiness.json` has `forbidden_state_present: 0`; only missing reviewed bootstrap seeds remain.
+- [EVIDENCE] `git diff --check` passed after the AGENTS cleanup.
+- [SIMPLIFY] Keep: AGENTS as a thin root selector and `docs/goals/INDEX.md` as the active goal selector.
+- [SIMPLIFY] Delete/avoid: exact active-goal filename, exact canonical blueprint file path, local absolute paths, new selector config, committed `.krn/**` runtime evidence, dashboard/API/benchmark work, and broad docs edits.
+- [OVERCLAIM] This slice proves root-router hardcoded-truth hygiene only. It does not prove full repo-bootstrap readiness, because `.krn/config.toml`, source/context/eval/policy seeds, and `.agents/skills/README.md` are still absent from this repo target.
+- [NEXT] The concrete next repo-bootstrap bottleneck is deciding whether this repo should dogfood the reviewed init seeds through the existing proposal/apply path or keep those seeds target-only. Do not add a new init surface until that ownership boundary is explicit.
 
 ## Disproves Completion
 
