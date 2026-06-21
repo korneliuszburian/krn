@@ -17,7 +17,7 @@ import {
 import { buildKrnOperatingBrief, writeKrnOperatingBrief, type BriefArgs } from "./brief.js";
 import { buildKrnContextPacket, parseContextBuildArgs, writeKrnContextPacket } from "./context.js";
 import { buildKrnEngineeringGate, parseKrnGateArgs, writeKrnEngineeringGate } from "./gate.js";
-import { runKrnInit } from "./init.js";
+import { initProposalCapabilityUsage, runKrnInit } from "./init.js";
 import { buildKrnReviewReport, writeKrnReviewReport } from "./review.js";
 import { createRunId, pathKind } from "./runtime-utils.js";
 import { buildKrnSourceCheck, parseSourceCheckArgs, writeKrnSourceCheck } from "./source-graph.js";
@@ -258,7 +258,22 @@ const EVAL_MODULES: EvalModuleDescriptor[] = [
 ];
 
 function usage(): string {
-  return "Usage: krn <command>\n\nCommands:\n  init --dry-run [--target <path>]\n  init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|policy_boundaries [--target <path>]\n  init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|policy_boundaries --proposal-path <path> --decision-path <path> [--target <path>]\n  doctor [--target <path>]\n  eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]\n  review [--target <path>]\n  brief --task <text> [--path <path>] [--target <path>]\n  context build --task <text> [--path <path>] [--target <path>]\n  sources check --context <path> --graph <path> [--target <path>]\n  gate --task <text> [--path <path>] [--target <path>]\n  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]\n";
+  const initCapabilities = initProposalCapabilityUsage();
+  return `Usage: krn <command>
+
+Commands:
+  init --dry-run [--target <path>]
+  init --proposal ${initCapabilities} [--target <path>]
+  init --apply ${initCapabilities} --proposal-path <path> --decision-path <path> [--target <path>]
+  doctor [--target <path>]
+  eval [--target <path>] [--lane core|current|lab|all] [--module <module-id>]
+  review [--target <path>]
+  brief --task <text> [--path <path>] [--target <path>]
+  context build --task <text> [--path <path>] [--target <path>]
+  sources check --context <path> --graph <path> [--target <path>]
+  gate --task <text> [--path <path>] [--target <path>]
+  research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]
+`;
 }
 
 function parseDoctorArgs(argv: readonly string[]): DoctorArgs {

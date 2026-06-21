@@ -16,15 +16,113 @@ import {
 import { createRunId, pathKind } from "./runtime-utils.js";
 
 type InitProposalCapability = InitBootstrapCapability;
+type InitBootstrapPlanCapability = InitManifest["bootstrap_plan"][number]["capability"];
 
-const INIT_PROPOSAL_CAPABILITIES = [
-  "agent_instructions",
-  "local_config",
-  "source_pointers",
-  "context_pointers",
-  "eval_baseline",
-  "policy_boundaries",
-] as const satisfies readonly InitProposalCapability[];
+type InitBootstrapTarget = {
+  capability: InitBootstrapPlanCapability;
+  path: string;
+  proposalEnabled: boolean;
+  label: string;
+  description: string;
+  purpose: string;
+  boundary: string;
+  sourceRefs: readonly string[];
+};
+
+const INIT_BOOTSTRAP_TARGETS = [
+  {
+    capability: "agent_instructions",
+    path: "AGENTS.md",
+    proposalEnabled: true,
+    label: "agent-instructions",
+    description:
+      "Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database.",
+    purpose: "Create or preserve a thin Codex selector that points to active goal, memory index, and verification rules.",
+    boundary: "AGENTS.md must stay a compact router, not a generated encyclopedia or memory database.",
+    sourceRefs: ["docs/specs/krn-init/README.md"],
+  },
+  {
+    capability: "local_config",
+    path: ".krn/config.toml",
+    proposalEnabled: true,
+    label: "local-config",
+    description:
+      "Local config is a bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.",
+    purpose: "Describe local-first KRN project settings without requiring cloud/API sync.",
+    boundary: "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
+    sourceRefs: ["docs/specs/krn-init/README.md"],
+  },
+  {
+    capability: "source_pointers",
+    path: ".krn/sources/index.json",
+    proposalEnabled: true,
+    label: "source-pointers",
+    description:
+      "Source pointers must seed a source graph boundary without copying a bibliography, active source list, or KRN product truth into the target repo.",
+    purpose: "Point Codex/KRN at source graph entries used for source-backed planning and stale/conflict checks.",
+    boundary: "Source pointers are indexes and lineage, not a copied bibliography or hardcoded active source list.",
+    sourceRefs: ["docs/specs/krn-source-graph/README.md", "docs/plans/canonical/SOURCES.md"],
+  },
+  {
+    capability: "context_pointers",
+    path: ".krn/context/index.json",
+    proposalEnabled: true,
+    label: "context-pointers",
+    description:
+      "Context pointers must seed a bounded packet index without copying memory bodies, task intent, active goal truth, or broad docs context into the target repo.",
+    purpose: "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
+    boundary:
+      "Context pointer index may point at bounded packet locations; it must not store memory bodies, active task truth, or broad docs context dumps.",
+    sourceRefs: [
+      "docs/specs/krn-context-pointer-index/README.md",
+      "docs/specs/krn-context-packet/README.md",
+      "docs/specs/krn-init/README.md",
+    ],
+  },
+  {
+    capability: "eval_baseline",
+    path: ".krn/evals/baseline.json",
+    proposalEnabled: true,
+    label: "eval-baseline",
+    description:
+      "Eval baseline must seed lean core/current verification without copying live eval reports, enabling lab/all defaults, or claiming lift.",
+    purpose: "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
+    boundary:
+      "Eval baseline may point at core/current verification commands; it must not store live reports, enable lab/all defaults, or claim productivity lift.",
+    sourceRefs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
+  },
+  {
+    capability: "skill_wiring",
+    path: ".agents/skills/",
+    proposalEnabled: false,
+    label: "skill-wiring",
+    description: "Skill wiring is intentionally not an apply-capable init target until its exact payload boundary exists.",
+    purpose: "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
+    boundary: "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
+    sourceRefs: ["docs/specs/krn-init/README.md"],
+  },
+  {
+    capability: "policy_boundaries",
+    path: ".krn/policies/boundaries.json",
+    proposalEnabled: true,
+    label: "policy-boundaries",
+    description:
+      "Policy boundaries must seed local warn/block/approval rules without claiming hook enforcement, broad security quality, dashboard/API readiness, or cloud sync.",
+    purpose: "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
+    boundary: "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
+    sourceRefs: ["docs/specs/krn-policy-boundaries/README.md", "docs/specs/krn-engineering-gate/README.md", "docs/specs/krn-init/README.md"],
+  },
+] as const satisfies readonly InitBootstrapTarget[];
+
+function isProposalTarget(
+  target: InitBootstrapTarget,
+): target is InitBootstrapTarget & { capability: InitProposalCapability; proposalEnabled: true } {
+  return target.proposalEnabled && target.capability !== "skill_wiring";
+}
+
+const INIT_PROPOSAL_CAPABILITIES = INIT_BOOTSTRAP_TARGETS.filter(isProposalTarget).map(
+  (target) => target.capability,
+);
 
 type InitArgs = {
   target: string;
@@ -65,6 +163,29 @@ const DETECTED_PATHS = [
 
 function initCapabilityList(): string {
   return INIT_PROPOSAL_CAPABILITIES.join(", ");
+}
+
+export function initProposalCapabilityUsage(): string {
+  return INIT_PROPOSAL_CAPABILITIES.join("|");
+}
+
+function initBootstrapTarget(capability: InitBootstrapPlanCapability): InitBootstrapTarget {
+  const target = INIT_BOOTSTRAP_TARGETS.find((item) => item.capability === capability);
+  if (!target) {
+    throw new Error(`Unknown init bootstrap target: ${capability}`);
+  }
+  return target;
+}
+
+function initProposalTarget(capability: InitProposalCapability): InitBootstrapTarget & {
+  capability: InitProposalCapability;
+  proposalEnabled: true;
+} {
+  const target = initBootstrapTarget(capability);
+  if (!isProposalTarget(target)) {
+    throw new Error(`krn init proposal is not enabled for capability: ${capability}`);
+  }
+  return target;
 }
 
 function parseInitCapability(value: string, mode: "proposal" | "apply"): InitProposalCapability {
@@ -245,6 +366,10 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
     detectedArtifacts.find((artifact) => artifact.path === ".krn/policies/boundaries.json")?.exists ?? false;
   const memoryIndexExists =
     detectedArtifacts.find((artifact) => artifact.path === "docs/memory/INDEX.md")?.exists ?? false;
+  const bootstrapTargetExists = (target: InitBootstrapTarget): boolean =>
+    target.capability === "skill_wiring"
+      ? false
+      : (detectedArtifacts.find((artifact) => artifact.path === target.path)?.exists ?? false);
 
   const candidateManifest: unknown = {
     schema_version: "krn-init-manifest.v1",
@@ -403,68 +528,14 @@ export function buildInitManifest(targetInput: string, now = new Date()): InitMa
       },
     ],
     bootstrap_plan: [
-      {
-        capability: "agent_instructions",
-        path: "AGENTS.md",
-        action: agentsExists ? "skip" : "proposal_only",
-        purpose: "Create or preserve a thin Codex selector that points to active goal, memory index, and verification rules.",
-        boundary: "AGENTS.md must stay a compact router, not a generated encyclopedia or memory database.",
-        source_refs: ["docs/specs/krn-init/README.md"],
-      },
-      {
-        capability: "local_config",
-        path: ".krn/config.toml",
-        action: localConfigExists ? "skip" : "proposal_only",
-        purpose: "Describe local-first KRN project settings without requiring cloud/API sync.",
-        boundary: "Config may point at stores and policies; it must not embed live memory records or current-goal truth.",
-        source_refs: ["docs/specs/krn-init/README.md"],
-      },
-      {
-        capability: "source_pointers",
-        path: ".krn/sources/index.json",
-        action: sourcePointersExist ? "skip" : "proposal_only",
-        purpose: "Point Codex/KRN at source graph entries used for source-backed planning and stale/conflict checks.",
-        boundary: "Source pointers are indexes and lineage, not a copied bibliography or hardcoded active source list.",
-        source_refs: ["docs/specs/krn-source-graph/README.md", "docs/plans/canonical/SOURCES.md"],
-      },
-      {
-        capability: "context_pointers",
-        path: ".krn/context/index.json",
-        action: contextPointersExist ? "skip" : "proposal_only",
-        purpose: "Prepare the runtime directory for bounded context packets built from task intent, memory selection, and source refs.",
-        boundary:
-          "Context pointer index may point at bounded packet locations; it must not store memory bodies, active task truth, or broad docs context dumps.",
-        source_refs: [
-          "docs/specs/krn-context-pointer-index/README.md",
-          "docs/specs/krn-context-packet/README.md",
-          "docs/specs/krn-init/README.md",
-        ],
-      },
-      {
-        capability: "eval_baseline",
-        path: ".krn/evals/baseline.json",
-        action: evalBaselineExists ? "skip" : "proposal_only",
-        purpose: "Prepare a local eval baseline that uses the lean core/current path before explicit lab work.",
-        boundary:
-          "Eval baseline may point at core/current verification commands; it must not store live reports, enable lab/all defaults, or claim productivity lift.",
-        source_refs: ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
-      },
-      {
-        capability: "skill_wiring",
-        path: ".agents/skills/",
-        action: "proposal_only",
-        purpose: "Wire only required operator skills with owners, triggers, forbidden behavior, and verification.",
-        boundary: "Skills are not prompt sprawl; missing triggers should produce evals or deletion decisions, not endless markdown.",
-        source_refs: ["docs/specs/krn-init/README.md"],
-      },
-      {
-        capability: "policy_boundaries",
-        path: ".krn/policies/boundaries.json",
-        action: policyBoundariesExist ? "skip" : "proposal_only",
-        purpose: "Prepare local policy hooks and approval boundaries for unsafe writes, memory writes, source acceptance, and command use.",
-        boundary: "Policies can warn/block/propose; broad write-capable API or cloud sync requires later explicit audit/idempotency work.",
-        source_refs: ["docs/specs/krn-policy-boundaries/README.md", "docs/specs/krn-engineering-gate/README.md", "docs/specs/krn-init/README.md"],
-      },
+      ...INIT_BOOTSTRAP_TARGETS.map((target) => ({
+        capability: target.capability,
+        path: target.path,
+        action: bootstrapTargetExists(target) ? "skip" : "proposal_only",
+        purpose: target.purpose,
+        boundary: target.boundary,
+        source_refs: target.sourceRefs,
+      })),
     ],
     no_touch_paths: [".git", "node_modules", "AGENTS.md", ".codex", ".agents", "docs/memory"],
     source_refs: ["docs/specs/krn-init/README.md"],
@@ -506,6 +577,7 @@ function manifestRuntimePath(manifest: InitManifest): string {
 }
 
 export function buildInitProposal(manifest: InitManifest, capability: InitProposalCapability): KrnControlPlaneProposal {
+  const target = initProposalTarget(capability);
   const bootstrapItem = manifest.bootstrap_plan.find((item) => item.capability === capability);
   if (!bootstrapItem) {
     throw new Error(`Init manifest is missing bootstrap capability: ${capability}`);
@@ -520,8 +592,6 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
       : "review a future exact-file proposal before any target mutation";
   const promotionPayload =
     bootstrapItem.action === "skip" ? undefined : buildInitBootstrapPayload(capability, bootstrapItem.path);
-  const targetLabel = bootstrapTargetLabel(capability);
-  const targetDescription = bootstrapTargetDescription(capability);
 
   return parseKrnControlPlaneProposal({
     schema_version: "krn-control-plane-proposal.v1",
@@ -529,8 +599,8 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     proposal_id: proposalId,
     proposal_kind: proposalKind,
     status: "proposal_only",
-    title: `Review KRN init ${targetLabel} bootstrap`,
-    rationale: `KRN needs reviewed bootstrap targets before write mode. ${targetDescription}`,
+    title: `Review KRN init ${target.label} bootstrap`,
+    rationale: `KRN needs reviewed bootstrap targets before write mode. ${target.description}`,
     proposed_change: `For ${bootstrapItem.path}, ${actionSummary}. Capability purpose: ${bootstrapItem.purpose} Boundary: ${bootstrapItem.boundary}`,
     promotion_payload: promotionPayload,
     target: {
@@ -561,40 +631,6 @@ export function buildInitProposal(manifest: InitManifest, capability: InitPropos
     interpretation_caveat:
       "This init proposal is append-only review input for one bootstrap capability; it does not mutate target setup files, approve write mode, create memory core, publish a dashboard event, or prove productivity lift.",
   });
-}
-
-function bootstrapTargetLabel(capability: InitProposalCapability): string {
-  switch (capability) {
-    case "agent_instructions":
-      return "agent-instructions";
-    case "local_config":
-      return "local-config";
-    case "source_pointers":
-      return "source-pointers";
-    case "context_pointers":
-      return "context-pointers";
-    case "eval_baseline":
-      return "eval-baseline";
-    case "policy_boundaries":
-      return "policy-boundaries";
-  }
-}
-
-function bootstrapTargetDescription(capability: InitProposalCapability): string {
-  switch (capability) {
-    case "agent_instructions":
-      return "Agent instructions are the narrowest user-visible bootstrap surface and must stay a thin selector rather than a generated memory database.";
-    case "local_config":
-      return "Local config is a bootstrap boundary and must point at local-first stores/policies without embedding live memory, source lists, or current-goal truth.";
-    case "source_pointers":
-      return "Source pointers must seed a source graph boundary without copying a bibliography, active source list, or KRN product truth into the target repo.";
-    case "context_pointers":
-      return "Context pointers must seed a bounded packet index without copying memory bodies, task intent, active goal truth, or broad docs context into the target repo.";
-    case "eval_baseline":
-      return "Eval baseline must seed lean core/current verification without copying live eval reports, enabling lab/all defaults, or claiming lift.";
-    case "policy_boundaries":
-      return "Policy boundaries must seed local warn/block/approval rules without claiming hook enforcement, broad security quality, dashboard/API readiness, or cloud sync.";
-  }
 }
 
 export function writeInitProposal(

@@ -73,6 +73,22 @@ describe("krn init --dry-run", () => {
     expect(topLevelEntries).toEqual([".krn"]);
   }, 30_000);
 
+  it("keeps skill wiring in the manifest but out of proposal/apply targets until an exact payload exists", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-skill-wiring-target-"));
+
+    expect(() =>
+      execFileSync(
+        "pnpm",
+        ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", "skill_wiring", "--target", targetRoot],
+        {
+          cwd: process.cwd(),
+          encoding: "utf8",
+        },
+      ),
+    ).toThrow();
+    expect(existsSync(join(targetRoot, ".krn"))).toBe(false);
+  }, 30_000);
+
   it("stores a reviewed agent-instructions proposal without mutating the target file", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-proposal-target-"));
 

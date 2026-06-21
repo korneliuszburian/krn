@@ -807,6 +807,18 @@ no-overwrite behavior, source/evidence lineage, and focused eval coverage.
 - [SIMPLIFY] Delete/avoid: no natural-language policy framework, no dashboard/API/benchmark exception list outside the gate, no hook/security claim, and no broad rewrite of `krn gate`.
 - [OVERCLAIM] This repair proves only that negated forbidden-surface boundary text no longer false-blocks a scoped task. It does not prove that unsafe dashboard/API/benchmark expansion is semantically impossible, that hooks enforce policy, or that KRN improved productivity.
 - [NEXT] Resume the previously selected init-target registry simplification, or choose `skill_wiring` / repo-bootstrap readiness if the registry duplication is not the current bottleneck.
+- [FACT] Init target registry simplification extracted stable bootstrap target metadata in `packages/cli/src/init.ts` and reused it for CLI capability parsing, usage text, manifest `bootstrap_plan`, and proposal title/rationale metadata.
+- [FACT] `skill_wiring` remains in the dry-run bootstrap plan but stays out of proposal/apply capability routing until an exact payload boundary exists.
+- [FACT] `packages/cli/src/init-bootstrap.ts` keeps explicit exact-payload builders and payload assertions; the registry does not weaken the reviewed promotion boundary.
+- [EVIDENCE] Focused init tests passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 10 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T012647Z-967649/report.json` with 11/11 cases and 51/51 assertions passing.
+- [EVIDENCE] `pnpm run eval:krn-proposal-promotion` passed run `.krn/evals/krn-proposal-promotion/20260621T012647Z-967659/report.json` with 13/13 cases and 49/49 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T012702Z-967930/report.json` with 5/5 modules, 23/23 cases, and 82/82 assertions passing.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [SIMPLIFY] Keep: one stable init target registry for target metadata, one known-bad-ish test that rejects `--proposal skill_wiring`, and explicit payload builders in `init-bootstrap.ts`.
+- [SIMPLIFY] Delete/avoid: no generic scaffold framework, no registry-driven file content generation, no proposal/apply support for `skill_wiring` before its exact payload exists, and no dashboard/API/bootstrap readiness claim from this cleanup.
+- [OVERCLAIM] This slice proves maintainability cleanup and target-routing consistency only. It does not prove a new bootstrap capability, skill quality, repo-bootstrap readiness, merge-mode safety, final memory quality, hook enforcement, security quality, or productivity lift.
+- [NEXT] Continue with `skill_wiring` exact payload boundary or repo-bootstrap readiness; do not do another init registry cleanup unless a real consumer creates new duplication.
 
 ## Disproves Completion
 
