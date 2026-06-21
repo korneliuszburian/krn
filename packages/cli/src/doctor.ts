@@ -8,6 +8,12 @@ type DoctorArgs = {
 };
 
 const localSpecPathPatterns = [/\/home\/krn\//, /C:\\Users\\krnij/i, /\/mnt\/c\/Users\/krnij/i];
+const DOCTOR_CONTRACT_SOURCE_REFS = ["docs/specs/krn-doctor/README.md"] as const;
+const AGENTS_SOURCE_REFS = ["AGENTS.md"] as const;
+const MEMORY_INDEX_SOURCE_REFS = ["docs/memory/INDEX.md"] as const;
+const OPERATOR_SKILLS_SOURCE_REFS = ["docs/skills/operator-pipeline.md"] as const;
+const COMPACT_HOOKS_SOURCE_REFS = ["docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md"] as const;
+const EVAL_REGISTRY_SOURCE_REFS = ["docs/evals/registry.json", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"] as const;
 
 type EvalRegistryReadiness = {
   status: "ready" | "warning" | "blocked";
@@ -162,7 +168,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
         pathKind(targetRoot, "AGENTS.md") === "file"
           ? "Root AGENTS.md exists."
           : "Root AGENTS.md is missing.",
-      source_refs: ["AGENTS.md", "docs/goals/goal-038.md"],
+      source_refs: [...AGENTS_SOURCE_REFS],
     },
     {
       id: "memory-index",
@@ -174,7 +180,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
         pathKind(targetRoot, "docs/memory/INDEX.md") === "file"
           ? "Repo-local memory index exists."
           : "Repo-local memory index is missing.",
-      source_refs: ["docs/memory/INDEX.md", "docs/goals/goal-038.md"],
+      source_refs: [...MEMORY_INDEX_SOURCE_REFS],
     },
     {
       id: "operator-skills",
@@ -186,7 +192,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
         skillCount > 0
           ? `${skillCount} operator skill contracts are present.`
           : "No operator skill contracts were found.",
-      source_refs: ["docs/skills/operator-pipeline.md", "docs/goals/goal-038.md"],
+      source_refs: [...OPERATOR_SKILLS_SOURCE_REFS],
     },
     {
       id: "compact-hooks",
@@ -197,7 +203,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
       summary: hooksReady
         ? "Project-local compact continuity hook files are present."
         : "Compact continuity hook config or script is missing.",
-      source_refs: ["docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md", "docs/goals/goal-038.md"],
+      source_refs: [...COMPACT_HOOKS_SOURCE_REFS],
     },
     {
       id: "eval-modules",
@@ -206,7 +212,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
       status: evalRegistry.status,
       exists: evalRegistry.exists,
       summary: evalRegistry.summary,
-      source_refs: ["docs/evals/registry.json", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
+      source_refs: [...EVAL_REGISTRY_SOURCE_REFS],
     },
     {
       id: "spec-portability",
@@ -219,7 +225,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
         : localSpecPathFiles.length > 0
           ? `KRN spec examples contain user-specific local paths: ${localSpecPathFiles.join(", ")}.`
           : "KRN spec examples do not contain known user-specific local paths.",
-      source_refs: ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
+      source_refs: [...DOCTOR_CONTRACT_SOURCE_REFS],
     },
     {
       id: "runtime-artifacts",
@@ -231,7 +237,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
         pathKind(targetRoot, ".krn") === "directory"
           ? "KRN runtime artifact directory exists."
           : "KRN runtime artifact directory is missing and will be created for this report.",
-      source_refs: ["docs/goals/goal-038.md", "docs/specs/krn-doctor/README.md"],
+      source_refs: [...DOCTOR_CONTRACT_SOURCE_REFS],
     },
   ];
 
@@ -247,7 +253,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
     checks,
     summary,
     runtime_report_path: runtimeReportPath,
-    source_refs: ["docs/goals/goal-038.md", "docs/specs/krn-doctor/README.md", "docs/plans/canonical/draft.md"],
+    source_refs: [...DOCTOR_CONTRACT_SOURCE_REFS],
     interpretation_caveat:
       "This report proves local readiness surface detection only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness.",
   };

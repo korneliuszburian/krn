@@ -33,6 +33,8 @@ describe("krn doctor", () => {
       "specs",
       "runtime",
     ]);
+    expect(JSON.stringify(report)).not.toContain("docs/goals/goal-038.md");
+    expect(report.source_refs).toEqual(["docs/specs/krn-doctor/README.md"]);
     expect(existsSync(join(targetRoot, ".krn", "doctor", report.run_id, "report.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);
     expect(existsSync(join(targetRoot, ".codex"))).toBe(false);

@@ -53,6 +53,8 @@ The report must include checks for:
 - `specs`: `docs/specs/**` examples and fixtures do not contain user-specific local operator paths
 - `runtime`: `.krn/`
 
+Runtime `source_refs` should cite stable contracts or checked local surfaces. They must not copy the active goal or canonical blueprint into product output as volatile truth.
+
 ## Boundary
 
 Allowed writes:

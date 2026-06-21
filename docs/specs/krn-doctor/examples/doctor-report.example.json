@@ -14,7 +14,7 @@
       "status": "ready",
       "exists": true,
       "summary": "Root AGENTS.md exists.",
-      "source_refs": ["AGENTS.md", "docs/goals/goal-038.md"]
+      "source_refs": ["AGENTS.md"]
     },
     {
       "id": "memory-index",
@@ -23,7 +23,7 @@
       "status": "ready",
       "exists": true,
       "summary": "Repo-local memory index exists.",
-      "source_refs": ["docs/memory/INDEX.md", "docs/goals/goal-038.md"]
+      "source_refs": ["docs/memory/INDEX.md"]
     },
     {
       "id": "operator-skills",
@@ -32,7 +32,7 @@
       "status": "ready",
       "exists": true,
       "summary": "Operator skill contracts are present.",
-      "source_refs": ["docs/skills/operator-pipeline.md", "docs/goals/goal-038.md"]
+      "source_refs": ["docs/skills/operator-pipeline.md"]
     },
     {
       "id": "compact-hooks",
@@ -41,7 +41,7 @@
       "status": "ready",
       "exists": true,
       "summary": "Project-local compact continuity hook files are present.",
-      "source_refs": ["docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md", "docs/goals/goal-038.md"]
+      "source_refs": ["docs/memory/openai-codex/2026-06-19--compact-hooks-continuity.md"]
     },
     {
       "id": "eval-modules",
@@ -59,7 +59,7 @@
       "status": "ready",
       "exists": true,
       "summary": "KRN spec examples do not contain known user-specific local paths.",
-      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"]
+      "source_refs": ["docs/specs/krn-doctor/README.md"]
     },
     {
       "id": "runtime-artifacts",
@@ -68,7 +68,7 @@
       "status": "ready",
       "exists": true,
       "summary": "KRN runtime artifact directory exists.",
-      "source_refs": ["docs/goals/goal-038.md", "docs/specs/krn-doctor/README.md"]
+      "source_refs": ["docs/specs/krn-doctor/README.md"]
     }
   ],
   "summary": {
@@ -78,9 +78,7 @@
   },
   "runtime_report_path": ".krn/doctor/krn-doctor-example-001/report.json",
   "source_refs": [
-    "docs/goals/goal-038.md",
-    "docs/specs/krn-doctor/README.md",
-    "docs/plans/canonical/draft.md"
+    "docs/specs/krn-doctor/README.md"
   ],
   "interpretation_caveat": "This report proves local readiness surface detection only; it does not prove productivity lift, hook semantic correctness, API/MCP readiness, or dashboard readiness."
 }

@@ -1391,6 +1391,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: filesystem/path/default-store code inside `memory-store.ts`, no service/cloud memory implementation yet, no repo-local memory-core claim, no dashboard/API/benchmark work, and no committed runtime evidence.
 - [OVERCLAIM] This slice proves local MemoryStore adapter separation only. It does not prove final service-backed memory, memory precision, source quality, review-burden reduction, API sync, team memory, or productivity lift.
 - [NEXT] Commit and push this cleanup; then stop or continue only if another consumed cleanup is obvious from code pressure.
+- [EVIDENCE] The doctor runtime source-ref hygiene cleanup pre-edit gate passed and wrote `.krn/gates/20260621T061119Z-1526354/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T061119Z-1526365/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] `krn doctor` runtime reports no longer copy `docs/goals/goal-038.md` or the canonical draft into report `source_refs` as volatile product truth. Doctor report source refs now cite stable contracts or checked local surfaces.
+- [FACT] `docs/specs/krn-doctor/examples/doctor-report.example.json` was updated to match the runtime contract, and `packages/cli/test/doctor.test.ts` now rejects `goal-038` leakage in generated doctor reports.
+- [EVIDENCE] Focused public-interface tests passed: `pnpm exec vitest run packages/cli/test/doctor.test.ts packages/contracts/test/doctor-report.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] Focused doctor eval passed: `pnpm run eval:krn-doctor` run `.krn/evals/krn-doctor-contracts/20260621T061256Z-1528653/report.json` passed 3/3 cases and 7/7 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one current `krn doctor` CLI consumer, its schema fixture, and one regression assertion against active-goal runtime source-ref leakage.
+- [SIMPLIFY] Delete/avoid: no repo-wide source-ref string sweep, no source graph service, no dashboard/API/benchmark work, no committed runtime evidence, and no claim that all runtime reports are now free of volatile source refs.
+- [OVERCLAIM] This slice proves doctor runtime source-ref hygiene only. It does not prove source freshness, final source graph quality, memory quality, hook enforcement, review-burden reduction, or product lift.
+- [NEXT] Commit and push this cleanup; then continue only with another consumed runtime/source-ref cleanup if a live CLI, contract, eval, MCP, or dashboard consumer exposes it.
 
 ## Disproves Completion
 
