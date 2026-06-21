@@ -169,7 +169,8 @@ export function buildKrnEngineeringGate(args: GateArgs, now = new Date()): KrnEn
         step: blocked
           ? "Rewrite the task around the current bottleneck and a real typed consumer before editing."
           : `Execute the smallest production-shaped slice for: ${args.task}`,
-        verification: "Run focused public-interface tests, pnpm typecheck, git diff --check, and the goal-038 simplify/condense check.",
+        verification:
+          "Run focused public-interface tests, pnpm typecheck, git diff --check, and the engineering-gate simplify/condense check.",
       },
     ],
     runtime_report_path: runtimeReportPath,
