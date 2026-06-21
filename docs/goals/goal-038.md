@@ -692,6 +692,10 @@ refs.
 [FACT] MemoryStore application guidance no longer names `goal-038` directly in
 review questions; runtime guidance refers to active goal evidence instead.
 
+[FACT] The `krn init` static bootstrap target registry now lives in
+`packages/cli/src/init-targets.ts`; `packages/cli/src/init.ts` remains the
+manifest/proposal/apply runtime module.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -1109,6 +1113,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Keep: one wording change and one runtime-output assertion through `krn brief`.
 - [SIMPLIFY] Delete/avoid: no schema change, no new config surface, no broad fixture rewrite, and no claim that the memory application guidance is final-quality.
 - [OVERCLAIM] This slice proves removal of one volatile active-goal wording from MemoryStore application guidance only. It does not prove final memory quality, context quality, review quality, or product lift.
+- [EVIDENCE] The init target-registry extraction pre-edit gate passed and wrote `.krn/gates/20260621T034133Z-1268080/engineering-gate.json`.
+- [FACT] Static init bootstrap target registry and capability parsing moved from `packages/cli/src/init.ts` into `packages/cli/src/init-targets.ts`.
+- [FACT] `packages/cli/src/init.ts` dropped from 687 lines before the extraction to 552 lines; `packages/cli/src/init-targets.ts` is 151 lines and has the public `krn init` path as its consumer.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts packages/contracts/test/init-manifest.test.ts` passed 2 files / 15 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T034451Z-1272737/report.json` with 13/13 cases and 62/62 assertions passing.
+- [EVIDENCE] Narrow no-emit check passed for `packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T034502Z-1273044/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one static target registry module, unchanged public `krn init` behavior, existing proposal/apply boundaries, and no copied product truth.
+- [SIMPLIFY] Delete/avoid: no init behavior expansion, no extra abstraction around manifest building, no dashboard/API/MCP work, no broad bootstrap rewrite, and no new eval family.
+- [SIMPLIFY] Next candidate: only continue init cleanup if another init capability touches the manifest/apply boundary; otherwise pick the next consumer-led bottleneck.
+- [OVERCLAIM] This slice proves init maintainability cleanup and public behavior parity only. It does not prove bootstrap usefulness, fresh-repo adoption, review-burden reduction, memory quality, or product lift.
 
 ## Disproves Completion
 
