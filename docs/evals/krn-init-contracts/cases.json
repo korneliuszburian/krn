@@ -294,5 +294,31 @@
       "hardcoded_truth_reduction_score"
     ],
     "failure_mode": "The policy_boundaries init apply path can write policy setup without an approved decision, without exact payload provenance, with repo-local memory core allowed, or with hook/security/productivity claims embedded in runtime config."
+  },
+  {
+    "id": "generated-reviewed-bootstrap-compose-ready",
+    "expected_behavior": "The CLI composes all reviewed init bootstrap targets in one isolated repo through dry-run, proposal, approved decision, and apply, then a second dry-run marks the reviewed targets as skip without repo-local memory core or hardcoded product truth.",
+    "source_patterns": [
+      "docs/goals/goal-038.md",
+      "docs/specs/krn-init/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/evals/STANDARD.md"
+    ],
+    "assertions": [
+      "initial dry-run exposes all reviewed bootstrap capabilities",
+      "all reviewed bootstrap targets apply through approved decisions",
+      "post-apply dry-run marks reviewed bootstrap targets as skip",
+      "typed source/context/eval/policy seeds parse after composition",
+      "composed bootstrap avoids repo-local memory core and hardcoded product truth"
+    ],
+    "metrics": [
+      "runtime_contract_score",
+      "proposal_review_readiness_score",
+      "bootstrap_safety_score",
+      "hardcoded_truth_reduction_score",
+      "memory_boundary_score"
+    ],
+    "failure_mode": "Individual init target apply paths pass, but the full reviewed bootstrap sequence does not compose into a usable repo state or leaks repo-local memory core / active product truth."
   }
 ]

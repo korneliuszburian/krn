@@ -167,6 +167,23 @@ Forbidden behavior:
 - no copied skill bodies, active skill claims, trigger-quality claims, or active-goal/canonical-plan copy in the skill wiring seed.
 - no repo-local memory-core allowance, dashboard/API/cloud default, hook/security enforcement claim, or productivity-lift claim in the policy boundary seed.
 
+## Repo-Bootstrap Readiness Proof
+
+Repo-bootstrap readiness is proven only when the reviewed targets compose in one isolated target through this sequence:
+
+```text
+krn init --dry-run
+  -> krn init --proposal <capability>
+  -> approved KrnProposalReviewDecision
+  -> krn init --apply <capability>
+  -> repeat for all reviewed capabilities
+  -> krn init --dry-run reports reviewed targets as skip
+```
+
+The proof must parse the generated source, context, eval, and policy seeds through their typed contracts. It must also verify that the composed target does not create `docs/memory/**`, `.krn/memory/**`, dashboard state, API state, copied `goal-038`, or copied canonical draft text.
+
+This is readiness for the reviewed local bootstrap path only. It is not a new broad scaffold command, merge-mode proof, final memory quality proof, hook/security proof, dashboard/API readiness, or productivity-lift evidence.
+
 ## Minimum Detection
 
 The command must inspect whether these target artifacts exist:

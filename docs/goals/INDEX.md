@@ -29,7 +29,7 @@ mechanism-first
   -> deletion-friendly
 ```
 
-[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. MemoryStore selection/application, the pre-edit engineering gate, bounded context packet, local source graph check, eval-lane split, final-shaped `krn init --dry-run` bootstrap, first proposal-only `krn init --proposal agent_instructions`, first reviewed `krn init --apply agent_instructions`, second reviewed `krn init --proposal/apply local_config`, third reviewed `krn init --proposal/apply source_pointers`, fourth reviewed `krn init --proposal/apply context_pointers`, fifth reviewed `krn init --proposal/apply eval_baseline`, and sixth reviewed `krn init --proposal/apply policy_boundaries` target are now the active execution path. The next useful product slice should continue with skill wiring, repo-bootstrap readiness, or a small init target registry simplification, not add another passive note, dashboard panel, benchmark lane, broad API/cloud sync, research runtime, or broad scaffold writer.
+[DECISION] `docs/memory/**` is a pattern bank / audit export, not the final memory system. `.krn/**` is runtime evidence/cache/ledger, not memory core. MemoryStore selection/application, the pre-edit engineering gate, bounded context packet, local source graph check, eval-lane split, final-shaped `krn init --dry-run` bootstrap, all seven reviewed `krn init --proposal/apply` targets, the init target registry simplification, and isolated reviewed-bootstrap composition proof are now completed active-path foundation. The next useful work is cleanup/condense of repo sediment followed by one real capability dogfood task that uses existing KRN context/source/memory/review/eval boundaries. Do not add another passive note, init proof, dashboard panel, benchmark lane, broad API/cloud sync, research runtime, or broad scaffold writer unless that capability task creates a real consumer.
 
 ## Buckets
 
@@ -50,7 +50,7 @@ mechanism-first
 - If a goal file has a stale `Status` header, this index wins for routing.
 - Do not move or delete old goal files unless first updating every source, memory, and eval reference that points to them.
 - Do not add a new goal file for tiny mechanical edits.
-- New child goals must name the bottleneck, mechanism, smallest production-shaped behavior, proof, review burden, and overclaim boundary.
+- New child goals must name the bottleneck, mechanism, tight final-shaped behavior, proof, review burden, and overclaim boundary.
 - Do not add new child goals for normal progress under `goal-038`; update `goal-038` progress/checkpoint state instead unless the user asks for a separate goal.
 - Benchmark goals must stay in the lab lane unless the user explicitly asks for benchmark work.
 - Product goals must end in code, a consumed contract, a review surface, or a deletion/merge decision. Passive documentation alone is not enough.

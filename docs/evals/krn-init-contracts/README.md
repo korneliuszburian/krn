@@ -17,6 +17,7 @@ This eval verifies the final-shaped dry-run bootstrap and first proposal-only bo
 InitManifest parser -> krn init --dry-run -> bootstrap plan -> runtime manifest -> eval report
 InitManifest parser -> krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries -> KrnControlPlaneProposal -> append-only proposal store -> eval report
 Init proposal -> approved review decision -> krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries -> KrnProposalPromotion -> exact target write
+All reviewed targets -> second krn init --dry-run -> reviewed bootstrap targets report skip without repo-local memory core or hardcoded product truth
 ```
 
 It does not claim productivity lift, dashboard readiness, MCP readiness, memory-core quality, paper-research automation, broad repo bootstrap, or merge-mode safety.
@@ -45,6 +46,8 @@ It does not claim productivity lift, dashboard readiness, MCP readiness, memory-
 - The generated apply path writes `.agents/skills/README.md` from the exact reviewed payload, avoids copied skill bodies and active-goal truth, and records a promotion.
 - The CLI-generated `policy_boundaries` apply path requires an approved review decision.
 - The generated apply path writes `.krn/policies/boundaries.json` from the exact reviewed payload, blocks repo-local memory-core writes, avoids cloud/dashboard defaults and hook/security overclaims, and records a promotion.
+- The generated reviewed bootstrap targets compose in one isolated target and a second dry-run marks reviewed targets as `skip`.
+- The composed target does not create `docs/memory`, `.krn/memory`, dashboard/API state, copied `goal-038`, or copied canonical draft truth.
 - The eval writes a machine-readable report under `.krn/evals/krn-init-contracts/{run_id}/report.json`.
 
 ## Command
@@ -63,4 +66,4 @@ Runtime outputs stay local. Reviewed durable lessons move to `docs/memory`.
 
 ## Interpretation Policy
 
-A green run means the final-shaped bootstrap dry-run contract, first proposal-only bootstrap targets, and reviewed exact `AGENTS.md` / `.krn/config.toml` / `.krn/sources/index.json` / `.krn/context/index.json` / `.krn/evals/baseline.json` / `.agents/skills/README.md` / `.krn/policies/boundaries.json` apply paths are locally checkable. It does not mean KRN improves Codex behavior, that skills are high quality, or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.
+A green run means the final-shaped bootstrap dry-run contract, proposal-only bootstrap targets, reviewed exact `AGENTS.md` / `.krn/config.toml` / `.krn/sources/index.json` / `.krn/context/index.json` / `.krn/evals/baseline.json` / `.agents/skills/README.md` / `.krn/policies/boundaries.json` apply paths, and isolated composition readiness are locally checkable. It does not mean KRN improves Codex behavior, that skills are high quality, or that later API/MCP/dashboard/broad bootstrap/merge-mode work is ready to start.

@@ -19,6 +19,102 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
 }
 
+const reviewedBootstrapCapabilities = [
+  "agent_instructions",
+  "local_config",
+  "source_pointers",
+  "context_pointers",
+  "eval_baseline",
+  "skill_wiring",
+  "policy_boundaries",
+] as const;
+
+type ReviewedBootstrapCapability = (typeof reviewedBootstrapCapabilities)[number];
+
+const bootstrapTargetPathByCapability: Record<ReviewedBootstrapCapability, string> = {
+  agent_instructions: "AGENTS.md",
+  local_config: ".krn/config.toml",
+  source_pointers: ".krn/sources/index.json",
+  context_pointers: ".krn/context/index.json",
+  eval_baseline: ".krn/evals/baseline.json",
+  skill_wiring: ".agents/skills/README.md",
+  policy_boundaries: ".krn/policies/boundaries.json",
+};
+
+function applyReviewedBootstrapCapability(targetRoot: string, capability: ReviewedBootstrapCapability): string {
+  const proposalStdout = execFileSync(
+    "pnpm",
+    ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--proposal", capability, "--target", targetRoot],
+    {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    },
+  );
+  const proposalPath = proposalStdout.trim();
+  const proposal = parseKrnControlPlaneProposal(readJson(proposalPath));
+  const proposalRelativePath = relative(targetRoot, proposalPath).replaceAll("\\", "/");
+  const decision = parseKrnProposalReviewDecision({
+    schema_version: "krn-proposal-review-decision.v1",
+    kind: "krn_proposal_review_decision",
+    decision_id: `decision-${proposal.proposal_id}`,
+    proposal_id: proposal.proposal_id,
+    proposal_path: proposalRelativePath,
+    decision: "approved_for_promotion",
+    review_scope: "proposal_review_only",
+    target_mutated: false,
+    promotion_state: "not_promoted",
+    reviewer: "krn-init-test",
+    rationale: `The generated ${capability} seed is narrow, target is absent, and the exact payload is safe to apply.`,
+    write_policy: {
+      default_effect: "no_target_mutation",
+      allowed_persistence: "append_only",
+      idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
+    },
+    evidence_refs: proposal.evidence_refs,
+    source_refs: proposal.source_refs,
+    blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+    created_at: "2026-06-21T00:00:00.000Z",
+    created_by: "krn init test",
+    interpretation_caveat:
+      "This decision approves promotion input only; the exact target write still requires explicit init apply mode.",
+  });
+  const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: targetRoot });
+
+  const promotionStdout = execFileSync(
+    "pnpm",
+    [
+      "exec",
+      "tsx",
+      "packages/cli/src/main.ts",
+      "--",
+      "init",
+      "--apply",
+      capability,
+      "--proposal-path",
+      proposalPath,
+      "--decision-path",
+      join(targetRoot, storedDecision.decision_path),
+      "--target",
+      targetRoot,
+    ],
+    {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    },
+  );
+  const promotionPath = promotionStdout.trim();
+  const promotion = parseKrnProposalPromotion(readJson(promotionPath));
+
+  expect(proposal.target).toEqual({ target_type: "path", path: bootstrapTargetPathByCapability[capability] });
+  expect(promotion.proposal_kind).toBe("init_bootstrap");
+  expect(promotion.promotion_scope).toBe("approved_init_bootstrap_only");
+  expect(promotion.apply_mode).toBe("apply_exact_target_write");
+  expect(promotion.target.path).toBe(bootstrapTargetPathByCapability[capability]);
+  expect(readFileSync(join(targetRoot, promotion.target.path), "utf8")).toBe(promotion.target.file_content);
+
+  return promotionPath;
+}
+
 describe("krn init --dry-run", () => {
   it("writes a schema-backed manifest without mutating target setup files", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-target-"));
@@ -701,6 +797,61 @@ describe("krn init --dry-run", () => {
     expect(policyContent).not.toContain("goal-038");
     expect(policyContent).not.toContain("docs/plans/canonical/draft.md");
   }, 30_000);
+
+  it("composes all reviewed bootstrap targets into one isolated repo readiness surface", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-compose-target-"));
+
+    const initialManifestStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--dry-run", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const initialManifest = parseInitManifest(readJson(initialManifestStdout.trim()));
+
+    expect(initialManifest.bootstrap_plan.map((item) => item.capability)).toEqual([...reviewedBootstrapCapabilities]);
+    expect(initialManifest.bootstrap_plan.every((item) => item.action === "proposal_only")).toBe(true);
+
+    const promotionPaths = reviewedBootstrapCapabilities.map((capability) =>
+      applyReviewedBootstrapCapability(targetRoot, capability),
+    );
+
+    const postApplyManifestStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--dry-run", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const postApplyManifest = parseInitManifest(readJson(postApplyManifestStdout.trim()));
+    const targetContents = Object.values(bootstrapTargetPathByCapability)
+      .map((targetPath) => readFileSync(join(targetRoot, targetPath), "utf8"))
+      .join("\n");
+    const sourceGraph = parseKrnSourceGraph(readJson(join(targetRoot, ".krn", "sources", "index.json")));
+    const contextIndex = parseKrnContextPointerIndex(readJson(join(targetRoot, ".krn", "context", "index.json")));
+    const evalBaseline = parseKrnEvalBaseline(readJson(join(targetRoot, ".krn", "evals", "baseline.json")));
+    const policy = parseKrnPolicyBoundaries(readJson(join(targetRoot, ".krn", "policies", "boundaries.json")));
+
+    expect(promotionPaths).toHaveLength(reviewedBootstrapCapabilities.length);
+    expect(new Set(promotionPaths).size).toBe(reviewedBootstrapCapabilities.length);
+    expect(postApplyManifest.bootstrap_plan.map((item) => item.capability)).toEqual([...reviewedBootstrapCapabilities]);
+    expect(postApplyManifest.bootstrap_plan.every((item) => item.action === "skip")).toBe(true);
+    expect(readdirSync(join(targetRoot, ".krn", "promotions"))).toHaveLength(reviewedBootstrapCapabilities.length);
+    expect(sourceGraph.records[0]?.ref).toBe("krn://source/bootstrap-policy");
+    expect(contextIndex.memory_policy.store_memory_bodies).toBe(false);
+    expect(contextIndex.memory_policy.require_application_guidance).toBe(true);
+    expect(evalBaseline.policy.productivity_lift_claimed).toBe(false);
+    expect(policy.boundaries.find((boundary) => boundary.surface === "memory_core_write")?.enforcement).toBe("block");
+    expect(existsSync(join(targetRoot, "docs", "memory"))).toBe(false);
+    expect(existsSync(join(targetRoot, ".krn", "memory"))).toBe(false);
+    expect(existsSync(join(targetRoot, ".krn", "dashboard"))).toBe(false);
+    expect(existsSync(join(targetRoot, ".krn", "api"))).toBe(false);
+    expect(targetContents).not.toContain("goal-038");
+    expect(targetContents).not.toContain("docs/plans/canonical/draft.md");
+  }, 90_000);
 
   it("rejects apply paths outside the target root before reading them", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-apply-outside-target-"));

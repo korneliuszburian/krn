@@ -33,14 +33,14 @@ It is not hidden model memory and it is not the final KRN memory core. It is che
 Before major planning work:
 
 1. Read this index.
-2. If a `/goal` is active, read [docs/goals/INDEX.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/INDEX.md), then the active read set listed there: [docs/goals/goal-038.md](/home/krn/coding/krn/active/krn-gastown/docs/goals/goal-038.md) and [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md). Older goals are indexed evidence or lab history, not default context.
+2. If a `/goal` is active, read [docs/goals/INDEX.md](../goals/INDEX.md), then the active read set listed there: [docs/goals/goal-038.md](../goals/goal-038.md) and [docs/plans/canonical/draft.md](../plans/canonical/draft.md). Older goals are indexed evidence or lab history, not default context.
 3. Read current final product direction only when product direction is unclear or changing:
-   - [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md)
+   - [docs/plans/canonical/draft.md](../plans/canonical/draft.md)
 4. Read current canonical synthesis only for synthesis/source-ledger work:
-   - [docs/plans/canonical/draft.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/draft.md)
-   - [docs/plans/canonical/pattern-matrix.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/pattern-matrix.md)
-   - [docs/plans/canonical/SOURCES.md](/home/krn/coding/krn/active/krn-gastown/docs/plans/canonical/SOURCES.md)
-5. For product implementation terms, read [CONTEXT.md](/home/krn/coding/krn/active/krn-gastown/CONTEXT.md) only when terms are unclear or changing.
+   - [docs/plans/canonical/draft.md](../plans/canonical/draft.md)
+   - [docs/plans/canonical/pattern-matrix.md](../plans/canonical/pattern-matrix.md)
+   - [docs/plans/canonical/SOURCES.md](../plans/canonical/SOURCES.md)
+5. For product implementation terms, read [CONTEXT.md](../../CONTEXT.md) only when terms are unclear or changing.
 6. Read relevant category notes below.
 
 ## Index

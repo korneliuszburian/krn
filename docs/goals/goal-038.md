@@ -61,10 +61,12 @@ Newest user message wins. Treat shorthand such as "simplify", "condense",
 "senior", "Karpathy-small", "anti-slop", "memory core", "hardcoded truth",
 and "final-shaped slice" as operational commands defined in goal-038.md.
 
-Current next slice:
-Build or run the pre-edit engineering gate before continuing new non-trivial
-implementation work; then continue the next dependency-ordered final-product
-slice from this goal.
+Current active mode:
+Run cleanup/condense on current repo sediment first, then move into the
+capability dogfood loop. This means KRN must use the boundaries it already has
+on one real KRN capability task before another init proof, eval family,
+dashboard surface, benchmark lane, broad API/cloud sync, research runtime, or
+passive document is allowed.
 
 Constraints:
 - docs/memory/** is pattern bank / audit export, not memory core.
@@ -83,6 +85,11 @@ Constraints:
 - Selected memory without application guidance must fail.
 - Before expanding behavior, run the goal-038 simplify/condense check on the
   touched surface.
+- Treat the canonical blueprint as the full final target state, not as MVP or
+  v0 thinking. Slices are dependency-ordered implementation carriers for that
+  final architecture.
+- Keep the full ADR/source-backed pattern catalog current when product
+  architecture changes. Do not replace it with scattered notes.
 - Before non-trivial product edits, produce or run `krn gate --task <text>`
   semantics and make these checks explicit: mechanism, scope boundary,
   consumer, verification, rollback/kill, hardcoded truth, skill routing,
@@ -103,6 +110,21 @@ Constraints:
 
 [DECISION] KRN is a Codex Operating Layer / AI Engineering Control Plane.
 
+[DECISION] KRN is built toward the full final-product target state from the
+start.
+
+Dependency-ordered slices are not MVPs. They are the fastest safe carriers for
+the final architecture. A slice may be tightly scoped, but it must preserve final
+ownership boundaries, final memory/source/eval semantics, and the real rollback
+or kill path.
+
+[DECISION] The canonical blueprint and eventual ADR are product truth for target
+architecture.
+
+If product architecture changes, update the canonical blueprint/source ledger or
+ADR-level decision in the same pass. Do not let the final product plan live only
+in chat, social-research notes, or local runtime artifacts.
+
 [DECISION] Repo-local files are not the final memory core.
 
 - `docs/memory/**` is a pattern bank and audit/export layer.
@@ -110,6 +132,15 @@ Constraints:
 - authoritative memory core is KRN service/store backed, local-first at the beginning and API/team-sync capable later.
 
 [DECISION] A feature is not real until it has a consumer, evidence, and a feedback path.
+
+[DECISION] KRN may dogfood KRN only at proven boundaries.
+
+Future self-use is a product direction, not a license to pretend the system is
+already self-growing. KRN can use its own MemoryStore, context/source packet,
+review, eval, skill, or policy layer only when that layer has a typed boundary,
+a current consumer, verification evidence, rollback/kill criteria, and an
+overclaim boundary. Until then, use the layer as a local proof input, not as
+authoritative automation.
 
 [DECISION] Every agentic element must have:
 
@@ -151,7 +182,11 @@ The user often uses short phrases as compact operational instructions. Interpret
 | `Karpathy-small` | Prefer one hypothesis, one mechanism, one measurable signal, one consumer, and one falsifier before adding a framework layer. Dumb baseline first; complexity must earn its keep. |
 | `senior` | Name the mechanism, tradeoff, simplest viable design, verification surface, owner, rollback/kill path, and overclaim boundary. |
 | `anti-slop` | Reject proof-shaped artifacts that do not reduce context waste, review burden, memory rot, task drift, unsafe writes, or duplicate concepts. |
-| `final-shaped slice` | Build the smallest dependency-ordered piece of the final architecture, not a throwaway MVP shortcut. It must keep the final ownership boundaries. |
+| `full target state` | Keep the complete final architecture visible in the canonical blueprint/ADR. Do not narrow the product to MVP/v0 language just because implementation is incremental. |
+| `final-shaped slice` | Build the tightest dependency-ordered carrier of the final architecture, not a throwaway MVP shortcut. It must keep the final ownership boundaries. |
+| `sprzątanie` / `cleanup` | Inventory stale goals, duplicate docs, unconsumed evals, weak skills, hardcoded local paths, and monolith pressure. Delete, park, merge, or route them out of the default path before adding another surface. |
+| `capability dogfood` | Use existing KRN boundaries on one real KRN capability task, then record keep/kill/revisit from focused evidence. This is not a broad live-agent benchmark or self-growing claim. |
+| `self-growing KRN` | Future direction only. A KRN layer can help build KRN after it has a typed boundary, consumer, verification, rollback, and overclaim boundary. |
 | `hardcoded truth` | Do not embed product direction, memory records, active source lists, user-specific paths, benchmark assumptions, or current-goal state in product code. Use typed config/store/source graph/test fixtures. |
 | `gate` / `pre-edit gate` | Before non-trivial edits, produce the engineering gate checklist and use it to block unclear mechanism, missing consumer, missing verification, missing rollback, broad dashboard/benchmark/API expansion, or hardcoded volatile truth. |
 
@@ -310,8 +345,10 @@ Each vertical slice follows this loop:
 ```text
 intake
   -> choose final-product layer
+  -> check canonical blueprint/ADR target state
+  -> cleanup/condense stale or duplicate surfaces in the touched path
   -> research/plan checkpoint when non-trivial
-  -> smallest production-shaped behavior
+  -> tight final-shaped behavior
   -> implementation
   -> focused verification
   -> review/handoff
@@ -320,6 +357,22 @@ intake
 ```
 
 This loop is dependency-ordered, not maturity-labeled. Do not call slices MVP, v0, prototype, or demo unless the user explicitly asks for that framing.
+
+The default next loop after repo-bootstrap composition is:
+
+```text
+cleanup inventory
+  -> delete/park/merge or route stale surfaces out of default context
+  -> choose one real KRN capability task
+  -> build context from existing MemoryStore/source boundaries
+  -> implement code through the relevant skill and typed consumer
+  -> verify with focused tests/evals only
+  -> record keep/kill/revisit and overclaim boundary
+```
+
+No broad `codex exec` research loop is allowed in this default path. `codex
+exec` remains a worker/eval lane for explicit, bounded dogfood or lab tasks with
+a hypothesis, budget, trace, and stop condition.
 
 ## Code Quality And Monolith Rule
 
@@ -502,11 +555,13 @@ These tracks are final-product dependencies, not release versions.
 | Security/governance | unsafe autonomy is bounded | API/MCP writes expand | threat model and gates protect real workflows |
 | Dogfood/lift | product improves real work | core loop usable | repeated failure/review-burden metric improves |
 
-## First Concrete Slice
+## First Completed Concrete Slice
 
-Build the memory store boundary and selection/application proof.
+The first concrete slice after the goal reset was the memory store boundary and
+selection/application proof. It is now completed local foundation, not the
+active next task.
 
-Do not build the final cloud service yet. Build the smallest final-shaped boundary:
+The boundary was final-shaped but local-first:
 
 ```text
 MemoryStore interface
@@ -587,6 +642,19 @@ writes, and productivity-lift claims. It does not prove hook enforcement,
 security quality, broad API permissioning, dashboard usefulness, final memory
 quality, or productivity lift.
 
+[FACT] `krn init --proposal skill_wiring` and `krn init --apply skill_wiring`
+reuse the same reviewed promotion spine for the seventh absent bootstrap
+target: `.agents/skills/README.md`. The exact `init_skill_wiring` payload seeds
+only a local skill-wiring pointer and forbids copied active skill bodies,
+runtime evidence in skill text, durable memory bodies in repo-local skills,
+active-goal truth, dashboard/API state, hook/security claims, or productivity
+lift claims.
+
+[FACT] The seven reviewed bootstrap targets now compose in one isolated target:
+dry-run, proposal, approved review decision, exact apply, and second dry-run
+`skip` detection pass together while rejecting repo-local memory core,
+dashboard/API state, copied `goal-038`, and copied canonical draft truth.
+
 [FACT] The active default eval path is now:
 
 ```text
@@ -596,13 +664,18 @@ krn eval
   -> excluded_lanes: lab
 ```
 
-[NEXT] After this checkpoint, continue with skill wiring, policy boundaries, or
-repo-bootstrap readiness before adding dashboard, benchmark, broad API/cloud
-sync, research runtime, or passive docs. Do not turn init into a broad scaffold
-writer and do not add another target mutation without review/promotion,
-no-overwrite behavior, source/evidence lineage, and focused eval coverage.
+[NEXT] After this checkpoint, stop adding isolated init proofs. Run the
+cleanup/condense inventory on current repo sediment, then execute the capability
+dogfood loop on one real KRN capability task using existing MemoryStore,
+context/source, review, and eval boundaries. Keep dashboard, benchmark, broad
+API/cloud sync, research runtime, and passive docs out of the default path until
+the capability task creates a real consumer.
 
 ## Progress Ledger
+
+Historical `[NEXT]` entries below record what the next step was at that point in
+the sequence. The active next step is always the `Current Dependency Cursor`
+above plus the newest `[NEXT]` entry.
 
 ### 2026-06-20
 
@@ -832,6 +905,32 @@ no-overwrite behavior, source/evidence lineage, and focused eval coverage.
 - [SIMPLIFY] Delete/avoid: no generated skill folders, no copied SKILL.md bodies, no generic scaffold engine, no skill registry/dashboard/API expansion, no hook/security/skill-quality claim, and no repo-local memory-core fiction.
 - [OVERCLAIM] This slice proves only the reviewed exact `skill_wiring` seed write boundary. It does not prove skill quality, trigger quality, skill eval quality, hook enforcement, security quality, broad repo bootstrap readiness, memory-core quality, dashboard/API readiness, or productivity lift.
 - [NEXT] Move to repo-bootstrap readiness: prove the existing reviewed init targets compose into a usable minimal bootstrap workflow in an isolated target without broad scaffolding, hardcoded product truth, repo-local memory-core writes, or another metadata cleanup.
+- [EVIDENCE] The repo-bootstrap readiness pre-edit gate passed and wrote `.krn/gates/20260621T014810Z-1003888/engineering-gate.json`.
+- [FACT] The reviewed init targets now have an isolated composition proof: `krn init --dry-run`, each `krn init --proposal <capability>`, approved review decisions, each `krn init --apply <capability>`, and a second `krn init --dry-run` that marks the reviewed bootstrap targets as `skip`.
+- [FACT] The composition proof parses the generated source graph, context pointer index, eval baseline, and policy boundaries after all target writes, and verifies that the target does not create `docs/memory/**`, `.krn/memory/**`, dashboard/API state, copied `goal-038`, or copied canonical draft truth.
+- [EVIDENCE] Focused test passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T015352Z-1016328/report.json` with 13/13 cases and 62/62 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T015415Z-1016808/report.json` with 5/5 modules passing.
+- [EVIDENCE] `pnpm typecheck` passed.
+- [SIMPLIFY] Keep: one composition readiness case, the existing proposal/review/promotion spine, exact target payloads, and post-apply dry-run `skip` detection because they prove the bootstrap pieces work together without adding a new broad scaffold command.
+- [SIMPLIFY] Delete/avoid: no `apply-all`, no direct dry-run mutation, no repo-local memory core, no generated active skills, no dashboard/API state, no copied active goal/canonical draft truth, and no second init registry abstraction.
+- [OVERCLAIM] This slice proves isolated local reviewed-bootstrap composition only. It does not prove merge-mode safety for existing files, final skill quality, final memory quality, hook/security enforcement, broad API/dashboard readiness, fresh-repo dogfood success, or productivity lift.
+- [NEXT] Move to the capability dogfood loop: prove KRN can take one real repo capability task, build bounded context from existing MemoryStore/source boundaries, run through reviewed bootstrap/task evidence, verify with focused tests/evals, and record keep/kill/revisit without adding another passive init, memory, dashboard, benchmark, or API layer.
+
+### 2026-06-21 Autonomous Direction Reset
+
+- [DECISION] The active goal is full final-product execution, not MVP/v0/prototype framing. Slices remain tightly scoped only as dependency-ordered carriers of the final architecture.
+- [DECISION] Before the next product surface, run cleanup/condense on repo sediment: stale goal routing, duplicate source truth, unconsumed eval/lab surfaces, hardcoded local paths, weak skill routing, and monolith pressure.
+- [DECISION] KRN-to-build-KRN is a future gated capability. Use KRN's own layers only where the layer already has a typed boundary, consumer, verification, rollback/kill, and overclaim boundary.
+- [DECISION] `codex exec` is not the default overnight loop. It may be used only as a bounded worker/eval lane with a hypothesis, trace, budget, and stop condition.
+- [FACT] Root routing and memory-index links are being cleaned from repo-specific absolute paths so the repo stays portable and does not encode one operator workspace as product truth.
+- [EVIDENCE] The first route-correction pre-edit gate was blocked at `.krn/gates/20260621T020759Z-1032448/engineering-gate.json`; the narrowed route-correction gate passed at `.krn/gates/20260621T020902Z-1033513/engineering-gate.json`.
+- [EVIDENCE] Post-correction stale-router check passed: no repo-specific absolute workspace links, stale previous-next markers, or stale source-coverage counters remain in the active router/canonical files.
+- [EVIDENCE] Focused test passed after the route correction: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T021814Z-1065632/report.json` with 13/13 cases and 62/62 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T021929Z-1068166/report.json`.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [NEXT] After committing the repo-bootstrap composition proof and this routing correction, choose the first capability dogfood task that writes code and measures review-burden/diff-risk/context-use evidence instead of adding another report family.
 
 ## Disproves Completion
 
