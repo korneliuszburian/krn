@@ -1015,6 +1015,19 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no active eval module list in product code, no duplicated module list in the eval validator or README, no dashboard/API/benchmark expansion, no broad registry service, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves data-backed eval module routing and parser-backed registry validation only. It does not prove eval quality, final registry UX, source freshness quality, product lift, API readiness, or dashboard usefulness.
 - [NEXT] Continue cleanup/condense by selecting the next product bottleneck from current code pressure, not by adding another eval or dashboard surface. Good candidates: `packages/cli/src/init.ts` size/target boundaries, duplicate docs/source truth, or MemoryStore/source graph hardcoded fixtures if a real consumer touches them.
+- [EVIDENCE] The doctor extraction pre-edit gate passed and wrote `.krn/gates/20260621T030521Z-1167089/engineering-gate.json`.
+- [FACT] `krn doctor` command behavior moved from `packages/cli/src/main.ts` into `packages/cli/src/doctor.ts`; `main.ts` now keeps only doctor command dispatch.
+- [FACT] Doctor runtime source refs moved from historical `goal-006` / compatibility product plan to active `goal-038`, `docs/specs/krn-doctor/README.md`, and `docs/plans/canonical/draft.md`.
+- [FACT] `packages/cli/src/main.ts` dropped from 574 lines to 378 lines; `packages/cli/src/doctor.ts` is 198 lines and has the public doctor CLI path as its consumer.
+- [EVIDENCE] Focused doctor tests passed: `pnpm exec vitest run packages/cli/test/doctor.test.ts packages/contracts/test/doctor-report.test.ts` passed 2 files / 4 tests.
+- [EVIDENCE] Narrow CLI no-emit check passed: `pnpm exec tsc --noEmit --pretty false --project packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run eval:krn-doctor` passed run `.krn/evals/krn-doctor-contracts/20260621T030756Z-1169414/report.json` with 3/3 cases and 7/7 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T030806Z-1169728/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one doctor module, unchanged public command, active source refs, focused doctor tests/eval, and no new registry.
+- [SIMPLIFY] Delete/avoid: no behavior expansion, no readiness-quality claim, no dashboard/API/benchmark surface, no research-pack refactor in the same slice, and no copied goal/canonical text.
+- [SIMPLIFY] Next candidate: the remaining stale `goal-006` source refs in `research-pack` scaffold/main path, or `packages/cli/src/init.ts` target-boundary pressure if another init capability is touched.
+- [OVERCLAIM] This slice proves doctor command extraction and source-ref freshness only. It does not prove readiness quality, semantic hook correctness, productivity lift, API/MCP readiness, or dashboard usefulness.
 
 ## Disproves Completion
 
