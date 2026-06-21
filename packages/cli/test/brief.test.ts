@@ -59,6 +59,11 @@ describe("krn brief", () => {
     expect(brief.memory_application.applied_memory_ids).toEqual(
       brief.memory_selection.selected.map((selected) => selected.memory_id),
     );
+    expect(brief.source_refs).toEqual([
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/SOURCES.md#C061",
+    ]);
+    expect(brief.source_refs).not.toContain("docs/plans/canonical/draft.md");
     expect(JSON.stringify(brief)).not.toContain("KRN memory must be selected from a store boundary");
     expect(existsSync(join(targetRoot, ".krn", "briefs", brief.run_id, "brief.json"))).toBe(true);
     expect(readdirSync(targetRoot).sort()).toEqual([".krn"]);

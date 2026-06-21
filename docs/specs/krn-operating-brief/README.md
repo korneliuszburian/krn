@@ -21,6 +21,7 @@ task intent -> selected memory IDs/patterns -> rejected context -> applied kerne
 ```
 
 This is a MemoryStore consumer, not a passive planning document and not final memory core.
+Runtime `source_refs` must mirror the selected memory `source_lineage`; they are not a second hardcoded active-goal/source list.
 
 ## Command
 

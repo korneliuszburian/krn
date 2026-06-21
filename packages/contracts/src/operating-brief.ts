@@ -69,6 +69,27 @@ export const KrnOperatingBriefSchema = z
       }
     }
 
+    const selectedSourceRefs = new Set(brief.selected_context.flatMap((context) => context.source_lineage));
+    const sourceRefs = new Set(brief.source_refs);
+    for (const sourceRef of brief.source_refs) {
+      if (!selectedSourceRefs.has(sourceRef)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["source_refs"],
+          message: `source_refs entry ${sourceRef} is not backed by selected_context.source_lineage`,
+        });
+      }
+    }
+    for (const selectedSourceRef of selectedSourceRefs) {
+      if (!sourceRefs.has(selectedSourceRef)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["source_refs"],
+          message: `selected_context.source_lineage entry ${selectedSourceRef} is missing from source_refs`,
+        });
+      }
+    }
+
     if (brief.memory_application.applied_memory_ids.length === 0) {
       ctx.addIssue({
         code: "custom",

@@ -130,7 +130,6 @@
   "runtime_report_path": ".krn/briefs/20260620T211000Z-example/brief.json",
   "source_refs": [
     "docs/goals/goal-038.md",
-    "docs/plans/canonical/draft.md",
     "docs/plans/canonical/SOURCES.md#C061"
   ],
   "overclaim_boundary": "This operating brief proves bounded memory selection/application for one local Codex run.",

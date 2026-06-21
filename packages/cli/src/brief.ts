@@ -122,6 +122,7 @@ export function buildKrnOperatingBrief(args: BriefArgs, now = new Date()): KrnOp
   const memory = buildBriefMemoryBundle(targetRoot, runId, now, args.task);
   const appliedMemoryIds = memory.application.applied_memory_ids;
   const selectedContext = selectedContextFromRecords(memory.selectedRecords, appliedMemoryIds);
+  const sourceRefs = unique(selectedContext.flatMap((context) => context.source_lineage));
   const appliedKernelTerms = unique(memory.selectedRecords.flatMap((record) => record.kernel_terms));
 
   const candidate: unknown = {
@@ -152,11 +153,7 @@ export function buildKrnOperatingBrief(args: BriefArgs, now = new Date()): KrnOp
       artifact: runtimeReportPath,
     },
     runtime_report_path: runtimeReportPath,
-    source_refs: [
-      "docs/goals/goal-038.md",
-      "docs/plans/canonical/draft.md",
-      "docs/plans/canonical/SOURCES.md#C061",
-    ],
+    source_refs: sourceRefs,
     overclaim_boundary:
       "This operating brief proves bounded memory selection/application for one local Codex run. It does not prove productivity lift, final memory quality, dashboard readiness, or API/cloud sync.",
     interpretation_caveat:

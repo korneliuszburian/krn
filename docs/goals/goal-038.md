@@ -680,6 +680,10 @@ the task text omits TypeScript keywords.
 `packages/evals/**` and `docs/evals/**` target paths even when task text omits
 eval keywords.
 
+[FACT] `krn brief` now derives runtime `source_refs` from selected
+MemoryStore `source_lineage`; the operating brief parser rejects source refs
+that are not backed by selected context lineage.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -1065,6 +1069,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no repo-local memory core, no dashboard/API/cloud sync, no passive memory note, no copied memory bodies in runtime evidence, no hardcoded benchmark goal ranges or `docs/memory/**` rejection policy in CLI code.
 - [SIMPLIFY] Next candidate: use this policy-backed MemoryStore boundary in the next real capability dogfood task, or inspect `packages/cli/src/init.ts` only if another reviewed init capability is actually touched.
 - [OVERCLAIM] This slice proves local MemoryStore policy parsing and consumption only. It does not prove final memory quality, graph memory, neuroscience-style synthesis, source freshness, review-burden reduction, API/team sync, or productivity lift.
+- [EVIDENCE] The operating-brief source-lineage pre-edit gate passed and wrote `.krn/gates/20260621T033010Z-1248837/engineering-gate.json`.
+- [FACT] `krn brief` no longer hardcodes active `goal-038`, canonical draft, or source-ledger refs in product code for runtime `source_refs`; it derives them from selected MemoryStore `source_lineage`.
+- [FACT] `KrnOperatingBrief` now rejects `source_refs` entries not present in `selected_context.source_lineage` and rejects selected lineage entries missing from top-level `source_refs`.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/operating-brief.test.ts packages/cli/test/brief.test.ts` passed 2 files / 5 tests.
+- [EVIDENCE] Narrow no-emit checks passed for `packages/contracts/tsconfig.json` and `packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T033228Z-1256262/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one-line brief source-ref derivation, one parser invariant, one public CLI behavior assertion, and the operating-brief example aligned to selected lineage.
+- [SIMPLIFY] Delete/avoid: no review/report/dashboard/API cleanup in this slice, no new source service, no passive note, and no copied canonical draft ref in `krn brief` runtime output.
+- [SIMPLIFY] Next candidate: inspect `packages/cli/src/review.ts` source-ref constants or `init.ts` target pressure only through a new gate and real consumer; do not broaden this brief cleanup retroactively.
+- [OVERCLAIM] This slice proves operating-brief source-ref lineage enforcement only. It does not prove source graph freshness, final memory quality, review-burden reduction, API/team sync, or productivity lift.
 
 ## Disproves Completion
 
