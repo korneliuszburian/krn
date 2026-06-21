@@ -95,6 +95,19 @@ export const KrnReviewReportSchema = z
         });
       }
     }
+
+    const reportSourceRefs = new Set(report.source_refs);
+    for (const selected of report.memory_selection.selected) {
+      for (const sourceRef of selected.source_lineage) {
+        if (!reportSourceRefs.has(sourceRef)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["source_refs"],
+            message: `selected memory source lineage ${sourceRef} is missing from review source_refs`,
+          });
+        }
+      }
+    }
   });
 
 export type KrnReviewReport = z.infer<typeof KrnReviewReportSchema>;

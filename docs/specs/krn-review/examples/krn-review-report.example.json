@@ -79,7 +79,11 @@
         ".krn/doctor/20260620T210100Z-example/report.json",
         ".krn/eval/20260620T210200Z-example/report.json"
       ],
-      "source_refs": ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md"],
+      "source_refs": [
+        "docs/goals/goal-038.md",
+        "docs/plans/canonical/SOURCES.md#C061",
+        "docs/plans/canonical/SOURCES.md"
+      ],
       "blocked_surfaces": ["broad API sync", "dashboard command surfaces", "runtime skills"]
     },
     {
@@ -195,10 +199,9 @@
   "no_touch_paths": ["AGENTS.md", ".codex", ".agents", "docs/memory", "docs/evals", "docs/plans"],
   "runtime_report_path": ".krn/review/20260620T212000Z-example/report.json",
   "source_refs": [
-    "docs/goals/goal-038.md",
     "docs/specs/krn-review/README.md",
     "docs/evals/STANDARD.md",
-    "docs/plans/canonical/draft.md",
+    "docs/goals/goal-038.md",
     "docs/plans/canonical/SOURCES.md#C061"
   ],
   "interpretation_caveat": "This report applies selected memory IDs to local review guidance only; it does not approve memory/source changes, store authoritative memory in the repo, prove productivity lift, or unblock destructive API/MCP/dashboard behavior by itself."

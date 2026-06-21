@@ -29,6 +29,12 @@ describe("KrnReviewReport contract", () => {
       "mem-goal-038-memory-boundary",
     ]);
     expect(report.proposals.every((proposal) => proposal.status === "proposal_only")).toBe(true);
+    expect(report.source_refs).toEqual([
+      "docs/specs/krn-review/README.md",
+      "docs/evals/STANDARD.md",
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/SOURCES.md#C061",
+    ]);
   });
 
   it("rejects the known-bad fixture", () => {
@@ -43,6 +49,16 @@ describe("KrnReviewReport contract", () => {
         ...fixture.memory_application,
         applied_memory_ids: ["different-memory-id"],
       },
+    };
+
+    expect(() => parseKrnReviewReport(candidate)).toThrow();
+  });
+
+  it("rejects a report missing selected memory source lineage", () => {
+    const fixture = parseKrnReviewReport(readJson("docs/specs/krn-review/examples/krn-review-report.example.json"));
+    const candidate: unknown = {
+      ...fixture,
+      source_refs: fixture.source_refs.filter((sourceRef) => sourceRef !== "docs/plans/canonical/SOURCES.md#C061"),
     };
 
     expect(() => parseKrnReviewReport(candidate)).toThrow();

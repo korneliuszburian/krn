@@ -59,6 +59,7 @@ KRN_MEMORY_STORE_PATH=/path/to/memory-store.json
 ```
 
 The report stores selected memory IDs, source lineage, application guidance, and feedback outcome. It must not store authoritative memory bodies in `.krn/**`.
+Top-level review `source_refs` must include every selected MemoryStore `source_lineage`; stable spec/eval refs may be added, but active memory lineage must come from the store selection.
 
 ## Boundary
 

@@ -39,6 +39,21 @@ describe("krn review", () => {
     expect(report.memory_selection.rejected_context.map((context) => context.ref)).toContain("docs/memory/** full scan");
     expect(report.memory_application.applied_memory_ids).toEqual(report.memory_selection.selected.map((selected) => selected.memory_id));
     expect(report.memory_feedback.feedback_sink_ref).toBe(`local-dev-json:${storePath}`);
+    expect(report.source_refs).toEqual([
+      "docs/specs/krn-review/README.md",
+      "docs/evals/STANDARD.md",
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/SOURCES.md#C061",
+    ]);
+    expect(report.source_refs).not.toContain("docs/plans/canonical/draft.md");
+    expect(report.findings.find((finding) => finding.id === "memory-selection-applied")?.source_refs).toEqual([
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/SOURCES.md#C061",
+    ]);
+    expect(report.proposals.find((proposal) => proposal.id === "apply-memory-store-boundary")?.source_refs).toEqual([
+      "docs/goals/goal-038.md",
+      "docs/plans/canonical/SOURCES.md#C061",
+    ]);
     expect(JSON.stringify(report)).not.toContain("KRN memory must be selected from a store boundary");
     expect(existsSync(join(targetRoot, ".krn", "review", report.run_id, "report.json"))).toBe(true);
     expect(existsSync(join(targetRoot, "AGENTS.md"))).toBe(false);

@@ -684,6 +684,11 @@ eval keywords.
 MemoryStore `source_lineage`; the operating brief parser rejects source refs
 that are not backed by selected context lineage.
 
+[FACT] `krn review` now derives memory-specific source refs from selected
+MemoryStore `source_lineage`; the review-report parser requires top-level
+source refs to include selected memory lineage while allowing stable spec/eval
+refs.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -1080,6 +1085,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no review/report/dashboard/API cleanup in this slice, no new source service, no passive note, and no copied canonical draft ref in `krn brief` runtime output.
 - [SIMPLIFY] Next candidate: inspect `packages/cli/src/review.ts` source-ref constants or `init.ts` target pressure only through a new gate and real consumer; do not broaden this brief cleanup retroactively.
 - [OVERCLAIM] This slice proves operating-brief source-ref lineage enforcement only. It does not prove source graph freshness, final memory quality, review-burden reduction, API/team sync, or productivity lift.
+- [EVIDENCE] The review source-lineage pre-edit gate passed and wrote `.krn/gates/20260621T033507Z-1259977/engineering-gate.json`.
+- [FACT] `krn review` now derives memory-specific finding/proposal source refs and top-level memory refs from selected MemoryStore `source_lineage` instead of hardcoding active goal/canonical source refs for those surfaces.
+- [FACT] `KrnReviewReport` now rejects reports whose top-level `source_refs` omit selected memory source lineage while still allowing stable spec/eval refs such as `docs/specs/krn-review/README.md` and `docs/evals/STANDARD.md`.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/review-report.test.ts packages/cli/test/review.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] `pnpm run eval:krn-review` passed run `.krn/evals/krn-review-contracts/20260621T033634Z-1261594/report.json` with 3/3 cases and 9/9 assertions passing.
+- [EVIDENCE] Narrow no-emit checks passed for `packages/contracts/tsconfig.json` and `packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T033708Z-1262313/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one local `memorySourceRefs` derivation, one parser invariant, public review CLI assertions, stable artifact spec refs, and no new source registry.
+- [SIMPLIFY] Delete/avoid: no dashboard/MCP/API/lab cleanup, no broad `goal-006` sweep, no passive source note, and no shared helper abstraction for a one-line local dedupe.
+- [SIMPLIFY] Next candidate: inspect hardcoded review artifact/source refs only if the next consumer needs source registry behavior; otherwise move to the next real product bottleneck instead of sweeping all historical fixtures.
+- [OVERCLAIM] This slice proves review-report selected-memory lineage enforcement only. It does not prove source freshness, final memory quality, source graph completeness, human review quality, review-burden reduction, API/team sync, or productivity lift.
 
 ## Disproves Completion
 

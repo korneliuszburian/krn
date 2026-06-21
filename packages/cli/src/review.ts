@@ -82,6 +82,10 @@ function artifactPathForEvidence(path: string | null): string[] {
   return [path];
 }
 
+function unique(values: readonly string[]): string[] {
+  return [...new Set(values)];
+}
+
 function reviewArtifact(
   id: string,
   kind: ReviewArtifact["kind"],
@@ -208,7 +212,11 @@ function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
   }
 }
 
-function buildReviewFindings(artifacts: readonly ReviewArtifact[], application: KrnMemoryApplication): ReviewFinding[] {
+function buildReviewFindings(
+  artifacts: readonly ReviewArtifact[],
+  application: KrnMemoryApplication,
+  memorySourceRefs: readonly string[],
+): ReviewFinding[] {
   const findings: ReviewFinding[] = [];
 
   for (const artifact of artifacts) {
@@ -240,7 +248,7 @@ function buildReviewFindings(artifacts: readonly ReviewArtifact[], application: 
     artifact_id: null,
     summary: `Applied ${application.applied_memory_ids.length} selected memory IDs to krn review guidance.`,
     evidence_refs: [application.run_id],
-    source_refs: ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"],
+    source_refs: [...memorySourceRefs],
   });
 
   return findings;
@@ -267,7 +275,11 @@ function proposal(
   };
 }
 
-function buildReviewProposals(artifacts: readonly ReviewArtifact[], application: KrnMemoryApplication): ReviewProposal[] {
+function buildReviewProposals(
+  artifacts: readonly ReviewArtifact[],
+  application: KrnMemoryApplication,
+  memorySourceRefs: readonly string[],
+): ReviewProposal[] {
   const evidenceRefs = artifacts.flatMap((artifact) => (artifact.path ? [artifact.path] : []));
   const proposals: ReviewProposal[] = [];
   const missingOrInvalid = artifacts.filter((artifact) => artifact.status !== "present");
@@ -281,7 +293,7 @@ function buildReviewProposals(artifacts: readonly ReviewArtifact[], application:
         "Regenerate missing or invalid runtime evidence before promotion.",
         "KRN review cannot promote runtime evidence when one or more required artifacts are missing or invalid.",
         missingOrInvalid.map((artifact) => artifact.id),
-        ["docs/goals/goal-038.md", "docs/evals/STANDARD.md"],
+        unique([...memorySourceRefs, "docs/evals/STANDARD.md"]),
         ["packages/mcp", "apps/dashboard", "runtime skills", "memory promotion"],
       ),
     );
@@ -293,7 +305,7 @@ function buildReviewProposals(artifacts: readonly ReviewArtifact[], application:
         "Review and promote parsed runtime evidence into the source ledger.",
         "The latest init, doctor, and eval runtime artifacts all parse through KRN contracts; a human should review before durable promotion.",
         evidenceRefs,
-        ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md"],
+        unique([...memorySourceRefs, "docs/plans/canonical/SOURCES.md"]),
         ["broad API sync", "dashboard command surfaces", "runtime skills"],
       ),
     );
@@ -306,7 +318,7 @@ function buildReviewProposals(artifacts: readonly ReviewArtifact[], application:
       "Use selected memory IDs as review guidance before adding new product surfaces.",
       "The MemoryStore boundary is the active final-product slice; selected memory must produce application guidance and feedback before it counts as product memory.",
       memoryEvidenceRefs,
-      ["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"],
+      memorySourceRefs,
       ["repo-local memory core", "context dump", "dashboard expansion", "benchmark expansion", "cloud sync"],
     ),
   );
@@ -345,13 +357,14 @@ export function buildKrnReviewReport(targetInput: string, now = new Date()): Krn
   const runId = createRunId(now);
   const runtimeReportPath = `.krn/review/${runId}/report.json`;
   const memory = buildReviewMemoryBundle(targetRoot, runId, now);
+  const memorySourceRefs = unique(memory.selectedRecords.flatMap((record) => record.source_lineage));
   const artifacts = [
     buildInitReviewArtifact(targetRoot),
     buildDoctorReviewArtifact(targetRoot),
     buildEvalReviewArtifact(targetRoot),
   ];
-  const findings = buildReviewFindings(artifacts, memory.application);
-  const proposals = buildReviewProposals(artifacts, memory.application);
+  const findings = buildReviewFindings(artifacts, memory.application, memorySourceRefs);
+  const proposals = buildReviewProposals(artifacts, memory.application, memorySourceRefs);
   const summary = summarizeReview(artifacts, findings, proposals);
 
   const candidateReport: unknown = {
@@ -372,13 +385,7 @@ export function buildKrnReviewReport(targetInput: string, now = new Date()): Krn
     summary,
     no_touch_paths: ["AGENTS.md", ".codex", ".agents", "docs/memory", "docs/evals", "docs/plans"],
     runtime_report_path: runtimeReportPath,
-    source_refs: [
-      "docs/goals/goal-038.md",
-      "docs/specs/krn-review/README.md",
-      "docs/evals/STANDARD.md",
-      "docs/plans/canonical/draft.md",
-      "docs/plans/canonical/SOURCES.md#C061",
-    ],
+    source_refs: unique(["docs/specs/krn-review/README.md", "docs/evals/STANDARD.md", ...memorySourceRefs]),
     interpretation_caveat:
       "This report applies selected memory IDs to local review guidance only; it does not approve memory/source changes, store authoritative memory in the repo, prove productivity lift, or unblock destructive API/MCP/dashboard behavior by itself.",
   };
