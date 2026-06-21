@@ -28,7 +28,7 @@ Commands:
   review [--target <path>]
   brief --task <text> [--path <path>] [--target <path>]
   context build --task <text> [--path <path>] [--target <path>]
-  memory feedback --artifact <path> --outcome used|ignored|harmful|missed|stale|blocked_bad_action --reason <text>
+  memory feedback --artifact <path> --outcome used|ignored|harmful|missed|stale|blocked_bad_action --reason <text> [--memory-id <id>]
   sources check --context <path> --graph <path> [--target <path>]
   gate --task <text> [--path <path>] [--target <path>]
   research-pack --question <text> --decision <text> [--budget quick|standard|deep] [--target <path>]

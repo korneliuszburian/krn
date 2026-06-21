@@ -11,6 +11,7 @@ export type MemoryFeedbackArgs = {
   artifact: string;
   outcome: ResolvedMemoryOutcome;
   reason: string;
+  memoryIds: string[];
 };
 
 function readOptionValue(argv: readonly string[], index: number, option: string): string {
@@ -36,6 +37,7 @@ export function parseMemoryFeedbackArgs(argv: readonly string[]): MemoryFeedback
   let artifact: string | null = null;
   let outcome: ResolvedMemoryOutcome | null = null;
   let reason: string | null = null;
+  const memoryIds: string[] = [];
 
   for (let index = 2; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -58,6 +60,12 @@ export function parseMemoryFeedbackArgs(argv: readonly string[]): MemoryFeedback
       continue;
     }
 
+    if (arg === "--memory-id") {
+      memoryIds.push(readOptionValue(argv, index, arg));
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
   }
 
@@ -71,7 +79,7 @@ export function parseMemoryFeedbackArgs(argv: readonly string[]): MemoryFeedback
     throw new Error("Missing required --reason");
   }
 
-  return { artifact, outcome, reason };
+  return { artifact, outcome, reason, memoryIds: [...new Set(memoryIds)] };
 }
 
 function isRecord(input: unknown): input is Record<string, unknown> {
@@ -100,6 +108,17 @@ export function buildResolvedMemoryFeedback(args: MemoryFeedbackArgs, now = new 
   if (pendingFeedback.overall_outcome !== "pending_review") {
     throw new Error("KRN memory feedback artifact is already resolved. Use the original pending feedback artifact.");
   }
+  const pendingOutcomesById = new Map(pendingFeedback.memory_outcomes.map((outcome) => [outcome.memory_id, outcome]));
+  const memoryOutcomes =
+    args.memoryIds.length === 0
+      ? pendingFeedback.memory_outcomes
+      : args.memoryIds.map((memoryId) => {
+          const outcome = pendingOutcomesById.get(memoryId);
+          if (!outcome) {
+            throw new Error(`KRN memory feedback artifact does not include selected memory: ${memoryId}`);
+          }
+          return outcome;
+        });
 
   const candidate: unknown = {
     schema_version: "krn-memory-feedback.v1",
@@ -111,7 +130,7 @@ export function buildResolvedMemoryFeedback(args: MemoryFeedbackArgs, now = new 
     application_run_id: pendingFeedback.application_run_id,
     feedback_sink_ref: pendingFeedback.feedback_sink_ref,
     overall_outcome: args.outcome,
-    memory_outcomes: pendingFeedback.memory_outcomes.map((memoryOutcome) => ({
+    memory_outcomes: memoryOutcomes.map((memoryOutcome) => ({
       memory_id: memoryOutcome.memory_id,
       outcome: args.outcome,
       reason: args.reason,

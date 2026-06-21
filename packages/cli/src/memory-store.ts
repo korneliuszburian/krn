@@ -9,6 +9,7 @@ import {
   type KrnMemoryRecord,
   type KrnMemoryRetrievalPolicy,
   type KrnMemorySelection,
+  type MemoryOutcome,
 } from "@krn/contracts";
 import {
   loadLocalMemoryStore,
@@ -27,23 +28,74 @@ type MemoryBundle = {
 type MemoryTaskKind = KrnMemorySelection["task_kind"];
 type MemoryApplicationSurface = KrnMemoryApplication["surface"];
 
-function selectRecords(records: readonly KrnMemoryRecord[], taskKind: MemoryTaskKind, maxSelected: number): {
+const feedbackBlockingOutcomes = new Set<MemoryOutcome>(["harmful", "stale", "blocked_bad_action"]);
+
+function latestOutcomesByMemoryId(feedback: readonly KrnMemoryFeedback[]): Map<string, MemoryOutcome> {
+  const outcomes = new Map<string, MemoryOutcome>();
+  for (const entry of feedback) {
+    for (const memoryOutcome of entry.memory_outcomes) {
+      outcomes.set(memoryOutcome.memory_id, memoryOutcome.outcome);
+    }
+  }
+  return outcomes;
+}
+
+function recordIsSelectable(
+  record: KrnMemoryRecord,
+  taskKind: MemoryTaskKind,
+  latestOutcomes: ReadonlyMap<string, MemoryOutcome>,
+): boolean {
+  const latestOutcome = latestOutcomes.get(record.id);
+  const blockedByFeedback = latestOutcome ? feedbackBlockingOutcomes.has(latestOutcome) : false;
+  return (
+    record.status === "active" &&
+    record.freshness !== "stale" &&
+    record.selectors.task_kinds.includes(taskKind) &&
+    !blockedByFeedback
+  );
+}
+
+function rejectedRecordReason(
+  record: KrnMemoryRecord,
+  taskKind: MemoryTaskKind,
+  latestOutcomes: ReadonlyMap<string, MemoryOutcome>,
+): string {
+  const latestOutcome = latestOutcomes.get(record.id);
+  if (latestOutcome && feedbackBlockingOutcomes.has(latestOutcome)) {
+    return `Not selected because latest feedback outcome is ${latestOutcome}.`;
+  }
+  if (record.status !== "active" || record.freshness === "stale") {
+    return "Not selected because stale/lab/archive memory is not default context.";
+  }
+  if (!record.selectors.task_kinds.includes(taskKind)) {
+    return `Not selected because this record does not target ${taskKind} tasks.`;
+  }
+  return "Not selected because the bounded review budget was already filled by higher-priority active records.";
+}
+
+function selectRecords(
+  records: readonly KrnMemoryRecord[],
+  feedback: readonly KrnMemoryFeedback[],
+  taskKind: MemoryTaskKind,
+  maxSelected: number,
+): {
   selected: KrnMemoryRecord[];
-  rejected: KrnMemoryRecord[];
+  rejected: Array<{ record: KrnMemoryRecord; reason: string }>;
 } {
+  const latestOutcomes = latestOutcomesByMemoryId(feedback);
   const selected = records
-    .filter(
-      (record) =>
-        record.status === "active" &&
-        record.freshness !== "stale" &&
-        record.selectors.task_kinds.includes(taskKind),
-    )
+    .filter((record) => recordIsSelectable(record, taskKind, latestOutcomes))
     .slice(0, maxSelected);
   const selectedIds = new Set(selected.map((record) => record.id));
 
   return {
     selected,
-    rejected: records.filter((record) => !selectedIds.has(record.id)),
+    rejected: records
+      .filter((record) => !selectedIds.has(record.id))
+      .map((record) => ({
+        record,
+        reason: rejectedRecordReason(record, taskKind, latestOutcomes),
+      })),
   };
 }
 
@@ -56,8 +108,9 @@ function createMemorySelection(
   taskKind: MemoryTaskKind,
   policy: KrnMemoryRetrievalPolicy,
   records: readonly KrnMemoryRecord[],
+  feedback: readonly KrnMemoryFeedback[],
 ): KrnMemorySelection {
-  const { selected, rejected } = selectRecords(records, taskKind, policy.max_selected);
+  const { selected, rejected } = selectRecords(records, feedback, taskKind, policy.max_selected);
   if (selected.length === 0) {
     throw new Error(`KRN MemoryStore has no active ${taskKind} records to select.`);
   }
@@ -77,12 +130,9 @@ function createMemorySelection(
       source_lineage: record.source_lineage,
       expected_use: record.action_rule,
     })),
-    rejected: rejected.map((record) => ({
+    rejected: rejected.map(({ record, reason }) => ({
       memory_id: record.id,
-      reason:
-        record.status === "active"
-          ? "Not selected because the bounded review budget was already filled by higher-priority active records."
-          : "Not selected because stale/lab/archive memory is not default context.",
+      reason,
     })),
     rejected_context: policy.rejected_context,
     retrieval_budget: {
@@ -211,6 +261,7 @@ function buildMemoryBundle(input: {
     input.taskKind,
     storeFile.policy,
     storeFile.records,
+    storeFile.feedback,
   );
   const application = createMemoryApplication(input.targetRoot, input.runId, createdAt, input.surface, selection);
   const feedback = createMemoryFeedback(input.targetRoot, input.runId, createdAt, storeRef, selection, application);

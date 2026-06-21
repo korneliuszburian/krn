@@ -1457,6 +1457,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new dashboard/API/benchmark surface, no new memory body storage under `.krn/**`, no broad dogfood lab, no `codex exec` worker loop, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves the pending MemoryStore application feedback loop can be resolved by operator evidence. It does not prove memory precision, self-growing behavior, review-burden reduction, cloud/API sync, or final Memory Core quality.
 - [NEXT] Commit and push this feedback-closure slice; then continue only with another consumed final-product capability or cleanup bottleneck that a CLI/review/eval/source/memory consumer exposes.
+- [EVIDENCE] The feedback-aware MemoryStore selection pre-edit gate passed and wrote `.krn/gates/20260621T064431Z-1629070/engineering-gate.json`.
+- [FACT] `krn memory feedback` can now scope a reviewed outcome to one or more `--memory-id` values from the pending feedback artifact.
+- [FACT] Future MemoryStore selection now reads prior feedback and rejects memory whose latest reviewed outcome is `harmful`, `stale`, or `blocked_bad_action`, while preserving bounded selection for the remaining active records.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/memory-feedback.test.ts packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/contracts/test/memory-store.test.ts` passed 5 files / 13 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one feedback-aware selector rule, one scoped feedback argument, and one public CLI regression proving harmful memory is excluded from the next context packet.
+- [SIMPLIFY] Delete/avoid: no ranking engine, embeddings, dashboard/API sync, benchmark loop, broad eval family, repo-local memory body writes, or claim that memory quality has improved globally.
+- [OVERCLAIM] This slice proves feedback can alter future local MemoryStore selection for blocked outcomes. It does not prove optimal ranking, memory precision lift, self-growing memory, team/cloud sync, or review-burden reduction.
+- [NEXT] Commit and push this feedback-aware selection slice; then continue only where the next real KRN capability task exposes source/context/eval/review friction.
 
 ## Disproves Completion
 

@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseKrnLocalMemoryStore, parseKrnMemoryFeedback } from "@krn/contracts";
+import { parseKrnContextPacket, parseKrnLocalMemoryStore, parseKrnMemoryFeedback } from "@krn/contracts";
 import { writeMemoryStoreFixture } from "./memory-store-fixture.js";
 
 function readJson(path: string): unknown {
@@ -64,6 +64,66 @@ describe("krn memory feedback", () => {
     expect(store.feedback.at(-1)?.run_id).toBe(feedback.run_id);
     expect(store.records.filter((record) => record.last_used_at === feedback.created_at)).toHaveLength(2);
     expect(JSON.stringify(feedback)).not.toContain("KRN memory must be selected from a store boundary");
+  }, 30_000);
+
+  it("keeps harmful feedback out of future MemoryStore selections", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-memory-feedback-selection-target-"));
+    const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
+    const storePath = join(storeRoot, "memory-store.json");
+    writeMemoryStoreFixture(storePath);
+
+    const contextPath = runCli(
+      [
+        "context",
+        "build",
+        "--target",
+        targetRoot,
+        "--task",
+        "Build context before harmful feedback",
+        "--path",
+        "packages/cli/src/memory-store.ts",
+      ],
+      storePath,
+    ).trim();
+
+    runCli(
+      [
+        "memory",
+        "feedback",
+        "--artifact",
+        contextPath,
+        "--memory-id",
+        "mem-goal-038-memory-boundary",
+        "--outcome",
+        "harmful",
+        "--reason",
+        "This memory would cause a repo-local memory-core write for this task.",
+      ],
+      storePath,
+    );
+
+    const nextContextPath = runCli(
+      [
+        "context",
+        "build",
+        "--target",
+        targetRoot,
+        "--task",
+        "Build context after harmful feedback",
+        "--path",
+        "packages/cli/src/memory-store.ts",
+      ],
+      storePath,
+    ).trim();
+    const nextContext = parseKrnContextPacket(readJson(nextContextPath));
+
+    expect(nextContext.selected_context.map((context) => context.ref)).toEqual([
+      "memory:mem-goal-038-simplify-cadence",
+    ]);
+    expect(nextContext.memory_selection.rejected).toContainEqual({
+      memory_id: "mem-goal-038-memory-boundary",
+      reason: "Not selected because latest feedback outcome is harmful.",
+    });
   }, 30_000);
 
   it("rejects unresolved pending_review as a final feedback outcome", () => {
