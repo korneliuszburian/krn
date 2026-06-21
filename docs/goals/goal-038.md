@@ -1026,8 +1026,21 @@ above plus the newest `[NEXT]` entry.
 - [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
 - [SIMPLIFY] Keep: one doctor module, unchanged public command, active source refs, focused doctor tests/eval, and no new registry.
 - [SIMPLIFY] Delete/avoid: no behavior expansion, no readiness-quality claim, no dashboard/API/benchmark surface, no research-pack refactor in the same slice, and no copied goal/canonical text.
-- [SIMPLIFY] Next candidate: the remaining stale `goal-006` source refs in `research-pack` scaffold/main path, or `packages/cli/src/init.ts` target-boundary pressure if another init capability is touched.
+- [SIMPLIFY] Resolved later: the remaining stale `goal-006` source refs in `research-pack` scaffold/main path were cleaned by the following research-pack extraction slice; otherwise inspect `packages/cli/src/init.ts` target-boundary pressure only when another init capability is touched.
 - [OVERCLAIM] This slice proves doctor command extraction and source-ref freshness only. It does not prove readiness quality, semantic hook correctness, productivity lift, API/MCP readiness, or dashboard usefulness.
+- [EVIDENCE] The research-pack cleanup pre-edit gate passed and wrote `.krn/gates/20260621T031145Z-1177187/engineering-gate.json`.
+- [FACT] `krn research-pack` scaffold behavior moved from `packages/cli/src/main.ts` into `packages/cli/src/research-pack.ts`; `main.ts` now keeps only research-pack command dispatch.
+- [FACT] Research-pack runtime/spec/eval source refs moved from stale `goal-006` to active `goal-038` plus the canonical draft/spec refs while preserving `goal-036` as historical research-pack evidence.
+- [FACT] `packages/cli/src/main.ts` dropped from 378 lines to 205 lines; `packages/cli/src/research-pack.ts` is 171 lines and has the public `krn research-pack` CLI path as its consumer.
+- [EVIDENCE] Focused research-pack tests passed: `pnpm exec vitest run packages/cli/test/research-pack.test.ts packages/contracts/test/research-pack.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] Narrow CLI no-emit check passed: `pnpm exec tsc --noEmit --pretty false --project packages/cli/tsconfig.json`.
+- [EVIDENCE] `pnpm run eval:krn-research-pack` passed run `.krn/evals/krn-research-pack/20260621T031415Z-1191657/report.json` with 3/3 cases and 9/9 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T031431Z-1192192/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one research-pack module, unchanged public command, active source refs, focused research-pack tests/eval, explicit lab-only caveat, and no worker/runtime expansion.
+- [SIMPLIFY] Delete/avoid: no long-researcher worker, no dashboard/API/benchmark surface, no new research runtime, no passive research note, no copied memory/source bodies, and no claim that research quality or productivity improved.
+- [SIMPLIFY] Next candidate: inspect `packages/cli/src/main.ts` again after the research-pack extraction; if no command helper remains there, shift cleanup pressure to `packages/cli/src/init.ts` or the next consumer-led MemoryStore/review capability rather than inventing another lab surface.
+- [OVERCLAIM] This slice proves research-pack scaffold extraction and source-ref freshness only. It does not prove source quality, final research-brain quality, memory promotion correctness, productivity lift, API/MCP readiness, or dashboard usefulness.
 
 ## Disproves Completion
 

@@ -132,8 +132,9 @@
   "next_action": "Create the next vertical slice that runs a long-researcher worker against this typed scaffold.",
   "runtime_report_path": ".krn/research-packs/krn-research-pack-example-001/research-pack.json",
   "source_refs": [
-    "docs/goals/goal-006.md",
+    "docs/goals/goal-038.md",
     "docs/goals/goal-036.md",
+    "docs/plans/canonical/draft.md",
     "docs/specs/krn-research-pack/README.md"
   ],
   "evidence_refs": [

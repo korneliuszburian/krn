@@ -5,9 +5,10 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
+  - docs/goals/goal-038.md
   - docs/goals/goal-035.md
   - docs/goals/goal-036.md
+  - docs/plans/canonical/draft.md
   - docs/source-bank/MANIFEST.md
   - .agents/skills/long-researcher/SKILL.md
 ---

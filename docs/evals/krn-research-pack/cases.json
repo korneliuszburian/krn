@@ -3,7 +3,7 @@
     "id": "valid-fixture-parses",
     "expected_behavior": "The valid krn-research-pack fixture parses through @krn/contracts and preserves source budget plus mechanism extraction.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/goals/goal-035.md",
       "docs/specs/krn-research-pack/README.md"
     ],
@@ -39,7 +39,7 @@
     "id": "generated-scaffold-parses",
     "expected_behavior": "The CLI writes a scaffolded research pack under .krn/research-packs and the generated pack parses through @krn/contracts.",
     "source_patterns": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/goals/goal-036.md",
       "docs/specs/krn-research-pack/README.md"
     ],
