@@ -9,18 +9,8 @@ import {
   type EvalModuleResult,
   type KrnEvalReport,
 } from "@krn/contracts";
-
-type ModuleReportSummary = {
-  total_cases: number;
-  passed_cases: number;
-  failed_cases: number;
-  case_pass_rate: number;
-  total_assertions: number;
-  passed_assertions: number;
-  failed_assertions: number;
-  assertion_pass_rate: number;
-  interpretation_caveat: string;
-};
+import { excludedLanesForSelection, includedLanesForSelection, uniqueEvalLanes } from "./eval-lanes.js";
+import { extractReportPath, parseModuleReportSummary } from "./eval-report-summary.js";
 
 export type EvalModuleRunArgs = {
   modules: string[];
@@ -41,60 +31,8 @@ export type EvalModuleRun = {
 const DEFAULT_EVAL_REGISTRY_PATH = "docs/evals/registry.json";
 const AGGREGATE_EVAL_SOURCE_REFS = ["docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"] as const;
 
-export const DEFAULT_EVAL_LANE_POLICY =
-  "Default current runs core plus current eval modules. Lab modules require --lane lab, --lane all, or explicit --module selection.";
-
 function readJsonFile(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
-}
-
-function stringField(record: Record<string, unknown>, key: string): string {
-  const value = record[key];
-  if (typeof value !== "string" || value.length === 0) {
-    throw new Error(`Module report missing string field: ${key}`);
-  }
-  return value;
-}
-
-function numberField(record: Record<string, unknown>, key: string): number {
-  const value = record[key];
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    throw new Error(`Module report missing numeric field: ${key}`);
-  }
-  return value;
-}
-
-function parseModuleReportSummary(input: unknown): ModuleReportSummary {
-  if (!input || typeof input !== "object") {
-    throw new Error("Module report must be an object");
-  }
-
-  const record = input as Record<string, unknown>;
-
-  return {
-    total_cases: numberField(record, "total_cases"),
-    passed_cases: numberField(record, "passed_cases"),
-    failed_cases: numberField(record, "failed_cases"),
-    case_pass_rate: numberField(record, "case_pass_rate"),
-    total_assertions: numberField(record, "total_assertions"),
-    passed_assertions: numberField(record, "passed_assertions"),
-    failed_assertions: numberField(record, "failed_assertions"),
-    assertion_pass_rate: numberField(record, "assertion_pass_rate"),
-    interpretation_caveat: stringField(record, "interpretation_caveat"),
-  };
-}
-
-function extractReportPath(output: string): string {
-  const reportLine = output
-    .split(/\r?\n/)
-    .reverse()
-    .find((line) => line.startsWith("report: "));
-
-  if (!reportLine) {
-    throw new Error("Eval module output did not include a report path");
-  }
-
-  return reportLine.replace(/^report:\s*/, "").trim();
 }
 
 function toTargetRelativePath(targetRoot: string, absolutePath: string): string {
@@ -105,42 +43,8 @@ function toTargetRelativePath(targetRoot: string, absolutePath: string): string 
   return absolutePath;
 }
 
-function uniqueEvalLanes(laneValues: readonly EvalLane[]): EvalLane[] {
-  const lanes: EvalLane[] = [];
-  for (const lane of laneValues) {
-    if (!lanes.includes(lane)) {
-      lanes.push(lane);
-    }
-  }
-  return lanes;
-}
-
 function uniqueSourceRefs(sourceRefs: readonly string[]): string[] {
   return [...new Set(sourceRefs)];
-}
-
-function includedLanesForSelection(selection: EvalLaneSelection): EvalLane[] {
-  if (selection === "core") {
-    return ["core"];
-  }
-  if (selection === "current") {
-    return ["core", "current"];
-  }
-  if (selection === "lab") {
-    return ["lab"];
-  }
-  if (selection === "all") {
-    return ["core", "current", "lab"];
-  }
-  return ["core", "current", "lab"];
-}
-
-function excludedLanesForSelection(selection: EvalLaneSelection, includedLanes: readonly EvalLane[]): EvalLane[] {
-  if (selection === "custom" || selection === "all") {
-    return [];
-  }
-
-  return (["core", "current", "lab"] as const).filter((lane) => !includedLanes.includes(lane));
 }
 
 function readEvalModuleDescriptors(targetRoot: string): EvalModuleDescriptor[] {

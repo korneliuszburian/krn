@@ -1,7 +1,8 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseKrnEvalReport, type EvalLaneSelection, type KrnEvalReport } from "@krn/contracts";
-import { DEFAULT_EVAL_LANE_POLICY, runKrnEvalModules } from "./eval-modules.js";
+import { DEFAULT_EVAL_LANE_POLICY } from "./eval-lanes.js";
+import { runKrnEvalModules } from "./eval-modules.js";
 import { createRunId } from "./runtime-utils.js";
 
 export type EvalArgs = {
