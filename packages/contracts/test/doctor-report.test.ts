@@ -21,6 +21,7 @@ describe("DoctorReport contract", () => {
       "skills",
       "hooks",
       "evals",
+      "specs",
       "runtime",
     ]);
   });

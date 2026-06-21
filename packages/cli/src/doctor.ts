@@ -1,11 +1,13 @@
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { relative, resolve } from "node:path";
 import { parseDoctorReport, type DoctorCheck, type DoctorReport } from "@krn/contracts";
 import { createRunId, pathKind } from "./runtime-utils.js";
 
 type DoctorArgs = {
   target: string;
 };
+
+const localSpecPathPatterns = [/\/home\/krn\//, /C:\\Users\\krnij/i, /\/mnt\/c\/Users\/krnij/i];
 
 export function parseDoctorArgs(argv: readonly string[]): DoctorArgs {
   if (argv[0] !== "doctor") {
@@ -61,6 +63,36 @@ function countEvalCases(targetRoot: string): number {
   }).length;
 }
 
+function collectFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = resolve(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      return collectFiles(path);
+    }
+
+    if (entry.isFile()) {
+      return [path];
+    }
+
+    return [];
+  });
+}
+
+function findLocalSpecPathFiles(targetRoot: string): string[] {
+  const specsRoot = resolve(targetRoot, "docs", "specs");
+  if (!existsSync(specsRoot) || !statSync(specsRoot).isDirectory()) {
+    return [];
+  }
+
+  return collectFiles(specsRoot)
+    .filter((path) => {
+      const content = readFileSync(path, "utf8");
+      return localSpecPathPatterns.some((pattern) => pattern.test(content));
+    })
+    .map((path) => relative(targetRoot, path));
+}
+
 function doctorStatus(exists: boolean): "ready" | "warning" {
   return exists ? "ready" : "warning";
 }
@@ -94,6 +126,8 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
   const hooksJsonExists = pathKind(targetRoot, ".codex/hooks.json") === "file";
   const compactHookExists = pathKind(targetRoot, ".codex/hooks/compact_continuity.py") === "file";
   const hooksReady = hooksJsonExists && compactHookExists;
+  const specsExists = pathKind(targetRoot, "docs/specs") === "directory";
+  const localSpecPathFiles = findLocalSpecPathFiles(targetRoot);
 
   const checks: DoctorCheck[] = [
     {
@@ -151,6 +185,19 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
       exists: evalCount > 0,
       summary: evalCount > 0 ? `${evalCount} eval modules with cases are present.` : "No eval module cases were found.",
       source_refs: ["docs/evals/README.md", "docs/evals/STANDARD.md"],
+    },
+    {
+      id: "spec-portability",
+      surface: "specs",
+      path: "docs/specs",
+      status: !specsExists ? "warning" : localSpecPathFiles.length > 0 ? "blocked" : "ready",
+      exists: specsExists,
+      summary: !specsExists
+        ? "KRN spec examples are missing."
+        : localSpecPathFiles.length > 0
+          ? `KRN spec examples contain user-specific local paths: ${localSpecPathFiles.join(", ")}.`
+          : "KRN spec examples do not contain known user-specific local paths.",
+      source_refs: ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
     },
     {
       id: "runtime-artifacts",

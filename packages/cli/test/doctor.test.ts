@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -30,6 +30,7 @@ describe("krn doctor", () => {
       "skills",
       "hooks",
       "evals",
+      "specs",
       "runtime",
     ]);
     expect(existsSync(join(targetRoot, ".krn", "doctor", report.run_id, "report.json"))).toBe(true);
@@ -40,5 +41,29 @@ describe("krn doctor", () => {
 
     const topLevelEntries = readdirSync(targetRoot).sort();
     expect(topLevelEntries).toEqual([".krn"]);
+  }, 30_000);
+
+  it("blocks when checked-in spec examples contain user-specific local paths", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-doctor-spec-portability-"));
+    const specsRoot = join(targetRoot, "docs", "specs", "example");
+    mkdirSync(specsRoot, { recursive: true });
+    writeFileSync(join(specsRoot, "bad.example.json"), '{ "target_root": "/home/krn/coding/example" }\n', "utf8");
+
+    const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "doctor", "--target", targetRoot], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    });
+
+    const report = parseDoctorReport(readJson(stdout.trim()));
+    const specCheck = report.checks.find((check) => check.id === "spec-portability");
+
+    expect(report.overall_status).toBe("blocked");
+    expect(specCheck).toMatchObject({
+      surface: "specs",
+      path: "docs/specs",
+      status: "blocked",
+      exists: true,
+    });
+    expect(specCheck?.summary).toContain("docs/specs/example/bad.example.json");
   }, 30_000);
 });

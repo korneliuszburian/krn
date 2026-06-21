@@ -36,7 +36,7 @@ type EvalReport = {
   interpretation_caveat: string;
 };
 
-const REQUIRED_SURFACES = ["agents", "memory", "skills", "hooks", "evals", "runtime"];
+const REQUIRED_SURFACES = ["agents", "memory", "skills", "hooks", "evals", "specs", "runtime"];
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;

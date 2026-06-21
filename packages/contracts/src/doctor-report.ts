@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const SourceRefSchema = z.string().min(1);
 
-const DoctorSurfaceSchema = z.enum(["agents", "memory", "skills", "hooks", "evals", "runtime"]);
+const DoctorSurfaceSchema = z.enum(["agents", "memory", "skills", "hooks", "evals", "specs", "runtime"]);
 const DoctorStatusSchema = z.enum(["ready", "warning", "blocked"]);
 
 const DoctorCheckSchema = z

@@ -1180,6 +1180,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no broad rewrite of historical proposal payloads, no dashboard/API behavior, no benchmark lane, no new registry, and no source graph behavior claim.
 - [SIMPLIFY] Next candidate: proposal/dashboard source-ref cleanup should continue only when the touched consumer proves it needs current source metadata; do not rewrite historical lab fixtures by default.
 - [OVERCLAIM] This slice proves active control-plane spec source-ref freshness only. It does not prove proposal safety beyond existing validation, final source graph quality, dashboard usefulness, API readiness, review-burden reduction, or product lift.
+- [EVIDENCE] The doctor spec-portability check pre-edit gate passed and wrote `.krn/gates/20260621T040133Z-1320155/engineering-gate.json`.
+- [FACT] `krn doctor` now includes a `spec-portability` readiness surface: missing `docs/specs` warns, and user-specific local path prefixes in checked-in spec content block the report.
+- [FACT] The doctor check protects spec examples/fixtures only. Runtime evidence may still record the actual target root, and this is not a general secret scanner.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/doctor-report.test.ts packages/cli/test/doctor.test.ts` passed 2 files / 5 tests, including a blocked local-path fixture.
+- [EVIDENCE] `pnpm run eval:krn-doctor` passed run `.krn/evals/krn-doctor-contracts/20260621T040240Z-1321525/report.json` with 3/3 cases and 7/7 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T040323Z-1322447/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck`, `pnpm exec tsc --noEmit --pretty false --project packages/cli/tsconfig.json`, and `git diff --check` passed.
+- [SIMPLIFY] Keep: one doctor check, one contract enum extension, one blocked CLI test, and one updated doctor example.
+- [SIMPLIFY] Delete/avoid: no new eval family, no global scanner framework, no runtime path ban, no dashboard/API/benchmark work, and no product-lift claim.
+- [SIMPLIFY] Next candidate: if spec portability causes false positives, narrow the checked path set before expanding this into a broader policy engine.
+- [OVERCLAIM] This slice proves operator-visible detection of local path leakage in `docs/specs/**` only. It does not prove runtime privacy, secret scanning, source graph quality, memory quality, review-burden reduction, or product lift.
 
 ## Disproves Completion
 
