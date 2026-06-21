@@ -1263,6 +1263,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no live benchmark run, no dashboard command, no broad stale-goal sweep, no source registry abstraction, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves dashboard-data and benchmark-reports aggregate source lineage only. It does not prove benchmark usefulness, dashboard usefulness, source graph completeness, memory quality, human review quality, or product lift.
 - [NEXT] Commit and push this cleanup; then continue only with cleanup that has a live typed consumer or with the next capability dogfood task from the canonical blueprint.
+- [EVIDENCE] The context-packet broad-context guard cleanup pre-edit gate passed and wrote `.krn/gates/20260621T043644Z-1417043/engineering-gate.json`.
+- [FACT] `parseKrnContextPacket` no longer hardcodes the historical `goal-018.md..goal-034.md` range as a product-specific context-dump detector. It now rejects broad selected context by shape: wildcard refs, full-scan refs, or `goal-N..goal-M` range refs.
+- [FACT] A new public parser regression rejects `docs/goals/goal-001.md..goal-999.md` with the broad-context-dump failure, proving the guard is not tied to one old benchmark/lab range.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/context-packet.test.ts packages/cli/test/context.test.ts packages/cli/test/source-graph.test.ts` passed 3 files / 9 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T043746Z-1423296/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one parser predicate, public parser regression, existing context/source graph consumers, and no new context/memory/eval surface.
+- [SIMPLIFY] Delete/avoid: no historical goal-range hardcode, no dashboard/API/benchmark work, no broad context-policy engine, and no memory-quality claim.
+- [OVERCLAIM] This slice proves context-packet hardcode cleanup only. It does not prove final context quality, memory precision, source graph completeness, review burden reduction, or product lift.
+- [NEXT] Commit and push this cleanup; then continue with either another consumed hardcoded-truth cleanup or the first capability dogfood task if cleanup pressure is no longer concrete.
 
 ## Disproves Completion
 

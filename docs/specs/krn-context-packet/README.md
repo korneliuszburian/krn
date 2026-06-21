@@ -38,7 +38,7 @@ krn context build --task <text> [--path <path>] [--target <path>]
 ## Contract Rules
 
 - selected context must be backed by `memory_selection.selected`;
-- selected context must not contain broad dumps such as `docs/memory/**`;
+- selected context must not contain broad dumps such as wildcard scans, full scans, or goal-range refs;
 - memory application surface must be `krn_context`;
 - every selected memory must have application guidance;
 - runtime evidence may store memory IDs, reasons, lineage, guidance, and outcomes, not authoritative memory bodies.

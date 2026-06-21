@@ -35,6 +35,24 @@ describe("KRN context packet contract", () => {
     ).toThrow();
   });
 
+  it("rejects context packets that select broad goal ranges without hardcoded goal numbers", () => {
+    const packet = parseKrnContextPacket(
+      readJson("docs/specs/krn-context-packet/examples/context-packet.example.json"),
+    );
+
+    expect(() =>
+      parseKrnContextPacket({
+        ...packet,
+        selected_context: [
+          {
+            ...packet.selected_context[0],
+            ref: "docs/goals/goal-001.md..goal-999.md",
+          },
+        ],
+      }),
+    ).toThrow(/broad context dump/);
+  });
+
   it("rejects selected memory without application guidance", () => {
     const packet = parseKrnContextPacket(
       readJson("docs/specs/krn-context-packet/examples/context-packet.example.json"),

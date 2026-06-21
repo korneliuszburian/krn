@@ -39,6 +39,15 @@ const VerificationSchema = z
   })
   .strict();
 
+function isBroadContextDumpRef(ref: string): boolean {
+  const normalized = ref.toLowerCase();
+  return (
+    normalized.includes("**") ||
+    normalized.includes(" full scan") ||
+    /\bgoal-\d+\.md\.\.goal-\d+\.md\b/.test(normalized)
+  );
+}
+
 export const KrnContextPacketSchema = z
   .object({
     schema_version: z.literal("krn-context-packet.v1"),
@@ -76,7 +85,7 @@ export const KrnContextPacketSchema = z
   .superRefine((packet, ctx) => {
     const selectedMemoryIds = new Set(packet.memory_selection.selected.map((selected) => selected.memory_id));
     for (const context of packet.selected_context) {
-      if (context.ref.includes("docs/memory/**") || context.ref.includes("goal-018.md..goal-034.md")) {
+      if (isBroadContextDumpRef(context.ref)) {
         ctx.addIssue({
           code: "custom",
           path: ["selected_context"],
