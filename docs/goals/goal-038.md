@@ -1273,6 +1273,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no historical goal-range hardcode, no dashboard/API/benchmark work, no broad context-policy engine, and no memory-quality claim.
 - [OVERCLAIM] This slice proves context-packet hardcode cleanup only. It does not prove final context quality, memory precision, source graph completeness, review burden reduction, or product lift.
 - [NEXT] Commit and push this cleanup; then continue with either another consumed hardcoded-truth cleanup or the first capability dogfood task if cleanup pressure is no longer concrete.
+- [EVIDENCE] The first capability dogfood context packet for the MemoryStore rejected-context cleanup wrote `.krn/context/20260621T044012Z-1431711/context-packet.json` using an external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [EVIDENCE] The MemoryStore rejected-context cleanup pre-edit gate passed and wrote `.krn/gates/20260621T044056Z-1433195/engineering-gate.json`.
+- [FACT] MemoryStore fixtures and examples no longer carry the exact historical `goal-018.md..goal-034.md` range as default rejected context. They now describe the rejected surface as `docs/goals/goal-*.md lab/archive range`.
+- [FACT] `parseKrnContextPacket` rejects any wildcard selected-context ref, not only `**`, so wildcard/range context can appear as rejected context but cannot be promoted into selected context.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/context-packet.test.ts packages/contracts/test/memory-store.test.ts packages/contracts/test/operating-brief.test.ts packages/contracts/test/review-report.test.ts packages/cli/test/context.test.ts packages/cli/test/brief.test.ts packages/cli/test/review.test.ts` passed 7 files / 24 tests.
+- [EVIDENCE] The post-cleanup dogfood context packet `.krn/context/20260621T044311Z-1435941/context-packet.json` selected `memory:mem-goal-038-memory-boundary` and rejected `docs/goals/goal-*.md lab/archive range`, `docs/memory/** full scan`, and `.krn/** as memory core`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T044322Z-1436287/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one generic selected-context wildcard guard, existing MemoryStore rejected-context policy, context packet dogfood evidence, and parser examples that do not name a stale benchmark goal range.
+- [SIMPLIFY] Delete/avoid: no source registry, no broad memory system rewrite, no dashboard/API/benchmark surface, no repo-local memory core, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves KRN can use its existing MemoryStore/context boundary to guide one cleanup and record pending feedback. It does not prove self-growing behavior, final memory quality, review burden reduction, or product lift.
+- [NEXT] Commit and push this dogfood cleanup; then continue with the next real capability task or a consumed hardcoded-truth cleanup only if a concrete consumer exposes it.
 
 ## Disproves Completion
 

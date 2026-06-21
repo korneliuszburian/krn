@@ -124,8 +124,8 @@
     "rejected": [],
     "rejected_context": [
       {
-        "ref": "docs/goals/goal-018.md..goal-034.md",
-        "reason": "Expanded benchmark goals are lab/archive context and are rejected for default product review."
+        "ref": "docs/goals/goal-*.md lab/archive range",
+        "reason": "Historical benchmark/lab goal ranges are rejected for default product review."
       },
       {
         "ref": "docs/memory/** full scan",

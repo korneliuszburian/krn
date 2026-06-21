@@ -53,6 +53,24 @@ describe("KRN context packet contract", () => {
     ).toThrow(/broad context dump/);
   });
 
+  it("rejects context packets that select wildcard context refs", () => {
+    const packet = parseKrnContextPacket(
+      readJson("docs/specs/krn-context-packet/examples/context-packet.example.json"),
+    );
+
+    expect(() =>
+      parseKrnContextPacket({
+        ...packet,
+        selected_context: [
+          {
+            ...packet.selected_context[0],
+            ref: "docs/goals/goal-*.md lab/archive range",
+          },
+        ],
+      }),
+    ).toThrow(/broad context dump/);
+  });
+
   it("rejects selected memory without application guidance", () => {
     const packet = parseKrnContextPacket(
       readJson("docs/specs/krn-context-packet/examples/context-packet.example.json"),

@@ -42,7 +42,7 @@ const VerificationSchema = z
 function isBroadContextDumpRef(ref: string): boolean {
   const normalized = ref.toLowerCase();
   return (
-    normalized.includes("**") ||
+    normalized.includes("*") ||
     normalized.includes(" full scan") ||
     /\bgoal-\d+\.md\.\.goal-\d+\.md\b/.test(normalized)
   );
