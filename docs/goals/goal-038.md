@@ -1536,6 +1536,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: hidden home-directory memory fallback, repo-local memory core, new service/cloud adapter, dashboard/API/benchmark expansion, and committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves explicit local MemoryStore adapter configuration only. It does not prove final Memory Core storage, memory precision, privacy hardening, team sync, review-burden reduction, or product lift.
 - [NEXT] Commit and push this adapter cleanup. Then continue only with another consumed hardcoded-truth, memory-boundary, or monolith-pressure bottleneck.
+- [EVIDENCE] The `krn init` proposal extraction pre-edit gate passed and wrote `.krn/gates/20260621T072955Z-1728507/engineering-gate.json`.
+- [FACT] Existing `krn init` proposal construction moved from `packages/cli/src/init.ts` into `packages/cli/src/init-proposal.ts`, while `packages/cli/src/init.ts` remains the dry-run manifest and command-routing module.
+- [FACT] `packages/cli/src/init.ts` is 284 lines after the extraction, down from 369 lines before this cleanup; `packages/cli/src/init-proposal.ts` is 88 lines.
+- [EVIDENCE] Focused init test passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] Focused init eval passed: `pnpm run eval:krn-init` run `.krn/evals/krn-init-contracts/20260621T073234Z-1733685/report.json` passed 13/13 cases and 62/62 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: public `krn init` behavior, `buildInitProposal`/`writeInitProposal` compatibility exports from `init.ts`, exact proposal payload promotion behavior, and existing init test/eval gates.
+- [SIMPLIFY] Delete/avoid: proposal-building logic inside the init router, new init target behavior, generic scaffold engine, dashboard/API/benchmark work, and committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves init proposal maintainability cleanup and behavior parity only. It does not prove broad repo bootstrap quality, merge-mode safety, memory quality, source freshness, hook enforcement, or productivity lift.
+- [NEXT] Commit and push this init cleanup. Then continue only with another consumed monolith-pressure, hardcoded-truth, memory-boundary, or review/eval friction point.
 
 ## Disproves Completion
 
