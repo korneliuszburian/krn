@@ -44,6 +44,9 @@ describe("krn gate", () => {
     expect(gate.gate_status).toBe("pass");
     expect(gate.checks.every((check) => check.status === "pass")).toBe(true);
     expect(gate.checks.map((check) => check.id)).toContain("hardcoded_truth");
+    expect(JSON.stringify(gate)).not.toContain("docs/goals/goal-038.md");
+    expect(JSON.stringify(gate)).not.toContain("docs/plans/canonical/draft.md");
+    expect(gate.source_refs).toEqual(["docs/specs/krn-engineering-gate/README.md"]);
     expect(gate.required_skills.map((skill) => skill.name)).toEqual([
       "typescript-contract-engineer",
       "eval-designer",

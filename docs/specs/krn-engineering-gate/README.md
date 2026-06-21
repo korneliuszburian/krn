@@ -33,6 +33,10 @@ krn gate --task <text> [--path <path>] [--target <path>]
 {target_root}/.krn/gates/{run_id}/engineering-gate.json
 ```
 
+Runtime `source_refs` cite this stable contract. Active goal files and canonical
+blueprints may explain why the gate exists, but they must not be hardcoded into
+gate runtime output as current product truth.
+
 ## Required Non-Trivial Checks
 
 - mechanism

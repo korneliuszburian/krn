@@ -13,15 +13,15 @@ type GateCheck = KrnEngineeringGate["checks"][number];
 type CheckDefinition = readonly [GateCheck["id"], string, string, string];
 
 const CHECK_DEFINITIONS: readonly CheckDefinition[] = [
-  ["mechanism", "Name the concrete mechanism that improves KRN before editing.", "State the mechanism as a consumed product behavior, not a best-practice label.", "docs/goals/goal-038.md#Compressed-Operator-Vocabulary"],
-  ["scope_boundary", "Name the exact surface touched by this slice.", "Keep the slice limited to the named files, public interfaces, and tests.", "docs/goals/goal-038.md#Code-Quality-And-Monolith-Rule"],
-  ["consumer", "Every durable object must have a current consumer.", "Do not add contracts, docs, reports, or UI surfaces unless a CLI, review, eval, MCP/API, or dashboard consumer exists.", "docs/goals/goal-038.md#Continuity-Rules"],
-  ["verification", "Name focused verification before implementation is claimed done.", "Run narrow public-interface tests, pnpm typecheck, and git diff --check for this task.", "docs/goals/goal-038.md#Canonical-Resume-Prompt"],
-  ["rollback_or_kill", "Name how to reverse or kill the layer if it adds ceremony without value.", "Keep the slice removable and define the review finding or metric that would delete it.", "docs/goals/goal-038.md#Anti-Slop-Guardrails"],
-  ["hardcoded_truth", "Separate stable schema constants from volatile product truth.", "Put volatile truth behind a typed store, config, source graph, or fixture; do not bake it into product code.", "docs/goals/goal-038.md#Compressed-Operator-Vocabulary"],
-  ["skill_routing", "Use matching repo skills for non-trivial work.", "Use the required skills before editing and record missing triggers as skill-quality issues.", "docs/goals/goal-038.md#Skill-Routing-Contract"],
-  ["simplify_cadence", "Run a simplify/condense check when adding durable objects.", "Review diff stat, duplicate concepts, unconsumed objects, default read-set growth, and unused exports before commit.", "docs/goals/goal-038.md#Simplify-And-Quality-Condensation-Cadence"],
-  ["overclaim_boundary", "Name what this slice does not prove.", "Report the narrow proof and explicitly avoid productivity, memory-quality, hook-enforcement, or final-product claims unless measured.", "docs/goals/goal-038.md#Progress-Ledger"],
+  ["mechanism", "Name the concrete mechanism that improves KRN before editing.", "State the mechanism as a consumed product behavior, not a best-practice label.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["scope_boundary", "Name the exact surface touched by this slice.", "Keep the slice limited to the named files, public interfaces, and tests.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["consumer", "Every durable object must have a current consumer.", "Do not add contracts, docs, reports, or UI surfaces unless a CLI, review, eval, MCP/API, or dashboard consumer exists.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["verification", "Name focused verification before implementation is claimed done.", "Run narrow public-interface tests, pnpm typecheck, and git diff --check for this task.", "docs/specs/krn-engineering-gate/README.md#validation"],
+  ["rollback_or_kill", "Name how to reverse or kill the layer if it adds ceremony without value.", "Keep the slice removable and define the review finding or metric that would delete it.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["hardcoded_truth", "Separate stable schema constants from volatile product truth.", "Put volatile truth behind a typed store, config, source graph, or fixture; do not bake it into product code.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["skill_routing", "Use matching repo skills for non-trivial work.", "Use the required skills before editing and record missing triggers as skill-quality issues.", "docs/specs/krn-engineering-gate/README.md#required-non-trivial-checks"],
+  ["simplify_cadence", "Run a simplify/condense check when adding durable objects.", "Review diff stat, duplicate concepts, unconsumed objects, default read-set growth, and unused exports before commit.", "docs/specs/krn-engineering-gate/README.md#validation"],
+  ["overclaim_boundary", "Name what this slice does not prove.", "Report the narrow proof and explicitly avoid productivity, memory-quality, hook-enforcement, or final-product claims unless measured.", "docs/specs/krn-engineering-gate/README.md#purpose"],
 ];
 
 function readOptionValue(argv: readonly string[], index: number, option: string): string {
@@ -173,7 +173,7 @@ export function buildKrnEngineeringGate(args: GateArgs, now = new Date()): KrnEn
       },
     ],
     runtime_report_path: runtimeReportPath,
-    source_refs: ["docs/goals/goal-038.md", "AGENTS.md", "docs/specs/krn-engineering-gate/README.md"],
+    source_refs: ["docs/specs/krn-engineering-gate/README.md"],
     overclaim_boundary:
       "This gate proves that a non-trivial task has a required pre-edit engineering checklist and runtime artifact. It does not prove hook-level enforcement, productivity lift, final memory quality, or completed implementation.",
     interpretation_caveat:

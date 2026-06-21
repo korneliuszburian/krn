@@ -1506,6 +1506,16 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: seed content and payload-hash construction inside apply/promotion flow, no generic scaffold engine, no new init target, no dashboard/API/benchmark work, and no product-lift claim.
 - [OVERCLAIM] This slice proves init bootstrap maintainability and behavior parity only. It does not prove broad repo bootstrap quality, merge-mode safety, source freshness, memory quality, hook enforcement, or productivity lift.
 - [NEXT] Commit and push this init cleanup. Then continue only if another consumed bottleneck is visible from code pressure or user-facing CLI/review friction.
+- [EVIDENCE] The engineering-gate runtime lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T071755Z-1711019/engineering-gate.json`.
+- [FACT] `krn gate` runtime output no longer hardcodes `docs/goals/goal-038.md`, `docs/plans/canonical/draft.md`, or `AGENTS.md` as artifact `source_refs`; gate artifacts now cite the stable engineering-gate spec.
+- [FACT] Gate check evidence strings now point to stable `docs/specs/krn-engineering-gate/README.md` anchors, and fixtures were updated to match the runtime contract.
+- [FACT] `packages/cli/test/gate.test.ts` now rejects active-goal and canonical-draft leakage from the public `krn gate` output.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/engineering-gate.test.ts packages/cli/test/gate.test.ts` passed 2 files / 11 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one stable gate spec as runtime lineage, existing check IDs and command behavior, one public CLI regression, and current pre-edit gate consumer.
+- [SIMPLIFY] Delete/avoid: no active-goal/canonical source refs in gate runtime output, no new hook enforcement layer, no dashboard/API/benchmark work, no broad source-ref sweep, and no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves engineering-gate source-ref hygiene only. It does not prove hook-level enforcement, semantic policy enforcement, memory quality, human review burden reduction, or product lift.
+- [NEXT] Commit and push this gate cleanup. Then continue only with another consumed hardcoded-truth, context, memory, source, review, or eval bottleneck.
 
 ## Disproves Completion
 
