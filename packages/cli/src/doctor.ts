@@ -7,7 +7,7 @@ type DoctorArgs = {
   target: string;
 };
 
-const localSpecPathPatterns = [/\/home\/krn\//, /C:\\Users\\krnij/i, /\/mnt\/c\/Users\/krnij/i];
+const localSpecPathPatterns = [/\/home\/[^/\s"']+\//, /C:\\Users\\[^\\\s"']+\\/i, /\/mnt\/c\/Users\/[^/\s"']+\//i];
 const DOCTOR_CONTRACT_SOURCE_REFS = ["docs/specs/krn-doctor/README.md"] as const;
 const AGENTS_SOURCE_REFS = ["AGENTS.md"] as const;
 const MEMORY_INDEX_SOURCE_REFS = ["docs/memory/INDEX.md"] as const;

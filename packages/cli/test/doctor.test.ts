@@ -49,7 +49,7 @@ describe("krn doctor", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-doctor-spec-portability-"));
     const specsRoot = join(targetRoot, "docs", "specs", "example");
     mkdirSync(specsRoot, { recursive: true });
-    writeFileSync(join(specsRoot, "bad.example.json"), '{ "target_root": "/home/krn/coding/example" }\n', "utf8");
+    writeFileSync(join(specsRoot, "bad.example.json"), '{ "target_root": "/home/alice/coding/example" }\n', "utf8");
 
     const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "doctor", "--target", targetRoot], {
       cwd: process.cwd(),
