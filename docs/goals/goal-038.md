@@ -1366,6 +1366,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: the local `DETECTED_PATHS` / `artifactReason` block inside `init.ts`, repeated artifact `find(...).exists` calls, no new init capability, no dashboard/API/benchmark work, and no broad init rewrite.
 - [OVERCLAIM] This slice proves init monolith pressure reduction for artifact detection only. It does not prove broader repo bootstrap quality, merge-mode safety, policy enforcement, memory quality, source freshness, or productivity lift.
 - [NEXT] Commit and push this cleanup; then continue only with another small consumed cleanup if the next code pressure is obvious. Otherwise stop with status rather than inventing another surface.
+- [EVIDENCE] The init argument parser extraction pre-edit gate passed and wrote `.krn/gates/20260621T050627Z-1490752/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T050627Z-1490766/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] `parseInitArgs` moved from `packages/cli/src/init.ts` into `packages/cli/src/init-args.ts`, while `init.ts` keeps a compatibility re-export.
+- [FACT] `packages/cli/src/init.ts` now focuses on init manifest/proposal/apply orchestration and is reduced to 369 lines after the artifact and argument-parser extractions.
+- [EVIDENCE] Focused public-interface test passed: `pnpm exec vitest run packages/cli/test/init-dry-run.test.ts` passed 1 file / 11 tests.
+- [EVIDENCE] Focused init eval passed: `pnpm run eval:krn-init` run `.krn/evals/krn-init-contracts/20260621T050857Z-1494563/report.json` passed 13/13 cases and 62/62 assertions.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T050857Z-1494574/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one `init-args.ts` parser module, compatibility re-export from `init.ts`, and public init suite/eval as behavior proof.
+- [SIMPLIFY] Delete/avoid: parser branches inside `init.ts`, no broad CLI parser framework, no new command behavior, no dashboard/API/benchmark work, and no runtime artifacts committed.
+- [OVERCLAIM] This slice proves init parser extraction only. It does not prove final repo bootstrap quality, merge-mode safety, source/memory quality, policy hook enforcement, or productivity lift.
+- [NEXT] Commit and push this cleanup; then stop if no next obvious consumed cleanup exists. Do not invent another surface just to keep running.
 
 ## Disproves Completion
 
