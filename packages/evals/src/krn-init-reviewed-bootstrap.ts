@@ -6,6 +6,7 @@ import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnEvalBaseline,
+  parseKrnInitReadinessReport,
   parseKrnPolicyBoundaries,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
@@ -159,6 +160,11 @@ export function evaluateReviewedBootstrapComposition(now: Date): ReviewedBootstr
   }
 
   const postApplyManifest = parseInitManifest(readJson(postApplyManifestResult.stdout.trim()));
+  const readinessResult = runKrnCli(["init", "--readiness", "--target", composedTarget]);
+  if (readinessResult.exitCode !== 0) {
+    throw new Error(readinessResult.stderr);
+  }
+  const readiness = parseKrnInitReadinessReport(readJson(readinessResult.stdout.trim()));
   const targetContents = Object.values(BOOTSTRAP_TARGET_PATH_BY_CAPABILITY)
     .map((targetPath) => readFileSync(join(composedTarget, targetPath), "utf8"))
     .join("\n");
@@ -176,6 +182,9 @@ export function evaluateReviewedBootstrapComposition(now: Date): ReviewedBootstr
       readdirSync(join(composedTarget, ".krn", "promotions")).length === REQUIRED_BOOTSTRAP_CAPABILITIES.length &&
       hasRequiredBootstrapCapabilities(postApplyManifest) &&
       postApplyManifest.bootstrap_plan.every((item) => item.action === "skip") &&
+      readiness.readiness_status === "ready" &&
+      readiness.summary.present_capabilities === REQUIRED_BOOTSTRAP_CAPABILITIES.length &&
+      readiness.forbidden_state.every((item) => item.status === "clear") &&
       sourceGraph.records[0]?.ref === "krn://source/bootstrap-policy" &&
       contextIndex.memory_policy.store_memory_bodies === false &&
       contextIndex.memory_policy.require_application_guidance === true &&
@@ -191,6 +200,7 @@ export function evaluateReviewedBootstrapComposition(now: Date): ReviewedBootstr
       "initial dry-run exposes all reviewed bootstrap capabilities",
       "all reviewed bootstrap targets apply through approved decisions",
       "post-apply dry-run marks reviewed bootstrap targets as skip",
+      "readiness CLI reports reviewed bootstrap target as ready",
       "typed source/context/eval/policy seeds parse after composition",
       "composed bootstrap avoids repo-local memory core and hardcoded product truth",
     ],

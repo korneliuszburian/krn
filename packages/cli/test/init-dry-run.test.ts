@@ -1,5 +1,5 @@
-import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -8,6 +8,7 @@ import {
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnEvalBaseline,
+  parseKrnInitReadinessReport,
   parseKrnPolicyBoundaries,
   parseKrnProposalPromotion,
   parseKrnProposalReviewDecision,
@@ -827,6 +828,15 @@ describe("krn init --dry-run", () => {
       },
     );
     const postApplyManifest = parseInitManifest(readJson(postApplyManifestStdout.trim()));
+    const readinessStdout = execFileSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--readiness", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const readiness = parseKrnInitReadinessReport(readJson(readinessStdout.trim()));
     const targetContents = Object.values(bootstrapTargetPathByCapability)
       .map((targetPath) => readFileSync(join(targetRoot, targetPath), "utf8"))
       .join("\n");
@@ -839,6 +849,10 @@ describe("krn init --dry-run", () => {
     expect(new Set(promotionPaths).size).toBe(reviewedBootstrapCapabilities.length);
     expect(postApplyManifest.bootstrap_plan.map((item) => item.capability)).toEqual([...reviewedBootstrapCapabilities]);
     expect(postApplyManifest.bootstrap_plan.every((item) => item.action === "skip")).toBe(true);
+    expect(readiness.readiness_status).toBe("ready");
+    expect(readiness.required_capabilities.map((item) => item.capability)).toEqual([...reviewedBootstrapCapabilities]);
+    expect(readiness.summary.present_capabilities).toBe(reviewedBootstrapCapabilities.length);
+    expect(readiness.forbidden_state.every((item) => item.status === "clear")).toBe(true);
     expect(readdirSync(join(targetRoot, ".krn", "promotions"))).toHaveLength(reviewedBootstrapCapabilities.length);
     expect(sourceGraph.records[0]?.ref).toBe("krn://source/bootstrap-policy");
     expect(contextIndex.memory_policy.store_memory_bodies).toBe(false);
@@ -852,6 +866,27 @@ describe("krn init --dry-run", () => {
     expect(targetContents).not.toContain("goal-038");
     expect(targetContents).not.toContain("docs/plans/canonical/draft.md");
   }, 90_000);
+
+  it("blocks readiness when reviewed bootstrap state is missing or forbidden runtime state exists", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-readiness-blocked-target-"));
+    mkdirSync(join(targetRoot, ".krn", "memory"), { recursive: true });
+
+    const result = spawnSync(
+      "pnpm",
+      ["exec", "tsx", "packages/cli/src/main.ts", "--", "init", "--readiness", "--target", targetRoot],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+    const report = parseKrnInitReadinessReport(readJson(result.stdout.trim()));
+
+    expect(result.status).toBe(1);
+    expect(report.readiness_status).toBe("blocked");
+    expect(report.summary.missing_capabilities).toBeGreaterThan(0);
+    expect(report.forbidden_state.find((item) => item.id === "repo_local_memory_core")?.status).toBe("present");
+    expect(report.blocked_surfaces).toContain("repo_local_memory_core");
+  }, 30_000);
 
   it("rejects apply paths outside the target root before reading them", () => {
     const targetRoot = mkdtempSync(join(tmpdir(), "krn-init-apply-outside-target-"));

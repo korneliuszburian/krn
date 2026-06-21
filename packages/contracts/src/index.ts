@@ -120,6 +120,12 @@ export {
   type InitManifest,
 } from "./init-manifest.js";
 export {
+  KrnInitReadinessReportSchema,
+  krnInitReadinessReportJsonSchema,
+  parseKrnInitReadinessReport,
+  type KrnInitReadinessReport,
+} from "./init-readiness-report.js";
+export {
   DoctorReportSchema,
   doctorReportJsonSchema,
   parseDoctorReport,

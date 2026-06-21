@@ -11,6 +11,9 @@ export type InitArgs = {
       mode: "dry-run";
     }
   | {
+      mode: "readiness";
+    }
+  | {
       mode: "proposal";
       capability: InitProposalCapability;
     }
@@ -37,6 +40,7 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
 
   let target = ".";
   let sawDryRun = false;
+  let sawReadiness = false;
   let proposalCapability: InitProposalCapability | null = null;
   let applyCapability: InitProposalCapability | null = null;
   let proposalPath: string | null = null;
@@ -47,6 +51,11 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
 
     if (arg === "--dry-run") {
       sawDryRun = true;
+      continue;
+    }
+
+    if (arg === "--readiness") {
+      sawReadiness = true;
       continue;
     }
 
@@ -83,12 +92,16 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
     throw new Error(`Unknown argument: ${arg ?? "<empty>"}`);
   }
 
-  if (sawDryRun && proposalCapability) {
-    throw new Error("krn init accepts either --dry-run or --proposal, not both");
+  if (sawDryRun && sawReadiness) {
+    throw new Error("krn init accepts either --dry-run or --readiness, not both");
   }
 
-  if ((sawDryRun || proposalCapability) && applyCapability) {
-    throw new Error("krn init accepts only one of --dry-run, --proposal, or --apply");
+  if ((sawDryRun || sawReadiness) && proposalCapability) {
+    throw new Error("krn init accepts only one of --dry-run, --readiness, or --proposal");
+  }
+
+  if ((sawDryRun || sawReadiness || proposalCapability) && applyCapability) {
+    throw new Error("krn init accepts only one of --dry-run, --readiness, --proposal, or --apply");
   }
 
   if ((proposalPath || decisionPath) && !applyCapability) {
@@ -106,8 +119,12 @@ export function parseInitArgs(argv: readonly string[]): InitArgs {
     return { target, mode: "proposal", capability: proposalCapability };
   }
 
+  if (sawReadiness) {
+    return { target, mode: "readiness" };
+  }
+
   if (!sawDryRun) {
-    throw new Error(`krn init currently requires --dry-run or --proposal ${initCapabilityList()}`);
+    throw new Error(`krn init currently requires --dry-run, --readiness, or --proposal ${initCapabilityList()}`);
   }
 
   return { target, mode: "dry-run" };

@@ -19,7 +19,7 @@ sources:
 
 ## Purpose
 
-`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries` routes the first reviewed bootstrap target paths. `krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries` is the exact reviewed write boundary for those targets.
+`krn init --dry-run` is the safe repo-bootstrap preview for the final KRN operating layer. `krn init --readiness` is the read-only report that verifies whether reviewed bootstrap targets compose into a local dogfood-ready target. `krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries` routes the first reviewed bootstrap target paths. `krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries` is the exact reviewed write boundary for those targets.
 
 It inspects a target project and writes a schema-backed dry-run manifest under `.krn/init/{run_id}/manifest.json`. It must not mutate target project setup files by default. The manifest must expose the final-shaped bootstrap plan without claiming write-mode safety or memory-core readiness.
 
@@ -27,10 +27,13 @@ The proposal mode writes an append-only `KrnControlPlaneProposal` under `.krn/pr
 
 The apply mode requires an existing `init_bootstrap` proposal, an existing `approved_for_promotion` review decision, and an exact init bootstrap payload before writing `AGENTS.md`, `.krn/config.toml`, `.krn/sources/index.json`, `.krn/context/index.json`, `.krn/evals/baseline.json`, `.agents/skills/README.md`, or `.krn/policies/boundaries.json`. It records the write under `.krn/promotions/**/promotion.json` and refuses overwrite of an existing target.
 
+The readiness mode writes only `.krn/init/{run_id}/readiness.json`. It exits `0` when all reviewed bootstrap capabilities are present and typed seeds parse, and exits `1` when required capabilities are missing/invalid or forbidden bootstrap state is present.
+
 ## Command
 
 ```bash
 pnpm run krn -- init --dry-run --target .
+pnpm run krn -- init --readiness --target .
 pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run krn -- init --proposal local_config --target .
 pnpm run krn -- init --proposal source_pointers --target .
@@ -51,6 +54,7 @@ Accepted shape:
 
 ```text
 krn init --dry-run [--target <path>]
+krn init --readiness [--target <path>]
 krn init --proposal agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries [--target <path>]
 krn init --apply agent_instructions|local_config|source_pointers|context_pointers|eval_baseline|skill_wiring|policy_boundaries --proposal-path <path> --decision-path <path> [--target <path>]
 ```
@@ -66,6 +70,14 @@ The command writes:
 ```
 
 The manifest uses `schema_version: "krn-init-manifest.v1"` and `kind: "krn_init_manifest"`.
+
+Readiness mode writes:
+
+```text
+{target_root}/.krn/init/{run_id}/readiness.json
+```
+
+The readiness report uses `schema_version: "krn-init-readiness-report.v1"` and `kind: "krn_init_readiness_report"`. It stores capability statuses, forbidden-state IDs, source refs, summary counts, and an overclaim boundary only. It must not store memory bodies, active task truth, source body lists, dashboard data, API sync state, or authoritative memory records.
 
 Proposal mode also writes:
 
@@ -178,9 +190,10 @@ krn init --dry-run
   -> krn init --apply <capability>
   -> repeat for all reviewed capabilities
   -> krn init --dry-run reports reviewed targets as skip
+  -> krn init --readiness reports readiness_status: ready
 ```
 
-The proof must parse the generated source, context, eval, and policy seeds through their typed contracts. It must also verify that the composed target does not create `docs/memory/**`, `.krn/memory/**`, dashboard state, API state, copied `goal-038`, or copied canonical draft text.
+The proof must parse the generated source, context, eval, and policy seeds through their typed contracts. It must also verify that the composed target does not create `docs/memory/**`, `.krn/memory/**`, dashboard state, API state, copied active-goal truth, or copied canonical draft text.
 
 This is readiness for the reviewed local bootstrap path only. It is not a new broad scaffold command, merge-mode proof, final memory quality proof, hook/security proof, dashboard/API readiness, or productivity-lift evidence.
 
@@ -215,6 +228,7 @@ pnpm test -- packages/contracts/test/control-plane-proposal.test.ts
 pnpm test -- packages/contracts/test/proposal-promotion.test.ts
 pnpm test -- packages/mcp/test/proposal-promotion-store.test.ts
 pnpm run krn -- init --dry-run --target .
+pnpm run krn -- init --readiness --target .
 pnpm run krn -- init --proposal agent_instructions --target .
 pnpm run krn -- init --proposal local_config --target .
 pnpm run krn -- init --proposal source_pointers --target .

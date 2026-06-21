@@ -297,7 +297,7 @@
   },
   {
     "id": "generated-reviewed-bootstrap-compose-ready",
-    "expected_behavior": "The CLI composes all reviewed init bootstrap targets in one isolated repo through dry-run, proposal, approved decision, and apply, then a second dry-run marks the reviewed targets as skip without repo-local memory core or hardcoded product truth.",
+    "expected_behavior": "The CLI composes all reviewed init bootstrap targets in one isolated repo through dry-run, proposal, approved decision, and apply, then a second dry-run and readiness report mark the reviewed targets as ready without repo-local memory core or hardcoded product truth.",
     "source_patterns": [
       "docs/goals/goal-038.md",
       "docs/specs/krn-init/README.md",
@@ -309,6 +309,7 @@
       "initial dry-run exposes all reviewed bootstrap capabilities",
       "all reviewed bootstrap targets apply through approved decisions",
       "post-apply dry-run marks reviewed bootstrap targets as skip",
+      "readiness CLI reports reviewed bootstrap target as ready",
       "typed source/context/eval/policy seeds parse after composition",
       "composed bootstrap avoids repo-local memory core and hardcoded product truth"
     ],

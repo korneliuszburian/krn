@@ -21,6 +21,7 @@ function usage(): string {
 
 Commands:
   init --dry-run [--target <path>]
+  init --readiness [--target <path>]
   init --proposal ${initCapabilities} [--target <path>]
   init --apply ${initCapabilities} --proposal-path <path> --decision-path <path> [--target <path>]
   doctor [--target <path>]

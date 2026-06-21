@@ -1602,6 +1602,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: application/feedback builder duplication inside `memory-store.ts`, new public contract surface, dashboard/API/benchmark expansion, service/cloud memory adapter, and committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves MemoryStore maintainability cleanup only. It does not prove memory precision, final Memory Core storage, source quality, review-burden reduction, self-growing behavior, or product lift.
 - [NEXT] Continue only if another obvious code-pressure bottleneck has a current public consumer and focused verification. Otherwise stop with clean status instead of inventing another surface.
+- [EVIDENCE] The init readiness report pre-edit gate passed and wrote `.krn/gates/20260621T081104Z-1842240/engineering-gate.json`.
+- [FACT] `krn init --readiness` now writes a typed `KrnInitReadinessReport` under `.krn/init/{run_id}/readiness.json` and exits nonzero when required reviewed bootstrap capabilities are missing/invalid or forbidden bootstrap state is present.
+- [FACT] Readiness verifies the seven reviewed bootstrap capabilities, parses source/context/eval/policy seeds through typed contracts, and blocks repo-local `.krn/memory`, `.krn/dashboard`, `.krn/api`, operator-local absolute paths, active-goal truth, and copied canonical-draft truth from bootstrap seed files.
+- [FACT] The existing `krn-init` composition eval now includes the readiness CLI consumer instead of creating a new eval family or dashboard surface.
+- [EVIDENCE] Focused readiness/init tests passed: `pnpm exec vitest run packages/contracts/test/init-readiness-report.test.ts packages/cli/test/init-dry-run.test.ts` passed 2 files / 16 tests.
+- [EVIDENCE] Focused init eval passed: `pnpm run eval:krn-init` run `.krn/evals/krn-init-contracts/20260621T082224Z-1869645/report.json` passed 13/13 cases and 63/63 assertions, including `readiness CLI reports reviewed bootstrap target as ready`.
+- [EVIDENCE] `pnpm typecheck`, `git diff --check`, and a production hardcoded-truth scan over changed CLI/contract files passed with no active-goal/canonical-draft/local-machine hits.
+- [SIMPLIFY] Keep: one readiness contract, one `krn init --readiness` CLI consumer, one existing `krn-init` eval path, and the current seven reviewed bootstrap targets.
+- [SIMPLIFY] Delete/avoid: no new init target, no generic scaffold engine, no dashboard/API/cloud sync, no benchmark lane, no repo-local memory core, no passive memory note, no `codex exec`, and no committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves reviewed local repo-bootstrap readiness reporting only. It does not prove merge-mode safety, final Memory Core storage, memory precision, source freshness, hook/security enforcement, skill quality, dashboard/API readiness, review-burden reduction, self-growing behavior, or productivity lift.
+- [NEXT] Use `krn init --readiness` as the local dogfood gate for the next repo-bootstrap capability task. Continue only through a consumed final-product bottleneck with focused verification; if no concrete consumer exposes friction, stop with clean status instead of inventing another surface.
 
 ## Disproves Completion
 

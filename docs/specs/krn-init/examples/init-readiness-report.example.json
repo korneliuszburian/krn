@@ -1,0 +1,100 @@
+{
+  "schema_version": "krn-init-readiness-report.v1",
+  "kind": "krn_init_readiness_report",
+  "run_id": "krn-init-readiness-example-001",
+  "created_at": "2026-06-21T00:00:00.000Z",
+  "target_root": ".",
+  "command": "krn init --readiness",
+  "readiness_status": "ready",
+  "required_capabilities": [
+    {
+      "capability": "agent_instructions",
+      "path": "AGENTS.md",
+      "status": "present",
+      "reason": "AGENTS.md exists; this capability has no richer bootstrap parser yet.",
+      "source_refs": ["docs/specs/krn-init/README.md"]
+    },
+    {
+      "capability": "local_config",
+      "path": ".krn/config.toml",
+      "status": "present",
+      "reason": ".krn/config.toml exists; this capability has no richer bootstrap parser yet.",
+      "source_refs": ["docs/specs/krn-init/README.md"]
+    },
+    {
+      "capability": "source_pointers",
+      "path": ".krn/sources/index.json",
+      "status": "present",
+      "reason": ".krn/sources/index.json exists and parses through its typed bootstrap contract.",
+      "source_refs": ["docs/specs/krn-source-graph/README.md", "docs/plans/canonical/SOURCES.md"]
+    },
+    {
+      "capability": "context_pointers",
+      "path": ".krn/context/index.json",
+      "status": "present",
+      "reason": ".krn/context/index.json exists and parses through its typed bootstrap contract.",
+      "source_refs": [
+        "docs/specs/krn-context-pointer-index/README.md",
+        "docs/specs/krn-context-packet/README.md",
+        "docs/specs/krn-init/README.md"
+      ]
+    },
+    {
+      "capability": "eval_baseline",
+      "path": ".krn/evals/baseline.json",
+      "status": "present",
+      "reason": ".krn/evals/baseline.json exists and parses through its typed bootstrap contract.",
+      "source_refs": ["docs/specs/krn-eval-baseline/README.md", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"]
+    },
+    {
+      "capability": "skill_wiring",
+      "path": ".agents/skills/README.md",
+      "status": "present",
+      "reason": ".agents/skills/README.md exists; this capability has no richer bootstrap parser yet.",
+      "source_refs": ["docs/specs/krn-init/README.md"]
+    },
+    {
+      "capability": "policy_boundaries",
+      "path": ".krn/policies/boundaries.json",
+      "status": "present",
+      "reason": ".krn/policies/boundaries.json exists and parses through its typed bootstrap contract.",
+      "source_refs": [
+        "docs/specs/krn-policy-boundaries/README.md",
+        "docs/specs/krn-engineering-gate/README.md",
+        "docs/specs/krn-init/README.md"
+      ]
+    }
+  ],
+  "forbidden_state": [
+    {
+      "id": "repo_local_memory_core",
+      "path": ".krn/memory",
+      "status": "clear",
+      "reason": ".krn/memory is absent; bootstrap readiness has not created a repo-local memory core."
+    },
+    {
+      "id": "dashboard_runtime_state",
+      "path": ".krn/dashboard",
+      "status": "clear",
+      "reason": ".krn/dashboard is absent; readiness is not using a dashboard-first surface."
+    },
+    {
+      "id": "api_runtime_state",
+      "path": ".krn/api",
+      "status": "clear",
+      "reason": ".krn/api is absent; readiness has not created broad API/cloud sync state."
+    }
+  ],
+  "summary": {
+    "required_capabilities": 7,
+    "present_capabilities": 7,
+    "missing_capabilities": 0,
+    "invalid_capabilities": 0,
+    "forbidden_state_present": 0
+  },
+  "next_action": "Use this target for the next local repo-bootstrap dogfood task; do not claim memory quality, hook/security, dashboard/API, or productivity lift.",
+  "blocked_surfaces": [],
+  "source_refs": ["docs/specs/krn-init/README.md"],
+  "overclaim_boundary": "This report proves local reviewed repo-bootstrap readiness only; it does not prove merge-mode safety, memory quality, hook/security enforcement, dashboard/API readiness, source freshness, skill quality, or productivity lift.",
+  "interpretation_caveat": "Runtime evidence may store readiness status, capability IDs, and outcomes; authoritative product memory and source truth remain outside this report."
+}

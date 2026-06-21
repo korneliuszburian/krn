@@ -4,6 +4,7 @@ import { parseInitManifest, type InitManifest } from "@krn/contracts";
 import { applyInitProposal } from "./init-bootstrap.js";
 import { parseInitArgs } from "./init-args.js";
 import { buildInitDetectedArtifacts, initArtifactExists } from "./init-artifacts.js";
+import { buildKrnInitReadinessReport, writeKrnInitReadinessReport } from "./init-readiness.js";
 import {
   INIT_BOOTSTRAP_TARGETS,
   initProposalCapabilityUsage,
@@ -272,6 +273,13 @@ export function runKrnInit(argv: readonly string[]): InitCliResult {
   if (args.mode === "apply") {
     const promotionPath = applyInitProposal(args.target, args.proposalPath, args.decisionPath);
     return { exitCode: 0, stdout: `${promotionPath}\n`, stderr: "" };
+  }
+
+  if (args.mode === "readiness") {
+    const report = buildKrnInitReadinessReport(args.target);
+    const reportPath = writeKrnInitReadinessReport(args.target, report);
+    const exitCode = report.readiness_status === "ready" ? 0 : 1;
+    return { exitCode, stdout: `${reportPath}\n`, stderr: "" };
   }
 
   const manifest = buildInitManifest(args.target);
