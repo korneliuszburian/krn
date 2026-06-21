@@ -39,6 +39,7 @@ describe("krn review", () => {
     expect(report.memory_selection.rejected_context.map((context) => context.ref)).toContain("docs/memory/** full scan");
     expect(report.memory_application.applied_memory_ids).toEqual(report.memory_selection.selected.map((selected) => selected.memory_id));
     expect(report.memory_feedback.feedback_sink_ref).toBe(`local-dev-json:${storePath}`);
+    expect(report.artifacts.flatMap((artifact) => artifact.source_refs)).not.toContain("docs/goals/goal-038.md");
     expect(report.source_refs).toEqual([
       "docs/specs/krn-review/README.md",
       "docs/evals/STANDARD.md",

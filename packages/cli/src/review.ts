@@ -17,6 +17,10 @@ export type ReviewArgs = {
   target: string;
 };
 
+const INIT_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-init/README.md"] as const;
+const DOCTOR_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-doctor/README.md"] as const;
+const EVAL_ARTIFACT_SOURCE_REFS = ["docs/specs/krn-eval/README.md"] as const;
+
 export function parseReviewArgs(argv: readonly string[]): ReviewArgs {
   if (argv[0] !== "review") {
     throw new Error("Expected command: review");
@@ -113,7 +117,7 @@ function buildInitReviewArtifact(targetRoot: string): ReviewArtifact {
       "missing",
       null,
       "No init dry-run manifest was found.",
-      ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
+      [...INIT_ARTIFACT_SOURCE_REFS],
     );
   }
 
@@ -125,7 +129,7 @@ function buildInitReviewArtifact(targetRoot: string): ReviewArtifact {
       "present",
       toTargetRelativePath(targetRoot, manifestPath),
       `Latest init manifest ${manifest.run_id} parsed in ${manifest.mode} mode.`,
-      ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
+      manifest.source_refs,
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "unknown parse error";
@@ -135,7 +139,7 @@ function buildInitReviewArtifact(targetRoot: string): ReviewArtifact {
       "invalid",
       toTargetRelativePath(targetRoot, manifestPath),
       `Latest init manifest could not be parsed: ${message}`,
-      ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"],
+      [...INIT_ARTIFACT_SOURCE_REFS],
     );
   }
 }
@@ -149,7 +153,7 @@ function buildDoctorReviewArtifact(targetRoot: string): ReviewArtifact {
       "missing",
       null,
       "No doctor readiness report was found.",
-      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
+      [...DOCTOR_ARTIFACT_SOURCE_REFS],
     );
   }
 
@@ -161,7 +165,7 @@ function buildDoctorReviewArtifact(targetRoot: string): ReviewArtifact {
       "present",
       toTargetRelativePath(targetRoot, reportPath),
       `Latest doctor report ${report.run_id} parsed with overall status ${report.overall_status}.`,
-      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
+      report.source_refs,
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "unknown parse error";
@@ -171,7 +175,7 @@ function buildDoctorReviewArtifact(targetRoot: string): ReviewArtifact {
       "invalid",
       toTargetRelativePath(targetRoot, reportPath),
       `Latest doctor report could not be parsed: ${message}`,
-      ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"],
+      [...DOCTOR_ARTIFACT_SOURCE_REFS],
     );
   }
 }
@@ -185,7 +189,7 @@ function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
       "missing",
       null,
       "No aggregate eval report was found.",
-      ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"],
+      [...EVAL_ARTIFACT_SOURCE_REFS],
     );
   }
 
@@ -197,7 +201,7 @@ function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
       "present",
       toTargetRelativePath(targetRoot, reportPath),
       `Latest eval aggregate ${report.run_id} parsed with ${report.summary.passed_modules}/${report.summary.total_modules} modules passing.`,
-      ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"],
+      report.source_refs,
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "unknown parse error";
@@ -207,7 +211,7 @@ function buildEvalReviewArtifact(targetRoot: string): ReviewArtifact {
       "invalid",
       toTargetRelativePath(targetRoot, reportPath),
       `Latest aggregate eval report could not be parsed: ${message}`,
-      ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"],
+      [...EVAL_ARTIFACT_SOURCE_REFS],
     );
   }
 }

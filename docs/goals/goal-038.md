@@ -1402,6 +1402,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no repo-wide source-ref string sweep, no source graph service, no dashboard/API/benchmark work, no committed runtime evidence, and no claim that all runtime reports are now free of volatile source refs.
 - [OVERCLAIM] This slice proves doctor runtime source-ref hygiene only. It does not prove source freshness, final source graph quality, memory quality, hook enforcement, review-burden reduction, or product lift.
 - [NEXT] Commit and push this cleanup; then continue only with another consumed runtime/source-ref cleanup if a live CLI, contract, eval, MCP, or dashboard consumer exposes it.
+- [EVIDENCE] The review artifact lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T061433Z-1530455/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T061433Z-1530443/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] `krn review` artifact rows no longer hardcode active-goal refs for missing, invalid, or present init/doctor/eval artifacts. Missing/invalid artifact rows cite stable artifact specs; present rows inherit source lineage from the parsed runtime artifact.
+- [FACT] `packages/cli/test/review.test.ts` now rejects active-goal leakage from review artifact source refs while preserving selected MemoryStore source lineage in top-level report refs and memory-specific findings/proposals.
+- [EVIDENCE] Focused public-interface tests passed: `pnpm exec vitest run packages/cli/test/review.test.ts packages/contracts/test/review-report.test.ts` passed 2 files / 6 tests.
+- [EVIDENCE] Focused review eval passed: `pnpm run eval:krn-review` run `.krn/evals/krn-review-contracts/20260621T061536Z-1532410/report.json` passed 3/3 cases and 9/9 assertions.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one review CLI consumer, artifact-level stable spec fallback, parsed runtime artifact lineage for present artifacts, and the existing MemoryStore source-lineage contract.
+- [SIMPLIFY] Delete/avoid: no review report schema change, no source graph service, no broad MCP/dashboard cleanup, no committed runtime evidence, and no claim that all non-review surfaces are cleaned.
+- [OVERCLAIM] This slice proves review artifact source-ref hygiene only. It does not prove source freshness, final source graph quality, memory precision, dashboard trust, human review quality, or productivity lift.
+- [NEXT] Commit and push this cleanup; then inspect remaining active-goal hardcodes only if a concrete consumer and focused verification path exist. Do not continue into MCP/dashboard or eval surfaces merely because `rg` finds strings.
 
 ## Disproves Completion
 
