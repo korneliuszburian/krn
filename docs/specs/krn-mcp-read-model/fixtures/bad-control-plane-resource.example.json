@@ -11,6 +11,6 @@
   "latest_report_path": null,
   "payload": null,
   "error_summary": null,
-  "source_refs": ["docs/goals/goal-006.md"],
+  "source_refs": ["docs/goals/goal-038.md"],
   "interpretation_caveat": "This bad fixture is missing the read_only boundary."
 }

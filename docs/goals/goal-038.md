@@ -1135,6 +1135,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Keep: TypeScript-first stack decision, historical goal context, and one current active-contract correction.
 - [SIMPLIFY] Delete/avoid: no new ADR, no broad source-ledger rewrite, no code changes, no extra skill edits.
 - [OVERCLAIM] This slice proves stale stack-decision routing cleanup only. It does not prove TypeScript implementation quality, productivity lift, or final product completion.
+- [EVIDENCE] The MCP source-ref freshness pre-edit gate passed and wrote `.krn/gates/20260621T034920Z-1281406/engineering-gate.json`.
+- [FACT] MCP read-model and proposal-tool source refs now point at active `goal-038` and `docs/plans/canonical/draft.md` where those surfaces cite current product direction instead of historical `goal-006` / compatibility product-plan refs.
+- [FACT] Historical proposal/review fixtures that still validate older proposal payloads were left intact when they remain the source truth for those examples.
+- [EVIDENCE] Focused MCP/contract tests passed: `pnpm exec vitest run packages/contracts/test/control-plane-resource.test.ts packages/contracts/test/mcp-proposal-tool.test.ts packages/mcp/test/stdio-server.test.ts packages/mcp/test/proposal-store.test.ts` passed 4 files / 17 tests.
+- [EVIDENCE] Narrow MCP no-emit check passed: `pnpm exec tsc --noEmit --pretty false --project packages/mcp/tsconfig.json`.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T035201Z-1286415/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: current source refs on MCP read/proposal metadata, unchanged read-only/proposal-only MCP behavior, and focused parser/server/proposal-store coverage.
+- [SIMPLIFY] Delete/avoid: no new MCP/API behavior, no dashboard panel, no benchmark lane, no broad historical fixture rewrite, no passive source note, and no product-truth copy in runtime artifacts.
+- [SIMPLIFY] Next candidate: continue cleaning stale source refs only when a touched consumer needs them; otherwise move to the next capability dogfood task instead of doing repo-wide string sweeps.
+- [OVERCLAIM] This slice proves MCP metadata source-ref freshness and behavior parity only. It does not prove MCP readiness, security quality, source graph completeness, dashboard usefulness, review-burden reduction, or product lift.
 
 ## Disproves Completion
 

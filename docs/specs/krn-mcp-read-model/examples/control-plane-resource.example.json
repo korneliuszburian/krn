@@ -21,7 +21,7 @@
         "status": "available",
         "report_path": ".krn/init/20260619T220000Z-example/manifest.json",
         "summary": "Latest KRN init manifest is available.",
-        "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"]
+        "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"]
       },
       {
         "uri": "krn://runtime/doctor/latest",
@@ -29,7 +29,7 @@
         "status": "available",
         "report_path": ".krn/doctor/20260619T220100Z-example/report.json",
         "summary": "Latest KRN doctor report is available.",
-        "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"]
+        "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"]
       },
       {
         "uri": "krn://runtime/eval/latest",
@@ -37,7 +37,7 @@
         "status": "available",
         "report_path": ".krn/eval/20260619T220200Z-example/report.json",
         "summary": "Latest KRN eval aggregate is available.",
-        "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"]
+        "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
       },
       {
         "uri": "krn://runtime/review/latest",
@@ -45,7 +45,7 @@
         "status": "available",
         "report_path": ".krn/review/20260619T220300Z-example/report.json",
         "summary": "Latest KRN review report is available.",
-        "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"]
+        "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-038.md"]
       },
       {
         "uri": "krn://runtime/benchmark/latest",
@@ -53,7 +53,7 @@
         "status": "available",
         "report_path": ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-example/report.json",
         "summary": "Latest KRN benchmark report is available.",
-        "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-006.md"]
+        "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-038.md"]
       }
     ],
     "available_resources": 5,
@@ -67,9 +67,9 @@
   },
   "error_summary": null,
   "source_refs": [
-    "docs/goals/goal-006.md",
+    "docs/goals/goal-038.md",
     "docs/specs/krn-mcp-read-model/README.md",
-    "docs/product/final-product-plan.md",
+    "docs/plans/canonical/draft.md",
     "https://developers.openai.com/codex/mcp"
   ],
   "interpretation_caveat": "This resource exposes read-only local KRN runtime state only; it does not approve proposals, mutate memory/source ledgers, prove productivity lift, or enable destructive MCP/API behavior."

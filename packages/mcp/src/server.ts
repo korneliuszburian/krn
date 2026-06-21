@@ -114,7 +114,7 @@ export function createKrnMcpServer(options: KrnMcpServerOptions = {}): McpServer
           "destructive_mcp_tools",
         ],
         source_refs: [
-          "docs/goals/goal-006.md",
+          "docs/goals/goal-038.md",
           "docs/goals/goal-010.md",
           "docs/specs/krn-control-plane-proposal/README.md",
           "docs/specs/krn-mcp-proposal-tool/README.md",

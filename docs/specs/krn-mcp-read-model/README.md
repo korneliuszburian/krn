@@ -5,8 +5,8 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
-  - docs/product/final-product-plan.md
+  - docs/goals/goal-038.md
+  - docs/plans/canonical/draft.md
   - docs/specs/technology-stack/decision.md
   - docs/evals/STANDARD.md
   - https://developers.openai.com/codex/mcp

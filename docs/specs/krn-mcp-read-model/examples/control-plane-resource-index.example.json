@@ -14,9 +14,9 @@
       "status": "available",
       "latest_report_path": null,
       "source_refs": [
-        "docs/goals/goal-006.md",
+        "docs/goals/goal-038.md",
         "docs/specs/krn-mcp-read-model/README.md",
-        "docs/product/final-product-plan.md",
+        "docs/plans/canonical/draft.md",
         "https://developers.openai.com/codex/mcp"
       ]
     },
@@ -29,7 +29,7 @@
       "read_only": true,
       "status": "available",
       "latest_report_path": ".krn/init/20260619T220000Z-example/manifest.json",
-      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-006.md"]
+      "source_refs": ["docs/specs/krn-init/README.md", "docs/goals/goal-038.md"]
     },
     {
       "uri": "krn://runtime/doctor/latest",
@@ -40,7 +40,7 @@
       "read_only": true,
       "status": "available",
       "latest_report_path": ".krn/doctor/20260619T220100Z-example/report.json",
-      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-006.md"]
+      "source_refs": ["docs/specs/krn-doctor/README.md", "docs/goals/goal-038.md"]
     },
     {
       "uri": "krn://runtime/eval/latest",
@@ -51,7 +51,7 @@
       "read_only": true,
       "status": "available",
       "latest_report_path": ".krn/eval/20260619T220200Z-example/report.json",
-      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-006.md"]
+      "source_refs": ["docs/specs/krn-eval/README.md", "docs/goals/goal-038.md"]
     },
     {
       "uri": "krn://runtime/review/latest",
@@ -62,7 +62,7 @@
       "read_only": true,
       "status": "available",
       "latest_report_path": ".krn/review/20260619T220300Z-example/report.json",
-      "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-006.md"]
+      "source_refs": ["docs/specs/krn-review/README.md", "docs/goals/goal-038.md"]
     },
     {
       "uri": "krn://runtime/benchmark/latest",
@@ -73,7 +73,7 @@
       "read_only": true,
       "status": "available",
       "latest_report_path": ".krn/benchmarks/krn-benchmark-spine/20260619T220400Z-example/report.json",
-      "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-006.md"]
+      "source_refs": ["docs/specs/krn-benchmark-report/README.md", "docs/goals/goal-038.md"]
     }
   ],
   "summary": {
@@ -93,9 +93,9 @@
     "krn://runtime/benchmark/latest"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md",
+    "docs/goals/goal-038.md",
     "docs/specs/krn-mcp-read-model/README.md",
-    "docs/product/final-product-plan.md",
+    "docs/plans/canonical/draft.md",
     "https://developers.openai.com/codex/mcp"
   ],
   "interpretation_caveat": "This index lists read-only KRN control-plane resources only; it does not expose write tools, approve proposals, or prove productivity lift."
