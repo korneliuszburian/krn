@@ -374,6 +374,52 @@ No broad `codex exec` research loop is allowed in this default path. `codex
 exec` remains a worker/eval lane for explicit, bounded dogfood or lab tasks with
 a hypothesis, budget, trace, and stop condition.
 
+## Autonomous Continuation Policy
+
+When the operator is away, continue only while the next action is a consumed
+final-product slice with a named mechanism, consumer, verification surface,
+rollback/kill path, and overclaim boundary.
+
+The autonomous path is:
+
+```text
+read active selectors
+  -> run pre-edit gate for the exact slice
+  -> build bounded context when MemoryStore/source boundaries are relevant
+  -> edit one consumed product surface
+  -> run focused tests and typecheck
+  -> run one core/current verification pass if the slice changes product behavior
+  -> run simplify/condense
+  -> semantic commit and push
+  -> choose the next consumed slice or stop with status
+```
+
+Hard stops:
+
+- do not run unbounded `codex exec` loops;
+- do not repeat the same eval/check without changing the failing mechanism;
+- do not add dashboard, benchmark, broad API/cloud sync, research runtime, or
+  passive docs while the next consumed code surface is unclear;
+- do not keep editing when the consumer, rollback, or verification cannot be
+  named honestly;
+- after two consecutive failures with the same root cause, create or update a
+  repair handoff instead of trying random fixes;
+- do not commit runtime/cache artifacts from `.krn/**` unless the user
+  explicitly asks for runtime evidence to be versioned;
+- leave unrelated user/other-agent changes uncommitted.
+
+Commit cadence:
+
+- commit after each verified semantic slice;
+- prefer one commit per mechanism;
+- push after the commit is locally verified;
+- never batch unrelated cleanup, product behavior, and docs direction changes
+  into one commit unless the active slice explicitly requires all of them.
+
+This policy is meant to accelerate final-product execution, not slow it down.
+It blocks only loops that create proof-shaped artifacts without changing a
+current product consumer.
+
 ## Code Quality And Monolith Rule
 
 Before adding durable behavior to a large file, ask whether the file is already a dumping ground. If yes, prefer extracting the touched behavior into a cohesive module with a small public interface instead of adding more branches to the monolith.
@@ -1285,6 +1331,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no source registry, no broad memory system rewrite, no dashboard/API/benchmark surface, no repo-local memory core, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves KRN can use its existing MemoryStore/context boundary to guide one cleanup and record pending feedback. It does not prove self-growing behavior, final memory quality, review burden reduction, or product lift.
 - [NEXT] Commit and push this dogfood cleanup; then continue with the next real capability task or a consumed hardcoded-truth cleanup only if a concrete consumer exposes it.
+- [EVIDENCE] The path-aware skill-routing cleanup pre-edit gate passed and wrote `.krn/gates/20260621T044928Z-1447077/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T044943Z-1448687/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] `krn gate`, `krn context build`, and `krn brief` now share one CLI skill-routing module instead of keeping separate task-wording regexes in each command.
+- [FACT] The shared routing detects `typescript-contract-engineer` and `eval-designer` from target paths, so generic cleanup wording cannot bypass the relevant build-time skill when `--path` points to TypeScript or eval surfaces.
+- [FACT] `goal-038` now includes an autonomous continuation policy: continue only through consumed final-product slices, run one verification pass per changed mechanism, commit/push per semantic slice, stop on unclear consumers or repeated failures, and avoid `codex exec` / eval churn.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/gate.test.ts packages/cli/test/context.test.ts packages/cli/test/brief.test.ts` passed 3 files / 9 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T045536Z-1473184/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one shared `packages/cli/src/skill-routing.ts` module, public command tests for all changed consumers, and the active-goal autonomous policy.
+- [SIMPLIFY] Delete/avoid: local duplicate skill-routing helpers in `brief.ts`, `context.ts`, and `gate.ts`; no new eval family, dashboard panel, benchmark lane, broad API/cloud sync, passive research doc, or committed `.krn/**` runtime evidence.
+- [OVERCLAIM] This slice proves build-time skill-routing enforcement and cleanup cadence for these CLI consumers only. It does not prove skill quality, TypeScript code quality across the repo, final memory quality, self-growing behavior, review-burden reduction, or productivity lift.
+- [NEXT] Commit and push this cleanup; then continue with the next consumed product bottleneck from code pressure. Prefer cleanup that reduces monolith pressure or duplicate runtime rules; do not add another infrastructure proof unless a real capability task consumes it.
 
 ## Disproves Completion
 

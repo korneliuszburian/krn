@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseKrnOperatingBrief, type KrnMemoryRecord, type KrnOperatingBrief } from "@krn/contracts";
 import { buildBriefMemoryBundle, recordMemoryFeedback } from "./memory-store.js";
+import { resolveKrnRequiredSkills } from "./skill-routing.js";
 
 export type BriefArgs = {
   target: string;
@@ -70,39 +71,6 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values)];
 }
 
-function requiredSkillsForTask(task: string): Array<{ name: string; reason: string }> {
-  const lowerTask = task.toLowerCase();
-  const skills: Array<{ name: string; reason: string }> = [
-    {
-      name: "goal-execplan",
-      reason: "The brief is an execution contract for a restartable Codex run.",
-    },
-  ];
-
-  if (/\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model)\b/.test(lowerTask)) {
-    skills.push({
-      name: "typescript-contract-engineer",
-      reason: "The task touches TypeScript contracts, parsers, CLI, or package boundaries.",
-    });
-  }
-
-  if (/\b(eval|fixture|known-bad|metric|assertion|validation)\b/.test(lowerTask)) {
-    skills.push({
-      name: "eval-designer",
-      reason: "The task changes eval behavior, fixtures, metrics, or validation gates.",
-    });
-  }
-
-  if (/\b(research|source|paper|pattern|adr|decision)\b/.test(lowerTask)) {
-    skills.push({
-      name: "research-synthesis",
-      reason: "The task needs source-backed synthesis or canonical decision updates.",
-    });
-  }
-
-  return skills;
-}
-
 function selectedContextFromRecords(records: readonly KrnMemoryRecord[], memoryIds: readonly string[]): KrnOperatingBrief["selected_context"] {
   const memoryIdSet = new Set(memoryIds);
   return records
@@ -143,7 +111,11 @@ export function buildKrnOperatingBrief(args: BriefArgs, now = new Date()): KrnOp
       ...memory.selection.rejected_context,
     ],
     applied_kernel_terms: appliedKernelTerms,
-    required_skills: requiredSkillsForTask(args.task),
+    required_skills: resolveKrnRequiredSkills({
+      task: args.task,
+      targetPath: args.path,
+      includeGoalExecplan: "The brief is an execution contract for a restartable Codex run.",
+    }),
     memory_selection: memory.selection,
     memory_application: memory.application,
     memory_feedback: memory.feedback,

@@ -72,4 +72,39 @@ describe("krn brief", () => {
     const storeAfterBrief = readJson(storePath) as { feedback?: unknown[] };
     expect(storeAfterBrief.feedback).toHaveLength(1);
   }, 30_000);
+
+  it("routes TypeScript skill from target path without task keywords", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-brief-path-skill-target-"));
+    const storeRoot = mkdtempSync(join(tmpdir(), "krn-memory-store-"));
+    const storePath = join(storeRoot, "memory-store.json");
+    writeMemoryStoreFixture(storePath);
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "brief",
+        "--target",
+        targetRoot,
+        "--task",
+        "Simplify the touched cleanup surface without keyword hints",
+        "--path",
+        "packages/cli/src/brief.ts",
+      ],
+      {
+        cwd: process.cwd(),
+        env: { ...process.env, KRN_MEMORY_STORE_PATH: storePath },
+        encoding: "utf8",
+      },
+    );
+
+    const brief = parseKrnOperatingBrief(readJson(stdout.trim()));
+    expect(brief.required_skills.map((skill) => skill.name)).toEqual([
+      "goal-execplan",
+      "typescript-contract-engineer",
+    ]);
+  }, 30_000);
 });

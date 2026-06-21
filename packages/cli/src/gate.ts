@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseKrnEngineeringGate, type KrnEngineeringGate } from "@krn/contracts";
+import { resolveKrnRequiredSkills } from "./skill-routing.js";
 
 export type GateArgs = {
   target: string;
@@ -9,31 +10,7 @@ export type GateArgs = {
 };
 
 type GateCheck = KrnEngineeringGate["checks"][number];
-type SkillRule = readonly [RegExp, string, string];
 type CheckDefinition = readonly [GateCheck["id"], string, string, string];
-
-const SKILL_RULES: readonly SkillRule[] = [
-  [
-    /\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model|schema)\b/,
-    "typescript-contract-engineer",
-    "The task touches TypeScript contracts, parsers, CLI, MCP/API, dashboard, or package boundaries.",
-  ],
-  [
-    /\b(eval|fixture|known-bad|metric|assertion|validation|gate)\b/,
-    "eval-designer",
-    "The task changes eval behavior, fixtures, metrics, assertions, or validation gates.",
-  ],
-  [
-    /\b(goal|execplan|resume|long-running|final product|slice)\b/,
-    "goal-execplan",
-    "The task changes a restartable goal, plan, or final-product slice boundary.",
-  ],
-  [
-    /\b(research|source|paper|pattern|adr|decision)\b/,
-    "research-synthesis",
-    "The task needs source-backed synthesis or canonical decision updates.",
-  ],
-];
 
 const CHECK_DEFINITIONS: readonly CheckDefinition[] = [
   ["mechanism", "Name the concrete mechanism that improves KRN before editing.", "State the mechanism as a consumed product behavior, not a best-practice label.", "docs/goals/goal-038.md#Compressed-Operator-Vocabulary"],
@@ -137,14 +114,6 @@ function needsBlockedSurface(task: string): boolean {
   return disallowedSurface && !justifiedConsumer;
 }
 
-function requiredSkillsForTask(task: string): KrnEngineeringGate["required_skills"] {
-  const lowerTask = task.toLowerCase();
-  return SKILL_RULES.filter(([pattern]) => pattern.test(lowerTask)).map(([, name, reason]) => ({
-    name,
-    reason,
-  }));
-}
-
 function buildChecks(task: string, blocked: boolean): KrnEngineeringGate["checks"] {
   const status = blocked ? "fail" : "pass";
   const blockedPrefix = blocked ? "Stop and narrow the task before editing. " : "";
@@ -177,7 +146,10 @@ export function buildKrnEngineeringGate(args: GateArgs, now = new Date()): KrnEn
     scope_classification: classifyScope(args.task, args.path),
     gate_status: gateStatus,
     checks: buildChecks(args.task, blocked),
-    required_skills: requiredSkillsForTask(args.task),
+    required_skills: resolveKrnRequiredSkills({
+      task: args.task,
+      targetPath: args.path,
+    }),
     blocked_actions: [
       "Do not edit product code before mechanism, consumer, verification, rollback, and hardcoded-truth checks are explicit.",
       "Do not treat docs/memory/** or .krn/** as authoritative memory core.",

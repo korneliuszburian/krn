@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseKrnContextPacket, type KrnContextPacket, type KrnMemoryRecord } from "@krn/contracts";
 import { buildContextMemoryBundle, recordMemoryFeedback } from "./memory-store.js";
+import { resolveKrnRequiredSkills } from "./skill-routing.js";
 
 export type ContextBuildArgs = {
   target: string;
@@ -78,49 +79,6 @@ function selectedContextFromRecords(
     }));
 }
 
-function normalizeTargetPath(path: string | null): string | null {
-  return path?.replaceAll("\\", "/") ?? null;
-}
-
-function isTypeScriptTargetPath(path: string | null): boolean {
-  const normalized = normalizeTargetPath(path);
-  return normalized !== null && /\.(?:ts|tsx|mts|cts)$/.test(normalized);
-}
-
-function isEvalTargetPath(path: string | null): boolean {
-  const normalized = normalizeTargetPath(path);
-  return normalized !== null && (normalized.startsWith("packages/evals/") || normalized.startsWith("docs/evals/"));
-}
-
-function requiredSkillsForTask(task: string, targetPath: string | null): KrnContextPacket["required_skills"] {
-  const lowerTask = task.toLowerCase();
-  const skills: KrnContextPacket["required_skills"] = [
-    {
-      name: "goal-execplan",
-      reason: "Context packets are restartable execution input for Codex work.",
-    },
-  ];
-
-  if (
-    /\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model|schema)\b/.test(lowerTask) ||
-    isTypeScriptTargetPath(targetPath)
-  ) {
-    skills.push({
-      name: "typescript-contract-engineer",
-      reason: "The task touches TypeScript contracts, parsers, CLI, target paths, or package boundaries.",
-    });
-  }
-
-  if (/\b(eval|fixture|known-bad|metric|assertion|validation|gate)\b/.test(lowerTask) || isEvalTargetPath(targetPath)) {
-    skills.push({
-      name: "eval-designer",
-      reason: "The task changes eval behavior, fixtures, metrics, validation gates, or eval target paths.",
-    });
-  }
-
-  return skills;
-}
-
 export function buildKrnContextPacket(args: ContextBuildArgs, now = new Date()): KrnContextPacket {
   const targetRoot = resolve(args.target);
   const runId = createRunId(now);
@@ -176,7 +134,11 @@ export function buildKrnContextPacket(args: ContextBuildArgs, now = new Date()):
         summary: "Verify through context-packet contract tests, CLI behavior tests, typecheck, and git diff checks.",
       },
     ],
-    required_skills: requiredSkillsForTask(args.task, args.path),
+    required_skills: resolveKrnRequiredSkills({
+      task: args.task,
+      targetPath: args.path,
+      includeGoalExecplan: "Context packets are restartable execution input for Codex work.",
+    }),
     blocked_actions: [
       "Do not load docs/memory/** as a context dump.",
       "Do not treat .krn/** as authoritative memory core.",
