@@ -1466,6 +1466,15 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no ranking engine, embeddings, dashboard/API sync, benchmark loop, broad eval family, repo-local memory body writes, or claim that memory quality has improved globally.
 - [OVERCLAIM] This slice proves feedback can alter future local MemoryStore selection for blocked outcomes. It does not prove optimal ranking, memory precision lift, self-growing memory, team/cloud sync, or review-burden reduction.
 - [NEXT] Commit and push this feedback-aware selection slice; then continue only where the next real KRN capability task exposes source/context/eval/review friction.
+- [EVIDENCE] The MemoryStore selection extraction pre-edit gate passed and wrote `.krn/gates/20260621T064832Z-1649380/engineering-gate.json`.
+- [FACT] Feedback-aware record selection moved into `packages/cli/src/memory-selection.ts`, a 76-line pure module with no filesystem or CLI side effects.
+- [FACT] `packages/cli/src/memory-store.ts` now keeps MemoryBundle composition, application, feedback creation, and persistence orchestration, and is 254 lines after the extraction.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/memory-feedback.test.ts packages/cli/test/brief.test.ts packages/cli/test/context.test.ts packages/cli/test/review.test.ts packages/contracts/test/memory-store.test.ts` passed 5 files / 13 tests.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one internal selector module consumed by `krn brief`, `krn context build`, and `krn review`; unchanged public behavior; existing feedback-aware regression coverage.
+- [SIMPLIFY] Delete/avoid: feedback selection helpers inside `memory-store.ts`, no new public contract, no dashboard/API/benchmark surface, no new eval family, no memory body writes, and no product-lift claim.
+- [OVERCLAIM] This slice proves maintainability cleanup after feedback-aware selection only. It does not prove better memory ranking, final Memory Core quality, review-burden reduction, or self-growing behavior.
+- [NEXT] Commit and push this condensation slice; then continue with a real consumed source/context/review capability only if it has a direct user-facing or CLI consumer.
 
 ## Disproves Completion
 
