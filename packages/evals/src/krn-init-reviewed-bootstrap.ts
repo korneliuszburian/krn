@@ -24,7 +24,7 @@ export const REQUIRED_BOOTSTRAP_CAPABILITIES = [
   "policy_boundaries",
 ] as const;
 
-type BootstrapCapability = (typeof REQUIRED_BOOTSTRAP_CAPABILITIES)[number];
+export type BootstrapCapability = (typeof REQUIRED_BOOTSTRAP_CAPABILITIES)[number];
 
 const BOOTSTRAP_TARGET_PATH_BY_CAPABILITY: Record<BootstrapCapability, string> = {
   agent_instructions: "AGENTS.md",
@@ -42,6 +42,18 @@ export type ReviewedBootstrapCompositionResult = {
   message: string;
 };
 
+export type ReviewedBootstrapCapabilityResult = {
+  promotionPath: string;
+  promotion: ReturnType<typeof parseKrnProposalPromotion>;
+  targetPath: string;
+  targetContent: string;
+};
+
+type ApplyReviewedBootstrapCapabilityOptions = {
+  rationale?: string;
+  blockedSurfaces?: readonly string[];
+};
+
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8")) as unknown;
 }
@@ -51,7 +63,12 @@ export function hasRequiredBootstrapCapabilities(manifest: ReturnType<typeof par
   return REQUIRED_BOOTSTRAP_CAPABILITIES.every((capability) => capabilities.has(capability));
 }
 
-function applyReviewedBootstrapCapability(targetRoot: string, capability: BootstrapCapability, now: Date): string {
+export function applyReviewedBootstrapCapability(
+  targetRoot: string,
+  capability: BootstrapCapability,
+  now: Date,
+  options: ApplyReviewedBootstrapCapabilityOptions = {},
+): ReviewedBootstrapCapabilityResult {
   const proposalResult = runKrnCli(["init", "--proposal", capability, "--target", targetRoot]);
   if (proposalResult.exitCode !== 0) {
     throw new Error(proposalResult.stderr);
@@ -71,7 +88,9 @@ function applyReviewedBootstrapCapability(targetRoot: string, capability: Bootst
     target_mutated: false,
     promotion_state: "not_promoted",
     reviewer: "krn-init-eval",
-    rationale: `The generated ${capability} seed is narrow, target is absent, and the exact payload is safe to apply.`,
+    rationale:
+      options.rationale ??
+      `The generated ${capability} seed is narrow, target is absent, and the exact payload is safe to apply.`,
     write_policy: {
       default_effect: "no_target_mutation",
       allowed_persistence: "append_only",
@@ -79,7 +98,7 @@ function applyReviewedBootstrapCapability(targetRoot: string, capability: Bootst
     },
     evidence_refs: proposal.evidence_refs,
     source_refs: proposal.source_refs,
-    blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
+    blocked_surfaces: options.blockedSurfaces ?? ["target_file_mutation_without_promotion", "memory_core_write"],
     created_at: now.toISOString(),
     created_by: "krn init eval",
     interpretation_caveat:
@@ -116,7 +135,12 @@ function applyReviewedBootstrapCapability(targetRoot: string, capability: Bootst
     throw new Error(`Capability ${capability} did not apply through the exact init bootstrap promotion boundary.`);
   }
 
-  return promotionPath;
+  return {
+    promotionPath,
+    promotion,
+    targetPath,
+    targetContent,
+  };
 }
 
 export function evaluateReviewedBootstrapComposition(now: Date): ReviewedBootstrapCompositionResult {
@@ -127,7 +151,7 @@ export function evaluateReviewedBootstrapComposition(now: Date): ReviewedBootstr
   }
   const initialManifest = parseInitManifest(readJson(initialManifestResult.stdout.trim()));
   const promotionPaths = REQUIRED_BOOTSTRAP_CAPABILITIES.map((capability) =>
-    applyReviewedBootstrapCapability(composedTarget, capability, now),
+    applyReviewedBootstrapCapability(composedTarget, capability, now).promotionPath,
   );
   const postApplyManifestResult = runKrnCli(["init", "--dry-run", "--target", composedTarget]);
   if (postApplyManifestResult.exitCode !== 0) {

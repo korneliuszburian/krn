@@ -668,10 +668,14 @@ krn eval
 composition behavior from the init eval runner into a one-consumer helper:
 `packages/evals/src/krn-init-reviewed-bootstrap.ts`.
 
-[NEXT] Continue into the capability dogfood loop on one real KRN capability task
-using existing MemoryStore, context/source, review, and eval boundaries. Keep
-dashboard, benchmark, broad API/cloud sync, research runtime, and passive docs
-out of the default path until the capability task creates a real consumer.
+[FACT] The first capability dogfood cleanup used `krn context build` with a
+local external MemoryStore to select bounded memory IDs, reject broad memory
+dumps, and guide the init-eval refactor before editing.
+
+[NEXT] Continue the capability dogfood loop on one real KRN capability task at a
+time, using existing MemoryStore, context/source, review, and eval boundaries.
+Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
+docs out of the default path until the capability task creates a real consumer.
 
 ## Progress Ledger
 
@@ -943,6 +947,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Next candidate: collapse the repeated individual bootstrap apply case scaffolding only when the next touched capability needs it; do not refactor every init case from momentum.
 - [OVERCLAIM] This slice proves maintainability cleanup and public runner parity only. It does not prove product lift, final bootstrap merge safety, memory quality, source quality, skill quality, hook enforcement, dashboard usefulness, or capability dogfood success.
 - [NEXT] Start the first capability dogfood task: use the existing MemoryStore/context/source/review/eval boundaries on a real KRN code change, then record keep/kill/revisit with review-burden, diff-risk, context-use, and overclaim evidence.
+- [EVIDENCE] `krn context build` dogfood packet wrote `.krn/context/20260621T022824Z-1078782/context-packet.json` for the init-eval refactor, selected `memory:mem-goal-038-memory-boundary` and `memory:mem-goal-038-simplify-cadence`, and rejected `docs/memory/** full scan`, `.krn/** as memory core`, and stale expanded-arena lab context.
+- [EVIDENCE] The exact refactor pre-edit gate passed and wrote `.krn/gates/20260621T022843Z-1079128/engineering-gate.json`.
+- [FACT] Individual reviewed init bootstrap apply cases now use `applyReviewedBootstrapCapability(...)` from `packages/evals/src/krn-init-reviewed-bootstrap.ts` instead of duplicating proposal, review-decision, promotion, and exact-target plumbing in `packages/evals/src/validate-krn-init.ts`.
+- [FACT] `packages/evals/src/validate-krn-init.ts` dropped from 1105 lines before the cleanup helper to 721 lines after the dogfood refactor; the helper is 199 lines and has the public eval runner as its consumer.
+- [EVIDENCE] `pnpm run eval:krn-init` passed run `.krn/evals/krn-init-contracts/20260621T023356Z-1097101/report.json` with 13/13 cases and 62/62 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T023409Z-1098238/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one reviewed-bootstrap helper, unchanged eval case IDs, per-capability semantic assertions, context packet evidence, gate evidence, and core eval coverage.
+- [SIMPLIFY] Delete/avoid: no new eval family, no broad benchmark run, no dashboard/API surface, no passive research doc, no copied memory body, and no hardcoded active goal/source truth in product code.
+- [SIMPLIFY] Next candidate: pick the next real product bottleneck by consumer pressure, not by old init momentum; inspect CLI command monolith or MemoryStore/source boundaries only if the next capability task touches them.
+- [OVERCLAIM] This dogfood proves bounded context/gate/useful-code-cleanup wiring on one KRN task. It does not prove self-growing autonomy, final memory quality, productivity lift, source quality, review-burden reduction across users, or final product completion.
+- [NEXT] Continue with a consumer-led product slice: either use MemoryStore/context/source/review boundaries on the next real code capability, or stop and simplify another touched monolith only when the next task creates that pressure.
 
 ## Disproves Completion
 

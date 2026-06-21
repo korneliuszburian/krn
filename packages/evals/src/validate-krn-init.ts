@@ -1,19 +1,17 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import {
   parseInitManifest,
   parseKrnContextPointerIndex,
   parseKrnControlPlaneProposal,
   parseKrnEvalBaseline,
   parseKrnPolicyBoundaries,
-  parseKrnProposalPromotion,
-  parseKrnProposalReviewDecision,
   parseKrnSourceGraph,
 } from "@krn/contracts";
 import { runKrnCli } from "@krn/cli";
-import { storeKrnProposalReviewDecision } from "@krn/mcp";
 import {
+  applyReviewedBootstrapCapability,
   evaluateReviewedBootstrapComposition,
   hasRequiredBootstrapCapabilities,
 } from "./krn-init-reviewed-bootstrap.js";
@@ -248,522 +246,249 @@ function runValidation(): EvalReport {
     throw new Error("Missing case generated-agent-instructions-apply-writes-reviewed-target");
   }
   const applyTarget = mkdtempSync(join(tmpdir(), "krn-init-apply-eval-"));
-  const applyProposalResult = runKrnCli(["init", "--proposal", "agent_instructions", "--target", applyTarget]);
-  const applyProposalPath = applyProposalResult.stdout.trim();
-  if (applyProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(applyTarget, "agent_instructions", now, {
+      rationale: "The generated AGENTS.md is thin, target is absent, and the exact payload is safe to apply.",
+    });
+    const targetAgentsPath = join(applyTarget, "AGENTS.md");
+
+    results.push(
+      result(
+        applyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetAgentsPath) &&
+          readFileSync(targetAgentsPath, "utf8") === applied.promotion.target.file_content,
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target AGENTS.md matches exact payload",
+        ],
+        applyCase.failure_mode,
+        "Generated init proposal applied exact reviewed AGENTS.md payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         applyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated init apply"],
         applyCase.failure_mode,
-        applyProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated init apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(applyProposalPath));
-      const proposalRelativePath = relative(applyTarget, applyProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated AGENTS.md is thin, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: applyTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "agent_instructions",
-        "--proposal-path",
-        applyProposalPath,
-        "--decision-path",
-        join(applyTarget, storedDecision.decision_path),
-        "--target",
-        applyTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetAgentsPath = join(applyTarget, "AGENTS.md");
-
-      results.push(
-        result(
-          applyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetAgentsPath) &&
-            readFileSync(targetAgentsPath, "utf8") === promotion.target.file_content,
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target AGENTS.md matches exact payload",
-          ],
-          applyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed AGENTS.md payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          applyCase.id,
-          false,
-          ["generated init apply"],
-          applyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated init apply error",
-        ),
-      );
-    }
   }
   const localConfigApplyCase = caseById.get("generated-local-config-apply-writes-reviewed-target");
   if (!localConfigApplyCase) {
     throw new Error("Missing case generated-local-config-apply-writes-reviewed-target");
   }
   const localConfigTarget = mkdtempSync(join(tmpdir(), "krn-init-local-config-apply-eval-"));
-  const localConfigProposalResult = runKrnCli(["init", "--proposal", "local_config", "--target", localConfigTarget]);
-  const localConfigProposalPath = localConfigProposalResult.stdout.trim();
-  if (localConfigProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(localConfigTarget, "local_config", now, {
+      rationale: "The generated local config is minimal, target is absent, and the exact payload is safe to apply.",
+    });
+    const targetConfigPath = join(localConfigTarget, ".krn", "config.toml");
+    const configContent = applied.targetContent;
+
+    results.push(
+      result(
+        localConfigApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetConfigPath) &&
+          configContent === applied.promotion.target.file_content &&
+          configContent.includes('memory_store_env = "KRN_MEMORY_STORE_PATH"') &&
+          !configContent.includes("goal-038") &&
+          !configContent.includes("docs/plans/canonical/draft.md"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .krn/config.toml matches exact payload",
+          "config avoids active-goal runtime truth",
+        ],
+        localConfigApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed local config payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         localConfigApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated local config apply"],
         localConfigApplyCase.failure_mode,
-        localConfigProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated local config apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(localConfigProposalPath));
-      const proposalRelativePath = relative(localConfigTarget, localConfigProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated local config is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: localConfigTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "local_config",
-        "--proposal-path",
-        localConfigProposalPath,
-        "--decision-path",
-        join(localConfigTarget, storedDecision.decision_path),
-        "--target",
-        localConfigTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetConfigPath = join(localConfigTarget, ".krn", "config.toml");
-      const configContent = existsSync(targetConfigPath) ? readFileSync(targetConfigPath, "utf8") : "";
-
-      results.push(
-        result(
-          localConfigApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetConfigPath) &&
-            configContent === promotion.target.file_content &&
-            configContent.includes('memory_store_env = "KRN_MEMORY_STORE_PATH"') &&
-            !configContent.includes("goal-038") &&
-            !configContent.includes("docs/plans/canonical/draft.md"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .krn/config.toml matches exact payload",
-            "config avoids active-goal runtime truth",
-          ],
-          localConfigApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed local config payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          localConfigApplyCase.id,
-          false,
-          ["generated local config apply"],
-          localConfigApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated local config apply error",
-        ),
-      );
-    }
   }
   const sourcePointersApplyCase = caseById.get("generated-source-pointers-apply-writes-reviewed-target");
   if (!sourcePointersApplyCase) {
     throw new Error("Missing case generated-source-pointers-apply-writes-reviewed-target");
   }
   const sourcePointersTarget = mkdtempSync(join(tmpdir(), "krn-init-source-pointers-apply-eval-"));
-  const sourcePointersProposalResult = runKrnCli(["init", "--proposal", "source_pointers", "--target", sourcePointersTarget]);
-  const sourcePointersProposalPath = sourcePointersProposalResult.stdout.trim();
-  if (sourcePointersProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(sourcePointersTarget, "source_pointers", now, {
+      rationale: "The generated source graph seed is minimal, target is absent, and the exact payload is safe to apply.",
+      blockedSurfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_source_truth"],
+    });
+    const targetSourcePath = join(sourcePointersTarget, ".krn", "sources", "index.json");
+    const sourceContent = applied.targetContent;
+    const sourceGraph = parseKrnSourceGraph(JSON.parse(sourceContent) as unknown);
+
+    results.push(
+      result(
+        sourcePointersApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetSourcePath) &&
+          sourceContent === applied.promotion.target.file_content &&
+          sourceGraph.records.length === 1 &&
+          sourceGraph.records[0]?.ref === "krn://source/bootstrap-policy" &&
+          sourceGraph.overclaim_boundary.includes("not a copied bibliography") &&
+          !sourceContent.includes("docs/plans/canonical/SOURCES.md") &&
+          !sourceContent.includes("goal-038"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .krn/sources/index.json matches exact payload",
+          "source seed avoids copied source truth",
+        ],
+        sourcePointersApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed source graph seed payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         sourcePointersApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated source pointers apply"],
         sourcePointersApplyCase.failure_mode,
-        sourcePointersProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated source pointers apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(sourcePointersProposalPath));
-      const proposalRelativePath = relative(sourcePointersTarget, sourcePointersProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated source graph seed is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_source_truth"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: sourcePointersTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "source_pointers",
-        "--proposal-path",
-        sourcePointersProposalPath,
-        "--decision-path",
-        join(sourcePointersTarget, storedDecision.decision_path),
-        "--target",
-        sourcePointersTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetSourcePath = join(sourcePointersTarget, ".krn", "sources", "index.json");
-      const sourceContent = existsSync(targetSourcePath) ? readFileSync(targetSourcePath, "utf8") : "";
-      const sourceGraph = sourceContent.length > 0 ? parseKrnSourceGraph(JSON.parse(sourceContent) as unknown) : null;
-
-      results.push(
-        result(
-          sourcePointersApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetSourcePath) &&
-            sourceContent === promotion.target.file_content &&
-            sourceGraph?.records.length === 1 &&
-            sourceGraph.records[0]?.ref === "krn://source/bootstrap-policy" &&
-            sourceGraph.overclaim_boundary.includes("not a copied bibliography") &&
-            !sourceContent.includes("docs/plans/canonical/SOURCES.md") &&
-            !sourceContent.includes("goal-038"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .krn/sources/index.json matches exact payload",
-            "source seed avoids copied source truth",
-          ],
-          sourcePointersApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed source graph seed payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          sourcePointersApplyCase.id,
-          false,
-          ["generated source pointers apply"],
-          sourcePointersApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated source pointers apply error",
-        ),
-      );
-    }
   }
   const contextPointersApplyCase = caseById.get("generated-context-pointers-apply-writes-reviewed-target");
   if (!contextPointersApplyCase) {
     throw new Error("Missing case generated-context-pointers-apply-writes-reviewed-target");
   }
   const contextPointersTarget = mkdtempSync(join(tmpdir(), "krn-init-context-pointers-apply-eval-"));
-  const contextPointersProposalResult = runKrnCli(["init", "--proposal", "context_pointers", "--target", contextPointersTarget]);
-  const contextPointersProposalPath = contextPointersProposalResult.stdout.trim();
-  if (contextPointersProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(contextPointersTarget, "context_pointers", now, {
+      rationale:
+        "The generated context pointer index is minimal, target is absent, and the exact payload is safe to apply.",
+      blockedSurfaces: ["target_file_mutation_without_promotion", "memory_core_write", "context_dump"],
+    });
+    const targetContextPath = join(contextPointersTarget, ".krn", "context", "index.json");
+    const contextContent = applied.targetContent;
+    const contextIndex = parseKrnContextPointerIndex(JSON.parse(contextContent) as unknown);
+
+    results.push(
+      result(
+        contextPointersApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetContextPath) &&
+          contextContent === applied.promotion.target.file_content &&
+          contextIndex.runtime_root === ".krn/context" &&
+          contextIndex.packet_glob === ".krn/context/*/context-packet.json" &&
+          contextIndex.memory_policy.store_memory_bodies === false &&
+          contextIndex.memory_policy.require_selected_memory_ids === true &&
+          contextIndex.memory_policy.require_application_guidance === true &&
+          contextIndex.rejected_context_refs.includes("docs/memory/** full scan") &&
+          !contextContent.includes("goal-038") &&
+          !contextContent.includes("docs/plans/canonical/draft.md"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .krn/context/index.json matches exact payload",
+          "context pointer seed avoids memory bodies and active-goal truth",
+        ],
+        contextPointersApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed context pointer index payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         contextPointersApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated context pointers apply"],
         contextPointersApplyCase.failure_mode,
-        contextPointersProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated context pointers apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(contextPointersProposalPath));
-      const proposalRelativePath = relative(contextPointersTarget, contextPointersProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated context pointer index is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "context_dump"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: contextPointersTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "context_pointers",
-        "--proposal-path",
-        contextPointersProposalPath,
-        "--decision-path",
-        join(contextPointersTarget, storedDecision.decision_path),
-        "--target",
-        contextPointersTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetContextPath = join(contextPointersTarget, ".krn", "context", "index.json");
-      const contextContent = existsSync(targetContextPath) ? readFileSync(targetContextPath, "utf8") : "";
-      const contextIndex =
-        contextContent.length > 0 ? parseKrnContextPointerIndex(JSON.parse(contextContent) as unknown) : null;
-
-      results.push(
-        result(
-          contextPointersApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetContextPath) &&
-            contextContent === promotion.target.file_content &&
-            contextIndex?.runtime_root === ".krn/context" &&
-            contextIndex.packet_glob === ".krn/context/*/context-packet.json" &&
-            contextIndex.memory_policy.store_memory_bodies === false &&
-            contextIndex.memory_policy.require_selected_memory_ids === true &&
-            contextIndex.memory_policy.require_application_guidance === true &&
-            contextIndex.rejected_context_refs.includes("docs/memory/** full scan") &&
-            !contextContent.includes("goal-038") &&
-            !contextContent.includes("docs/plans/canonical/draft.md"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .krn/context/index.json matches exact payload",
-            "context pointer seed avoids memory bodies and active-goal truth",
-          ],
-          contextPointersApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed context pointer index payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          contextPointersApplyCase.id,
-          false,
-          ["generated context pointers apply"],
-          contextPointersApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated context pointers apply error",
-        ),
-      );
-    }
   }
   const evalBaselineApplyCase = caseById.get("generated-eval-baseline-apply-writes-reviewed-target");
   if (!evalBaselineApplyCase) {
     throw new Error("Missing case generated-eval-baseline-apply-writes-reviewed-target");
   }
   const evalBaselineTarget = mkdtempSync(join(tmpdir(), "krn-init-eval-baseline-apply-eval-"));
-  const evalBaselineProposalResult = runKrnCli(["init", "--proposal", "eval_baseline", "--target", evalBaselineTarget]);
-  const evalBaselineProposalPath = evalBaselineProposalResult.stdout.trim();
-  if (evalBaselineProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(evalBaselineTarget, "eval_baseline", now, {
+      rationale: "The generated eval baseline seed is minimal, target is absent, and the exact payload is safe to apply.",
+      blockedSurfaces: ["target_file_mutation_without_promotion", "memory_core_write", "lab_default", "lift_claim"],
+    });
+    const targetEvalPath = join(evalBaselineTarget, ".krn", "evals", "baseline.json");
+    const evalBaselineContent = applied.targetContent;
+    const evalBaseline = parseKrnEvalBaseline(JSON.parse(evalBaselineContent) as unknown);
+
+    results.push(
+      result(
+        evalBaselineApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetEvalPath) &&
+          evalBaselineContent === applied.promotion.target.file_content &&
+          evalBaseline.default_lane === "current" &&
+          evalBaseline.required_lanes.includes("core") &&
+          evalBaseline.required_lanes.includes("current") &&
+          evalBaseline.forbidden_default_lanes.includes("lab") &&
+          evalBaseline.forbidden_default_lanes.includes("all") &&
+          evalBaseline.policy.productivity_lift_claimed === false &&
+          !evalBaselineContent.includes("goal-038") &&
+          !evalBaselineContent.includes("docs/plans/canonical/draft.md"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .krn/evals/baseline.json matches exact payload",
+          "eval baseline seed avoids lab/all defaults and lift claims",
+        ],
+        evalBaselineApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed eval baseline seed payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         evalBaselineApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated eval baseline apply"],
         evalBaselineApplyCase.failure_mode,
-        evalBaselineProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated eval baseline apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(evalBaselineProposalPath));
-      const proposalRelativePath = relative(evalBaselineTarget, evalBaselineProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated eval baseline seed is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "lab_default", "lift_claim"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: evalBaselineTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "eval_baseline",
-        "--proposal-path",
-        evalBaselineProposalPath,
-        "--decision-path",
-        join(evalBaselineTarget, storedDecision.decision_path),
-        "--target",
-        evalBaselineTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetEvalPath = join(evalBaselineTarget, ".krn", "evals", "baseline.json");
-      const evalBaselineContent = existsSync(targetEvalPath) ? readFileSync(targetEvalPath, "utf8") : "";
-      const evalBaseline =
-        evalBaselineContent.length > 0 ? parseKrnEvalBaseline(JSON.parse(evalBaselineContent) as unknown) : null;
-
-      results.push(
-        result(
-          evalBaselineApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetEvalPath) &&
-            evalBaselineContent === promotion.target.file_content &&
-            evalBaseline?.default_lane === "current" &&
-            evalBaseline.required_lanes.includes("core") &&
-            evalBaseline.required_lanes.includes("current") &&
-            evalBaseline.forbidden_default_lanes.includes("lab") &&
-            evalBaseline.forbidden_default_lanes.includes("all") &&
-            evalBaseline.policy.productivity_lift_claimed === false &&
-            !evalBaselineContent.includes("goal-038") &&
-            !evalBaselineContent.includes("docs/plans/canonical/draft.md"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .krn/evals/baseline.json matches exact payload",
-            "eval baseline seed avoids lab/all defaults and lift claims",
-          ],
-          evalBaselineApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed eval baseline seed payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          evalBaselineApplyCase.id,
-          false,
-          ["generated eval baseline apply"],
-          evalBaselineApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated eval baseline apply error",
-        ),
-      );
-    }
   }
 
   const skillWiringApplyCase = caseById.get("generated-skill-wiring-apply-writes-reviewed-target");
@@ -771,103 +496,49 @@ function runValidation(): EvalReport {
     throw new Error("Missing case generated-skill-wiring-apply-writes-reviewed-target");
   }
   const skillWiringTarget = mkdtempSync(join(tmpdir(), "krn-init-skill-wiring-apply-eval-"));
-  const skillWiringProposalResult = runKrnCli(["init", "--proposal", "skill_wiring", "--target", skillWiringTarget]);
-  const skillWiringProposalPath = skillWiringProposalResult.stdout.trim();
-  if (skillWiringProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(skillWiringTarget, "skill_wiring", now, {
+      rationale: "The generated skill wiring seed is minimal, target is absent, and the exact payload is safe to apply.",
+      blockedSurfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_skill_body"],
+    });
+    const targetSkillWiringPath = join(skillWiringTarget, ".agents", "skills", "README.md");
+    const skillWiringContent = applied.targetContent;
+
+    results.push(
+      result(
+        skillWiringApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetSkillWiringPath) &&
+          skillWiringContent === applied.promotion.target.file_content &&
+          skillWiringContent.includes("Do not copy active skill bodies") &&
+          skillWiringContent.includes("does not create active skills") &&
+          !skillWiringContent.includes("goal-038") &&
+          !skillWiringContent.includes("docs/plans/canonical/draft.md"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .agents/skills/README.md matches exact payload",
+          "skill wiring seed avoids copied skill bodies and active-goal truth",
+        ],
+        skillWiringApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed skill wiring seed payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         skillWiringApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated skill wiring apply"],
         skillWiringApplyCase.failure_mode,
-        skillWiringProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated skill wiring apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(skillWiringProposalPath));
-      const proposalRelativePath = relative(skillWiringTarget, skillWiringProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated skill wiring seed is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "copied_skill_body"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: skillWiringTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "skill_wiring",
-        "--proposal-path",
-        skillWiringProposalPath,
-        "--decision-path",
-        join(skillWiringTarget, storedDecision.decision_path),
-        "--target",
-        skillWiringTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetSkillWiringPath = join(skillWiringTarget, ".agents", "skills", "README.md");
-      const skillWiringContent = existsSync(targetSkillWiringPath) ? readFileSync(targetSkillWiringPath, "utf8") : "";
-
-      results.push(
-        result(
-          skillWiringApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetSkillWiringPath) &&
-            skillWiringContent === promotion.target.file_content &&
-            skillWiringContent.includes("Do not copy active skill bodies") &&
-            skillWiringContent.includes("does not create active skills") &&
-            !skillWiringContent.includes("goal-038") &&
-            !skillWiringContent.includes("docs/plans/canonical/draft.md"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .agents/skills/README.md matches exact payload",
-            "skill wiring seed avoids copied skill bodies and active-goal truth",
-          ],
-          skillWiringApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed skill wiring seed payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          skillWiringApplyCase.id,
-          false,
-          ["generated skill wiring apply"],
-          skillWiringApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated skill wiring apply error",
-        ),
-      );
-    }
   }
 
   const policyBoundariesApplyCase = caseById.get("generated-policy-boundaries-apply-writes-reviewed-target");
@@ -875,109 +546,54 @@ function runValidation(): EvalReport {
     throw new Error("Missing case generated-policy-boundaries-apply-writes-reviewed-target");
   }
   const policyBoundariesTarget = mkdtempSync(join(tmpdir(), "krn-init-policy-boundaries-apply-eval-"));
-  const policyBoundariesProposalResult = runKrnCli(["init", "--proposal", "policy_boundaries", "--target", policyBoundariesTarget]);
-  const policyBoundariesProposalPath = policyBoundariesProposalResult.stdout.trim();
-  if (policyBoundariesProposalResult.exitCode !== 0) {
+  try {
+    const applied = applyReviewedBootstrapCapability(policyBoundariesTarget, "policy_boundaries", now, {
+      rationale: "The generated policy boundary seed is minimal, target is absent, and the exact payload is safe to apply.",
+      blockedSurfaces: ["target_file_mutation_without_promotion", "memory_core_write", "cloud_sync_default"],
+    });
+    const targetPolicyPath = join(policyBoundariesTarget, ".krn", "policies", "boundaries.json");
+    const policyContent = applied.targetContent;
+    const policy = parseKrnPolicyBoundaries(JSON.parse(policyContent) as unknown);
+
+    results.push(
+      result(
+        policyBoundariesApplyCase.id,
+        applied.promotion.proposal_kind === "init_bootstrap" &&
+          applied.promotion.promotion_scope === "approved_init_bootstrap_only" &&
+          applied.promotion.apply_mode === "apply_exact_target_write" &&
+          existsSync(applied.promotionPath) &&
+          existsSync(targetPolicyPath) &&
+          policyContent === applied.promotion.target.file_content &&
+          policy.boundaries.find((boundary) => boundary.surface === "memory_core_write")?.enforcement === "block" &&
+          policy.boundaries.find((boundary) => boundary.surface === "target_file_mutation")?.enforcement ===
+            "require_approval" &&
+          policy.forbidden_defaults.includes("cloud_sync_default") &&
+          policy.forbidden_defaults.includes("productivity_lift_claim") &&
+          policy.overclaim_boundary.includes("does not prove hook enforcement") &&
+          !policyContent.includes("goal-038") &&
+          !policyContent.includes("docs/plans/canonical/draft.md"),
+        [
+          "proposal CLI exits zero",
+          "approved review decision stored",
+          "apply CLI exits zero",
+          "promotion parses",
+          "target .krn/policies/boundaries.json matches exact payload",
+          "policy boundary seed blocks repo-local memory core and avoids hook/security overclaim",
+        ],
+        policyBoundariesApplyCase.failure_mode,
+        "Generated init proposal applied exact reviewed policy boundary seed payload through promotion boundary.",
+      ),
+    );
+  } catch (error: unknown) {
     results.push(
       result(
         policyBoundariesApplyCase.id,
         false,
-        ["proposal CLI exits zero", "apply CLI exits zero"],
+        ["generated policy boundaries apply"],
         policyBoundariesApplyCase.failure_mode,
-        policyBoundariesProposalResult.stderr,
+        error instanceof Error ? error.message : "unknown generated policy boundaries apply error",
       ),
     );
-  } else {
-    try {
-      const proposal = parseKrnControlPlaneProposal(readJson(policyBoundariesProposalPath));
-      const proposalRelativePath = relative(policyBoundariesTarget, policyBoundariesProposalPath).replaceAll("\\", "/");
-      const decision = parseKrnProposalReviewDecision({
-        schema_version: "krn-proposal-review-decision.v1",
-        kind: "krn_proposal_review_decision",
-        decision_id: `decision-${proposal.proposal_id}`,
-        proposal_id: proposal.proposal_id,
-        proposal_path: proposalRelativePath,
-        decision: "approved_for_promotion",
-        review_scope: "proposal_review_only",
-        target_mutated: false,
-        promotion_state: "not_promoted",
-        reviewer: "krn-init-eval",
-        rationale: "The generated policy boundary seed is minimal, target is absent, and the exact payload is safe to apply.",
-        write_policy: {
-          default_effect: "no_target_mutation",
-          allowed_persistence: "append_only",
-          idempotency_key: `review-decision:${proposal.proposal_id}:approved`,
-        },
-        evidence_refs: proposal.evidence_refs,
-        source_refs: proposal.source_refs,
-        blocked_surfaces: ["target_file_mutation_without_promotion", "memory_core_write", "cloud_sync_default"],
-        created_at: now.toISOString(),
-        created_by: "krn init eval",
-        interpretation_caveat:
-          "This decision approves promotion input only; exact target write still requires explicit init apply mode.",
-      });
-      const storedDecision = storeKrnProposalReviewDecision(decision, { targetInput: policyBoundariesTarget, now });
-      const applyResult = runKrnCli([
-        "init",
-        "--apply",
-        "policy_boundaries",
-        "--proposal-path",
-        policyBoundariesProposalPath,
-        "--decision-path",
-        join(policyBoundariesTarget, storedDecision.decision_path),
-        "--target",
-        policyBoundariesTarget,
-      ]);
-      const promotionPath = applyResult.stdout.trim();
-      const promotion = applyResult.exitCode === 0 ? parseKrnProposalPromotion(readJson(promotionPath)) : null;
-      const targetPolicyPath = join(policyBoundariesTarget, ".krn", "policies", "boundaries.json");
-      const policyContent = existsSync(targetPolicyPath) ? readFileSync(targetPolicyPath, "utf8") : "";
-      const policy = policyContent.length > 0 ? parseKrnPolicyBoundaries(JSON.parse(policyContent) as unknown) : null;
-
-      results.push(
-        result(
-          policyBoundariesApplyCase.id,
-          applyResult.exitCode === 0 &&
-            promotion?.proposal_kind === "init_bootstrap" &&
-            promotion.promotion_scope === "approved_init_bootstrap_only" &&
-            promotion.apply_mode === "apply_exact_target_write" &&
-            existsSync(promotionPath) &&
-            existsSync(targetPolicyPath) &&
-            policyContent === promotion.target.file_content &&
-            policy !== null &&
-            policy?.boundaries.find((boundary) => boundary.surface === "memory_core_write")?.enforcement === "block" &&
-            policy.boundaries.find((boundary) => boundary.surface === "target_file_mutation")?.enforcement ===
-              "require_approval" &&
-            policy.forbidden_defaults.includes("cloud_sync_default") &&
-            policy.forbidden_defaults.includes("productivity_lift_claim") &&
-            policy.overclaim_boundary.includes("does not prove hook enforcement") &&
-            !policyContent.includes("goal-038") &&
-            !policyContent.includes("docs/plans/canonical/draft.md"),
-          [
-            "proposal CLI exits zero",
-            "approved review decision stored",
-            "apply CLI exits zero",
-            "promotion parses",
-            "target .krn/policies/boundaries.json matches exact payload",
-            "policy boundary seed blocks repo-local memory core and avoids hook/security overclaim",
-          ],
-          policyBoundariesApplyCase.failure_mode,
-          applyResult.exitCode === 0
-            ? "Generated init proposal applied exact reviewed policy boundary seed payload through promotion boundary."
-            : applyResult.stderr,
-        ),
-      );
-    } catch (error: unknown) {
-      results.push(
-        result(
-          policyBoundariesApplyCase.id,
-          false,
-          ["generated policy boundaries apply"],
-          policyBoundariesApplyCase.failure_mode,
-          error instanceof Error ? error.message : "unknown generated policy boundaries apply error",
-        ),
-      );
-    }
   }
   const composedBootstrapCase = caseById.get("generated-reviewed-bootstrap-compose-ready");
   if (!composedBootstrapCase) {
