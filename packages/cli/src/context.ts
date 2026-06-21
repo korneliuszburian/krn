@@ -78,7 +78,11 @@ function selectedContextFromRecords(
     }));
 }
 
-function requiredSkillsForTask(task: string): KrnContextPacket["required_skills"] {
+function isTypeScriptTargetPath(path: string | null): boolean {
+  return path !== null && /\.(?:c|m)?tsx?$/.test(path);
+}
+
+function requiredSkillsForTask(task: string, targetPath: string | null): KrnContextPacket["required_skills"] {
   const lowerTask = task.toLowerCase();
   const skills: KrnContextPacket["required_skills"] = [
     {
@@ -87,10 +91,13 @@ function requiredSkillsForTask(task: string): KrnContextPacket["required_skills"
     },
   ];
 
-  if (/\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model|schema)\b/.test(lowerTask)) {
+  if (
+    /\b(type|typescript|contract|parser|cli|mcp|api|dashboard|view model|schema)\b/.test(lowerTask) ||
+    isTypeScriptTargetPath(targetPath)
+  ) {
     skills.push({
       name: "typescript-contract-engineer",
-      reason: "The task touches TypeScript contracts, parsers, CLI, or package boundaries.",
+      reason: "The task touches TypeScript contracts, parsers, CLI, target paths, or package boundaries.",
     });
   }
 
@@ -159,7 +166,7 @@ export function buildKrnContextPacket(args: ContextBuildArgs, now = new Date()):
         summary: "Verify through context-packet contract tests, CLI behavior tests, typecheck, and git diff checks.",
       },
     ],
-    required_skills: requiredSkillsForTask(args.task),
+    required_skills: requiredSkillsForTask(args.task, args.path),
     blocked_actions: [
       "Do not load docs/memory/** as a context dump.",
       "Do not treat .krn/** as authoritative memory core.",

@@ -672,6 +672,10 @@ composition behavior from the init eval runner into a one-consumer helper:
 local external MemoryStore to select bounded memory IDs, reject broad memory
 dumps, and guide the init-eval refactor before editing.
 
+[FACT] The first dogfood finding became a product fix: `krn context build`
+selects `typescript-contract-engineer` from TypeScript target paths even when
+the task text omits TypeScript keywords.
+
 [NEXT] Continue the capability dogfood loop on one real KRN capability task at a
 time, using existing MemoryStore, context/source, review, and eval boundaries.
 Keep dashboard, benchmark, broad API/cloud sync, research runtime, and passive
@@ -959,6 +963,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Next candidate: pick the next real product bottleneck by consumer pressure, not by old init momentum; inspect CLI command monolith or MemoryStore/source boundaries only if the next capability task touches them.
 - [OVERCLAIM] This dogfood proves bounded context/gate/useful-code-cleanup wiring on one KRN task. It does not prove self-growing autonomy, final memory quality, productivity lift, source quality, review-burden reduction across users, or final product completion.
 - [NEXT] Continue with a consumer-led product slice: either use MemoryStore/context/source/review boundaries on the next real code capability, or stop and simplify another touched monolith only when the next task creates that pressure.
+- [EVIDENCE] The context-skill-routing pre-edit gate passed and wrote `.krn/gates/20260621T023541Z-1104083/engineering-gate.json`.
+- [EVIDENCE] Pre-fix dogfood exposed a practical routing weakness: the init-eval refactor context packet selected `eval-designer` but not `typescript-contract-engineer` for a TypeScript file when the task text did not carry the right keyword.
+- [FACT] `krn context build` now routes `typescript-contract-engineer` when `--path` ends in `.ts`, `.tsx`, `.mts`, `.mtsx`, `.cts`, or `.ctsx`, not only when the task text contains TypeScript-like words.
+- [EVIDENCE] Focused test passed: `pnpm exec vitest run packages/cli/test/context.test.ts` passed 1 file / 1 test, with task text omitting TypeScript keywords and target path `packages/contracts/src/context-packet.ts`.
+- [EVIDENCE] Post-fix runtime context packet `.krn/context/20260621T023656Z-1107950/context-packet.json` selected `goal-execplan` and `typescript-contract-engineer`, selected memory IDs `mem-goal-038-memory-boundary` / `mem-goal-038-simplify-cadence`, and rejected full memory dumps plus stale lab context.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T023709Z-1108651/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: target-path skill routing, one small path classifier, one public CLI behavior test, and runtime context evidence.
+- [SIMPLIFY] Delete/avoid: no skill registry expansion, no new skill text, no broad operator-pipeline rewrite, no passive memory note, and no default context growth.
+- [OVERCLAIM] This slice proves one context-routing repair caused by dogfood. It does not prove all skill triggers are correct, final context quality, productivity lift, or autonomous self-growth.
+- [NEXT] Continue with another consumer-led dogfood slice only if it exposes a real capability bug or cleanup bottleneck; otherwise run a small repo sediment inventory before choosing the next product layer.
 
 ## Disproves Completion
 

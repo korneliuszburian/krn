@@ -29,7 +29,7 @@ describe("krn context build", () => {
         "--target",
         targetRoot,
         "--task",
-        "Build bounded TypeScript context packet contract and known-bad fixture",
+        "Refactor context packet routing without keyword hints",
         "--path",
         "packages/contracts/src/context-packet.ts",
       ],
@@ -53,6 +53,8 @@ describe("krn context build", () => {
     expect(packet.rejected_context.map((context) => context.ref)).toContain("docs/memory/** full scan");
     expect(packet.memory_application.surface).toBe("krn_context");
     expect(packet.source_refs).toEqual(["docs/goals/goal-038.md", "docs/plans/canonical/SOURCES.md#C061"]);
+    expect(packet.required_skills.map((skill) => skill.name)).toContain("typescript-contract-engineer");
+    expect(packet.required_skills.map((skill) => skill.name)).not.toContain("eval-designer");
     expect(JSON.stringify(packet)).not.toContain("KRN memory must be selected from a store boundary");
     expect(existsSync(join(targetRoot, ".krn", "context", packet.run_id, "context-packet.json"))).toBe(true);
     expect(readdirSync(targetRoot).sort()).toEqual([".krn"]);
