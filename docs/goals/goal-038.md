@@ -1343,6 +1343,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: local duplicate skill-routing helpers in `brief.ts`, `context.ts`, and `gate.ts`; no new eval family, dashboard panel, benchmark lane, broad API/cloud sync, passive research doc, or committed `.krn/**` runtime evidence.
 - [OVERCLAIM] This slice proves build-time skill-routing enforcement and cleanup cadence for these CLI consumers only. It does not prove skill quality, TypeScript code quality across the repo, final memory quality, self-growing behavior, review-burden reduction, or productivity lift.
 - [NEXT] Commit and push this cleanup; then continue with the next consumed product bottleneck from code pressure. Prefer cleanup that reduces monolith pressure or duplicate runtime rules; do not add another infrastructure proof unless a real capability task consumes it.
+- [EVIDENCE] The path-aware goal/source skill-routing pre-edit gate passed and wrote `.krn/gates/20260621T045812Z-1477273/engineering-gate.json`.
+- [EVIDENCE] The dogfood context packet for the same cleanup wrote `.krn/context/20260621T045812Z-1477257/context-packet.json` using the external local MemoryStore at `/tmp/krn-dogfood-memory/memory-store.json`.
+- [FACT] Shared CLI skill routing now detects `goal-execplan` from `docs/goals/**` and `docs/plans/canonical/draft.md` target paths even when task wording is generic.
+- [FACT] Shared CLI skill routing now detects `research-synthesis` from `docs/plans/canonical/SOURCES.md`, `docs/plans/canonical/pattern-matrix.md`, `docs/plans/canonical/draft.md`, and `docs/memory/**` target paths even when task wording is generic.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/cli/test/gate.test.ts` passed 1 file / 7 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T045923Z-1479017/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one shared path-aware skill router and public `krn gate` regressions for TypeScript, eval, goal, and source paths.
+- [SIMPLIFY] Delete/avoid: no new docs/source system, no passive research note, no dashboard/API/benchmark work, no new eval module, and no path-specific hardcode in three separate command files.
+- [OVERCLAIM] This slice proves pre-edit skill routing for canonical goal/source paths only. It does not prove research quality, source freshness, ADR completeness, skill impact, final memory quality, or productivity lift.
+- [NEXT] Commit and push this cleanup; then pick the next slice from real code pressure. If no concrete consumer exposes a bug, inspect monolith pressure around `packages/cli/src/init.ts` before adding behavior.
 
 ## Disproves Completion
 

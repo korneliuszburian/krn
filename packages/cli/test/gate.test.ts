@@ -166,4 +166,62 @@ describe("krn gate", () => {
     expect(gate.gate_status).toBe("pass");
     expect(gate.required_skills.map((skill) => skill.name)).toContain("eval-designer");
   }, 30_000);
+
+  it("routes goal skill from goal target path even when task wording is generic", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-goal-path-skill-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "gate",
+        "--target",
+        targetRoot,
+        "--task",
+        "Simplify the touched cleanup surface without adding dashboard benchmark API or passive docs",
+        "--path",
+        "docs/goals/goal-038.md",
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const gate = parseKrnEngineeringGate(readJson(stdout.trim()));
+    expect(gate.gate_status).toBe("pass");
+    expect(gate.required_skills.map((skill) => skill.name)).toContain("goal-execplan");
+  }, 30_000);
+
+  it("routes research skill from source target path even when task wording is generic", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-gate-source-path-skill-target-"));
+
+    const stdout = execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        "packages/cli/src/main.ts",
+        "--",
+        "gate",
+        "--target",
+        targetRoot,
+        "--task",
+        "Simplify the touched cleanup surface without adding dashboard benchmark API or passive docs",
+        "--path",
+        "docs/plans/canonical/SOURCES.md",
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      },
+    );
+
+    const gate = parseKrnEngineeringGate(readJson(stdout.trim()));
+    expect(gate.gate_status).toBe("pass");
+    expect(gate.required_skills.map((skill) => skill.name)).toContain("research-synthesis");
+  }, 30_000);
 });

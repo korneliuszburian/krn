@@ -27,11 +27,13 @@ const SKILL_RULES: readonly SkillRule[] = [
     pattern: /\b(goal|execplan|resume|long-running|final product|slice)\b/,
     name: "goal-execplan",
     reason: "The task changes a restartable goal, plan, or final-product slice boundary.",
+    targetPathMatches: isGoalTargetPath,
   },
   {
     pattern: /\b(research|source|paper|pattern|adr|decision)\b/,
     name: "research-synthesis",
     reason: "The task needs source-backed synthesis or canonical decision updates.",
+    targetPathMatches: isResearchTargetPath,
   },
 ];
 
@@ -47,6 +49,22 @@ function isTypeScriptTargetPath(path: string | null): boolean {
 function isEvalTargetPath(path: string | null): boolean {
   const normalized = normalizeTargetPath(path);
   return normalized !== null && (normalized.startsWith("packages/evals/") || normalized.startsWith("docs/evals/"));
+}
+
+function isGoalTargetPath(path: string | null): boolean {
+  const normalized = normalizeTargetPath(path);
+  return normalized !== null && (normalized.startsWith("docs/goals/") || normalized === "docs/plans/canonical/draft.md");
+}
+
+function isResearchTargetPath(path: string | null): boolean {
+  const normalized = normalizeTargetPath(path);
+  return (
+    normalized !== null &&
+    (normalized === "docs/plans/canonical/SOURCES.md" ||
+      normalized === "docs/plans/canonical/pattern-matrix.md" ||
+      normalized === "docs/plans/canonical/draft.md" ||
+      normalized.startsWith("docs/memory/"))
+  );
 }
 
 export function resolveKrnRequiredSkills(input: {
