@@ -17,7 +17,7 @@
   "promotions": [
     {
       "owner": "krn",
-      "source_refs": ["docs/goals/goal-006.md"],
+      "source_refs": ["docs/specs/krn-promotion-review-view-model/README.md"],
       "next_action": "Apply this promotion from the dashboard.",
       "failure_mode": "bad fixture",
       "promotion_id": "bad-promotion",
@@ -45,10 +45,10 @@
     "target_surface": "target_files",
     "label": "Apply promotion",
     "rationale": "bad fixture",
-    "source_refs": ["docs/goals/goal-006.md"]
+    "source_refs": ["docs/specs/krn-promotion-review-view-model/README.md"]
   },
   "blocked_actions": [],
-  "source_refs": ["docs/goals/goal-006.md"],
+  "source_refs": ["docs/specs/krn-promotion-review-view-model/README.md"],
   "failure_mode": "bad fixture",
   "interpretation_caveat": "bad fixture"
 }

@@ -5,10 +5,8 @@ status: active
 owner: krn
 updated: 2026-06-20
 sources:
-  - docs/goals/goal-006.md
+  - docs/goals/goal-038.md
   - docs/goals/goal-014.md
-  - docs/goals/goal-015.md
-  - docs/product/final-product-plan.md
   - docs/specs/krn-proposal-promotion/README.md
   - docs/plans/canonical/SOURCES.md
 ---

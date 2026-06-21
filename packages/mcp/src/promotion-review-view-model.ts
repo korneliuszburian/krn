@@ -5,10 +5,7 @@ import { listKrnProposalReviewDecisionStoreRecords } from "./proposal-review-dec
 import { listKrnProposalPromotionStoreRecords } from "./proposal-promotion-store.js";
 import { listKrnProposalStoreRecords, validateSourceRefs } from "./proposal-store.js";
 
-const PROMOTION_REVIEW_SOURCE_REFS = [
-  "docs/goals/goal-006.md",
-  "docs/goals/goal-014.md",
-  "docs/goals/goal-015.md",
+const PROMOTION_REVIEW_SPEC_SOURCE_REFS = [
   "docs/specs/krn-proposal-promotion/README.md",
   "docs/specs/krn-promotion-review-view-model/README.md",
 ] as const;
@@ -88,6 +85,7 @@ function promotionReviewNextAction(
   staleSourceRefs: number,
   targetConflicts: number,
   validPromotions: number,
+  sourceRefs: readonly string[],
 ): KrnPromotionReviewViewModel["next_allowed_action"] {
   if (invalidRecords > 0) {
     return {
@@ -95,7 +93,7 @@ function promotionReviewNextAction(
       target_surface: "promotion_store",
       label: "Repair invalid promotion records",
       rationale: "Promotion Review must not present unparseable promotion files as audited promotion state.",
-      source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -105,7 +103,7 @@ function promotionReviewNextAction(
       target_surface: "proposal_review_store",
       label: "Repair promotion references",
       rationale: "Promotion records must reference an existing proposal and approved review decision.",
-      source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -115,7 +113,7 @@ function promotionReviewNextAction(
       target_surface: "source_refs",
       label: "Repair promotion source refs",
       rationale: "Promotion Review must not trust stale source-backed promotion evidence.",
-      source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -125,7 +123,7 @@ function promotionReviewNextAction(
       target_surface: "target_files",
       label: "Inspect promotion target conflicts",
       rationale: "Promotion targets must match exact reviewed payloads before command readiness is claimed.",
-      source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -135,7 +133,7 @@ function promotionReviewNextAction(
       target_surface: "promotion_store",
       label: "Audit promotion records",
       rationale: "Promotion records are available for human audit, but dashboard commands remain blocked.",
-      source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+      source_refs: [...sourceRefs],
     };
   }
 
@@ -144,12 +142,16 @@ function promotionReviewNextAction(
     target_surface: "promotion_store",
     label: "Wait for promotion-store input",
     rationale: "No promotion records exist, so Promotion Review must render explicit zero state.",
-    source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+    source_refs: [...sourceRefs],
   };
 }
 
 function isTargetConflict(state: KrnPromotionReviewViewModel["promotions"][number]["target_file_state"]): boolean {
   return state === "not_applied_target_differs" || state === "applied_target_missing" || state === "applied_target_differs";
+}
+
+function sourceRefsWithPromotionReviewSpec(sourceRefs: readonly string[]): string[] {
+  return [...new Set([...sourceRefs, ...PROMOTION_REVIEW_SPEC_SOURCE_REFS])];
 }
 
 export function buildKrnPromotionReviewViewModel(targetInput = ".", now = new Date()): KrnPromotionReviewViewModel {
@@ -209,6 +211,7 @@ export function buildKrnPromotionReviewViewModel(targetInput = ".", now = new Da
         : "empty";
 
   const hasStoreState = rows.length > 0 || records.invalid_records.length > 0;
+  const sourceRefs = sourceRefsWithPromotionReviewSpec(rows.flatMap((row) => row.source_refs));
 
   return parseKrnPromotionReviewViewModel({
     schema_version: "krn-promotion-review-view-model.v1",
@@ -237,6 +240,7 @@ export function buildKrnPromotionReviewViewModel(targetInput = ".", now = new Da
       staleSourceRefs,
       targetConflicts,
       rows.length,
+      sourceRefs,
     ),
     blocked_actions: [
       "dashboard_promote_button",
@@ -246,7 +250,7 @@ export function buildKrnPromotionReviewViewModel(targetInput = ".", now = new Da
       "write_memory",
       "overwrite_target",
     ],
-    source_refs: [...PROMOTION_REVIEW_SOURCE_REFS],
+    source_refs: sourceRefs,
     failure_mode:
       "Promotion Review becomes harmful if audited promotion records are overclaimed as dashboard command readiness, broad write safety, human review quality, or productivity lift.",
     interpretation_caveat:

@@ -1237,6 +1237,18 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no broad dashboard cleanup, no benchmark execution, no source registry service, no memory/API work, and no productivity-lift claim.
 - [OVERCLAIM] This slice proves Pending Review source-ref freshness and data lineage only. It does not prove dashboard usefulness, source graph completeness, human review quality, benchmark quality, or product lift.
 - [NEXT] Commit and push this source-lineage cleanup; then continue only where a concrete consumer still exposes hardcoded-truth or contract drift.
+- [EVIDENCE] The Promotion Review source-lineage cleanup pre-edit gate passed and wrote `.krn/gates/20260621T042408Z-1374240/engineering-gate.json`.
+- [FACT] `buildKrnPromotionReviewViewModel` no longer hardcodes historical `goal-006` / `goal-015` refs for runtime top-level or next-action source refs. It derives source lineage from parsed promotion records and appends stable Proposal Promotion / Promotion Review spec refs.
+- [FACT] Empty or invalid Promotion Review states use stable spec refs only, while promotion rows keep the promotion record's own `source_refs`.
+- [FACT] Promotion Review examples now cite the current promotion record source lineage instead of the old dashboard/source list.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/mcp/test/promotion-review-view-model.test.ts packages/contracts/test/promotion-review-view-model.test.ts` passed 2 files / 7 tests.
+- [EVIDENCE] Dashboard tests passed: `pnpm --dir apps/dashboard exec vitest run test/promotion-review-dashboard.test.tsx` passed 1 file / 3 tests, and `pnpm --dir apps/dashboard exec vitest run test` passed 4 files / 13 tests.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T042556Z-1377602/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one source-ref derivation helper, existing parser/view-model contracts, focused tests, and no new dashboard/API/eval surface.
+- [SIMPLIFY] Delete/avoid: no broad dashboard cleanup, no benchmark execution, no source registry service, no memory/API work, and no productivity-lift claim.
+- [OVERCLAIM] This slice proves Promotion Review source-ref freshness and data lineage only. It does not prove dashboard usefulness, source graph completeness, human review quality, benchmark quality, or product lift.
+- [NEXT] Commit and push this source-lineage cleanup; then choose the next cleanup by live consumer pressure, not by broad source-ref string sweeps.
 
 ## Disproves Completion
 

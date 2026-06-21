@@ -112,6 +112,11 @@ describe("KRN promotion review view model builder", () => {
     expect(viewModel.queue_state).toBe("empty");
     expect(viewModel.valid_promotions).toBe(0);
     expect(viewModel.next_allowed_action.action_id).toBe("wait-for-promotion-store-input");
+    expect(viewModel.source_refs).toEqual([
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-promotion-review-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
   });
 
   it("renders approved promotion records without mutating target files", () => {
@@ -132,6 +137,13 @@ describe("KRN promotion review view model builder", () => {
       source_ref_status: "validated",
       target_file_state: "not_applied_target_absent",
     });
+    expect(viewModel.source_refs).toEqual([
+      ...promotion.source_refs,
+      "docs/specs/krn-promotion-review-view-model/README.md",
+    ]);
+    expect(viewModel.next_allowed_action.source_refs).toEqual(viewModel.source_refs);
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-006.md");
+    expect(viewModel.source_refs).not.toContain("docs/goals/goal-015.md");
     expect(viewModel.blocked_actions).toContain("apply_promotion_from_dashboard");
   });
 

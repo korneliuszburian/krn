@@ -18,9 +18,11 @@
     {
       "owner": "krn",
       "source_refs": [
-        "docs/goals/goal-006.md",
+        "docs/goals/goal-038.md",
         "docs/goals/goal-014.md",
-        "docs/specs/krn-proposal-promotion/README.md"
+        "docs/specs/krn-proposal-promotion/README.md",
+        "docs/specs/krn-proposal-review-decision/README.md",
+        "docs/specs/krn-control-plane-proposal/README.md"
       ],
       "next_action": "Audit this promotion record and target status before adding any dashboard/API command surface.",
       "failure_mode": "Promotion Review rows are unsafe if they imply dashboard command readiness, hide missing approvals, or detach target state from exact payload content.",
@@ -52,9 +54,11 @@
     "label": "Audit promotion records",
     "rationale": "Promotion records are available for human audit, but dashboard commands remain blocked.",
     "source_refs": [
-      "docs/goals/goal-006.md",
+      "docs/goals/goal-038.md",
       "docs/goals/goal-014.md",
-      "docs/goals/goal-015.md",
+      "docs/specs/krn-proposal-promotion/README.md",
+      "docs/specs/krn-proposal-review-decision/README.md",
+      "docs/specs/krn-control-plane-proposal/README.md",
       "docs/specs/krn-promotion-review-view-model/README.md"
     ]
   },
@@ -67,10 +71,11 @@
     "overwrite_target"
   ],
   "source_refs": [
-    "docs/goals/goal-006.md",
+    "docs/goals/goal-038.md",
     "docs/goals/goal-014.md",
-    "docs/goals/goal-015.md",
     "docs/specs/krn-proposal-promotion/README.md",
+    "docs/specs/krn-proposal-review-decision/README.md",
+    "docs/specs/krn-control-plane-proposal/README.md",
     "docs/specs/krn-promotion-review-view-model/README.md"
   ],
   "failure_mode": "Promotion Review becomes harmful if audited promotion records are overclaimed as dashboard command readiness, broad write safety, human review quality, or productivity lift.",
