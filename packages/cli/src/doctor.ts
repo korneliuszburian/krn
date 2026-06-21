@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { relative, resolve } from "node:path";
-import { parseDoctorReport, type DoctorCheck, type DoctorReport } from "@krn/contracts";
+import { parseDoctorReport, parseKrnEvalModuleRegistry, type DoctorCheck, type DoctorReport } from "@krn/contracts";
 import { createRunId, pathKind } from "./runtime-utils.js";
 
 type DoctorArgs = {
@@ -8,6 +8,12 @@ type DoctorArgs = {
 };
 
 const localSpecPathPatterns = [/\/home\/krn\//, /C:\\Users\\krnij/i, /\/mnt\/c\/Users\/krnij/i];
+
+type EvalRegistryReadiness = {
+  status: "ready" | "warning" | "blocked";
+  exists: boolean;
+  summary: string;
+};
 
 export function parseDoctorArgs(argv: readonly string[]): DoctorArgs {
   if (argv[0] !== "doctor") {
@@ -49,20 +55,6 @@ function countSkillContracts(targetRoot: string): number {
   }).length;
 }
 
-function countEvalCases(targetRoot: string): number {
-  const evalsRoot = resolve(targetRoot, "docs", "evals");
-  if (!existsSync(evalsRoot) || !statSync(evalsRoot).isDirectory()) {
-    return 0;
-  }
-
-  return readdirSync(evalsRoot, { withFileTypes: true }).filter((entry) => {
-    if (!entry.isDirectory()) {
-      return false;
-    }
-    return existsSync(resolve(evalsRoot, entry.name, "cases.json"));
-  }).length;
-}
-
 function collectFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(dir, entry.name);
@@ -77,6 +69,36 @@ function collectFiles(dir: string): string[] {
 
     return [];
   });
+}
+
+function evalRegistryReadiness(targetRoot: string): EvalRegistryReadiness {
+  const registryPath = resolve(targetRoot, "docs", "evals", "registry.json");
+  if (!existsSync(registryPath) || !statSync(registryPath).isFile()) {
+    return {
+      status: "warning",
+      exists: false,
+      summary: "Eval module registry is missing.",
+    };
+  }
+
+  try {
+    const registry = parseKrnEvalModuleRegistry(JSON.parse(readFileSync(registryPath, "utf8")) as unknown);
+    const coreCount = registry.modules.filter((module) => module.lane === "core").length;
+    const currentCount = registry.modules.filter((module) => module.lane === "current").length;
+    const labCount = registry.modules.filter((module) => module.lane === "lab").length;
+
+    return {
+      status: "ready",
+      exists: true,
+      summary: `Eval registry default lane is ${registry.default_lane}; ${coreCount} core, ${currentCount} current, and ${labCount} lab modules are registered.`,
+    };
+  } catch (error: unknown) {
+    return {
+      status: "blocked",
+      exists: true,
+      summary: `Eval module registry is invalid: ${error instanceof Error ? error.message : "unknown parse error"}.`,
+    };
+  }
 }
 
 function findLocalSpecPathFiles(targetRoot: string): string[] {
@@ -122,7 +144,7 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
   const runId = createRunId(now);
   const runtimeReportPath = `.krn/doctor/${runId}/report.json`;
   const skillCount = countSkillContracts(targetRoot);
-  const evalCount = countEvalCases(targetRoot);
+  const evalRegistry = evalRegistryReadiness(targetRoot);
   const hooksJsonExists = pathKind(targetRoot, ".codex/hooks.json") === "file";
   const compactHookExists = pathKind(targetRoot, ".codex/hooks/compact_continuity.py") === "file";
   const hooksReady = hooksJsonExists && compactHookExists;
@@ -180,11 +202,11 @@ export function buildDoctorReport(targetInput: string, now = new Date()): Doctor
     {
       id: "eval-modules",
       surface: "evals",
-      path: "docs/evals",
-      status: doctorStatus(evalCount > 0),
-      exists: evalCount > 0,
-      summary: evalCount > 0 ? `${evalCount} eval modules with cases are present.` : "No eval module cases were found.",
-      source_refs: ["docs/evals/README.md", "docs/evals/STANDARD.md"],
+      path: "docs/evals/registry.json",
+      status: evalRegistry.status,
+      exists: evalRegistry.exists,
+      summary: evalRegistry.summary,
+      source_refs: ["docs/evals/registry.json", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"],
     },
     {
       id: "spec-portability",

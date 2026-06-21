@@ -46,11 +46,11 @@
     {
       "id": "eval-modules",
       "surface": "evals",
-      "path": "docs/evals",
+      "path": "docs/evals/registry.json",
       "status": "ready",
       "exists": true,
-      "summary": "Eval definitions are present.",
-      "source_refs": ["docs/evals/README.md", "docs/evals/STANDARD.md"]
+      "summary": "Eval registry default lane is current; 5 core, 5 current, and 11 lab modules are registered.",
+      "source_refs": ["docs/evals/registry.json", "docs/specs/krn-eval/README.md", "docs/evals/STANDARD.md"]
     },
     {
       "id": "spec-portability",

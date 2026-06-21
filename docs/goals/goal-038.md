@@ -1191,6 +1191,17 @@ above plus the newest `[NEXT]` entry.
 - [SIMPLIFY] Delete/avoid: no new eval family, no global scanner framework, no runtime path ban, no dashboard/API/benchmark work, and no product-lift claim.
 - [SIMPLIFY] Next candidate: if spec portability causes false positives, narrow the checked path set before expanding this into a broader policy engine.
 - [OVERCLAIM] This slice proves operator-visible detection of local path leakage in `docs/specs/**` only. It does not prove runtime privacy, secret scanning, source graph quality, memory quality, review-burden reduction, or product lift.
+- [EVIDENCE] The doctor eval-registry readiness pre-edit gate passed and wrote `.krn/gates/20260621T040528Z-1324891/engineering-gate.json`.
+- [FACT] `krn doctor` now reads `docs/evals/registry.json` through `parseKrnEvalModuleRegistry` and reports default lane plus core/current/lab module counts instead of counting all historical eval case directories.
+- [FACT] Invalid eval registry content blocks the doctor report; a missing eval registry warns.
+- [EVIDENCE] Focused tests passed: `pnpm exec vitest run packages/contracts/test/doctor-report.test.ts packages/cli/test/doctor.test.ts packages/contracts/test/eval-module-registry.test.ts` passed 3 files / 9 tests, including an invalid-registry blocked case.
+- [EVIDENCE] `pnpm run eval:krn-doctor` passed run `.krn/evals/krn-doctor-contracts/20260621T040619Z-1326558/report.json` with 3/3 cases and 7/7 assertions passing.
+- [EVIDENCE] `pnpm run krn -- eval --lane core` passed run `.krn/eval/20260621T040635Z-1327881/report.json` with 5/5 modules, 25/25 cases, and 93/93 assertions passing.
+- [EVIDENCE] `pnpm typecheck` and `git diff --check` passed.
+- [SIMPLIFY] Keep: one registry-backed doctor readiness check, the existing eval registry parser, focused invalid-registry test, and no change to eval execution behavior.
+- [SIMPLIFY] Delete/avoid: no new eval modules, no dashboard/API/benchmark work, no lab-lane execution by doctor, no broad eval redesign, and no productivity-lift claim.
+- [SIMPLIFY] Next candidate: if eval count remains misleading in other surfaces, route them to the typed registry instead of duplicating lane lists.
+- [OVERCLAIM] This slice proves doctor eval-readiness metadata is registry-backed only. It does not prove eval quality, benchmark validity, dashboard usefulness, review-burden reduction, or product lift.
 
 ## Disproves Completion
 

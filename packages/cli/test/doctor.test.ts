@@ -66,4 +66,28 @@ describe("krn doctor", () => {
     });
     expect(specCheck?.summary).toContain("docs/specs/example/bad.example.json");
   }, 30_000);
+
+  it("blocks when the eval registry cannot be parsed", () => {
+    const targetRoot = mkdtempSync(join(tmpdir(), "krn-doctor-eval-registry-"));
+    const registryRoot = join(targetRoot, "docs", "evals");
+    mkdirSync(registryRoot, { recursive: true });
+    writeFileSync(join(registryRoot, "registry.json"), '{ "kind": "not-a-registry" }\n', "utf8");
+
+    const stdout = execFileSync("pnpm", ["exec", "tsx", "packages/cli/src/main.ts", "--", "doctor", "--target", targetRoot], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    });
+
+    const report = parseDoctorReport(readJson(stdout.trim()));
+    const evalCheck = report.checks.find((check) => check.id === "eval-modules");
+
+    expect(report.overall_status).toBe("blocked");
+    expect(evalCheck).toMatchObject({
+      surface: "evals",
+      path: "docs/evals/registry.json",
+      status: "blocked",
+      exists: true,
+    });
+    expect(evalCheck?.summary).toContain("Eval module registry is invalid");
+  }, 30_000);
 });

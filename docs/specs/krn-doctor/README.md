@@ -49,7 +49,7 @@ The report must include checks for:
 - `memory`: `docs/memory/INDEX.md`
 - `skills`: `.agents/skills/**/SKILL.md`
 - `hooks`: `.codex/hooks.json` plus `.codex/hooks/compact_continuity.py`
-- `evals`: `docs/evals/README.md` plus eval module cases
+- `evals`: typed `docs/evals/registry.json` lane policy, including core/current/lab separation
 - `specs`: `docs/specs/**` examples and fixtures do not contain user-specific local operator paths
 - `runtime`: `.krn/`
 
